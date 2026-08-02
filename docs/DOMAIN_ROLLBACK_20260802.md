@@ -17,14 +17,16 @@ This is an operational rollback checklist. It intentionally records only observe
 ## Post-attempt status
 
 - Last verified: 2026-08-02 19:24:27 +09:00.
-- Creating a CLASSCADE Pages site with `build_type=workflow` returned `422: Your current plan does not support GitHub Pages for this repository`.
-- No Pages deployment, custom-domain setting, DNS change, HTTPS enforcement, PR merge, or production release occurred as a result of that attempt.
-- The deployment workflow remains committed for use after an authorized plan/visibility/hosting decision.
+- Creating a CLASSCADE Pages site with `build_type=workflow` returned `422: Your current plan does not support GitHub Pages for this repository`; that direct Pages workflow is replaced by the public source-to-deployment-repository workflow.
+- `edutogether/edutogether.github.io` is the dedicated public deployment repository. GitHub organization deploy-key creation must be enabled before its write deploy key can be registered.
+- No custom-domain setting, DNS change, HTTPS enforcement, PR merge, or production release occurred as a result of the earlier attempt.
 
-## Planned target after a verified temporary Pages deployment
+## Planned target after a verified production deployment
 
-- Host: `edutogether/classcade` GitHub Pages, deployed by `.github/workflows/deploy-pages.yml`.
-- Custom domain: `edutogether.kr` configured in the CLASSCADE Pages setting (not through a branch-published CNAME file; GitHub Actions publishing ignores CNAME files).
+- Source: public `edutogether/classcade`; `.github/workflows/publish-edutogether-site.yml` verifies and builds `main` before publishing its `dist` output.
+- Host: public `edutogether/edutogether.github.io` GitHub Pages, published from its `main` branch root.
+- First public URL: `https://edutogether.github.io/`.
+- Custom domain: later configure `edutogether.kr` in the deployment repository's Pages setting. No CNAME file is used before that cutover.
 - HTTPS: enable enforcement only after the Pages certificate is approved.
 - DNS values to use only after the registrar/DNS administrator repairs authority delegation and preserves an exact current-zone export:
 
@@ -47,7 +49,7 @@ Keep the DNS provider's required SOA/NS records. Do not add wildcard records. Be
 1. Verify the exact feature build at the temporary Pages URL over HTTPS.
 2. Merge only the validated PR, deploy `main`, and verify its Pages URL.
 3. Export the live DNS zone and record it below before changing any record.
-4. Set `edutogether.kr` as the CLASSCADE Pages custom domain. If another Pages site owns it, record that site's setting first and remove it only after the CLASSCADE Pages deployment is healthy.
+4. Set `edutogether.kr` as the deployment repository's Pages custom domain. If another Pages site owns it, record that site's setting first and remove it only after the deployment repository's Pages deployment is healthy.
 5. Apply the target DNS records above through the authorized DNS provider. Never replace unobserved pre-change records.
 6. Wait for Pages domain verification and certificate approval, then enable HTTPS enforcement.
 7. Verify with the commands below from two public resolvers and an HTTPS client.
@@ -60,8 +62,8 @@ Keep the DNS provider's required SOA/NS records. Do not add wildcard records. Be
 
 ## Roll back to the pre-cutover destination
 
-1. Disable HTTPS enforcement on CLASSCADE Pages only if the original host requires it during recovery.
-2. Remove `edutogether.kr` from the CLASSCADE Pages custom-domain setting after the previous target is ready to serve it.
+1. Disable HTTPS enforcement on the deployment repository's Pages site only if the original host requires it during recovery.
+2. Remove `edutogether.kr` from the deployment repository's Pages custom-domain setting after the previous target is ready to serve it.
 3. Restore the administrator's exact pre-cutover DNS export above, including the original TTLs and every prior `A`, `AAAA`, `ALIAS`, `ANAME`, `CNAME`, and relevant `CAA` record.
 4. Restore the recorded former Pages custom-domain setting, if one existed; do not modify `edutogether/platform` code.
 5. Confirm the previous HTTPS certificate/redirect behavior and clear social caches only after the original HTML is live again.
