@@ -57,9 +57,9 @@ describe('golden-path journey reducer', () => {
   it('only opens sharing after completion and preserves audio toggles across reset', () => {
     let state = journeyReducer(createJourneyState(), { type: 'OPEN_SHARING' })
     expect(state.stage).toBe('nbti_start')
-    state = journeyReducer(state, { type: 'SET_AUDIO', audio: { bgmEnabled: true, sfxEnabled: true } })
+    state = journeyReducer(state, { type: 'SET_AUDIO', audio: { bgmEnabled: true, bgmVolume: .42, sfxEnabled: true } })
     state = journeyReducer(state, { type: 'RESET_NBTI' })
-    expect(state).toMatchObject({ stage: 'nbti_start', audio: { bgmEnabled: true, sfxEnabled: true } })
+    expect(state).toMatchObject({ stage: 'nbti_start', audio: { bgmEnabled: true, bgmVolume: .42, sfxEnabled: true } })
   })
 
   it('rejects malformed restored journey records', () => {

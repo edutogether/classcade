@@ -15,16 +15,17 @@ export function StartScene(props: JourneySceneProps) {
     <SceneFrame scene="start" {...props}>
       <div className="journey-start__copy journey-enter">
         <p className="journey-kicker"><span>✦</span> NBTI ADVENTURE <span>✦</span></p>
-        <h1>당신의 교실 플레이<br /><em>모험이</em><br />시작됩니다</h1>
-        <p className="journey-start__description">여러분의 선택으로 나의 교실 유형을 발견하고,<br />선생님 캐릭터를 성장시켜 보세요.</p>
+        <h1 data-tune-id="main-title"><span>당신의</span><span>교실 플레이 <em>모험이</em></span><span>시작됩니다</span></h1>
+        <p className="journey-start__description" data-tune-id="main-description">여러분의 선택으로 나의 교실 유형을 발견하고, 선생님 캐릭터를 성장시켜 보세요.</p>
+        <div className="journey-start__sparkles" aria-hidden="true">{Array.from({ length: 9 }, (_, index) => <i key={index} />)}</div>
         <ul className="journey-start__cards" aria-label="여정 정보">
           {journeyItems.map((item) => <li key={item.title}><Icon name={item.icon} size={25} /><span><b>{item.title}</b><small>{item.detail}</small></span></li>)}
         </ul>
         <div className="journey-start__actions">
-          <PrimaryButton onClick={() => props.onAction({ type: 'START_NBTI' })}>교실 NBTI 시작하기</PrimaryButton>
-          <SecondaryButton onClick={() => props.onAction({ type: 'RESET_NBTI' })}><Icon name="reset" size={20} />이전 여정 이어가기</SecondaryButton>
+          <PrimaryButton onClick={() => props.onAction({ type: 'START_NBTI' })} tuneId="main-primary-cta">교실 NBTI 시작하기</PrimaryButton>
+          <SecondaryButton onClick={() => props.onAction({ type: 'RESET_NBTI' })} tuneId="main-resume-cta"><Icon name="reset" size={20} />이전 여정 이어가기</SecondaryButton>
         </div>
-        <p className="journey-start__audio-note"><Icon name="speaker" size={15} />헤드폰을 착용하면 BGM과 효과음이 더욱 몰입감을 높여줘요.</p>
+        <p className="journey-start__audio-note" data-tune-id="main-headphone-note"><Icon name="speaker" size={17} />헤드폰을 착용하면 BGM과 효과음이 더욱 몰입감을 높여줘요.</p>
       </div>
       {JOURNEY_SCENE_ASSETS.start.showQuestBoard && <aside className="journey-start__quest-board" aria-hidden="true">
         <b>✦ 오늘의 모험 안내 ✦</b>

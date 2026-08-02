@@ -41,6 +41,7 @@ const profile: Profile = {
   region: 'seoul',
   growthPriorities: ['engagement', 'class-community'],
   growthPriorityOther: '',
+  nickname: '플레이메이커쌤',
   createdAt: '2026-08-02T00:00:00.000Z',
   updatedAt: '2026-08-02T00:00:00.000Z',
 }

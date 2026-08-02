@@ -3,7 +3,7 @@ import { getGameVariantForResult } from '../../data/gameVariants.provisional'
 import { resultCodeFromAnswers } from '../../data/nbtiScoring.provisional'
 import { PROVISIONAL_NBTI_RESULTS } from '../../data/nbtiResults.provisional'
 import type { JourneyStatus } from '../../data/adventure'
-import type { AudioSettings } from '../../lib/audioController'
+import { DEFAULT_BGM_VOLUME, clampBgmVolume, type AudioSettings } from '../../lib/audioController'
 
 export type JourneyStage = 'nbti_start' | 'nbti_question' | 'nbti_result' | 'game_intro' | 'game_choice' | 'game_shake' | 'game_complete' | 'sharing'
 
@@ -38,7 +38,7 @@ export type JourneyAction =
   | { type: 'SET_AUDIO'; audio: AudioSettings }
   | { type: 'OPEN_RESULT' }
 
-const defaultAudio: AudioSettings = { bgmEnabled: false, sfxEnabled: false }
+const defaultAudio: AudioSettings = { bgmEnabled: true, bgmVolume: DEFAULT_BGM_VOLUME, sfxEnabled: false }
 
 export function createJourneyState(stage: JourneyStage = 'nbti_start', audio: AudioSettings = defaultAudio): JourneyState {
   return {
@@ -187,7 +187,11 @@ export function validateJourneyState(value: unknown): JourneyState | null {
     gameStep: candidate.gameStep as number,
     gameChoices: gameChoices as Record<string, string>,
     shakeProgress: candidate.shakeProgress as number,
-    audio: { bgmEnabled: audio.bgmEnabled as boolean, sfxEnabled: audio.sfxEnabled as boolean },
+    audio: {
+      bgmEnabled: audio.bgmEnabled as boolean,
+      bgmVolume: clampBgmVolume(typeof audio.bgmVolume === 'number' ? audio.bgmVolume : DEFAULT_BGM_VOLUME),
+      sfxEnabled: audio.sfxEnabled as boolean,
+    },
     updatedAt: typeof candidate.updatedAt === 'string' ? candidate.updatedAt : new Date().toISOString(),
     completedAt: candidate.completedAt as string | null,
   }

@@ -1,20 +1,23 @@
 import { AUDIO_MANIFEST, BGM_MANIFEST, type AudioCue } from '../data/audioManifest'
-import type { AudioSettings } from './audioController'
+import { DEFAULT_BGM_VOLUME, clampBgmVolume, type AudioSettings } from './audioController'
 
 const cuePlayers = new Map<AudioCue, HTMLAudioElement>()
-const MAIN_THEME_VOLUME = .28
 const INITIAL_START_DELAY_MS = 450
 const INITIAL_FADE_MS = 2200
 const TOGGLE_ON_FADE_MS = 800
 const TOGGLE_OFF_FADE_MS = 300
 const RESULT_FADE_MS = 600
+const DISTANT_REVEAL_VOLUME = .055
+const DISTANT_REVEAL_FADE_MS = 740
+const REVEAL_TO_MAIN_FADE_MS = 1080
 
 let mainThemePlayer: HTMLAudioElement | null = null
 let mainThemeFadeFrame: number | null = null
 let mainThemeStartTimer: number | null = null
-let mainThemeState: 'idle' | 'starting' | 'playing' | 'stopping' = 'idle'
+let mainThemeState: 'idle' | 'starting' | 'distant' | 'playing' | 'stopping' = 'idle'
 let hasAudioUserGesture = false
 let hasStartedMainTheme = false
+let requestedMainThemeVolume = DEFAULT_BGM_VOLUME
 
 function playerForCue(cue: AudioCue) {
   const source = AUDIO_MANIFEST[cue]
@@ -79,7 +82,7 @@ function fadeMainThemeTo(player: HTMLAudioElement, target: number, duration: num
   mainThemeFadeFrame = window.requestAnimationFrame(tick)
 }
 
-function startMainTheme(delay: number, fadeDuration: number) {
+function startMainTheme(delay: number, fadeDuration: number, target = requestedMainThemeVolume, completion: 'distant' | 'playing' = 'playing') {
   const player = playerForMainTheme()
   if (!player) return
   cancelMainThemeTransition()
@@ -95,8 +98,8 @@ function startMainTheme(delay: number, fadeDuration: number) {
           return
         }
         hasStartedMainTheme = true
-        fadeMainThemeTo(player, MAIN_THEME_VOLUME, fadeDuration, () => {
-          if (mainThemeState === 'starting') mainThemeState = 'playing'
+        fadeMainThemeTo(player, target, fadeDuration, () => {
+          if (mainThemeState === 'starting') mainThemeState = completion
         })
       }).catch(() => {
         if (mainThemeState === 'starting') mainThemeState = 'idle'
@@ -132,15 +135,35 @@ export function noteAudioUserGesture() {
   hasAudioUserGesture = true
 }
 
+/** Starts the approved loop quietly during the loading-to-world handoff. */
+export function beginMainThemeReveal(enabled: boolean, volume: number) {
+  requestedMainThemeVolume = clampBgmVolume(volume)
+  if (!enabled || !hasAudioUserGesture || mainThemeState !== 'idle') return
+  startMainTheme(0, DISTANT_REVEAL_FADE_MS, Math.min(DISTANT_REVEAL_VOLUME, requestedMainThemeVolume), 'distant')
+}
+
 /** Keeps the same native loop alive through the start/question transition. */
-export function syncMainTheme(enabled: boolean, stage: string) {
+export function syncMainTheme(enabled: boolean, stage: string, volume = DEFAULT_BGM_VOLUME) {
+  requestedMainThemeVolume = clampBgmVolume(volume)
   const shouldPlay = enabled && (stage === 'nbti_start' || stage === 'nbti_question')
   if (!shouldPlay) {
     stopMainTheme(stage === 'nbti_result' ? RESULT_FADE_MS : TOGGLE_OFF_FADE_MS)
     return
   }
-  if (!hasAudioUserGesture || mainThemeState === 'starting' || mainThemeState === 'playing') return
-  startMainTheme(hasStartedMainTheme ? 0 : INITIAL_START_DELAY_MS, hasStartedMainTheme ? TOGGLE_ON_FADE_MS : INITIAL_FADE_MS)
+  if (!hasAudioUserGesture) return
+  const player = playerForMainTheme()
+  if (!player) return
+  if (mainThemeState === 'starting') return
+  if (mainThemeState === 'distant') {
+    mainThemeState = 'playing'
+    fadeMainThemeTo(player, requestedMainThemeVolume, REVEAL_TO_MAIN_FADE_MS)
+    return
+  }
+  if (mainThemeState === 'playing') {
+    fadeMainThemeTo(player, requestedMainThemeVolume, 120)
+    return
+  }
+  startMainTheme(hasStartedMainTheme ? 0 : INITIAL_START_DELAY_MS, hasStartedMainTheme ? TOGGLE_ON_FADE_MS : INITIAL_FADE_MS, requestedMainThemeVolume)
 }
 
 /**

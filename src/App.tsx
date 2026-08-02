@@ -187,7 +187,7 @@ export default function App() {
   const showJourney = (screen === 'journey' || prepExiting) && !sharedSessionGateOpen
   return <>
     {showJourney && profile && <JourneyApp state={journeyState} notice={notice} onAction={handleJourneyAction} onTeacherOpen={(button) => { teacherTriggerRef.current = button; setTeacherOpen(true) }} teacherTriggerRef={teacherTriggerRef} />}
-    {screen === 'prep' && <AdventurePrepScreen initialProfile={profile} exiting={prepExiting} isOffline={!online} onComplete={handleProfileComplete} />}
+    {screen === 'prep' && <AdventurePrepScreen initialProfile={profile} audio={journeyState.audio} exiting={prepExiting} isOffline={!online} onComplete={handleProfileComplete} />}
     {profile && <TeacherPanel open={teacherOpen} profile={profile} journey={journey} deviceMode={deviceMode} returnFocusRef={teacherTriggerRef} onClose={() => setTeacherOpen(false)} onEdit={() => { setTeacherOpen(false); setScreen('prep') }} onRestartNbti={restartNbti} onResetAll={resetActiveJourney} onStartNewShared={resetActiveJourney} onPlaceholderAction={handleTeacherAction} />}
   </>
 }

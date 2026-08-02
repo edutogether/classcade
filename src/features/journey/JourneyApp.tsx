@@ -16,8 +16,8 @@ type JourneyAppProps = {
 
 export function JourneyApp({ state, notice, onAction, onTeacherOpen, teacherTriggerRef }: JourneyAppProps) {
   useEffect(() => {
-    syncMainTheme(state.audio.bgmEnabled, state.stage)
-  }, [state.audio.bgmEnabled, state.stage])
+    syncMainTheme(state.audio.bgmEnabled, state.stage, state.audio.bgmVolume)
+  }, [state.audio.bgmEnabled, state.audio.bgmVolume, state.stage])
 
   const dispatch = (action: JourneyAction) => {
     noteAudioUserGesture()

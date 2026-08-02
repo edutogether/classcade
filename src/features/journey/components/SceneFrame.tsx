@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode, RefObject } from 'react'
+import { BgmControl } from '../../../components/BgmControl'
 import { AudioToggleButton } from '../../../components/AudioToggleButton'
 import { CompassSeal, Icon } from '../../../components/VisualPrimitives'
 import { JOURNEY_SCENE_ASSETS, type JourneySceneAsset } from '../../../data/sceneAssets'
@@ -28,7 +29,7 @@ function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef }: Om
     <header className="journey-header">
       <div className="logo-slot" aria-label="브랜드 로고"><CompassSeal /></div>
       <div className="journey-header__actions">
-        <AudioToggleButton kind="bgm" enabled={state.audio.bgmEnabled} onToggle={() => onAction({ type: 'SET_AUDIO', audio: toggleAudioChannel(state.audio, 'bgm') })} />
+        <BgmControl enabled={state.audio.bgmEnabled} volume={state.audio.bgmVolume} onToggle={() => onAction({ type: 'SET_AUDIO', audio: toggleAudioChannel(state.audio, 'bgm') })} onVolumeChange={(bgmVolume) => onAction({ type: 'SET_AUDIO', audio: { ...state.audio, bgmVolume } })} />
         <AudioToggleButton kind="sfx" enabled={state.audio.sfxEnabled} onToggle={() => onAction({ type: 'SET_AUDIO', audio: toggleAudioChannel(state.audio, 'sfx') })} />
         <button className="journey-header__teacher" type="button" ref={teacherTriggerRef} onClick={() => { if (teacherTriggerRef.current) onTeacherOpen(teacherTriggerRef.current) }} aria-haspopup="dialog" aria-label="선생님 패널 열기">
           <span aria-hidden="true">교</span><b>선생님</b><Icon name="chevron" size={16} />
@@ -60,12 +61,12 @@ export function SceneFrame({ scene, children, state, onAction, onTeacherOpen, te
   )
 }
 
-export function PrimaryButton({ children, onClick, disabled = false, className = '' }: { children: ReactNode; onClick: () => void; disabled?: boolean; className?: string }) {
-  return <button className={`journey-button journey-button--primary ${className}`} type="button" onClick={onClick} disabled={disabled}><CompassSeal className="journey-button__seal" /><span>{children}</span><Icon name="arrow" size={25} /></button>
+export function PrimaryButton({ children, onClick, disabled = false, className = '', tuneId }: { children: ReactNode; onClick: () => void; disabled?: boolean; className?: string; tuneId?: string }) {
+  return <button className={`journey-button journey-button--primary ${className}`} type="button" onClick={onClick} disabled={disabled} data-tune-id={tuneId}><CompassSeal className="journey-button__seal" /><span>{children}</span><Icon name="arrow" size={25} /></button>
 }
 
-export function SecondaryButton({ children, onClick, className = '' }: { children: ReactNode; onClick: () => void; className?: string }) {
-  return <button className={`journey-button journey-button--secondary ${className}`} type="button" onClick={onClick}>{children}</button>
+export function SecondaryButton({ children, onClick, className = '', tuneId }: { children: ReactNode; onClick: () => void; className?: string; tuneId?: string }) {
+  return <button className={`journey-button journey-button--secondary ${className}`} type="button" onClick={onClick} data-tune-id={tuneId}>{children}</button>
 }
 
 export function Progress({ current, total, label }: { current: number; total: number; label: string }) {

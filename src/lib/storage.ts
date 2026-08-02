@@ -27,6 +27,7 @@ export type Profile = {
   region: Region
   growthPriorities: GrowthPriority[]
   growthPriorityOther: string
+  nickname: string
   createdAt: string
   updatedAt: string
 }
@@ -55,6 +56,27 @@ const hasValue = <T extends string>(options: readonly { value: T }[], value: unk
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
+}
+
+const legacySchoolLevel: Record<string, SchoolLevel> = { 'special-other': 'special' }
+const legacyRegion: Record<string, Region> = {
+  busan: 'busan-ulsan-gyeongnam',
+  ulsan: 'busan-ulsan-gyeongnam',
+  gyeongnam: 'busan-ulsan-gyeongnam',
+  daegu: 'daegu-gyeongbuk',
+  gyeongbuk: 'daegu-gyeongbuk',
+  daejeon: 'daejeon-sejong',
+  sejong: 'daejeon-sejong',
+  chungbuk: 'chungcheong',
+  chungnam: 'chungcheong',
+  gwangju: 'gwangju-jeonnam',
+  jeonnam: 'gwangju-jeonnam',
+  jeju: 'gwangju-jeonnam',
+}
+
+function normalizeOption<T extends string>(options: readonly { value: T }[], legacy: Record<string, T>, value: unknown): T | null {
+  if (hasValue(options, value)) return value
+  return typeof value === 'string' ? legacy[value] ?? null : null
 }
 
 function nowJourney(): Journey {
@@ -124,7 +146,9 @@ function remove(backend: StorageBackend | null, key: string): StorageResult<unde
 
 export function validateProfile(value: unknown): Profile | null {
   if (!isRecord(value) || value.version !== 1) return null
-  if (!hasValue(SCHOOL_LEVEL_OPTIONS, value.schoolLevel) || !hasValue(CAREER_RANGE_OPTIONS, value.careerRange) || !hasValue(REGION_OPTIONS, value.region)) return null
+  const schoolLevel = normalizeOption(SCHOOL_LEVEL_OPTIONS, legacySchoolLevel, value.schoolLevel)
+  const region = normalizeOption(REGION_OPTIONS, legacyRegion, value.region)
+  if (!schoolLevel || !hasValue(CAREER_RANGE_OPTIONS, value.careerRange) || !region) return null
   if (!Array.isArray(value.growthPriorities) || value.growthPriorities.length < 1 || value.growthPriorities.length > 3) return null
 
   const growthPriorities = value.growthPriorities.filter((priority): priority is GrowthPriority => hasValue(GROWTH_PRIORITY_OPTIONS, priority))
@@ -135,11 +159,12 @@ export function validateProfile(value: unknown): Profile | null {
 
   return {
     version: 1,
-    schoolLevel: value.schoolLevel,
+    schoolLevel,
     careerRange: value.careerRange,
-    region: value.region,
+    region,
     growthPriorities,
     growthPriorityOther: growthPriorities.includes('other') ? growthPriorityOther : '',
+    nickname: typeof value.nickname === 'string' ? value.nickname.trim().slice(0, 16) : '',
     createdAt: typeof value.createdAt === 'string' ? value.createdAt : new Date().toISOString(),
     updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : new Date().toISOString(),
   }
