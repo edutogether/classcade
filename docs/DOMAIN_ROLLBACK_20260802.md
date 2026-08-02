@@ -14,6 +14,13 @@ This is an operational rollback checklist. It intentionally records only observe
 - `edutogether/classcade` had no GitHub Pages site at audit time (`GET /repos/edutogether/classcade/pages` returned 404).
 - Other organization Pages sites (`muds`, `aiways-incheon`, `googler`) have `cname: null`; no observed organization Pages setting uses `edutogether.kr`.
 
+## Post-attempt status
+
+- Last verified: 2026-08-02 19:24:27 +09:00.
+- Creating a CLASSCADE Pages site with `build_type=workflow` returned `422: Your current plan does not support GitHub Pages for this repository`.
+- No Pages deployment, custom-domain setting, DNS change, HTTPS enforcement, PR merge, or production release occurred as a result of that attempt.
+- The deployment workflow remains committed for use after an authorized plan/visibility/hosting decision.
+
 ## Planned target after a verified temporary Pages deployment
 
 - Host: `edutogether/classcade` GitHub Pages, deployed by `.github/workflows/deploy-pages.yml`.
@@ -68,10 +75,14 @@ Resolve-DnsName www.edutogether.kr -Type CNAME -Server 1.1.1.1
 Resolve-DnsName www.edutogether.kr -Type CNAME -Server 8.8.8.8
 curl.exe -I https://edutogether.kr/
 curl.exe -I https://www.edutogether.kr/
+curl.exe -sS -L -A "KakaoTalk-Scrap/1.0" https://edutogether.kr/
 ```
+
+For Kakao preview cache inspection after the public domain is healthy, sign in to [Kakao Developers Share Debugger](https://developers.kakao.com/tool/debugger/sharing), enter `https://edutogether.kr/`, confirm the fetched Open Graph values, and run its cache refresh if necessary. The direct tool requires Kakao login.
 
 ## Change log
 
 | Time (KST) | Change | Verified by |
 | --- | --- | --- |
 | 2026-08-02, pre-deployment | DNS/Pages audit recorded; no DNS or custom-domain setting changed | local resolver, Cloudflare DoH, Google Public DNS, GitHub API |
+| 2026-08-02 19:24:27 +09:00 | CLASSCADE Pages API enablement declined with HTTP 422; no cutover performed | GitHub REST API |
