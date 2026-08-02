@@ -1,5 +1,5 @@
-import type { RefObject } from 'react'
-import { playAudioCue } from '../../lib/audioManager'
+import { useEffect, type RefObject } from 'react'
+import { noteAudioUserGesture, playAudioCue, syncMainTheme } from '../../lib/audioManager'
 import type { JourneyAction, JourneyState } from './journeyState'
 import { CompleteScene, GameChoiceScene, GameIntroScene, ShakeScene, ShareScene } from './scenes/GameScenes'
 import { QuestionScene, ResultScene, StartScene } from './scenes/NbtiScenes'
@@ -15,7 +15,12 @@ type JourneyAppProps = {
 }
 
 export function JourneyApp({ state, notice, onAction, onTeacherOpen, teacherTriggerRef }: JourneyAppProps) {
+  useEffect(() => {
+    syncMainTheme(state.audio.bgmEnabled, state.stage)
+  }, [state.audio.bgmEnabled, state.stage])
+
   const dispatch = (action: JourneyAction) => {
+    noteAudioUserGesture()
     if (['ANSWER_NBTI', 'ANSWER_GAME', 'NEXT_NBTI', 'NEXT_GAME'].includes(action.type)) playAudioCue('choice', state.audio)
     if (action.type === 'OPEN_GAME_INTRO') playAudioCue('reveal', state.audio)
     if (action.type === 'OPEN_SHARING') playAudioCue('complete', state.audio)

@@ -6,6 +6,7 @@ import { JourneyApp } from './features/journey/JourneyApp'
 import { loadJourneyState, saveJourneyState } from './features/journey/journeyPersistence'
 import { createJourneyState, journeyReducer, journeyStatusForStage, type JourneyAction, type JourneyState } from './features/journey/journeyState'
 import { resolveEntryState } from './lib/entryState'
+import { preloadMainTheme } from './lib/audioManager'
 import {
   clearActiveSession,
   clearNbtiAndProgress,
@@ -70,6 +71,10 @@ export default function App() {
       window.removeEventListener('online', syncOnlineStatus)
       window.removeEventListener('offline', syncOnlineStatus)
     }
+  }, [])
+
+  useEffect(() => {
+    preloadMainTheme()
   }, [])
 
   useEffect(() => () => { if (transitionTimerRef.current) window.clearTimeout(transitionTimerRef.current) }, [])
