@@ -124,3 +124,7 @@ Before presenting a scene:
 ## Current status
 
 The repository is initialized. The next task is project foundation and a design specification for the first start scene. Do not implement the final visual scene until the user has reviewed and approved its detailed specification or updated mockup.
+
+## Golden-path priority — 2026-08-02
+
+The user has approved a local, end-to-end golden-path implementation: preparation, NBTI start and questions, provisional result, the result-dependent second game, accessible shake fallback, completion, and sharing. Keep the existing visual contract and entry/storage behavior, but make every transition work before adding new art directions or backend integrations. Any result or NBTI label must be clearly presented as provisional exploration rather than a scientific diagnosis.
