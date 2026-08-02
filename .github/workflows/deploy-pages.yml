@@ -1,0 +1,75 @@
+name: Deploy CLASSCADE to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      VITE_SITE_URL: https://edutogether.github.io/classcade
+      VITE_BASE_PATH: /classcade/
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build production site
+        run: npm run build
+
+      - name: Prepare and verify Pages artifact
+        run: |
+          cp dist/index.html dist/404.html
+          test -f dist/index.html
+          test -f dist/404.html
+          test -d dist/assets
+          test -f dist/og/classcade-share-v1.png
+          test -f dist/favicon.svg
+          test -f dist/favicon-32x32.png
+          test -f dist/apple-touch-icon.png
+          test -f dist/site.webmanifest
+          test "$(find dist/assets -maxdepth 1 -type f \( -name '*.ogg' -o -name '*.mp3' \) | wc -l)" -ge 2
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

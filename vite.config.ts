@@ -10,12 +10,23 @@ function siteUrlHtmlPlugin(siteUrl: string): Plugin {
   }
 }
 
+function normalizeBasePath(basePath: string): string {
+  const trimmed = basePath.trim()
+
+  if (!trimmed || trimmed === '/') {
+    return '/'
+  }
+
+  return `/${trimmed.replace(/^\/+|\/+$/g, '')}/`
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_')
   const siteUrl = (process.env.VITE_SITE_URL ?? env.VITE_SITE_URL ?? 'http://localhost:5173').replace(/\/+$/, '')
+  const base = normalizeBasePath(process.env.VITE_BASE_PATH ?? env.VITE_BASE_PATH ?? '/')
 
   return {
-    base: '/',
+    base,
     plugins: [react(), siteUrlHtmlPlugin(siteUrl)],
   }
 })
