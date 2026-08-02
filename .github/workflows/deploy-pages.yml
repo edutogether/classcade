@@ -18,8 +18,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      VITE_SITE_URL: https://edutogether.github.io/classcade
-      VITE_BASE_PATH: /classcade/
+      VITE_SITE_URL: https://edutogether.kr
+      VITE_BASE_PATH: /
     steps:
       - name: Check out source
         uses: actions/checkout@v6
