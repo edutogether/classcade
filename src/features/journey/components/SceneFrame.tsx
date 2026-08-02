@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode, RefObject } from 'react'
 import { AudioToggleButton } from '../../../components/AudioToggleButton'
-import { CompassSeal, Icon, LogoSlot } from '../../../components/VisualPrimitives'
+import { CompassSeal, Icon } from '../../../components/VisualPrimitives'
 import { JOURNEY_SCENE_ASSETS, type JourneySceneAsset } from '../../../data/sceneAssets'
 import { toggleAudioChannel } from '../../../lib/audioController'
 import type { JourneyAction, JourneyState } from '../journeyState'
@@ -26,7 +26,7 @@ type SceneFrameProps = SceneContext & {
 function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef }: Omit<SceneContext, 'notice'>) {
   return (
     <header className="journey-header">
-      <LogoSlot />
+      <div className="logo-slot" aria-label="브랜드 로고"><CompassSeal /></div>
       <div className="journey-header__actions">
         <AudioToggleButton kind="bgm" enabled={state.audio.bgmEnabled} onToggle={() => onAction({ type: 'SET_AUDIO', audio: toggleAudioChannel(state.audio, 'bgm') })} />
         <AudioToggleButton kind="sfx" enabled={state.audio.sfxEnabled} onToggle={() => onAction({ type: 'SET_AUDIO', audio: toggleAudioChannel(state.audio, 'sfx') })} />
@@ -55,7 +55,7 @@ export function SceneFrame({ scene, children, state, onAction, onTeacherOpen, te
       <SceneArt asset={JOURNEY_SCENE_ASSETS[scene]} />
       <JourneyHeader state={state} onAction={onAction} onTeacherOpen={onTeacherOpen} teacherTriggerRef={teacherTriggerRef} />
       <section className="journey-scene__stage">{children}</section>
-      {notice && <p className="journey-notice" aria-live="polite">{notice}</p>}
+      {notice && scene !== 'question' && <p className="journey-notice" aria-live="polite">{notice}</p>}
     </main>
   )
 }

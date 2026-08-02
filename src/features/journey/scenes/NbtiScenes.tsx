@@ -22,9 +22,9 @@ export function StartScene(props: JourneySceneProps) {
         </ul>
         <div className="journey-start__actions">
           <PrimaryButton onClick={() => props.onAction({ type: 'START_NBTI' })}>교실 NBTI 시작하기</PrimaryButton>
-          <SecondaryButton onClick={() => props.onAction({ type: 'RESET_NBTI' })}><Icon name="reset" size={20} />처음부터 준비하기</SecondaryButton>
+          <SecondaryButton onClick={() => props.onAction({ type: 'RESET_NBTI' })}><Icon name="reset" size={20} />이전 여정 이어가기</SecondaryButton>
         </div>
-        <p className="journey-start__audio-note"><Icon name="speaker" size={15} />사운드 옵션은 준비되어 있어요. 승인된 오디오 자산 전까지는 무음으로 동작합니다.</p>
+        <p className="journey-start__audio-note"><Icon name="speaker" size={15} />헤드폰을 착용하면 BGM과 효과음이 더욱 몰입감을 높여줘요.</p>
       </div>
       {JOURNEY_SCENE_ASSETS.start.showQuestBoard && <aside className="journey-start__quest-board" aria-hidden="true">
         <b>✦ 오늘의 모험 안내 ✦</b>
@@ -44,9 +44,9 @@ export function QuestionScene(props: JourneySceneProps) {
   return (
     <SceneFrame scene="question" {...props} compact>
       <div className="journey-panel journey-question journey-enter">
-        <div className="journey-panel__topline"><p>CLASS PLAY EXPLORATION · PROVISIONAL</p><Progress current={props.state.questionIndex + 1} total={NBTI_TOTAL_QUESTIONS} label={`질문 ${props.state.questionIndex + 1}`} /></div>
+        <div className="journey-panel__topline"><p>{`질문 ${props.state.questionIndex + 1}`}</p><Progress current={props.state.questionIndex + 1} total={NBTI_TOTAL_QUESTIONS} label="진행률" /></div>
         <div className="journey-question__body">
-          <div className="journey-question__copy"><p className="journey-kicker">{question.chapter}</p><h1>{question.prompt}</h1><p>{question.helper}</p><div className="journey-question__growth" aria-label={`캐릭터 성장 ${growth}%`}><CompassSeal /><span>성장 문양</span><b>{growth}%</b></div></div>
+          <div className="journey-question__copy"><p className="journey-kicker">{question.chapter}</p><h1>{question.prompt}</h1><p>{question.helper}</p><div className="journey-question__growth" aria-label={`캐릭터 성장 ${growth}%`}><CompassSeal /><span>성장</span><div className="journey-question__growth-track" aria-hidden="true"><i style={{ width: `${growth}%` }} /></div><b>{growth}%</b></div></div>
           <div className="journey-question__choices" role="group" aria-label={question.prompt}>
             {question.choices.map((choice, index) => (
               <button className={`journey-choice ${selected === choice.id ? 'is-selected' : ''}`} type="button" key={choice.id} onClick={() => props.onAction({ type: 'ANSWER_NBTI', questionId: question.id, choiceId: choice.id })} aria-pressed={selected === choice.id}>
@@ -70,7 +70,7 @@ export function ResultScene(props: JourneySceneProps) {
   return (
     <SceneFrame scene="result" {...props}>
       <div className={`journey-result journey-result--${result.palette} journey-enter`}>
-        <div className="journey-result__copy"><p className="journey-kicker">✦ NBTI PLAY RESULT · PROVISIONAL ✦</p><p className="journey-result__eyebrow">나의 교실 플레이 타입</p><h1>{result.title}</h1><p className="journey-result__code">{result.code}</p><p className="journey-result__description">{result.description}</p><div className="journey-result__strengths">{result.strengths.map((strength) => <span key={strength}><Icon name="spark" size={16} />{strength}</span>)}</div><p className="journey-result__disclaimer">공식 진단이 아닌 체험용 탐색 결과입니다.</p><PrimaryButton onClick={() => props.onAction({ type: 'OPEN_GAME_INTRO' })}>나의 다음 게임 열기</PrimaryButton><SecondaryButton onClick={() => props.onAction({ type: 'RESET_NBTI' })}><Icon name="reset" size={19} />다시 탐색하기</SecondaryButton></div>
+        <div className="journey-result__copy"><p className="journey-kicker">✦ 나의 교실 플레이 결과 ✦</p><p className="journey-result__eyebrow">나의 교실 플레이 타입</p><h1>{result.title}</h1><p className="journey-result__description">{result.description}</p><div className="journey-result__strengths">{result.strengths.map((strength) => <span key={strength}><Icon name="spark" size={16} />{strength}</span>)}</div><p className="journey-result__disclaimer">공식 진단이 아닌 체험용 탐색 결과입니다.</p><PrimaryButton onClick={() => props.onAction({ type: 'OPEN_GAME_INTRO' })}>나의 다음 게임 열기</PrimaryButton><SecondaryButton onClick={() => props.onAction({ type: 'RESET_NBTI' })}><Icon name="reset" size={19} />다시 탐색하기</SecondaryButton></div>
         <aside className="journey-result__reveal" aria-label="결과 해금 연출"><CompassSeal /><p>{result.subtitle}</p><span>빛나는 문양이 기록되었습니다</span><i /><i /><i /></aside>
       </div>
     </SceneFrame>
