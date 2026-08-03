@@ -21,6 +21,7 @@ import prepFourReference from '../assets/front120/prep-4.png'
 import portalAcademy from '../assets/portal-academy-background.png'
 import { CompassSeal, Icon, type IconName } from './VisualPrimitives'
 import '../front120.css'
+import type { TunerScreen } from '../features/front120/visualTuning'
 
 type PrepStep = 1 | 2 | 3 | 4 | 'nickname' | 'loading'
 
@@ -30,6 +31,7 @@ type AdventurePrepScreenProps = {
   exiting: boolean
   isOffline: boolean
   onComplete: (profile: Profile) => Promise<{ ok: boolean }>
+  onScreenChange: (screen: TunerScreen) => void
 }
 
 const STEP_IMAGES: Record<Exclude<PrepStep, 'nickname' | 'loading'>, string> = {
@@ -70,7 +72,7 @@ function PrepProgress({ step }: { step: 1 | 2 | 3 | 4 }) {
   return <div className="front120-progress" aria-label={`모험 준비 ${step} / 4`}><b>{step} / 4</b><span>{[1, 2, 3, 4].map((value) => <i className={value <= step ? 'is-complete' : ''} key={value} />)}</span></div>
 }
 
-export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline, onComplete }: AdventurePrepScreenProps) {
+export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline, onComplete, onScreenChange }: AdventurePrepScreenProps) {
   const [step, setStep] = useState<PrepStep>(1)
   const [schoolLevel, setSchoolLevel] = useState<SchoolLevel | null>(initialProfile?.schoolLevel ?? null)
   const [careerRange, setCareerRange] = useState<CareerRange | null>(initialProfile?.careerRange ?? null)
@@ -87,6 +89,10 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   const nicknameReady = nickname.trim().length > 0
   const stageImage = step === 'loading' ? loadingReference : step === 'nickname' ? prepFourReference : STEP_IMAGES[step]
   const stepNumber = typeof step === 'number' ? step : 4
+
+  useEffect(() => {
+    onScreenChange(step === 'nickname' || step === 'loading' ? step : `prep-${step}` as TunerScreen)
+  }, [onScreenChange, step])
 
   useEffect(() => {
     if (step !== 'loading') return

@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "vitest run && tsc -b --noEmit",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "front120:tune:apply": "node scripts/apply-front120-tuning.mjs"
   },
   "dependencies": {
     "react": "^19.1.1",

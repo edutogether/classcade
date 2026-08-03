@@ -7,6 +7,8 @@ import { loadJourneyState, saveJourneyState } from './features/journey/journeyPe
 import { createJourneyState, journeyReducer, journeyStatusForStage, type JourneyAction, type JourneyState } from './features/journey/journeyState'
 import { resolveEntryState } from './lib/entryState'
 import { preloadMainTheme } from './lib/audioManager'
+import { Front120VisualTuner } from './features/front120/Front120VisualTuner'
+import { applyTuning, createTuning, type TunerScreen } from './features/front120/visualTuning'
 import {
   clearActiveSession,
   clearNbtiAndProgress,
@@ -52,6 +54,7 @@ export default function App() {
   const [sharedSessionGateOpen, setSharedSessionGateOpen] = useState(initialEntryState.sharedSessionGateOpen)
   const [prepExiting, setPrepExiting] = useState(false)
   const [teacherOpen, setTeacherOpen] = useState(false)
+  const [tunerScreen, setTunerScreen] = useState<TunerScreen>(initialEntryState.screen === 'start' ? 'main' : 'prep-1')
   const [notice, setNotice] = useState(boot.detailedJourneyResult.ok ? '' : '이전 여정 상태를 복원하지 못해 새 여정으로 안전하게 시작합니다.')
   const [online, setOnline] = useState(isBrowserOnline)
   const teacherTriggerRef = useRef<HTMLButtonElement>(null)
@@ -76,6 +79,10 @@ export default function App() {
   useEffect(() => {
     preloadMainTheme()
   }, [])
+
+  useEffect(() => {
+    applyTuning(createTuning(), tunerScreen)
+  }, [tunerScreen])
 
   useEffect(() => () => { if (transitionTimerRef.current) window.clearTimeout(transitionTimerRef.current) }, [])
 
@@ -187,7 +194,9 @@ export default function App() {
   const showJourney = (screen === 'journey' || prepExiting) && !sharedSessionGateOpen
   return <>
     {showJourney && profile && <JourneyApp state={journeyState} notice={notice} onAction={handleJourneyAction} onTeacherOpen={(button) => { teacherTriggerRef.current = button; setTeacherOpen(true) }} teacherTriggerRef={teacherTriggerRef} />}
-    {screen === 'prep' && <AdventurePrepScreen initialProfile={profile} audio={journeyState.audio} exiting={prepExiting} isOffline={!online} onComplete={handleProfileComplete} />}
+    {screen === 'prep' && <AdventurePrepScreen initialProfile={profile} audio={journeyState.audio} exiting={prepExiting} isOffline={!online} onComplete={handleProfileComplete} onScreenChange={setTunerScreen} />}
     {profile && <TeacherPanel open={teacherOpen} profile={profile} journey={journey} deviceMode={deviceMode} returnFocusRef={teacherTriggerRef} onClose={() => setTeacherOpen(false)} onEdit={() => { setTeacherOpen(false); setScreen('prep') }} onRestartNbti={restartNbti} onResetAll={resetActiveJourney} onStartNewShared={resetActiveJourney} onPlaceholderAction={handleTeacherAction} />}
+    {showJourney && profile && <Front120VisualTuner screen="main" />}
+    {screen === 'prep' && <Front120VisualTuner screen={tunerScreen} />}
   </>
 }
