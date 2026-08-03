@@ -56,6 +56,18 @@
 .front120-prep--3 .front120-prep__reference { object-position: 51% center; }
 .front120-prep--4 .front120-prep__reference { object-position: 51% center; }
 
+.front120-prep--1 .front120-prep__reference { filter: saturate(.9) brightness(.82); mask-image: linear-gradient(90deg, transparent 0 53%, rgba(0,0,0,.06) 61%, #000 80%); object-position: 59% center; }
+.front120-prep--2 .front120-prep__reference { filter: saturate(.88) brightness(.84); mask-image: linear-gradient(90deg, transparent 0 45%, rgba(0,0,0,.16) 56%, #000 82%); object-position: 58% center; }
+.front120-prep--3 .front120-prep__reference { filter: saturate(.82) brightness(.78); mask-image: linear-gradient(90deg, transparent 0 42%, rgba(0,0,0,.18) 55%, #000 82%); object-position: 55% center; }
+.front120-prep--4 .front120-prep__reference { filter: saturate(.88) brightness(.8); mask-image: linear-gradient(90deg, transparent 0 44%, rgba(0,0,0,.12) 57%, #000 82%); object-position: 58% center; }
+.front120-prep--1 .front120-prep__panel { min-height: min(88svh, 840px); }
+.front120-prep--2 .front120-prep__illustration { bottom: 0; right: -5%; top: 15%; width: 48%; }
+.front120-prep--3 .front120-prep__illustration { bottom: 0; right: -4%; top: 14%; width: 54%; }
+.front120-prep--4 .front120-prep__illustration { bottom: 0; right: -5%; top: 15%; width: 49%; }
+.front120-prep--3 .front120-choice-grid--compact { gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 54%; }
+.front120-prep--3 .front120-choice-grid--compact .front120-choice-card { font-size: clamp(12px, 1.08vw, 16px); min-height: 72px; white-space: normal; }
+.front120-prep--4 .front120-growth-grid { max-width: 61%; }
+
 .front120-motes {
   inset: 0;
   overflow: hidden;
@@ -168,6 +180,10 @@
    accessible live heading, status, and progress indicator above it. */
 .front120-loading__reference { filter: blur(3px) brightness(.48) saturate(.68); transform: scale(1.035); }
 .front120-loading__veil { background: radial-gradient(circle at 51% 42%, rgba(17,41,23,.08), rgba(1,7,4,.8) 70%), rgba(0,4,2,.42); }
+.front120-loading__reference { clip-path: inset(0 0 31% 0); mask-image: radial-gradient(ellipse at 50% 28%, #000 0 34%, transparent 64%); opacity: .56; }
+.front120-loading__copy { text-shadow: 0 3px 18px rgba(0,0,0,.85); }
+.front120-loading__track { border-radius: 999px; height: 22px; overflow: hidden; }
+.front120-loading__track i { border-radius: 999px; }
 
 .front120-prep.is-exiting,
 .front120-loading.is-exiting { animation: front120-fade-to-black .72s ease both; }
