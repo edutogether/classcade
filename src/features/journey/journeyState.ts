@@ -8,7 +8,7 @@ import { DEFAULT_BGM_VOLUME, clampBgmVolume, type AudioSettings } from '../../li
 export type JourneyStage = 'nbti_start' | 'nbti_question' | 'nbti_result' | 'game_intro' | 'game_choice' | 'game_shake' | 'game_complete' | 'sharing'
 
 export type JourneyState = {
-  version: 1
+  version: 2
   stage: JourneyStage
   questionIndex: number
   answers: Record<string, string>
@@ -42,7 +42,7 @@ const defaultAudio: AudioSettings = { bgmEnabled: true, bgmVolume: DEFAULT_BGM_V
 
 export function createJourneyState(stage: JourneyStage = 'nbti_start', audio: AudioSettings = defaultAudio): JourneyState {
   return {
-    version: 1,
+    version: 2,
     stage,
     questionIndex: 0,
     answers: {},
@@ -146,7 +146,8 @@ export function validateJourneyState(value: unknown): JourneyState | null {
   if (!value || typeof value !== 'object') return null
   const candidate = value as Record<string, unknown>
   const validStages: JourneyStage[] = ['nbti_start', 'nbti_question', 'nbti_result', 'game_intro', 'game_choice', 'game_shake', 'game_complete', 'sharing']
-  if (candidate.version !== 1 || !validStages.includes(candidate.stage as JourneyStage)) return null
+  // Version 2 invalidates the former eight-question answer set before restoration.
+  if (candidate.version !== 2 || !validStages.includes(candidate.stage as JourneyStage)) return null
   if (!Number.isInteger(candidate.questionIndex) || (candidate.questionIndex as number) < 0 || (candidate.questionIndex as number) >= NBTI_QUESTIONS.length) return null
   if (!candidate.answers || typeof candidate.answers !== 'object' || Array.isArray(candidate.answers)) return null
   if (!candidate.gameChoices || typeof candidate.gameChoices !== 'object' || Array.isArray(candidate.gameChoices)) return null
@@ -178,7 +179,7 @@ export function validateJourneyState(value: unknown): JourneyState | null {
   if (['game_complete', 'sharing'].includes(stage) && typeof candidate.completedAt !== 'string') return null
 
   return {
-    version: 1,
+    version: 2,
     stage,
     questionIndex: candidate.questionIndex as number,
     answers: answers as Record<string, string>,

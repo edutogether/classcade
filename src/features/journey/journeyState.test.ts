@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { NBTI_QUESTIONS } from '../../data/nbti.provisional'
+import { NBTI_AXES, NBTI_QUESTIONS } from '../../data/nbti.provisional'
 import { getGameVariantForResult } from '../../data/gameVariants.provisional'
-import { resultCodeFromAnswers } from '../../data/nbtiScoring.provisional'
+import { scoreNbtiAnswers, resultCodeFromAnswers } from '../../data/nbtiScoring.provisional'
+import { PROVISIONAL_NBTI_RESULTS } from '../../data/nbtiResults.provisional'
 import { createJourneyState, journeyReducer, journeyStatusForStage, validateJourneyState } from './journeyState'
 
 function completeNbti() {
@@ -14,6 +15,28 @@ function completeNbti() {
 }
 
 describe('golden-path journey reducer', () => {
+  it('defines sixteen single-axis scenes with a seven-point, non-tied decision on every axis', () => {
+    expect(NBTI_QUESTIONS).toHaveLength(16)
+    for (const axis of NBTI_AXES) {
+      const questions = NBTI_QUESTIONS.filter((question) => question.axis === axis.id)
+      expect(questions).toHaveLength(4)
+      expect(questions.reduce((total, question) => total + question.weight, 0)).toBe(7)
+    }
+  })
+
+  it('maps every one of the sixteen direction combinations to exactly one result and game variant', () => {
+    expect(PROVISIONAL_NBTI_RESULTS).toHaveLength(16)
+    for (let value = 0; value < 16; value += 1) {
+      const bits = value.toString(2).padStart(4, '0').split('').map(Number)
+      const answers = Object.fromEntries(NBTI_QUESTIONS.map((question) => [question.id, question.choices[bits[NBTI_AXES.findIndex((axis) => axis.id === question.axis)] as 0 | 1].id]))
+      const expected = `P${value.toString().padStart(2, '0')}`
+      expect(resultCodeFromAnswers(answers)).toBe(expected)
+      expect(PROVISIONAL_NBTI_RESULTS.filter((result) => result.code === expected)).toHaveLength(1)
+      expect(getGameVariantForResult(expected).resultCodes).toContain(expected)
+      for (const score of Object.values(scoreNbtiAnswers(answers))) expect(score.zero + score.one).toBe(7)
+    }
+  })
+
   it('guards NBTI forward navigation until the current choice is valid', () => {
     const started = journeyReducer(createJourneyState(), { type: 'START_NBTI' })
     expect(journeyReducer(started, { type: 'NEXT_NBTI' })).toBe(started)
@@ -65,6 +88,6 @@ describe('golden-path journey reducer', () => {
   it('rejects malformed restored journey records', () => {
     expect(validateJourneyState({ version: 1, stage: 'game_complete' })).toBeNull()
     expect(validateJourneyState({ ...createJourneyState(), questionIndex: 99 })).toBeNull()
-    expect(validateJourneyState(createJourneyState())).toMatchObject({ stage: 'nbti_start' })
+    expect(validateJourneyState(createJourneyState())).toMatchObject({ version: 2, stage: 'nbti_start' })
   })
 })
