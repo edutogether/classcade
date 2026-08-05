@@ -1,140 +1,124 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { CompassSeal, Icon } from '../../../components/VisualPrimitives'
 import { getGameVariantForResult } from '../../../data/gameVariants.provisional'
 import { getProvisionalResult } from '../../../data/nbtiResults.provisional'
+import { GAME_CANDIDATES, GAME_CONDITIONS, candidatesForConcept, defaultGameConditions, getGameCandidate, recommendConcepts, type GameConditions } from '../../../data/classroomGameBuilder'
 import { PrimaryButton, Progress, SceneFrame, SecondaryButton, type JourneySceneProps } from '../components/SceneFrame'
-import type { JourneyState } from '../journeyState'
+
+const fallbackConditions: GameConditions = { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' }
+const conditionLabels: Record<keyof GameConditions, string> = { schoolLevel: '학교급', size: '참여 인원', time: '수업 시간', space: '공간', mood: '원하는 분위기' }
+
+export function GameConditionsScene(props: JourneySceneProps) {
+  const [conditions, setConditions] = useState(props.state.gameConditions ?? (props.profile ? defaultGameConditions(props.profile) : fallbackConditions))
+  return <SceneFrame scene="game" {...props}>
+    <div className="journey-panel journey-game-builder journey-enter">
+      <div className="journey-panel__topline"><p>01 · 우리 반 조건</p><Progress current={1} total={4} label="게임 만들기" /></div>
+      <h1>오늘의 교실은<br />어떤 모습인가요?</h1>
+      <p>조건을 먼저 고르면, 우리 반에 맞는 4가지 게임 콘셉트를 추천해 드려요.</p>
+      <div className="journey-builder-groups">
+        {(Object.keys(GAME_CONDITIONS) as (keyof typeof GAME_CONDITIONS)[]).map((key) => <section className="journey-builder-group" key={key} aria-label={conditionLabels[key]}>
+          <b>{conditionLabels[key]}</b><div className="journey-builder-options" role="group">
+            {GAME_CONDITIONS[key].map((option) => <button className={`journey-choice journey-choice--game ${conditions[key] === option.id ? 'is-selected' : ''}`} key={option.id} type="button" onClick={() => setConditions({ ...conditions, [key]: option.id })} aria-pressed={conditions[key] === option.id}><b>{option.label}</b></button>)}
+          </div>
+        </section>)}
+      </div>
+      <PrimaryButton onClick={() => props.onAction({ type: 'SET_GAME_CONDITIONS', conditions })}>콘셉트 고르기</PrimaryButton>
+    </div>
+  </SceneFrame>
+}
+
+export function GameConceptsScene(props: JourneySceneProps) {
+  const result = getProvisionalResult(props.state.resultCode)
+  const concepts = recommendConcepts(result.directions, props.state.gameConditions ?? fallbackConditions)
+  return <SceneFrame scene="game" {...props}>
+    <div className="journey-panel journey-game-builder journey-enter">
+      <div className="journey-panel__topline"><p>02 · 모험 콘셉트</p><Progress current={2} total={4} label="게임 만들기" /></div>
+      <h1>우리 반의 첫 장면을<br />골라 주세요</h1>
+      <div className="journey-builder-cards" role="list">
+        {concepts.map((concept, index) => <button className="journey-choice journey-choice--game" key={concept.id} type="button" onClick={() => props.onAction({ type: 'SELECT_GAME_CONCEPT', concept: concept.id })} role="listitem">
+          <span className="journey-choice__number">0{index + 1}</span><b>{concept.title}</b><small>{concept.detail}</small><em>{concept.direction === result.directions[2] || concept.direction === result.directions[3] ? '성향 추천' : '다른 모험'}</em>
+        </button>)}
+      </div>
+    </div>
+  </SceneFrame>
+}
+
+export function GameCandidatesScene(props: JourneySceneProps) {
+  const candidates = candidatesForConcept(props.state.gameConcept ?? 'team')
+  return <SceneFrame scene="game" {...props}>
+    <div className="journey-panel journey-game-builder journey-enter">
+      <div className="journey-panel__topline"><p>03 · 게임 후보 4개</p><Progress current={3} total={4} label="게임 만들기" /></div>
+      <h1>우리 반에 맞는 게임을<br />골라 주세요</h1>
+      <p>첫 후보는 방금 고른 콘셉트에 맞춘 추천이에요.</p>
+      <div className="journey-builder-cards" role="list">
+        {candidates.map((candidate, index) => <button className="journey-choice journey-choice--game" key={candidate.id} type="button" onClick={() => props.onAction({ type: 'SELECT_GAME_CANDIDATE', candidateId: candidate.id })} role="listitem">
+          <span className="journey-choice__number">0{index + 1}</span><b>{candidate.title}</b><small>{candidate.intro} · {candidate.people} · {candidate.duration}</small>{index === 0 && <em>추천</em>}
+        </button>)}
+      </div>
+    </div>
+  </SceneFrame>
+}
+
+const adjustmentFields = [['time', '게임 시간'], ['teams', '팀 구성'], ['competition', '경쟁 강도'], ['teacher', '교사 개입'], ['materials', '준비물 차이']] as const
+export function GameAdjustScene(props: JourneySceneProps) {
+  const candidate = getGameCandidate(props.state.selectedGameId) ?? GAME_CANDIDATES[0]
+  const adjustments = props.state.gameAdjustments
+  return <SceneFrame scene="game" {...props}>
+    <div className="journey-panel journey-game-builder journey-enter">
+      <div className="journey-panel__topline"><p>04 · 마지막 조정</p><Progress current={4} total={4} label="게임 만들기" /></div>
+      <h1>{candidate.title}</h1><p>{candidate.intro}</p>
+      <div className="journey-builder-adjustments">
+        {adjustmentFields.map(([key, label]) => <label key={key}><b>{label}</b><select value={adjustments[key] ?? '기본'} onChange={(event) => props.onAction({ type: 'SET_GAME_ADJUSTMENT', key, value: event.target.value })}><option>기본</option><option>낮게</option><option>높게</option></select></label>)}
+      </div>
+      <PrimaryButton onClick={() => props.onAction({ type: 'COMPLETE_GAME_BUILDER' })}>우리 반 게임 완성하기</PrimaryButton>
+    </div>
+  </SceneFrame>
+}
 
 export function GameIntroScene(props: JourneySceneProps) {
-  const variant = getGameVariantForResult(props.state.resultCode)
-  return (
-    <SceneFrame scene="game" {...props}>
-      <div className="journey-game-intro journey-enter"><p className="journey-game-intro__badge"><Icon name="spark" size={16} />{getProvisionalResult(props.state.resultCode).title}에게 열린 퀘스트</p><h1>{variant.title}</h1><p>{variant.summary}</p><div className="journey-game-intro__facts"><span><Icon name="gamepad" size={23} />선택형 학급 게임</span><span><Icon name="clock" size={23} />약 2분 체험</span><span><Icon name="share" size={23} />완성 카드 저장</span></div><PrimaryButton onClick={() => props.onAction({ type: 'START_GAME' })}>이 퀘스트 시작하기</PrimaryButton><SecondaryButton onClick={() => props.onAction({ type: 'OPEN_RESULT' })}>NBTI 결과 다시 보기</SecondaryButton></div>
-    </SceneFrame>
-  )
+  const result = getProvisionalResult(props.state.resultCode)
+  return <SceneFrame scene="game" {...props}><div className="journey-game-intro journey-enter">
+    <p className="journey-game-intro__badge"><Icon name="spark" size={16} />{result.title}에게 어울리는 우리 반 게임</p>
+    <h1>우리 반 게임<br />만들기</h1><p>학급 조건과 성향을 함께 반영해, 바로 실행할 수 있는 게임을 완성해 보세요.</p>
+    <div className="journey-game-intro__facts"><span><Icon name="gamepad" size={23} />조건 5가지</span><span><Icon name="clock" size={23} />4단계 선택</span><span><Icon name="spark" size={23} />실행 카드 완성</span></div>
+    <PrimaryButton onClick={() => props.onAction({ type: 'START_GAME' })}>우리 반 게임 시작하기</PrimaryButton><SecondaryButton onClick={() => props.onAction({ type: 'OPEN_RESULT' })}>NBTI 결과 다시 보기</SecondaryButton>
+  </div></SceneFrame>
 }
 
 export function GameChoiceScene(props: JourneySceneProps) {
   const variant = getGameVariantForResult(props.state.resultCode)
   const choice = variant.choices[props.state.gameStep]
   const selected = props.state.gameChoices[choice.id]
-  const last = props.state.gameStep === variant.choices.length - 1
-  return (
-    <SceneFrame scene="game" {...props} compact>
-      <div className="journey-panel journey-game-choice journey-enter"><div className="journey-panel__topline"><p>{variant.title}</p><Progress current={props.state.gameStep + 1} total={variant.choices.length} label="퀘스트 선택" /></div><div className="journey-game-choice__body"><h1>{choice.prompt}</h1><p>{choice.helper}</p><div className="journey-game-choice__options" role="group" aria-label={choice.prompt}>{choice.options.map((option, index) => <button key={option.id} className={`journey-choice journey-choice--game ${selected === option.id ? 'is-selected' : ''}`} type="button" onClick={() => props.onAction({ type: 'ANSWER_GAME', choiceId: option.id })} aria-pressed={selected === option.id}><span className="journey-choice__number">0{index + 1}</span><b>{option.label}</b><small>{option.detail}</small><i aria-hidden="true"><Icon name={index ? 'spark' : 'gamepad'} size={29} /></i></button>)}</div></div><div className="journey-panel__footer"><span className="journey-panel__fineprint">선택은 마지막 완성 카드에 반영됩니다.</span><PrimaryButton onClick={() => props.onAction({ type: 'NEXT_GAME' })} disabled={!selected}>{last ? '보물 상자 열기' : '다음 선택으로'}</PrimaryButton></div></div>
-    </SceneFrame>
-  )
+  return <SceneFrame scene="game" {...props} compact><div className="journey-panel journey-game-choice journey-enter"><div className="journey-panel__topline"><p>{variant.title}</p><Progress current={props.state.gameStep + 1} total={variant.choices.length} label="이전 게임 선택" /></div><h1>{choice.prompt}</h1><p>{choice.helper}</p><div className="journey-game-choice__options">{choice.options.map((option, index) => <button key={option.id} className={`journey-choice journey-choice--game ${selected === option.id ? 'is-selected' : ''}`} type="button" onClick={() => props.onAction({ type: 'ANSWER_GAME', choiceId: option.id })} aria-pressed={selected === option.id}><span className="journey-choice__number">0{index + 1}</span><b>{option.label}</b><small>{option.detail}</small></button>)}</div><PrimaryButton onClick={() => props.onAction({ type: 'NEXT_GAME' })} disabled={!selected}>다음 선택으로</PrimaryButton></div></SceneFrame>
 }
 
 export function ShakeScene(props: JourneySceneProps) {
-  return <SceneFrame scene="game" {...props}><ShakeInteraction progress={props.state.shakeProgress} onProgress={(amount) => props.onAction({ type: 'ADD_SHAKE', amount })} /></SceneFrame>
+  return <SceneFrame scene="game" {...props}><div className="journey-shake journey-enter"><div className="journey-shake__chest"><CompassSeal /></div><h1>보물 상자를 열어 볼까요?</h1><p>기기를 흔들 수 없는 환경에서도 아래 버튼으로 계속할 수 있어요.</p><Progress current={props.state.shakeProgress} total={100} label="열기 진행" /><PrimaryButton onClick={() => props.onAction({ type: 'ADD_SHAKE', amount: 25 })}>별빛 모으기</PrimaryButton></div></SceneFrame>
 }
 
-function ShakeInteraction({ progress, onProgress }: { progress: number; onProgress: (amount: number) => void }) {
-  const [motionEnabled, setMotionEnabled] = useState(false)
-  const [motionMessage, setMotionMessage] = useState('휴대폰에서는 기기 흔들기를 허용할 수 있어요.')
-  const lastMagnitude = useRef(0)
-
-  useEffect(() => {
-    if (!motionEnabled) return
-    const handleMotion = (event: DeviceMotionEvent) => {
-      const data = event.accelerationIncludingGravity
-      const magnitude = Math.abs(data?.x ?? 0) + Math.abs(data?.y ?? 0) + Math.abs(data?.z ?? 0)
-      if (magnitude > 25 && Date.now() - lastMagnitude.current > 360) { lastMagnitude.current = Date.now(); onProgress(10) }
-    }
-    window.addEventListener('devicemotion', handleMotion)
-    return () => window.removeEventListener('devicemotion', handleMotion)
-  }, [motionEnabled, onProgress])
-
-  async function enableMotion() {
-    try {
-      const motionEvent = DeviceMotionEvent as unknown as { requestPermission?: () => Promise<'granted' | 'denied'> }
-      if (motionEvent.requestPermission) {
-        const permission = await motionEvent.requestPermission()
-        if (permission !== 'granted') { setMotionMessage('기기 흔들기 권한이 허용되지 않았어요. 아래 버튼으로 계속할 수 있어요.'); return }
-      }
-      setMotionEnabled(true)
-      setMotionMessage('기기를 흔들거나 아래 버튼을 눌러 보물 상자를 열어 주세요.')
-    } catch { setMotionMessage('기기 흔들기를 사용할 수 없어요. 아래 버튼으로 계속할 수 있어요.') }
-  }
-
-  return <div className="journey-shake journey-enter"><div className="journey-shake__chest" aria-hidden="true"><CompassSeal /><i /><i /><i /></div><h1>보물 상자를 열어 볼까요?</h1><p>{motionMessage}</p><Progress current={progress} total={100} label="해금 진행" /><div className="journey-shake__actions"><PrimaryButton onClick={() => { if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate?.(12); onProgress(25) }}>별빛을 모으기</PrimaryButton>{!motionEnabled && <SecondaryButton onClick={() => void enableMotion()}><Icon name="spark" size={19} />기기 흔들기 허용</SecondaryButton>}</div><small>키보드에서는 ‘별빛을 모으기’ 버튼을 Space 또는 Enter로 눌러 같은 흐름을 진행할 수 있어요.</small></div>
-}
-
-function selectionSummary(state: JourneyState) {
-  const variant = getGameVariantForResult(state.resultCode)
-  return variant.choices.map((choice) => choice.options.find((option) => option.id === state.gameChoices[choice.id])?.label).filter(Boolean).join(' · ')
+function conditionSummary(conditions: GameConditions | null) {
+  if (!conditions) return ''
+  return (Object.keys(GAME_CONDITIONS) as (keyof GameConditions)[]).map((key) => GAME_CONDITIONS[key].find((option) => option.id === conditions[key])?.label).filter(Boolean).join(' · ')
 }
 
 export function CompleteScene(props: JourneySceneProps) {
+  const candidate = getGameCandidate(props.state.selectedGameId) ?? GAME_CANDIDATES[0]
   const result = getProvisionalResult(props.state.resultCode)
-  const variant = getGameVariantForResult(props.state.resultCode)
-  return <SceneFrame scene="complete" {...props}><div className="journey-complete journey-enter"><p className="journey-kicker">✦ 퀘스트 완성 ✦</p><h1>{variant.title}<br />완성</h1><p className="journey-complete__lead">{result.title}의 선택으로 우리 반 퀘스트가 한 장면 완성되었어요.</p><article className="journey-complete__card"><CompassSeal /><div><span>오늘의 완성 기록</span><b>{selectionSummary(props.state)}</b><small>{props.state.completedAt ? new Intl.DateTimeFormat('ko-KR', { month: 'long', day: 'numeric' }).format(new Date(props.state.completedAt)) : '오늘'}</small></div></article><PrimaryButton onClick={() => props.onAction({ type: 'OPEN_SHARING' })}>완성 카드 저장·공유</PrimaryButton><SecondaryButton onClick={() => props.onAction({ type: 'OPEN_RESULT' })}>NBTI 결과 보기</SecondaryButton></div></SceneFrame>
+  const adjustments = Object.entries(props.state.gameAdjustments).filter(([, value]) => value !== '기본').map(([key, value]) => `${adjustmentFields.find(([id]) => id === key)?.[1]} ${value}`)
+  return <SceneFrame scene="complete" {...props}><div className="journey-panel journey-game-complete journey-enter">
+    <p className="journey-kicker">우리 반 게임 완성</p><h1>{candidate.title}</h1><p className="journey-complete__lead">{result.title}의 성향과 우리 반 조건을 반영한 실행 카드예요.</p>
+    <div className="journey-game-complete__facts"><span>{candidate.people}</span><span>{candidate.duration}</span><span>{candidate.space}</span><span>{candidate.materials}</span></div>
+    <section><h2>준비</h2><ul>{candidate.preparation.map((item) => <li key={item}>{item}</li>)}</ul></section>
+    <section><h2>진행 순서</h2><ol>{candidate.steps.map((item) => <li key={item}>{item}</li>)}</ol></section>
+    <section><h2>규칙과 운영</h2><p><b>규칙</b> {candidate.rules.join(' ')}</p><p><b>조용한 학생</b> {candidate.quiet}</p><p><b>의견 충돌</b> {candidate.conflict}</p><p><b>변형</b> {candidate.variation}</p><p><b>마무리</b> {candidate.closing}</p></section>
+    <aside><b>NBTI 반영</b><p>{candidate.fit}</p><small>{conditionSummary(props.state.gameConditions)}{adjustments.length ? ` · ${adjustments.join(' · ')}` : ''}</small></aside>
+    <SecondaryButton onClick={() => props.onAction({ type: 'OPEN_RESULT' })}>NBTI 결과 보기</SecondaryButton>
+  </div></SceneFrame>
 }
 
 export function ShareScene(props: JourneySceneProps) {
+  const candidate = getGameCandidate(props.state.selectedGameId) ?? GAME_CANDIDATES[0]
   const result = getProvisionalResult(props.state.resultCode)
-  const variant = getGameVariantForResult(props.state.resultCode)
-  const summary = selectionSummary(props.state)
-  return <SceneFrame scene="complete" {...props} compact><ShareActions resultTitle={result.title} gameTitle={variant.title} summary={summary} onClose={() => props.onAction({ type: 'CLOSE_SHARING' })} /></SceneFrame>
-}
-
-function ShareActions({ resultTitle, gameTitle, summary, onClose }: { resultTitle: string; gameTitle: string; summary: string; onClose: () => void }) {
-  const [message, setMessage] = useState('저장 또는 공유할 방법을 선택해 주세요.')
-  const url = typeof window === 'undefined' ? '' : window.location.href
-  const shareText = `${resultTitle}의 CLASSCADE 퀘스트: ${gameTitle} · ${summary}`
-  const exportSvg = useMemo(() => `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><rect width="100%" height="100%" fill="#07130c"/><circle cx="990" cy="130" r="260" fill="#27593e" opacity=".6"/><text x="80" y="125" fill="#e9c96c" font-size="28" font-family="sans-serif" letter-spacing="5">CLASSCADE · 퀘스트 완성</text><text x="80" y="240" fill="#fff6d6" font-size="68" font-weight="700" font-family="sans-serif">${escapeSvg(gameTitle)}</text><text x="80" y="330" fill="#d9e5bd" font-size="38" font-family="sans-serif">${escapeSvg(resultTitle)}</text><text x="80" y="420" fill="#f2e4be" font-size="30" font-family="sans-serif">${escapeSvg(summary || '우리 반의 새로운 모험')}</text><text x="80" y="550" fill="#abc59a" font-size="22" font-family="sans-serif">체험용 교실 플레이 완성 카드</text></svg>`, [gameTitle, resultTitle, summary])
-
-  async function copyLink() {
-    try {
-      if (!navigator.clipboard?.writeText) throw new Error('clipboard unavailable')
-      await navigator.clipboard.writeText(url)
-      setMessage('현재 페이지 링크를 클립보드에 복사했어요.')
-    } catch { setMessage('이 브라우저에서는 자동 복사가 허용되지 않았어요. 주소창의 링크를 직접 복사해 주세요.') }
-  }
-
-  async function nativeShare() {
-    if (!navigator.share) { await copyLink(); return }
-    try { await navigator.share({ title: 'CLASSCADE 퀘스트 완성', text: shareText, url }); setMessage('기기의 공유 창을 통해 전송했어요.') } catch { setMessage('공유를 취소했거나 이 기기에서 공유를 완료하지 않았어요.') }
-  }
-
-  function downloadBlob(blob: Blob, filename: string) {
-    const objectUrl = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = objectUrl
-    link.download = filename
-    link.click()
-    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 0)
-  }
-
-  async function downloadCard() {
-    try {
-      const svgBlob = new Blob([exportSvg], { type: 'image/svg+xml;charset=utf-8' })
-      const imageUrl = URL.createObjectURL(svgBlob)
-      const image = new Image()
-      await new Promise<void>((resolve, reject) => { image.onload = () => resolve(); image.onerror = () => reject(new Error('image conversion failed')); image.src = imageUrl })
-      const canvas = document.createElement('canvas')
-      canvas.width = 1200
-      canvas.height = 630
-      const context = canvas.getContext('2d')
-      if (!context) throw new Error('canvas unavailable')
-      context.drawImage(image, 0, 0)
-      URL.revokeObjectURL(imageUrl)
-      const pngBlob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'))
-      if (!pngBlob) throw new Error('png conversion failed')
-      downloadBlob(pngBlob, 'classcade-quest-complete.png')
-      setMessage('완성 카드를 PNG 이미지로 저장했어요.')
-    } catch {
-      try {
-        downloadBlob(new Blob([exportSvg], { type: 'image/svg+xml;charset=utf-8' }), 'classcade-quest-complete.svg')
-        setMessage('PNG 변환은 지원되지 않아 SVG 완성 카드를 저장했어요.')
-      } catch { setMessage('이미지 저장을 시작하지 못했어요. 브라우저의 다운로드 권한을 확인해 주세요.') }
-    }
-  }
-
-  return <div className="journey-share journey-enter"><p className="journey-kicker">완성 카드</p><h1>오늘의 모험을<br />기록으로 남기세요</h1><p>{shareText}</p><div className="journey-share__preview"><CompassSeal /><span>{gameTitle}</span><b>{resultTitle}</b></div><div className="journey-share__actions"><PrimaryButton onClick={downloadCard}>이미지 저장</PrimaryButton><SecondaryButton onClick={() => void nativeShare()}><Icon name="share" size={19} />기기 공유</SecondaryButton><SecondaryButton onClick={() => void copyLink()}><Icon name="notebook" size={19} />링크 복사</SecondaryButton></div><p className="journey-share__message" aria-live="polite">{message}</p><button className="journey-share__close" type="button" onClick={onClose}>완성 화면으로 돌아가기</button></div>
-}
-
-function escapeSvg(value: string) {
-  return value.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[character] ?? character)
+  const text = useMemo(() => `${result.title} · ${candidate.title}`, [candidate.title, result.title])
+  return <SceneFrame scene="complete" {...props} compact><div className="journey-share journey-enter"><p className="journey-kicker">이전 완성 기록</p><h1>{candidate.title}</h1><p>{text}</p><SecondaryButton onClick={() => props.onAction({ type: 'CLOSE_SHARING' })}>완성 화면으로 돌아가기</SecondaryButton></div></SceneFrame>
 }

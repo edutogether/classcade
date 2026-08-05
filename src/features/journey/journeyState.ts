@@ -4,8 +4,9 @@ import { resultCodeFromAnswers } from '../../data/nbtiScoring.provisional'
 import { PROVISIONAL_NBTI_RESULTS } from '../../data/nbtiResults.provisional'
 import type { JourneyStatus } from '../../data/adventure'
 import { DEFAULT_BGM_VOLUME, clampBgmVolume, type AudioSettings } from '../../lib/audioController'
+import { GAME_CANDIDATES, GAME_CONCEPTS, GAME_CONDITIONS, type GameConditions, type GameConceptId } from '../../data/classroomGameBuilder'
 
-export type JourneyStage = 'nbti_start' | 'nbti_question' | 'nbti_result' | 'game_intro' | 'game_choice' | 'game_shake' | 'game_complete' | 'sharing'
+export type JourneyStage = 'nbti_start' | 'nbti_question' | 'nbti_result' | 'game_intro' | 'game_conditions' | 'game_concepts' | 'game_candidates' | 'game_adjust' | 'game_choice' | 'game_shake' | 'game_complete' | 'sharing'
 
 export type JourneyState = {
   version: 2
@@ -20,6 +21,10 @@ export type JourneyState = {
   audio: AudioSettings
   updatedAt: string
   completedAt: string | null
+  gameConditions: GameConditions | null
+  gameConcept: GameConceptId | null
+  selectedGameId: string | null
+  gameAdjustments: Record<string, string>
 }
 
 export type JourneyAction =
@@ -28,6 +33,11 @@ export type JourneyAction =
   | { type: 'NEXT_NBTI' }
   | { type: 'PREVIOUS_NBTI' }
   | { type: 'OPEN_GAME_INTRO' }
+  | { type: 'SET_GAME_CONDITIONS'; conditions: GameConditions }
+  | { type: 'SELECT_GAME_CONCEPT'; concept: GameConceptId }
+  | { type: 'SELECT_GAME_CANDIDATE'; candidateId: string }
+  | { type: 'SET_GAME_ADJUSTMENT'; key: string; value: string }
+  | { type: 'COMPLETE_GAME_BUILDER' }
   | { type: 'START_GAME' }
   | { type: 'ANSWER_GAME'; choiceId: string }
   | { type: 'NEXT_GAME' }
@@ -54,6 +64,10 @@ export function createJourneyState(stage: JourneyStage = 'nbti_start', audio: Au
     audio,
     updatedAt: new Date().toISOString(),
     completedAt: null,
+    gameConditions: null,
+    gameConcept: null,
+    selectedGameId: null,
+    gameAdjustments: {},
   }
 }
 
@@ -67,6 +81,16 @@ function isChoiceForQuestion(questionId: string, choiceId: string) {
 
 function isCompletedNbti(answers: Record<string, string>) {
   return NBTI_QUESTIONS.every((question) => isChoiceForQuestion(question.id, answers[question.id] ?? ''))
+}
+
+function isGameConditions(value: unknown): value is GameConditions {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+  const conditions = value as Record<string, unknown>
+  return (Object.keys(GAME_CONDITIONS) as (keyof GameConditions)[]).every((key) => typeof conditions[key] === 'string' && GAME_CONDITIONS[key].some((option) => option.id === conditions[key]))
+}
+
+function isGameAdjustments(value: unknown): value is Record<string, string> {
+  return !!value && typeof value === 'object' && !Array.isArray(value) && Object.values(value as Record<string, unknown>).every((item) => typeof item === 'string')
 }
 
 function gameVariantForState(state: JourneyState) {
@@ -97,7 +121,12 @@ export function journeyReducer(state: JourneyState, action: JourneyAction): Jour
     case 'OPEN_GAME_INTRO':
       return state.stage === 'nbti_result' && state.resultCode ? stamp(state, { stage: 'game_intro' }) : state
     case 'START_GAME':
-      return state.stage === 'game_intro' && state.resultCode ? stamp(state, { stage: 'game_choice', gameStep: 0, gameChoices: {}, shakeProgress: 0 }) : state
+      return state.stage === 'game_intro' && state.resultCode ? stamp(state, { stage: 'game_conditions', gameStep: 0, gameChoices: {}, shakeProgress: 0 }) : state
+    case 'SET_GAME_CONDITIONS': return state.stage === 'game_conditions' && isGameConditions(action.conditions) ? stamp(state, { gameConditions: action.conditions, stage: 'game_concepts' }) : state
+    case 'SELECT_GAME_CONCEPT': return state.stage === 'game_concepts' && GAME_CONCEPTS.some((concept) => concept.id === action.concept) ? stamp(state, { gameConcept: action.concept, stage: 'game_candidates' }) : state
+    case 'SELECT_GAME_CANDIDATE': return state.stage === 'game_candidates' && GAME_CANDIDATES.some((candidate) => candidate.id === action.candidateId) ? stamp(state, { selectedGameId: action.candidateId, stage: 'game_adjust' }) : state
+    case 'SET_GAME_ADJUSTMENT': return state.stage === 'game_adjust' ? stamp(state, { gameAdjustments: { ...state.gameAdjustments, [action.key]: action.value } }) : state
+    case 'COMPLETE_GAME_BUILDER': return state.stage === 'game_adjust' && state.selectedGameId ? stamp(state, { stage: 'game_complete', completedAt: new Date().toISOString() }) : state
     case 'ANSWER_GAME': {
       if (state.stage !== 'game_choice') return state
       const choice = gameVariantForState(state).choices[state.gameStep]
@@ -138,14 +167,14 @@ export function journeyStatusForStage(stage: JourneyStage): JourneyStatus {
   if (stage === 'nbti_start') return 'new'
   if (stage === 'nbti_question') return 'nbti_in_progress'
   if (stage === 'nbti_result') return 'nbti_complete'
-  if (stage === 'game_intro' || stage === 'game_choice' || stage === 'game_shake') return 'game_in_progress'
+  if (stage === 'game_intro' || stage === 'game_conditions' || stage === 'game_concepts' || stage === 'game_candidates' || stage === 'game_adjust') return 'game_in_progress'
   return 'complete'
 }
 
 export function validateJourneyState(value: unknown): JourneyState | null {
   if (!value || typeof value !== 'object') return null
   const candidate = value as Record<string, unknown>
-  const validStages: JourneyStage[] = ['nbti_start', 'nbti_question', 'nbti_result', 'game_intro', 'game_choice', 'game_shake', 'game_complete', 'sharing']
+  const validStages: JourneyStage[] = ['nbti_start', 'nbti_question', 'nbti_result', 'game_intro', 'game_conditions', 'game_concepts', 'game_candidates', 'game_adjust', 'game_choice', 'game_shake', 'game_complete', 'sharing']
   // Version 2 invalidates the former eight-question answer set before restoration.
   if (candidate.version !== 2 || !validStages.includes(candidate.stage as JourneyStage)) return null
   if (!Number.isInteger(candidate.questionIndex) || (candidate.questionIndex as number) < 0 || (candidate.questionIndex as number) >= NBTI_QUESTIONS.length) return null
@@ -165,11 +194,24 @@ export function validateJourneyState(value: unknown): JourneyState | null {
   if (!Object.values(answers).every((answer) => typeof answer === 'string') || !Object.values(gameChoices).every((choice) => typeof choice === 'string')) return null
   const stage = candidate.stage as JourneyStage
   const resultCode = candidate.resultCode as string | null
-  const needsResult = ['nbti_result', 'game_intro', 'game_choice', 'game_shake', 'game_complete', 'sharing'].includes(stage)
+  const needsResult = ['nbti_result', 'game_intro', 'game_conditions', 'game_concepts', 'game_candidates', 'game_adjust', 'game_choice', 'game_shake', 'game_complete', 'sharing'].includes(stage)
   if (needsResult && (!resultCode || !PROVISIONAL_NBTI_RESULTS.some((result) => result.code === resultCode))) return null
   if (!needsResult && resultCode !== null) return null
   if (!Object.entries(answers).every(([questionId, choiceId]) => isChoiceForQuestion(questionId, choiceId as string))) return null
   if (needsResult && !isCompletedNbti(answers as Record<string, string>)) return null
+
+  const gameConditions = candidate.gameConditions === undefined || candidate.gameConditions === null ? null : isGameConditions(candidate.gameConditions) ? candidate.gameConditions : null
+  const gameConcept = typeof candidate.gameConcept === 'string' && GAME_CONCEPTS.some((concept) => concept.id === candidate.gameConcept) ? candidate.gameConcept as GameConceptId : null
+  const selectedGameId = typeof candidate.selectedGameId === 'string' && GAME_CANDIDATES.some((game) => game.id === candidate.selectedGameId) ? candidate.selectedGameId : null
+  const gameAdjustments = candidate.gameAdjustments === undefined ? {} : isGameAdjustments(candidate.gameAdjustments) ? candidate.gameAdjustments : null
+  if (gameAdjustments === null) return null
+  let restoredStage = stage
+  if (restoredStage === 'game_concepts' && !gameConditions) restoredStage = 'game_conditions'
+  if (restoredStage === 'game_candidates' && !gameConditions) restoredStage = 'game_conditions'
+  else if (restoredStage === 'game_candidates' && !gameConcept) restoredStage = 'game_concepts'
+  if ((restoredStage === 'game_adjust' || restoredStage === 'game_complete') && !gameConditions) restoredStage = 'game_conditions'
+  else if ((restoredStage === 'game_adjust' || restoredStage === 'game_complete') && !gameConcept) restoredStage = 'game_concepts'
+  else if ((restoredStage === 'game_adjust' || restoredStage === 'game_complete') && !selectedGameId) restoredStage = 'game_candidates'
 
   const expectedVariant = resultCode ? getGameVariantForResult(resultCode) : null
   if (expectedVariant && candidate.gameVariantId !== expectedVariant.id) return null
@@ -180,7 +222,7 @@ export function validateJourneyState(value: unknown): JourneyState | null {
 
   return {
     version: 2,
-    stage,
+    stage: restoredStage,
     questionIndex: candidate.questionIndex as number,
     answers: answers as Record<string, string>,
     resultCode,
@@ -195,5 +237,9 @@ export function validateJourneyState(value: unknown): JourneyState | null {
     },
     updatedAt: typeof candidate.updatedAt === 'string' ? candidate.updatedAt : new Date().toISOString(),
     completedAt: candidate.completedAt as string | null,
+    gameConditions,
+    gameConcept,
+    selectedGameId,
+    gameAdjustments,
   }
 }

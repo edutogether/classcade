@@ -59,12 +59,14 @@ describe('golden-path journey reducer', () => {
     let state = completeNbti()
     state = journeyReducer(state, { type: 'OPEN_GAME_INTRO' })
     state = journeyReducer(state, { type: 'START_GAME' })
-    const variant = getGameVariantForResult(state.resultCode)
-    for (const step of variant.choices) {
-      state = journeyReducer(state, { type: 'ANSWER_GAME', choiceId: step.options[0].id })
-      state = journeyReducer(state, { type: 'NEXT_GAME' })
-    }
-    expect(state.stage).toBe('game_shake')
+    expect(state.stage).toBe('game_conditions')
+    state = journeyReducer(state, { type: 'SET_GAME_CONDITIONS', conditions: { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' } })
+    state = journeyReducer(state, { type: 'SELECT_GAME_CONCEPT', concept: 'team' })
+    state = journeyReducer(state, { type: 'SELECT_GAME_CANDIDATE', candidateId: 'bridge-mission' })
+    state = journeyReducer(state, { type: 'SET_GAME_ADJUSTMENT', key: 'time', value: '낮게' })
+    state = journeyReducer(state, { type: 'COMPLETE_GAME_BUILDER' })
+    expect(state).toMatchObject({ stage: 'game_complete', selectedGameId: 'bridge-mission', gameAdjustments: { time: '낮게' } })
+    expect(validateJourneyState(state)).toMatchObject({ stage: 'game_complete', selectedGameId: 'bridge-mission' })
   })
 
   it('supports the accessible shake fallback and only completes at 100%', () => {

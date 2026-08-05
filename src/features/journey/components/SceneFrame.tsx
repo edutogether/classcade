@@ -5,6 +5,7 @@ import { CompassSeal, Icon } from '../../../components/VisualPrimitives'
 import { JOURNEY_SCENE_ASSETS, type JourneySceneAsset } from '../../../data/sceneAssets'
 import { toggleAudioChannel } from '../../../lib/audioController'
 import type { JourneyAction, JourneyState } from '../journeyState'
+import type { Profile } from '../../../lib/storage'
 
 export type SceneName = 'start' | 'question' | 'result' | 'game' | 'complete'
 
@@ -14,6 +15,7 @@ type SceneContext = {
   onTeacherOpen: (button: HTMLButtonElement) => void
   teacherTriggerRef: RefObject<HTMLButtonElement | null>
   notice: string
+  profile?: Profile
 }
 
 export type JourneySceneProps = SceneContext

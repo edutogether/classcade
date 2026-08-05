@@ -1,7 +1,7 @@
 import { useEffect, useState, type RefObject } from 'react'
 import { noteAudioUserGesture, playAudioCue, syncMainTheme } from '../../lib/audioManager'
 import type { JourneyAction, JourneyState } from './journeyState'
-import { CompleteScene, GameChoiceScene, GameIntroScene, ShakeScene, ShareScene } from './scenes/GameScenes'
+import { CompleteScene, GameAdjustScene, GameCandidatesScene, GameChoiceScene, GameConceptsScene, GameConditionsScene, GameIntroScene, ShakeScene, ShareScene } from './scenes/GameScenes'
 import { QuestionScene, ResultScene, StartScene } from './scenes/NbtiScenes'
 import { PairingEntryScene, PairingScene } from '../pairing/PairingScreens'
 import type { PairingPayload } from '../pairing/pairingContract'
@@ -41,7 +41,7 @@ export function JourneyApp({ state, notice, onAction, onTeacherOpen, teacherTrig
     if (action.type === 'OPEN_SHARING') playAudioCue('complete', state.audio)
     onAction(action)
   }
-  const sceneProps: JourneySceneProps = { state, notice, onAction: dispatch, onTeacherOpen, teacherTriggerRef }
+  const sceneProps: JourneySceneProps = { state, notice, onAction: dispatch, onTeacherOpen, teacherTriggerRef, profile: profile ?? undefined }
 
   if (pairingEntry) return <PairingEntryScene {...sceneProps} onPaired={(payload) => onPaired?.(payload)} onStart={() => onStartHere?.()} onBack={() => onExitPairingEntry?.()} />
 
@@ -50,6 +50,10 @@ export function JourneyApp({ state, notice, onAction, onTeacherOpen, teacherTrig
   if (state.stage === 'nbti_result' && pairingOpen && profile) return <PairingScene {...sceneProps} profile={profile} journeyId={journeyId} onBack={() => { savePairingGateOpen(false); setPairingOpen(false) }} />
   if (state.stage === 'nbti_result') return <ResultScene {...sceneProps} onPair={() => { savePairingGateOpen(true); setPairingOpen(true) }} />
   if (state.stage === 'game_intro') return <GameIntroScene {...sceneProps} />
+  if (state.stage === 'game_conditions') return <GameConditionsScene {...sceneProps} />
+  if (state.stage === 'game_concepts') return <GameConceptsScene {...sceneProps} />
+  if (state.stage === 'game_candidates') return <GameCandidatesScene {...sceneProps} />
+  if (state.stage === 'game_adjust') return <GameAdjustScene {...sceneProps} />
   if (state.stage === 'game_choice') return <GameChoiceScene {...sceneProps} />
   if (state.stage === 'game_shake') return <ShakeScene {...sceneProps} />
   if (state.stage === 'game_complete') return <CompleteScene {...sceneProps} />
