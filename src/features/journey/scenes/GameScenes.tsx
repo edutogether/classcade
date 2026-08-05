@@ -4,6 +4,7 @@ import { getGameVariantForResult } from '../../../data/gameVariants.provisional'
 import { getProvisionalResult } from '../../../data/nbtiResults.provisional'
 import { GAME_CANDIDATES, GAME_CONDITIONS, candidatesForConcept, defaultGameConditions, getGameCandidate, recommendConcepts, type GameConditions } from '../../../data/classroomGameBuilder'
 import { PrimaryButton, Progress, SceneFrame, SecondaryButton, type JourneySceneProps } from '../components/SceneFrame'
+import { CompletionExperience } from '../components/CompletionExperience'
 
 const fallbackConditions: GameConditions = { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' }
 const conditionLabels: Record<keyof GameConditions, string> = { schoolLevel: '학교급', size: '참여 인원', time: '수업 시간', space: '공간', mood: '원하는 분위기' }
@@ -112,6 +113,7 @@ export function CompleteScene(props: JourneySceneProps) {
     <section><h2>진행 순서</h2><ol>{candidate.steps.map((item) => <li key={item}>{item}</li>)}</ol></section>
     <section><h2>규칙과 운영</h2><p><b>규칙</b> {candidate.rules.join(' ')}</p><p><b>조용한 학생</b> {candidate.quiet}</p><p><b>의견 충돌</b> {candidate.conflict}</p><p><b>변형</b> {candidate.variation}</p><p><b>마무리</b> {candidate.closing}</p></section>
     <aside><b>NBTI 반영</b><p>{candidate.fit}</p><small>{conditionSummary(props.state.gameConditions)}{adjustments.length ? ` · ${adjustments.join(' · ')}` : ''}</small></aside>
+    <CompletionExperience state={props.state} onAction={props.onAction} />
     <SecondaryButton onClick={() => props.onAction({ type: 'OPEN_RESULT' })}>NBTI 결과 보기</SecondaryButton>
   </div></SceneFrame>
 }

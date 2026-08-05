@@ -8,6 +8,8 @@ import { GAME_CANDIDATES, GAME_CONCEPTS, GAME_CONDITIONS, type GameConditions, t
 
 export type JourneyStage = 'nbti_start' | 'nbti_question' | 'nbti_result' | 'game_intro' | 'game_conditions' | 'game_concepts' | 'game_candidates' | 'game_adjust' | 'game_choice' | 'game_shake' | 'game_complete' | 'sharing'
 
+export type CompletionState = { recommendationTags: string[]; recommendedVideoIds: string[]; shareCardFormat: 'square' | 'story' | null; shareCardGenerated: boolean; lastCompletedStep: string | null }
+
 export type JourneyState = {
   version: 2
   stage: JourneyStage
@@ -25,6 +27,7 @@ export type JourneyState = {
   gameConcept: GameConceptId | null
   selectedGameId: string | null
   gameAdjustments: Record<string, string>
+  completion: CompletionState
 }
 
 export type JourneyAction =
@@ -38,6 +41,7 @@ export type JourneyAction =
   | { type: 'SELECT_GAME_CANDIDATE'; candidateId: string }
   | { type: 'SET_GAME_ADJUSTMENT'; key: string; value: string }
   | { type: 'COMPLETE_GAME_BUILDER' }
+  | { type: 'SET_COMPLETION_STATE'; recommendationTags: string[]; recommendedVideoIds: string[]; shareCardFormat: CompletionState['shareCardFormat']; shareCardGenerated: boolean; lastCompletedStep: string }
   | { type: 'START_GAME' }
   | { type: 'ANSWER_GAME'; choiceId: string }
   | { type: 'NEXT_GAME' }
@@ -68,6 +72,7 @@ export function createJourneyState(stage: JourneyStage = 'nbti_start', audio: Au
     gameConcept: null,
     selectedGameId: null,
     gameAdjustments: {},
+    completion: { recommendationTags: [], recommendedVideoIds: [], shareCardFormat: null, shareCardGenerated: false, lastCompletedStep: null },
   }
 }
 
@@ -91,6 +96,12 @@ function isGameConditions(value: unknown): value is GameConditions {
 
 function isGameAdjustments(value: unknown): value is Record<string, string> {
   return !!value && typeof value === 'object' && !Array.isArray(value) && Object.values(value as Record<string, unknown>).every((item) => typeof item === 'string')
+}
+
+function isCompletionState(value: unknown): value is CompletionState {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+  const completion = value as Record<string, unknown>
+  return Array.isArray(completion.recommendationTags) && completion.recommendationTags.every((tag) => typeof tag === 'string') && Array.isArray(completion.recommendedVideoIds) && completion.recommendedVideoIds.every((id) => typeof id === 'string') && (completion.shareCardFormat === null || completion.shareCardFormat === 'square' || completion.shareCardFormat === 'story') && typeof completion.shareCardGenerated === 'boolean' && (completion.lastCompletedStep === null || typeof completion.lastCompletedStep === 'string')
 }
 
 function gameVariantForState(state: JourneyState) {
@@ -127,6 +138,7 @@ export function journeyReducer(state: JourneyState, action: JourneyAction): Jour
     case 'SELECT_GAME_CANDIDATE': return state.stage === 'game_candidates' && GAME_CANDIDATES.some((candidate) => candidate.id === action.candidateId) ? stamp(state, { selectedGameId: action.candidateId, stage: 'game_adjust' }) : state
     case 'SET_GAME_ADJUSTMENT': return state.stage === 'game_adjust' ? stamp(state, { gameAdjustments: { ...state.gameAdjustments, [action.key]: action.value } }) : state
     case 'COMPLETE_GAME_BUILDER': return state.stage === 'game_adjust' && state.selectedGameId ? stamp(state, { stage: 'game_complete', completedAt: new Date().toISOString() }) : state
+    case 'SET_COMPLETION_STATE': return state.stage === 'game_complete' ? stamp(state, { completion: { recommendationTags: [...new Set(action.recommendationTags)].slice(0, 12), recommendedVideoIds: [...new Set(action.recommendedVideoIds)].slice(0, 3), shareCardFormat: action.shareCardFormat, shareCardGenerated: action.shareCardGenerated, lastCompletedStep: action.lastCompletedStep } }) : state
     case 'ANSWER_GAME': {
       if (state.stage !== 'game_choice') return state
       const choice = gameVariantForState(state).choices[state.gameStep]
@@ -204,7 +216,9 @@ export function validateJourneyState(value: unknown): JourneyState | null {
   const gameConcept = typeof candidate.gameConcept === 'string' && GAME_CONCEPTS.some((concept) => concept.id === candidate.gameConcept) ? candidate.gameConcept as GameConceptId : null
   const selectedGameId = typeof candidate.selectedGameId === 'string' && GAME_CANDIDATES.some((game) => game.id === candidate.selectedGameId) ? candidate.selectedGameId : null
   const gameAdjustments = candidate.gameAdjustments === undefined ? {} : isGameAdjustments(candidate.gameAdjustments) ? candidate.gameAdjustments : null
+  const completion = candidate.completion === undefined ? { recommendationTags: [], recommendedVideoIds: [], shareCardFormat: null, shareCardGenerated: false, lastCompletedStep: null } : isCompletionState(candidate.completion) ? candidate.completion : null
   if (gameAdjustments === null) return null
+  if (completion === null) return null
   let restoredStage = stage
   if (restoredStage === 'game_concepts' && !gameConditions) restoredStage = 'game_conditions'
   if (restoredStage === 'game_candidates' && !gameConditions) restoredStage = 'game_conditions'
@@ -241,5 +255,6 @@ export function validateJourneyState(value: unknown): JourneyState | null {
     gameConcept,
     selectedGameId,
     gameAdjustments,
+    completion,
   }
 }
