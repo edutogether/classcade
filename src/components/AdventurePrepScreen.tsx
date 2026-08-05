@@ -230,6 +230,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         {step === 1 && <ChoiceCards options={SCHOOL_LEVEL_OPTIONS} value={schoolLevel} onChange={setSchoolLevel} icons={schoolIcons} tunePrefix="prep-1" />}
         {step === 2 && <ChoiceCards options={CAREER_RANGE_OPTIONS} value={careerRange} onChange={setCareerRange} icons={careerIcons} tunePrefix="prep-2" />}
         {step === 3 && <ChoiceCards options={REGION_OPTIONS} value={region} onChange={setRegion} icons={['region']} tunePrefix="prep-3" compact />}
+        {step === 4 && growthPriorities.length === 3 && <p className="front120-prep__next-cue" role="status">선택 완료 · 아래의 다음 질문 버튼으로 이어가요 ↓</p>}
         {step === 4 && <div className="front120-growth-grid" role="group" aria-label="교실 성장 우선순위">
           {GROWTH_PRIORITY_OPTIONS.map((option, index) => {
             const selected = growthPriorities.includes(option.value)
