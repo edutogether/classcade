@@ -1,0 +1,8 @@
+import { describe, expect, it } from 'vitest'
+import { MemoryPairingStore, PAIRING_TTL_MS, issuePairingCode, sixDigitCode } from './pairingContract'
+const payload = { version: 1 as const, journeyId: 'journey-safe', answers: { one: 'a' }, directions: { flow: 'design' as const }, resultCode: 'P00', profile: { schoolLevel: 'elementary' as const, careerRange: '1-5' as const, region: 'seoul' as const, growthPriorities: ['engagement'] as const, growthPriorityOther: '' } }
+describe('pairing contract', () => {
+  it('creates six numeric digits including leading zeroes', () => expect(sixDigitCode(() => .000001)).toBe('000001'))
+  it('retries collisions and consumes a valid record exactly once', async () => { const store = new MemoryPairingStore(); await store.create({ version: 1, code: '000001', payload, createdAt: 0, expiresAt: PAIRING_TTL_MS, usedAt: null }); let calls = 0; const record = await issuePairingCode(store, payload, 0, () => calls++ === 0 ? .000001 : .123456); expect(record.code).toBe('123456'); expect((await store.consume(record.code, 1)).status).toBe('connected'); expect((await store.consume(record.code, 2)).status).toBe('used') })
+  it('reports invalid and expired records', async () => { const store = new MemoryPairingStore(); expect((await store.consume('000000', 0)).status).toBe('invalid'); await store.create({ version: 1, code: '111111', payload, createdAt: 0, expiresAt: 1, usedAt: null }); expect((await store.consume('111111', 1)).status).toBe('expired') })
+})

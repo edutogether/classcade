@@ -8,6 +8,8 @@ import { createJourneyState, journeyReducer, journeyStatusForStage, type Journey
 import { resolveEntryState } from './lib/entryState'
 import { preloadMainTheme } from './lib/audioManager'
 import { Front120VisualTuner } from './features/front120/Front120VisualTuner'
+import type { PairingPayload } from './features/pairing/pairingContract'
+import { restorePairingJourney } from './features/pairing/pairingContract'
 import { applyTuning, createTuning, type TunerScreen } from './features/front120/visualTuning'
 import {
   clearActiveSession,
@@ -50,7 +52,8 @@ export default function App() {
   const [profile, setProfile] = useState<Profile | null>(boot.profileResult.value)
   const [journey, setJourney] = useState<Journey>(boot.journeyResult.value)
   const [journeyState, setJourneyState] = useState<JourneyState>(() => boot.detailedJourneyResult.value ?? createJourneyState())
-  const [screen, setScreen] = useState<Screen>(initialEntryState.screen === 'start' ? 'journey' : 'prep')
+  const pairingEntryRequested = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('pairing') === '1'
+  const [screen, setScreen] = useState<Screen>(pairingEntryRequested || initialEntryState.screen === 'start' ? 'journey' : 'prep')
   const [sharedSessionGateOpen, setSharedSessionGateOpen] = useState(initialEntryState.sharedSessionGateOpen)
   const [prepExiting, setPrepExiting] = useState(false)
   const [teacherOpen, setTeacherOpen] = useState(false)
@@ -59,6 +62,8 @@ export default function App() {
   const [online, setOnline] = useState(isBrowserOnline)
   const teacherTriggerRef = useRef<HTMLButtonElement>(null)
   const transitionTimerRef = useRef<number | null>(null)
+  const journeyIdResult = ensureAnonymousJourneyId(deviceMode)
+  const journeyId = journeyIdResult.ok ? journeyIdResult.value : ''
 
   useEffect(() => {
     if (!notice) return
@@ -189,11 +194,21 @@ export default function App() {
     setNotice('저장된 현재 여정으로 돌아왔습니다.')
   }
 
+  function restorePairedJourney(payload: PairingPayload) {
+    const now = new Date().toISOString()
+    const restoredProfile: Profile = { version: 1, ...payload.profile, growthPriorities: [...payload.profile.growthPriorities], nickname: '', createdAt: now, updatedAt: now }
+    const restoredState = restorePairingJourney(payload, journeyState.audio)
+    const savedProfile = saveProfile(restoredProfile, deviceMode)
+    if (!savedProfile.ok || !persistJourneyState(restoredState)) { setNotice('연결 기록을 이 기기에 저장하지 못했어요. 브라우저 저장 공간을 확인해 주세요.'); return }
+    setProfile(restoredProfile); setScreen('journey'); setNotice('모바일의 교실 플레이 기록을 불러왔습니다.')
+    if (typeof window !== 'undefined') window.history.replaceState({}, '', window.location.pathname)
+  }
+
   if (sharedSessionGateOpen) return <SharedSessionGate onResume={resumeSharedSession} onStartNew={resetActiveJourney} />
 
   const showJourney = (screen === 'journey' || prepExiting) && !sharedSessionGateOpen
   return <>
-    {showJourney && profile && <JourneyApp state={journeyState} notice={notice} onAction={handleJourneyAction} onTeacherOpen={(button) => { teacherTriggerRef.current = button; setTeacherOpen(true) }} teacherTriggerRef={teacherTriggerRef} />}
+    {showJourney && (profile || pairingEntryRequested) && <JourneyApp state={journeyState} notice={notice} onAction={handleJourneyAction} onTeacherOpen={(button) => { teacherTriggerRef.current = button; setTeacherOpen(true) }} teacherTriggerRef={teacherTriggerRef} profile={profile} journeyId={journeyId} pairingEntry={pairingEntryRequested && !profile} onPaired={restorePairedJourney} onStartHere={() => { setScreen('prep'); window.history.replaceState({}, '', window.location.pathname) }} onExitPairingEntry={() => { setScreen('prep'); window.history.replaceState({}, '', window.location.pathname) }} />}
     {screen === 'prep' && <AdventurePrepScreen initialProfile={profile} audio={journeyState.audio} exiting={prepExiting} isOffline={!online} onComplete={handleProfileComplete} onScreenChange={setTunerScreen} />}
     {profile && <TeacherPanel open={teacherOpen} profile={profile} journey={journey} deviceMode={deviceMode} returnFocusRef={teacherTriggerRef} onClose={() => setTeacherOpen(false)} onEdit={() => { setTeacherOpen(false); setScreen('prep') }} onRestartNbti={restartNbti} onResetAll={resetActiveJourney} onStartNewShared={resetActiveJourney} onPlaceholderAction={handleTeacherAction} />}
     {showJourney && profile && <Front120VisualTuner screen="main" />}

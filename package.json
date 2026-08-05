@@ -9,14 +9,17 @@
     "lint": "eslint .",
     "test": "vitest run && tsc -b --noEmit",
     "preview": "vite preview",
-    "front120:tune:apply": "node scripts/apply-front120-tuning.mjs"
+    "front120:tune:apply": "node scripts/apply-front120-tuning.mjs",
+    "rules:test": "firebase emulators:exec --only firestore \"vitest run src/features/pairing/firestore.rules.test.ts\""
   },
   "dependencies": {
+    "firebase": "^12.17.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@firebase/rules-unit-testing": "^5.0.1",
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
