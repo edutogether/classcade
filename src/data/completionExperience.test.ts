@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CLASSCADE_VIDEO_CATALOG, buildShareCardModel, rankVideos, recommendationTags } from './completionExperience'
+import { CLASSCADE_VIDEO_CATALOG, EDUTOGETHER_YOUTUBE_CHANNEL, buildShareCardModel, rankVideos, recommendationTags } from './completionExperience'
 import { GAME_CANDIDATES } from './classroomGameBuilder'
 import { PROVISIONAL_NBTI_RESULTS } from './nbtiResults.provisional'
 
@@ -13,9 +13,30 @@ describe('completion recommendation and sharing contract', () => {
       expect(tags).toContain('초등')
     }
   })
-  it('keeps a stable, duplicate-free empty state until confirmed video URLs are supplied', () => {
-    expect(CLASSCADE_VIDEO_CATALOG).toEqual([])
-    expect(rankVideos(['협력', '교실'])).toEqual([])
+  it('keeps the eight confirmed official videos and only supplied URL formats', () => {
+    expect(CLASSCADE_VIDEO_CATALOG).toHaveLength(8)
+    expect(new Set(CLASSCADE_VIDEO_CATALOG.map((video) => video.id)).size).toBe(8)
+    expect(EDUTOGETHER_YOUTUBE_CHANNEL).toEqual({ id: 'UCxwEDzU4bGOyvIrpTkqN5jg', name: '같이교육' })
+    for (const video of CLASSCADE_VIDEO_CATALOG) {
+      expect(video.youtubeUrl).toBe(`https://www.youtube.com/watch?v=${video.id}`)
+      expect(video.thumbnailUrl).toBe(`https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`)
+    }
+  })
+  it('ranks only condition-compatible videos, with stable matched-tag reasons', () => {
+    const relationship = rankVideos(['협력', '전원 참여', '관계'], { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' })
+    const calmIndividual = rankVideos(['개별 참여', '차분한 몰입', '자리 활동'], { schoolLevel: 'elementary', size: 'small', time: 'standard', space: 'seated', mood: 'calm' })
+    const strategyYoung = rankVideos(['전략형', '도전과 전략'], { schoolLevel: 'elementary', size: 'small', time: 'standard', space: 'seated', mood: 'challenge' })
+    expect(relationship[0]?.video.id).toBe('emAwxLcKBes')
+    expect(calmIndividual[0]?.video.id).toBe('KjHDS59tGS4')
+    expect(strategyYoung[0]?.video.id).toBe('HLx2aITlp38')
+    for (const entries of [relationship, calmIndividual, strategyYoung]) {
+      expect(entries.length).toBeGreaterThan(0); expect(entries.length).toBeLessThanOrEqual(3)
+      expect(new Set(entries.map(({ video }) => video.id)).size).toBe(entries.length)
+      for (const { video, matchedTags } of entries) expect(matchedTags.every((tag) => video.tags.includes(tag))).toBe(true)
+    }
+  })
+  it('uses an intentional no-match state instead of filling with poor candidates', () => {
+    expect(rankVideos(['협력', '교실'], { schoolLevel: 'high', size: 'large', time: 'long', space: 'outdoor', mood: 'challenge' })).toEqual([])
   })
   it('never includes direct or indirect profile identifiers in a share card model', () => {
     const model = buildShareCardModel('든든한 항해사', '교실의 흐름을 설계합니다.', GAME_CANDIDATES[0], ['협력', '교실'])

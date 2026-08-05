@@ -7,6 +7,11 @@ import type { JourneyAction, JourneyState } from '../journeyState'
 
 type Props = { state: JourneyState; onAction: (action: JourneyAction) => void }
 
+function VideoThumbnail({ src }: { src?: string }) {
+  const [failed, setFailed] = useState(!src)
+  return <div className="completion-video__thumb">{failed ? <CompassSeal /> : <img src={src} alt="" onError={() => setFailed(true)} />}</div>
+}
+
 function wrap(ctx: CanvasRenderingContext2D, value: string, width: number, lineHeight: number, x: number, y: number, maxLines: number) {
   const words = Array.from(value)
   let line = ''; let lineIndex = 0
@@ -41,7 +46,7 @@ async function renderCard(model: ShareCardModel, format: ShareCardFormat) {
 export function CompletionExperience({ state, onAction }: Props) {
   const result = getProvisionalResult(state.resultCode); const candidate = getGameCandidate(state.selectedGameId)
   const tags = useMemo(() => recommendationTags(result.directions, state.gameConditions, candidate, state.gameAdjustments), [candidate, result.directions, state.gameAdjustments, state.gameConditions])
-  const videos = useMemo(() => rankVideos(tags), [tags]); const [format, setFormat] = useState<ShareCardFormat>('square'); const [preview, setPreview] = useState<string | null>(null); const [message, setMessage] = useState('')
+  const videos = useMemo(() => rankVideos(tags, state.gameConditions), [tags, state.gameConditions]); const [format, setFormat] = useState<ShareCardFormat>('square'); const [preview, setPreview] = useState<string | null>(null); const [message, setMessage] = useState('')
   if (!candidate) return null
   const generate = async (nextFormat = format) => { try { setMessage('공유 이미지를 만드는 중이에요…'); const value = await renderCard(buildShareCardModel(result.title, result.description, candidate, tags), nextFormat); setFormat(nextFormat); setPreview(value); onAction({ type: 'SET_COMPLETION_STATE', recommendationTags: tags, recommendedVideoIds: videos.map(({ video }) => video.id), shareCardFormat: nextFormat, shareCardGenerated: true, lastCompletedStep: 'share-card-generated' }); setMessage(`${nextFormat === 'square' ? '정사각형' : '스토리'} 공유 이미지가 준비됐어요.`) } catch { setMessage('공유 이미지 생성에 실패했어요. 완성 게임 결과는 그대로 보존됩니다.') } }
   const download = () => { if (!preview) { void generate(); return } const link = document.createElement('a'); link.href = preview; link.download = `classcade-${format}-share.png`; link.click(); setMessage('이미지 다운로드를 시작했어요.') }
@@ -49,7 +54,7 @@ export function CompletionExperience({ state, onAction }: Props) {
   return <section className="completion-experience" aria-label="같이교육 추천과 공유">
     <header><p className="journey-kicker">같이교육 추천</p><h2>우리 반의 다음 장면</h2><p>완성한 게임의 조건과 성향을 바탕으로 추천 태그를 만들었어요.</p></header>
     <div className="completion-tags" aria-label="추천 태그">{tags.map((tag) => <span key={tag}>#{tag}</span>)}</div>
-    {videos.length ? <div className="completion-videos">{videos.map(({ video }) => <article key={video.id}><div className="completion-video__thumb">{video.thumbnailUrl ? <img src={video.thumbnailUrl} alt="" /> : <CompassSeal />}</div><div><h3>{video.title}</h3><p>{video.shortDescription}</p><small>{video.duration} · {video.materials}</small><a href={video.youtubeUrl} target="_blank" rel="noreferrer">같이교육 영상 보기</a></div></article>)}</div> : <div className="completion-videos__empty"><Icon name="notebook" size={28} /><div><b>확정된 같이교육 영상 주소가 아직 없습니다.</b><p>추천 태그와 우선순위 계산은 완료됐어요. 실제 YouTube URL을 영상 자료에 입력하면 최대 3개를 바로 추천합니다.</p></div></div>}
+    {videos.length ? <div className="completion-videos">{videos.map(({ video, matchedTags }) => <article key={video.id}><VideoThumbnail src={video.thumbnailUrl} /><div><h3>{video.title}</h3><p>{video.shortDescription}</p><small>{video.duration} · {video.materials}</small><p className="completion-video__reason">{matchedTags.slice(0, 3).map((tag) => `#${tag}`).join(' ')} 조건과 일치해 추천합니다.</p><a href={video.youtubeUrl} target="_blank" rel="noreferrer">같이교육 영상 보기</a></div></article>)}</div> : <div className="completion-videos__empty"><Icon name="notebook" size={28} /><div><b>현재 조건에 맞는 공개 영상을 찾지 못했습니다.</b><p>다른 게임 조건을 선택하거나, 다음 공개 영상이 추가될 때 다시 확인해 주세요.</p></div></div>}
     <section className="completion-share" aria-label="인스타그램 공유 이미지">
       <p className="journey-kicker">결과 공유 이미지</p><h2>우리 반 게임을 자랑해 주세요</h2><p>공유 이미지를 다운로드해 인스타그램에 공유하고, 교실 화면을 학급 학생들에게 보여 주세요.</p>
       <div className="completion-share__actions"><button type="button" onClick={() => void generate('square')}>정사각형 이미지 만들기</button><button type="button" onClick={() => void generate('story')}>스토리 이미지 만들기</button><button type="button" onClick={download}>이미지 다운로드하기</button><button type="button" onClick={() => void nativeShare()}>기기로 공유하기</button></div>
