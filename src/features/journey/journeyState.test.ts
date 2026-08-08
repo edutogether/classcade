@@ -69,6 +69,15 @@ describe('golden-path journey reducer', () => {
     expect(validateJourneyState(state)).toMatchObject({ stage: 'game_complete', selectedGameId: 'bridge-mission' })
   })
 
+  it('returns to the preceding NBTI question and preserves the selected answer', () => {
+    let state = journeyReducer(createJourneyState(), { type: 'START_NBTI' })
+    const first = NBTI_QUESTIONS[0]
+    state = journeyReducer(state, { type: 'ANSWER_NBTI', questionId: first.id, choiceId: first.choices[0].id })
+    state = journeyReducer(state, { type: 'NEXT_NBTI' })
+    state = journeyReducer(state, { type: 'PREVIOUS_STAGE' })
+    expect(state).toMatchObject({ stage: 'nbti_question', questionIndex: 0, answers: { [first.id]: first.choices[0].id } })
+  })
+
   it('supports the accessible shake fallback and only completes at 100%', () => {
     let state = completeNbti()
     state = { ...state, stage: 'game_shake' }
@@ -77,6 +86,27 @@ describe('golden-path journey reducer', () => {
     state = journeyReducer(state, { type: 'ADD_SHAKE', amount: 25 })
     expect(state.stage).toBe('game_complete')
     expect(state.completedAt).toEqual(expect.any(String))
+  })
+
+  it('maps every game-builder stage to its explicit preceding stage', () => {
+    const base = completeNbti()
+    const expected = [['game_intro', 'nbti_result'], ['game_conditions', 'game_intro'], ['game_concepts', 'game_conditions'], ['game_candidates', 'game_concepts'], ['game_adjust', 'game_candidates'], ['game_complete', 'game_adjust'], ['sharing', 'game_complete']] as const
+    for (const [stage, previous] of expected) expect(journeyReducer({ ...base, stage }, { type: 'PREVIOUS_STAGE' }).stage).toBe(previous)
+  })
+
+  it('returns home without deleting progress and resumes the exact stored stage', () => {
+    const result = completeNbti()
+    const home = journeyReducer(result, { type: 'GO_HOME' })
+    expect(home).toMatchObject({ stage: 'nbti_start', resumeStage: 'nbti_result', resultCode: 'P00' })
+    expect(journeyReducer(home, { type: 'RESUME_JOURNEY' })).toMatchObject({ stage: 'nbti_result', resumeStage: null, resultCode: 'P00' })
+  })
+
+  it('invalidates later game outputs when a prior condition or concept is changed', () => {
+    const state = { ...completeNbti(), stage: 'game_conditions' as const, gameConcept: 'team' as const, selectedGameId: 'bridge-mission', gameAdjustments: { time: '높게' }, completion: { recommendationTags: ['협력'], recommendedVideoIds: ['video-1'], shareCardFormat: 'square' as const, shareCardGenerated: true, lastCompletedStep: 'shared' } }
+    const afterConditions = journeyReducer(state, { type: 'SET_GAME_CONDITIONS', conditions: { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' } })
+    expect(afterConditions).toMatchObject({ stage: 'game_concepts', gameConcept: null, selectedGameId: null, gameAdjustments: {}, completion: { shareCardGenerated: false } })
+    const afterConcept = journeyReducer({ ...afterConditions, stage: 'game_concepts' }, { type: 'SELECT_GAME_CONCEPT', concept: 'team' })
+    expect(afterConcept).toMatchObject({ stage: 'game_candidates', selectedGameId: null, gameAdjustments: {}, completion: { shareCardGenerated: false } })
   })
 
   it('only opens sharing after completion and preserves audio toggles across reset', () => {

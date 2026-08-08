@@ -28,6 +28,7 @@ export type JourneyState = {
   selectedGameId: string | null
   gameAdjustments: Record<string, string>
   completion: CompletionState
+  resumeStage: JourneyStage | null
 }
 
 export type JourneyAction =
@@ -35,6 +36,9 @@ export type JourneyAction =
   | { type: 'ANSWER_NBTI'; questionId: string; choiceId: string }
   | { type: 'NEXT_NBTI' }
   | { type: 'PREVIOUS_NBTI' }
+  | { type: 'PREVIOUS_STAGE' }
+  | { type: 'GO_HOME' }
+  | { type: 'RESUME_JOURNEY' }
   | { type: 'OPEN_GAME_INTRO' }
   | { type: 'SET_GAME_CONDITIONS'; conditions: GameConditions }
   | { type: 'SELECT_GAME_CONCEPT'; concept: GameConceptId }
@@ -73,6 +77,7 @@ export function createJourneyState(stage: JourneyStage = 'nbti_start', audio: Au
     selectedGameId: null,
     gameAdjustments: {},
     completion: { recommendationTags: [], recommendedVideoIds: [], shareCardFormat: null, shareCardGenerated: false, lastCompletedStep: null },
+    resumeStage: null,
   }
 }
 
@@ -129,12 +134,20 @@ export function journeyReducer(state: JourneyState, action: JourneyAction): Jour
     }
     case 'PREVIOUS_NBTI':
       return state.stage === 'nbti_question' && state.questionIndex > 0 ? stamp(state, { questionIndex: state.questionIndex - 1 }) : state
+    case 'PREVIOUS_STAGE': {
+      const previous: Partial<Record<JourneyStage, JourneyStage>> = { nbti_result: 'nbti_question', game_intro: 'nbti_result', game_conditions: 'game_intro', game_concepts: 'game_conditions', game_candidates: 'game_concepts', game_adjust: 'game_candidates', game_choice: 'game_intro', game_shake: 'game_choice', game_complete: 'game_adjust', sharing: 'game_complete' }
+      if (state.stage === 'nbti_question') return state.questionIndex > 0 ? stamp(state, { questionIndex: state.questionIndex - 1 }) : stamp(state, { stage: 'nbti_start' })
+      const stage = previous[state.stage]
+      return stage ? stamp(state, { stage, questionIndex: stage === 'nbti_question' ? NBTI_QUESTIONS.length - 1 : state.questionIndex }) : state
+    }
+    case 'GO_HOME': return state.stage === 'nbti_start' ? state : stamp(state, { resumeStage: state.stage, stage: 'nbti_start' })
+    case 'RESUME_JOURNEY': return state.stage === 'nbti_start' && state.resumeStage ? stamp(state, { stage: state.resumeStage, resumeStage: null }) : state
     case 'OPEN_GAME_INTRO':
       return state.stage === 'nbti_result' && state.resultCode ? stamp(state, { stage: 'game_intro' }) : state
     case 'START_GAME':
       return state.stage === 'game_intro' && state.resultCode ? stamp(state, { stage: 'game_conditions', gameStep: 0, gameChoices: {}, shakeProgress: 0 }) : state
-    case 'SET_GAME_CONDITIONS': return state.stage === 'game_conditions' && isGameConditions(action.conditions) ? stamp(state, { gameConditions: action.conditions, stage: 'game_concepts' }) : state
-    case 'SELECT_GAME_CONCEPT': return state.stage === 'game_concepts' && GAME_CONCEPTS.some((concept) => concept.id === action.concept) ? stamp(state, { gameConcept: action.concept, stage: 'game_candidates' }) : state
+    case 'SET_GAME_CONDITIONS': return state.stage === 'game_conditions' && isGameConditions(action.conditions) ? stamp(state, { gameConditions: action.conditions, gameConcept: null, selectedGameId: null, gameAdjustments: {}, completion: createJourneyState().completion, stage: 'game_concepts' }) : state
+    case 'SELECT_GAME_CONCEPT': return state.stage === 'game_concepts' && GAME_CONCEPTS.some((concept) => concept.id === action.concept) ? stamp(state, { gameConcept: action.concept, selectedGameId: null, gameAdjustments: {}, completion: createJourneyState().completion, stage: 'game_candidates' }) : state
     case 'SELECT_GAME_CANDIDATE': return state.stage === 'game_candidates' && GAME_CANDIDATES.some((candidate) => candidate.id === action.candidateId) ? stamp(state, { selectedGameId: action.candidateId, stage: 'game_adjust' }) : state
     case 'SET_GAME_ADJUSTMENT': return state.stage === 'game_adjust' ? stamp(state, { gameAdjustments: { ...state.gameAdjustments, [action.key]: action.value } }) : state
     case 'COMPLETE_GAME_BUILDER': return state.stage === 'game_adjust' && state.selectedGameId ? stamp(state, { stage: 'game_complete', completedAt: new Date().toISOString() }) : state
@@ -256,5 +269,6 @@ export function validateJourneyState(value: unknown): JourneyState | null {
     selectedGameId,
     gameAdjustments,
     completion,
+    resumeStage: validStages.includes(candidate.resumeStage as JourneyStage) ? candidate.resumeStage as JourneyStage : null,
   }
 }

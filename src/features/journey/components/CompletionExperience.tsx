@@ -5,7 +5,7 @@ import { getGameCandidate } from '../../../data/classroomGameBuilder'
 import { getProvisionalResult } from '../../../data/nbtiResults.provisional'
 import type { JourneyAction, JourneyState } from '../journeyState'
 
-type Props = { state: JourneyState; onAction: (action: JourneyAction) => void }
+type Props = { state: JourneyState; onAction: (action: JourneyAction) => void; onNextParticipant?: () => void }
 
 function VideoThumbnail({ src }: { src?: string }) {
   const [failed, setFailed] = useState(!src)
@@ -43,14 +43,14 @@ async function renderCard(model: ShareCardModel, format: ShareCardFormat) {
   return canvas.toDataURL('image/png')
 }
 
-export function CompletionExperience({ state, onAction }: Props) {
+export function CompletionExperience({ state, onAction, onNextParticipant }: Props) {
   const result = getProvisionalResult(state.resultCode); const candidate = getGameCandidate(state.selectedGameId)
   const tags = useMemo(() => recommendationTags(result.directions, state.gameConditions, candidate, state.gameAdjustments), [candidate, result.directions, state.gameAdjustments, state.gameConditions])
   const videos = useMemo(() => rankVideos(tags, state.gameConditions), [tags, state.gameConditions]); const [format, setFormat] = useState<ShareCardFormat>('square'); const [preview, setPreview] = useState<string | null>(null); const [message, setMessage] = useState('')
   if (!candidate) return null
   const generate = async (nextFormat = format) => { try { setMessage('공유 이미지를 만드는 중이에요…'); const value = await renderCard(buildShareCardModel(result.title, result.description, candidate, tags), nextFormat); setFormat(nextFormat); setPreview(value); onAction({ type: 'SET_COMPLETION_STATE', recommendationTags: tags, recommendedVideoIds: videos.map(({ video }) => video.id), shareCardFormat: nextFormat, shareCardGenerated: true, lastCompletedStep: 'share-card-generated' }); setMessage(`${nextFormat === 'square' ? '정사각형' : '스토리'} 공유 이미지가 준비됐어요.`) } catch { setMessage('공유 이미지 생성에 실패했어요. 완성 게임 결과는 그대로 보존됩니다.') } }
   const download = () => { if (!preview) { void generate(); return } const link = document.createElement('a'); link.href = preview; link.download = `classcade-${format}-share.png`; link.click(); setMessage('이미지 다운로드를 시작했어요.') }
-  const nativeShare = async () => { try { let imageData = preview; if (!imageData) { imageData = await renderCard(buildShareCardModel(result.title, result.description, candidate, tags), format); setPreview(imageData); onAction({ type: 'SET_COMPLETION_STATE', recommendationTags: tags, recommendedVideoIds: videos.map(({ video }) => video.id), shareCardFormat: format, shareCardGenerated: true, lastCompletedStep: 'share-card-generated' }) } const blob = await (await fetch(imageData)).blob(); const file = new File([blob], `classcade-${format}-share.png`, { type: 'image/png' }); if (!navigator.share || !navigator.canShare?.({ files: [file] })) throw new Error('unsupported'); await navigator.share({ title: 'CLASSCADE 우리 반 게임', text: `${result.title} · ${candidate.title}`, files: [file] }); setMessage('기기 공유 창을 열었어요. 게시 완료 여부는 앱에서 직접 확인해 주세요.') } catch { if (preview) download(); else await generate(); setMessage('이 기기에서는 직접 공유를 지원하지 않아 이미지를 다운로드할 수 있게 준비했습니다.') } }
+  const nativeShare = async () => { try { let imageData = preview; if (!imageData) { imageData = await renderCard(buildShareCardModel(result.title, result.description, candidate, tags), format); setPreview(imageData); onAction({ type: 'SET_COMPLETION_STATE', recommendationTags: tags, recommendedVideoIds: videos.map(({ video }) => video.id), shareCardFormat: format, shareCardGenerated: true, lastCompletedStep: 'share-card-generated' }) } const blob = await (await fetch(imageData)).blob(); const file = new File([blob], `classcade-${format}-share.png`, { type: 'image/png' }); if (!navigator.share || !navigator.canShare?.({ files: [file] })) throw new Error('unsupported'); await navigator.share({ title: 'CLASSCADE 우리 반 게임', text: `${result.title} · ${candidate.title}`, files: [file] }); setMessage('기기 공유 창을 열었어요. 게시 완료 여부는 앱에서 직접 확인해 주세요.') } catch (error) { if (error instanceof DOMException && error.name === 'AbortError') { setMessage('공유를 취소했어요. 결과 화면에서 계속 진행할 수 있습니다.'); return } if (preview) download(); else await generate(); setMessage('이 기기에서는 직접 공유를 지원하지 않아 이미지를 다운로드할 수 있게 준비했습니다.') } }
   return <section className="completion-experience" aria-label="같이교육 추천과 공유">
     <header><p className="journey-kicker">같이교육 추천</p><h2>우리 반의 다음 장면</h2><p>완성한 게임의 조건과 성향을 바탕으로 추천 태그를 만들었어요.</p></header>
     <div className="completion-tags" aria-label="추천 태그">{tags.map((tag) => <span key={tag}>#{tag}</span>)}</div>
@@ -62,6 +62,7 @@ export function CompletionExperience({ state, onAction }: Props) {
       <p className="completion-share__message" aria-live="polite">{message}</p>
       <div className="completion-share__guide"><b>공유한 뒤, 실제 뽑기를 안전하게 진행하세요.</b><p>인스타그램 공유 화면을 학급 학생들에게 보여 주면 실제 뽑기에 참여할 수 있어요. 뽑기권 발급, 번호, 경품, 참여 기록은 이 서비스에서 처리하지 않습니다.</p></div>
     </section>
+    <div className="completion-share__actions"><button type="button" onClick={() => onAction({ type: 'OPEN_SHARING' })}>공유하지 않고 완료</button><button type="button" onClick={() => onAction({ type: 'GO_HOME' })}>처음으로</button>{onNextParticipant && <button type="button" onClick={onNextParticipant}>다음 참가자 준비</button>}</div>
     <button className="completion-restart" type="button" onClick={() => onAction({ type: 'RESET_NBTI' })}><Icon name="reset" size={18} />처음부터 다시 시작하기</button>
   </section>
 }

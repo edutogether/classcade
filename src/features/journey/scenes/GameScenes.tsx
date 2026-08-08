@@ -1,62 +1,57 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type CSSProperties } from 'react'
 import { CompassSeal, Icon } from '../../../components/VisualPrimitives'
 import { getGameVariantForResult } from '../../../data/gameVariants.provisional'
 import { getProvisionalResult } from '../../../data/nbtiResults.provisional'
 import { GAME_CANDIDATES, GAME_CONDITIONS, candidatesForConcept, defaultGameConditions, getGameCandidate, recommendConcepts, type GameConditions } from '../../../data/classroomGameBuilder'
 import { PrimaryButton, Progress, SceneFrame, SecondaryButton, type JourneySceneProps } from '../components/SceneFrame'
 import { CompletionExperience } from '../components/CompletionExperience'
+import { CanonicalGameScene, CanonicalHotspot, CanonicalMobileHero, ScreenReaderText } from '../components/CanonicalGameScene'
+import conditionsArt from '../../../assets/classcade/game-builder/classroom-conditions-master.png'
+import conceptsArt from '../../../assets/classcade/game-builder/concept-selection-master.png'
+import candidatesArt from '../../../assets/classcade/game-builder/game-candidates-master.png'
+import resultArt from '../../../assets/classcade/game-builder/game-result-master.png'
 
 const fallbackConditions: GameConditions = { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' }
 const conditionLabels: Record<keyof GameConditions, string> = { schoolLevel: '학교급', size: '참여 인원', time: '수업 시간', space: '공간', mood: '원하는 분위기' }
 
 export function GameConditionsScene(props: JourneySceneProps) {
   const [conditions, setConditions] = useState(props.state.gameConditions ?? (props.profile ? defaultGameConditions(props.profile) : fallbackConditions))
-  return <SceneFrame scene="game" {...props}>
-    <div className="journey-panel journey-game-builder journey-enter">
-      <div className="journey-panel__topline"><p>01 · 우리 반 조건</p><Progress current={1} total={4} label="게임 만들기" /></div>
-      <h1>오늘의 교실은<br />어떤 모습인가요?</h1>
-      <p>조건을 먼저 고르면, 우리 반에 맞는 4가지 게임 콘셉트를 추천해 드려요.</p>
-      <div className="journey-builder-groups">
-        {(Object.keys(GAME_CONDITIONS) as (keyof typeof GAME_CONDITIONS)[]).map((key) => <section className="journey-builder-group" key={key} aria-label={conditionLabels[key]}>
-          <b>{conditionLabels[key]}</b><div className="journey-builder-options" role="group">
-            {GAME_CONDITIONS[key].map((option) => <button className={`journey-choice journey-choice--game ${conditions[key] === option.id ? 'is-selected' : ''}`} key={option.id} type="button" onClick={() => setConditions({ ...conditions, [key]: option.id })} aria-pressed={conditions[key] === option.id}><b>{option.label}</b></button>)}
-          </div>
-        </section>)}
-      </div>
-      <PrimaryButton onClick={() => props.onAction({ type: 'SET_GAME_CONDITIONS', conditions })}>콘셉트 고르기</PrimaryButton>
-    </div>
+  return <SceneFrame scene="game" canonicalGame {...props}>
+    <CanonicalGameScene screen="conditions" art={conditionsArt}>
+      <CanonicalMobileHero art={conditionsArt} screen="conditions" eyebrow="01 · 우리 반 조건" title="우리 반 교실의 모험 조건" description="교실 장면을 고르고, 우리 반에 맞는 게임을 준비해요." />
+      {(Object.keys(GAME_CONDITIONS).filter((key) => key !== 'mood') as (keyof typeof GAME_CONDITIONS)[]).map((key) => <div className={`canonical-condition canonical-condition--${key}`} key={key} role="group" aria-label={conditionLabels[key]}>
+        <b className="canonical-mobile-group-title">{conditionLabels[key]}</b>{GAME_CONDITIONS[key].map((option, index) => <CanonicalHotspot key={option.id} type="button" style={{ '--mobile-art': `url(${conditionsArt})`, '--mobile-index': `${index}` } as CSSProperties} selected={conditions[key] === option.id} onClick={() => setConditions({ ...conditions, [key]: option.id })} aria-pressed={conditions[key] === option.id}>
+          <span className="canonical-mobile-label" aria-hidden="true">{option.label}</span><span className="canonical-mobile-choice-note" aria-hidden="true">{conditionLabels[key]} 선택</span><ScreenReaderText>{`${conditionLabels[key]}: ${option.label}`}</ScreenReaderText>
+        </CanonicalHotspot>)}
+      </div>)}
+      <fieldset className="canonical-condition-mood"><legend>원하는 분위기</legend>{GAME_CONDITIONS.mood.map((option) => <CanonicalHotspot key={option.id} type="button" selected={conditions.mood === option.id} onClick={() => setConditions({ ...conditions, mood: option.id })} aria-pressed={conditions.mood === option.id}>{option.label}</CanonicalHotspot>)}</fieldset>
+      <CanonicalHotspot className="canonical-next canonical-next--conditions" type="button" onClick={() => props.onAction({ type: 'SET_GAME_CONDITIONS', conditions })}><ScreenReaderText>콘셉트 카드 고르기</ScreenReaderText></CanonicalHotspot>
+    </CanonicalGameScene>
   </SceneFrame>
 }
 
 export function GameConceptsScene(props: JourneySceneProps) {
   const result = getProvisionalResult(props.state.resultCode)
   const concepts = recommendConcepts(result.directions, props.state.gameConditions ?? fallbackConditions)
-  return <SceneFrame scene="game" {...props}>
-    <div className="journey-panel journey-game-builder journey-enter">
-      <div className="journey-panel__topline"><p>02 · 모험 콘셉트</p><Progress current={2} total={4} label="게임 만들기" /></div>
-      <h1>우리 반의 첫 장면을<br />골라 주세요</h1>
-      <div className="journey-builder-cards" role="list">
-        {concepts.map((concept, index) => <button className="journey-choice journey-choice--game" key={concept.id} type="button" onClick={() => props.onAction({ type: 'SELECT_GAME_CONCEPT', concept: concept.id })} role="listitem">
-          <span className="journey-choice__number">0{index + 1}</span><b>{concept.title}</b><small>{concept.detail}</small><em>{concept.direction === result.directions[2] || concept.direction === result.directions[3] ? '성향 추천' : '다른 모험'}</em>
-        </button>)}
-      </div>
-    </div>
+  return <SceneFrame scene="game" canonicalGame {...props}>
+    <CanonicalGameScene screen="concepts" art={conceptsArt}>
+      <CanonicalMobileHero art={conceptsArt} screen="concepts" eyebrow="02 · 모험 콘셉트" title="우리 반의 첫 장면" description="원본 삽화 카드에서 우리 반의 모험을 골라요." />
+      <div className="canonical-concept-list" role="list">{concepts.map((concept, index) => <CanonicalHotspot className={`canonical-concept canonical-concept--${index + 1}`} key={concept.id} type="button" style={{ '--canonical-art': `url(${conceptsArt})`, '--canonical-row': `${index}` } as CSSProperties} onClick={() => props.onAction({ type: 'SELECT_GAME_CONCEPT', concept: concept.id })}><span className="canonical-mobile-label" aria-hidden="true">{concept.title}</span><span className="canonical-mobile-choice-note" aria-hidden="true">{concept.detail}</span><span className="canonical-mobile-reason" aria-hidden="true">{concept.direction === result.directions[2] || concept.direction === result.directions[3] ? '성향 추천' : '새로운 모험'}</span><ScreenReaderText>{`${concept.title}. ${concept.detail}`}</ScreenReaderText></CanonicalHotspot>)}</div>
+    </CanonicalGameScene>
   </SceneFrame>
 }
 
 export function GameCandidatesScene(props: JourneySceneProps) {
   const candidates = candidatesForConcept(props.state.gameConcept ?? 'team')
-  return <SceneFrame scene="game" {...props}>
-    <div className="journey-panel journey-game-builder journey-enter">
-      <div className="journey-panel__topline"><p>03 · 게임 후보 4개</p><Progress current={3} total={4} label="게임 만들기" /></div>
-      <h1>우리 반에 맞는 게임을<br />골라 주세요</h1>
-      <p>첫 후보는 방금 고른 콘셉트에 맞춘 추천이에요.</p>
-      <div className="journey-builder-cards" role="list">
-        {candidates.map((candidate, index) => <button className="journey-choice journey-choice--game" key={candidate.id} type="button" onClick={() => props.onAction({ type: 'SELECT_GAME_CANDIDATE', candidateId: candidate.id })} role="listitem">
-          <span className="journey-choice__number">0{index + 1}</span><b>{candidate.title}</b><small>{candidate.intro} · {candidate.people} · {candidate.duration}</small>{index === 0 && <em>추천</em>}
-        </button>)}
-      </div>
-    </div>
+  const [selectedId, setSelectedId] = useState(candidates[0]?.id ?? '')
+  const selected = candidates.find((candidate) => candidate.id === selectedId) ?? candidates[0]
+  return <SceneFrame scene="game" canonicalGame {...props}>
+    <CanonicalGameScene screen="candidates" art={candidatesArt}>
+      <CanonicalMobileHero art={candidatesArt} screen="candidates" eyebrow="03 · 게임 후보" title="우리 반의 모험 후보" description="캐릭터와 도시 장면에서 실제 후보를 골라요." />
+      <div className="canonical-candidate-list" role="list">{candidates.map((candidate, index) => <CanonicalHotspot className={`canonical-candidate canonical-candidate--${index + 1}`} key={candidate.id} type="button" style={{ '--canonical-art': `url(${candidatesArt})`, '--canonical-row': `${index}` } as CSSProperties} selected={selectedId === candidate.id} onClick={() => setSelectedId(candidate.id)} aria-pressed={selectedId === candidate.id}><span className="canonical-mobile-label" aria-hidden="true">{candidate.title}</span><span className="canonical-mobile-choice-note" aria-hidden="true">{candidate.people} · {candidate.duration} · {candidate.space}</span><span className="canonical-mobile-reason" aria-hidden="true">{candidate.fit}</span><ScreenReaderText>{`${candidate.title}. ${candidate.intro}`}</ScreenReaderText></CanonicalHotspot>)}</div>
+      {selected && <section className="canonical-candidate-detail" aria-live="polite"><b>{selected.title}</b><span>{selected.people} · {selected.duration}</span><p>{selected.intro}</p></section>}
+      <CanonicalHotspot className="canonical-next canonical-next--candidates" type="button" onClick={() => selected && props.onAction({ type: 'SELECT_GAME_CANDIDATE', candidateId: selected.id })}><ScreenReaderText>{selected ? `${selected.title} 이 후보로 결정하기` : '이 후보로 결정하기'}</ScreenReaderText></CanonicalHotspot>
+    </CanonicalGameScene>
   </SceneFrame>
 }
 
@@ -106,16 +101,19 @@ export function CompleteScene(props: JourneySceneProps) {
   const candidate = getGameCandidate(props.state.selectedGameId) ?? GAME_CANDIDATES[0]
   const result = getProvisionalResult(props.state.resultCode)
   const adjustments = Object.entries(props.state.gameAdjustments).filter(([, value]) => value !== '기본').map(([key, value]) => `${adjustmentFields.find(([id]) => id === key)?.[1]} ${value}`)
-  return <SceneFrame scene="complete" {...props}><div className="journey-panel journey-game-complete journey-enter">
-    <p className="journey-kicker">우리 반 게임 완성</p><h1>{candidate.title}</h1><p className="journey-complete__lead">{result.title}의 성향과 우리 반 조건을 반영한 실행 카드예요.</p>
+  return <SceneFrame scene="complete" canonicalGame {...props}><CanonicalGameScene screen="result" art={resultArt}>
+    <CanonicalMobileHero art={resultArt} screen="result" eyebrow="우리 반 게임 완성" title={candidate.title} description={`${candidate.people} · ${candidate.duration} · ${candidate.space}`} />
+    <section className="canonical-result-patch"><p>우리 반 게임</p><h1>{candidate.title}</h1><span>{candidate.people} · {candidate.duration}</span></section>
+    <div className="canonical-result-actions"><SecondaryButton onClick={() => props.onAction({ type: 'OPEN_RESULT' })}>NBTI 결과 보기</SecondaryButton></div>
+  </CanonicalGameScene><article className="canonical-result-book journey-game-complete">
+    <p className="journey-kicker">완성된 게임 상세</p><h2>{candidate.title}</h2><p className="journey-complete__lead">{result.title}의 성향과 우리 반 조건을 반영한 실행 카드예요.</p>
     <div className="journey-game-complete__facts"><span>{candidate.people}</span><span>{candidate.duration}</span><span>{candidate.space}</span><span>{candidate.materials}</span></div>
-    <section><h2>준비</h2><ul>{candidate.preparation.map((item) => <li key={item}>{item}</li>)}</ul></section>
-    <section><h2>진행 순서</h2><ol>{candidate.steps.map((item) => <li key={item}>{item}</li>)}</ol></section>
-    <section><h2>규칙과 운영</h2><p><b>규칙</b> {candidate.rules.join(' ')}</p><p><b>조용한 학생</b> {candidate.quiet}</p><p><b>의견 충돌</b> {candidate.conflict}</p><p><b>변형</b> {candidate.variation}</p><p><b>마무리</b> {candidate.closing}</p></section>
+    <section><h3>준비</h3><ul>{candidate.preparation.map((item) => <li key={item}>{item}</li>)}</ul></section>
+    <section><h3>진행 순서</h3><ol>{candidate.steps.map((item) => <li key={item}>{item}</li>)}</ol></section>
+    <section><h3>규칙과 운영</h3><p><b>규칙</b> {candidate.rules.join(' ')}</p><p><b>조용한 학생</b> {candidate.quiet}</p><p><b>의견 충돌</b> {candidate.conflict}</p><p><b>변형</b> {candidate.variation}</p><p><b>마무리</b> {candidate.closing}</p></section>
     <aside><b>NBTI 반영</b><p>{candidate.fit}</p><small>{conditionSummary(props.state.gameConditions)}{adjustments.length ? ` · ${adjustments.join(' · ')}` : ''}</small></aside>
-    <CompletionExperience state={props.state} onAction={props.onAction} />
-    <SecondaryButton onClick={() => props.onAction({ type: 'OPEN_RESULT' })}>NBTI 결과 보기</SecondaryButton>
-  </div></SceneFrame>
+    <CompletionExperience state={props.state} onAction={props.onAction} onNextParticipant={props.onNextParticipant} />
+  </article></SceneFrame>
 }
 
 export function ShareScene(props: JourneySceneProps) {

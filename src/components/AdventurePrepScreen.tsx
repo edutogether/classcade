@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import {
   CAREER_RANGE_OPTIONS,
   GROWTH_PRIORITY_OPTIONS,
@@ -13,11 +13,13 @@ import { beginMainThemeReveal, noteAudioUserGesture } from '../lib/audioManager'
 import type { AudioSettings } from '../lib/audioController'
 import type { Profile } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
-import loadingReference from '../assets/front120/loading.png'
-import prepOneReference from '../assets/front120/prep-1.png'
-import prepTwoReference from '../assets/front120/prep-2.png'
-import prepThreeReference from '../assets/front120/prep-3.png'
 import prepFourReference from '../assets/front120/prep-4.png'
+import prepOneMaster from '../assets/classcade/master-screens/prep-01-master.png'
+import prepOneElementaryNeutralMask from '../assets/classcade/master-screens/prep-01-elementary-neutral-mask.png'
+import prepTwoMaster from '../assets/classcade/master-screens/prep-02-master.png'
+import prepThreeMaster from '../assets/classcade/master-screens/prep-03-master.png'
+import prepFourMaster from '../assets/classcade/master-screens/prep-04-master.png'
+import loadingMaster from '../assets/classcade/master-screens/loading-master.png'
 import portalAcademy from '../assets/portal-academy-background.png'
 import { CompassSeal, Icon, type IconName } from './VisualPrimitives'
 import '../front120.css'
@@ -35,10 +37,10 @@ type AdventurePrepScreenProps = {
 }
 
 const STEP_IMAGES: Record<Exclude<PrepStep, 'nickname' | 'loading'>, string> = {
-  1: prepOneReference,
-  2: prepTwoReference,
-  3: prepThreeReference,
-  4: prepFourReference,
+  1: prepOneMaster,
+  2: prepTwoMaster,
+  3: prepThreeMaster,
+  4: prepFourMaster,
 }
 
 const schoolIcons: IconName[] = ['spark', 'notebook', 'school', 'career', 'leaf']
@@ -87,7 +89,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   const otherSelected = growthPriorities.includes('other')
   const growthReady = growthPriorities.length > 0 && (!otherSelected || Boolean(otherText.trim()))
   const nicknameReady = nickname.trim().length > 0
-  const stageImage = step === 'loading' ? loadingReference : step === 'nickname' ? prepFourReference : STEP_IMAGES[step]
+  const stageImage = step === 'nickname' ? prepFourReference : STEP_IMAGES[step as Exclude<PrepStep, 'nickname' | 'loading'>]
   const stepNumber = typeof step === 'number' ? step : 4
 
   useEffect(() => {
@@ -171,7 +173,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
 
   if (step === 'loading') {
     return <main className={`front120-loading ${exiting ? 'is-exiting' : ''}`} aria-live="polite">
-      <img className="front120-loading__reference" src={loadingReference} alt="" aria-hidden="true" />
+    <img className="front120-loading__reference" src={loadingMaster} alt="" aria-hidden="true" />
       <div className="front120-loading__veil" aria-hidden="true" />
       <div className="front120-motes front120-motes--loading" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
       <section className="front120-loading__copy">
@@ -211,6 +213,10 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   return <main className={`front120-prep front120-prep--${step} ${exiting ? 'is-exiting' : ''}`} aria-labelledby={`prep-${step}-title`}>
     <img className="front120-prep__world" src={portalAcademy} alt="" aria-hidden="true" />
     <img className="front120-prep__reference" src={stageImage} alt="" aria-hidden="true" data-tune-id={`prep-${step}-hero`} />
+    {step === 1 && <img className="front120-prep__elementary-mask" src={prepOneElementaryNeutralMask} alt="" aria-hidden="true" />}
+    {step === 2 && careerRange && <div className={`front120-prep__career-path front120-prep__career-path--${CAREER_RANGE_OPTIONS.findIndex((option) => option.value === careerRange) + 1}`} aria-hidden="true"><i /><i /><i /><i /><i /></div>}
+    {step === 3 && region && <i className={`front120-prep__region-marker front120-prep__region-marker--${REGION_OPTIONS.findIndex((option) => option.value === region) + 1}`} aria-hidden="true" />}
+    {step === 4 && growthPriorities.length > 0 && <div className={`front120-prep__growth-nodes front120-prep__growth-nodes--${growthPriorities.length}`} aria-hidden="true">{growthPriorities.map((priority, index) => <i key={priority} style={{ '--node': index } as CSSProperties} />)}</div>}
     <div className="front120-prep__vignette" aria-hidden="true" />
     <div className="front120-motes" aria-hidden="true">{Array.from({ length: 24 }, (_, index) => <i key={index} />)}</div>
     <section className="front120-prep__panel">

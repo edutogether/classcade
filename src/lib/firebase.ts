@@ -1,6 +1,6 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from 'firebase/app'
-import { getAuth, signInAnonymously, type Auth, type User } from 'firebase/auth'
-import { getFirestore, type Firestore } from 'firebase/firestore'
+import { connectAuthEmulator, getAuth, signInAnonymously, type Auth, type User } from 'firebase/auth'
+import { connectFirestoreEmulator, getFirestore, type Firestore } from 'firebase/firestore'
 
 type FirebaseRuntime = { app: FirebaseApp; auth: Auth; db: Firestore }
 
@@ -18,7 +18,15 @@ function config() {
 export function firebaseRuntime(): FirebaseRuntime {
   if (runtime) return runtime
   const app = getApps().length ? getApp() : initializeApp(config())
-  runtime = { app, auth: getAuth(app), db: getFirestore(app) }
+  const auth = getAuth(app); const db = getFirestore(app)
+  if (import.meta.env.VITE_FIREBASE_USE_EMULATOR === 'true') {
+    const host = import.meta.env.VITE_FIREBASE_EMULATOR_HOST || '127.0.0.1'
+    const authPort = Number(import.meta.env.VITE_FIREBASE_AUTH_EMULATOR_PORT || 9099)
+    const firestorePort = Number(import.meta.env.VITE_FIREBASE_FIRESTORE_EMULATOR_PORT || 8081)
+    connectAuthEmulator(auth, `http://${host}:${authPort}`, { disableWarnings: true })
+    connectFirestoreEmulator(db, host, firestorePort)
+  }
+  runtime = { app, auth, db }
   return runtime
 }
 

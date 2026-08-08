@@ -14,11 +14,13 @@ export const PROFILE_STORAGE_KEY = 'classcade.profile.v1'
 export const JOURNEY_STORAGE_KEY = 'classcade.journey.v1'
 export const JOURNEY_STATE_STORAGE_KEY = 'classcade.journey-state.v1'
 export const ANONYMOUS_JOURNEY_ID_STORAGE_KEY = 'classcade.anonymous-journey-id.v1'
+export const PAIRING_ISSUED_CODE_STORAGE_KEY = 'classcade.pairing-issued-code.v1'
 
 const NBTI_PROGRESS_STORAGE_KEY = 'classcade.nbti.v1'
 const GAME_PROGRESS_STORAGE_KEY = 'classcade.game.v1'
 
 export type DeviceMode = 'personal' | 'shared'
+export type DeviceRole = 'mobile-participant' | 'laptop-station'
 
 export type Profile = {
   version: 1
@@ -50,7 +52,7 @@ export type StorageResult<T> =
   | { ok: false; value: T; reason: 'unavailable' | 'read_failed' | 'write_failed' }
 
 const journeyStatuses: JourneyStatus[] = ['new', 'nbti_in_progress', 'nbti_complete', 'game_in_progress', 'complete']
-const sessionKeys = [PROFILE_STORAGE_KEY, JOURNEY_STORAGE_KEY, JOURNEY_STATE_STORAGE_KEY, ANONYMOUS_JOURNEY_ID_STORAGE_KEY, NBTI_PROGRESS_STORAGE_KEY, GAME_PROGRESS_STORAGE_KEY]
+const sessionKeys = [PROFILE_STORAGE_KEY, JOURNEY_STORAGE_KEY, JOURNEY_STATE_STORAGE_KEY, ANONYMOUS_JOURNEY_ID_STORAGE_KEY, NBTI_PROGRESS_STORAGE_KEY, GAME_PROGRESS_STORAGE_KEY, PAIRING_ISSUED_CODE_STORAGE_KEY]
 const hasValue = <T extends string>(options: readonly { value: T }[], value: unknown): value is T =>
   typeof value === 'string' && options.some((option) => option.value === value)
 
@@ -94,10 +96,16 @@ function currentSearch() {
 /** Resolve the browser-selected device context. Personal is deliberately the safe default. */
 export function resolveDeviceMode(search = currentSearch()): DeviceMode {
   try {
-    return new URLSearchParams(search).get('device') === 'shared' ? 'shared' : 'personal'
+    const params = new URLSearchParams(search)
+    return params.get('role') === 'laptop-station' || params.get('device') === 'shared' ? 'shared' : 'personal'
   } catch {
     return 'personal'
   }
+}
+
+/** Role is explicit when supplied; legacy device mode only provides a safe compatibility default. */
+export function resolveDeviceRole(search = currentSearch()): DeviceRole {
+  try { return new URLSearchParams(search).get('role') === 'laptop-station' || new URLSearchParams(search).get('device') === 'shared' ? 'laptop-station' : 'mobile-participant' } catch { return 'mobile-participant' }
 }
 
 /**
@@ -256,13 +264,11 @@ export function ensureAnonymousJourneyId(deviceMode: DeviceMode = resolveDeviceM
 
 /** Detects only the active backend; it never probes the other device mode. */
 export function hasActiveSession(deviceMode: DeviceMode = resolveDeviceMode(), options?: StorageOptions): StorageResult<boolean> {
-  const backend = getStorageBackend(deviceMode, options)
-  for (const key of [PROFILE_STORAGE_KEY, JOURNEY_STORAGE_KEY, ANONYMOUS_JOURNEY_ID_STORAGE_KEY]) {
-    const stored = read(backend, key)
-    if (!stored.ok) return { ...stored, value: false }
-    if (stored.value) return { ok: true, value: true }
-  }
-  return { ok: true, value: false }
+  const profile = loadProfile(deviceMode, options)
+  if (!profile.ok) return { ...profile, value: false }
+  const journey = loadJourney(deviceMode, options)
+  if (!journey.ok) return { ...journey, value: false }
+  return { ok: true, value: profile.value !== null && journey.value.status !== 'new' }
 }
 
 /** Clears future NBTI result/answer data and game progress while retaining basic profile data. */

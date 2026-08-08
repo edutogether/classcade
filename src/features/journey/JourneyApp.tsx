@@ -4,6 +4,7 @@ import type { JourneyAction, JourneyState } from './journeyState'
 import { CompleteScene, GameAdjustScene, GameCandidatesScene, GameChoiceScene, GameConceptsScene, GameConditionsScene, GameIntroScene, ShakeScene, ShareScene } from './scenes/GameScenes'
 import { QuestionScene, ResultScene, StartScene } from './scenes/NbtiScenes'
 import { PairingEntryScene, PairingScene } from '../pairing/PairingScreens'
+import { JourneyExitDialog } from './components/JourneyExitDialog'
 import type { PairingPayload } from '../pairing/pairingContract'
 import type { Profile } from '../../lib/storage'
 import type { JourneySceneProps } from './components/SceneFrame'
@@ -21,14 +22,17 @@ type JourneyAppProps = {
   onPaired?: (payload: PairingPayload) => void
   onStartHere?: () => void
   onExitPairingEntry?: () => void
+  onNextParticipant?: () => void
 }
 
 const PAIRING_GATE_OPEN_KEY = 'classcade.pairing-gate-open.v1'
 function loadPairingGateOpen() { try { return localStorage.getItem(PAIRING_GATE_OPEN_KEY) === 'true' } catch { return false } }
 function savePairingGateOpen(open: boolean) { try { if (open) localStorage.setItem(PAIRING_GATE_OPEN_KEY, 'true'); else localStorage.removeItem(PAIRING_GATE_OPEN_KEY) } catch { /* Pairing remains usable when browser storage is unavailable. */ } }
 
-export function JourneyApp({ state, notice, onAction, onTeacherOpen, teacherTriggerRef, profile, journeyId, pairingEntry = false, onPaired, onStartHere, onExitPairingEntry }: JourneyAppProps) {
+export function JourneyApp({ state, notice, onAction, onTeacherOpen, teacherTriggerRef, profile, journeyId, pairingEntry = false, onPaired, onStartHere, onExitPairingEntry, onNextParticipant }: JourneyAppProps) {
   const [pairingOpen, setPairingOpen] = useState(loadPairingGateOpen)
+  const [exitDialogOpen, setExitDialogOpen] = useState(false)
+  const [exitDialogMode, setExitDialogMode] = useState<'home' | 'next'>('home')
   useEffect(() => {
     syncMainTheme(state.audio.bgmEnabled, state.stage, state.audio.bgmVolume)
   }, [state.audio.bgmEnabled, state.audio.bgmVolume, state.stage])
@@ -41,21 +45,23 @@ export function JourneyApp({ state, notice, onAction, onTeacherOpen, teacherTrig
     if (action.type === 'OPEN_SHARING') playAudioCue('complete', state.audio)
     onAction(action)
   }
-  const sceneProps: JourneySceneProps = { state, notice, onAction: dispatch, onTeacherOpen, teacherTriggerRef, profile: profile ?? undefined }
+  const sceneProps: JourneySceneProps = { state, notice, onAction: dispatch, onTeacherOpen, teacherTriggerRef, profile: profile ?? undefined, onRequestHome: () => { setExitDialogMode('home'); setExitDialogOpen(true) }, onNextParticipant: onNextParticipant ? () => { setExitDialogMode('next'); setExitDialogOpen(true) } : undefined }
 
-  if (pairingEntry) return <PairingEntryScene {...sceneProps} onPaired={(payload) => onPaired?.(payload)} onStart={() => onStartHere?.()} onBack={() => onExitPairingEntry?.()} />
+  let content: React.ReactNode
+  if (pairingEntry) content = <PairingEntryScene {...sceneProps} onPaired={(payload) => onPaired?.(payload)} onStart={() => onStartHere?.()} onBack={() => onExitPairingEntry?.()} />
+  else if (state.stage === 'nbti_start') content = <StartScene {...sceneProps} />
+  else if (state.stage === 'nbti_question') content = <QuestionScene {...sceneProps} />
+  else if (state.stage === 'nbti_result' && pairingOpen && profile) content = <PairingScene {...sceneProps} profile={profile} journeyId={journeyId} onBack={() => { savePairingGateOpen(false); setPairingOpen(false) }} />
+  else if (state.stage === 'nbti_result') content = <ResultScene {...sceneProps} onPair={() => { savePairingGateOpen(true); setPairingOpen(true) }} />
+  else if (state.stage === 'game_intro') content = <GameIntroScene {...sceneProps} />
+  else if (state.stage === 'game_conditions') content = <GameConditionsScene {...sceneProps} />
+  else if (state.stage === 'game_concepts') content = <GameConceptsScene {...sceneProps} />
+  else if (state.stage === 'game_candidates') content = <GameCandidatesScene {...sceneProps} />
+  else if (state.stage === 'game_adjust') content = <GameAdjustScene {...sceneProps} />
+  else if (state.stage === 'game_choice') content = <GameChoiceScene {...sceneProps} />
+  else if (state.stage === 'game_shake') content = <ShakeScene {...sceneProps} />
+  else if (state.stage === 'game_complete') content = <CompleteScene {...sceneProps} />
+  else content = <ShareScene {...sceneProps} />
 
-  if (state.stage === 'nbti_start') return <StartScene {...sceneProps} />
-  if (state.stage === 'nbti_question') return <QuestionScene {...sceneProps} />
-  if (state.stage === 'nbti_result' && pairingOpen && profile) return <PairingScene {...sceneProps} profile={profile} journeyId={journeyId} onBack={() => { savePairingGateOpen(false); setPairingOpen(false) }} />
-  if (state.stage === 'nbti_result') return <ResultScene {...sceneProps} onPair={() => { savePairingGateOpen(true); setPairingOpen(true) }} />
-  if (state.stage === 'game_intro') return <GameIntroScene {...sceneProps} />
-  if (state.stage === 'game_conditions') return <GameConditionsScene {...sceneProps} />
-  if (state.stage === 'game_concepts') return <GameConceptsScene {...sceneProps} />
-  if (state.stage === 'game_candidates') return <GameCandidatesScene {...sceneProps} />
-  if (state.stage === 'game_adjust') return <GameAdjustScene {...sceneProps} />
-  if (state.stage === 'game_choice') return <GameChoiceScene {...sceneProps} />
-  if (state.stage === 'game_shake') return <ShakeScene {...sceneProps} />
-  if (state.stage === 'game_complete') return <CompleteScene {...sceneProps} />
-  return <ShareScene {...sceneProps} />
+  return <>{content}<JourneyExitDialog open={exitDialogOpen} mode={exitDialogMode} onContinue={() => setExitDialogOpen(false)} onHome={() => { setExitDialogOpen(false); dispatch({ type: 'GO_HOME' }) }} onNewSession={() => { setExitDialogOpen(false); if (exitDialogMode === 'next') onNextParticipant?.(); else dispatch({ type: 'RESET_NBTI' }) }} /></>
 }

@@ -6,6 +6,7 @@ import { JOURNEY_SCENE_ASSETS, type JourneySceneAsset } from '../../../data/scen
 import { toggleAudioChannel } from '../../../lib/audioController'
 import type { JourneyAction, JourneyState } from '../journeyState'
 import type { Profile } from '../../../lib/storage'
+import './JourneyControls.css'
 
 export type SceneName = 'start' | 'question' | 'result' | 'game' | 'complete'
 
@@ -16,6 +17,8 @@ type SceneContext = {
   teacherTriggerRef: RefObject<HTMLButtonElement | null>
   notice: string
   profile?: Profile
+  onRequestHome?: () => void
+  onNextParticipant?: () => void
 }
 
 export type JourneySceneProps = SceneContext
@@ -24,6 +27,8 @@ type SceneFrameProps = SceneContext & {
   scene: SceneName
   children: ReactNode
   compact?: boolean
+  artSrc?: string
+  canonicalGame?: boolean
 }
 
 function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef }: Omit<SceneContext, 'notice'>) {
@@ -41,10 +46,10 @@ function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef }: Om
   )
 }
 
-function SceneArt({ asset }: { asset: JourneySceneAsset }) {
+function SceneArt({ asset, artSrc }: { asset: JourneySceneAsset; artSrc?: string }) {
   return (
     <div className={`journey-art journey-art--${asset.tone}`} aria-hidden="true">
-      <img src={asset.src} alt="" style={{ '--scene-position': asset.position } as CSSProperties} />
+      <picture><source media="(max-width: 700px)" srcSet={artSrc ?? asset.mobileSrc ?? asset.src} /><img src={artSrc ?? asset.src} alt="" style={{ '--scene-position': asset.position } as CSSProperties} /></picture>
       <div className="journey-art__wash" />
       <div className="journey-art__motes"><i /><i /><i /><i /><i /><i /></div>
       <div className="journey-art__leaves"><i /><i /><i /></div>
@@ -52,11 +57,12 @@ function SceneArt({ asset }: { asset: JourneySceneAsset }) {
   )
 }
 
-export function SceneFrame({ scene, children, state, onAction, onTeacherOpen, teacherTriggerRef, notice, compact = false }: SceneFrameProps) {
+export function SceneFrame({ scene, children, state, onAction, onTeacherOpen, teacherTriggerRef, notice, onRequestHome, compact = false, artSrc, canonicalGame = false }: SceneFrameProps) {
   return (
-    <main className={`journey-scene journey-scene--${scene}${compact ? ' is-compact' : ''}`}>
-      <SceneArt asset={JOURNEY_SCENE_ASSETS[scene]} />
+    <main className={`journey-scene journey-scene--${scene}${canonicalGame ? ' journey-scene--canonical-game' : ''}${compact ? ' is-compact' : ''}`}>
+      <SceneArt asset={JOURNEY_SCENE_ASSETS[scene]} artSrc={artSrc} />
       <JourneyHeader state={state} onAction={onAction} onTeacherOpen={onTeacherOpen} teacherTriggerRef={teacherTriggerRef} />
+      {scene !== 'start' && <nav className="journey-utility" aria-label="여정 제어"><button type="button" onClick={() => onAction({ type: 'PREVIOUS_STAGE' })} aria-label="이전 단계로"><span aria-hidden="true">←</span> 이전</button><button type="button" onClick={() => onRequestHome?.() ?? onAction({ type: 'GO_HOME' })} aria-label="처음 화면으로"><span aria-hidden="true">×</span> 홈</button></nav>}
       <section className="journey-scene__stage">{children}</section>
       {notice && scene !== 'question' && <p className="journey-notice" aria-live="polite">{notice}</p>}
     </main>

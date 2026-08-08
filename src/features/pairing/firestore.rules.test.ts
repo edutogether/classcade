@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { afterAll, afterEach, beforeAll, describe, it } from 'vitest'
 import { assertFails, assertSucceeds, initializeTestEnvironment, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
-import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc, Timestamp, updateDoc } from 'firebase/firestore'
+import { collection, deleteDoc, doc, getDoc, getDocs, serverTimestamp, setDoc, Timestamp, updateDoc } from 'firebase/firestore'
 
 let environment: RulesTestEnvironment
 const projectId = 'classcade-pairing-rules-test'
@@ -39,5 +39,13 @@ describeRules('pairingSessions Firestore rules', () => {
     await environment.withSecurityRulesDisabled(async (context) => setDoc(doc(context.firestore(), 'pairingSessions', '123456'), { ...session('123456', Date.now() - 1), createdAt: Timestamp.now() }))
     await assertFails(getDoc(ref(anonymous('laptop'), '123456')))
     await assertFails(updateDoc(ref(anonymous('laptop'), '123456'), { status: 'connected', usedAt: serverTimestamp(), consumerUid: 'laptop' }))
+  })
+  it('allows only a creator to delete a still-waiting code and blocks consumed code deletion', async () => {
+    await assertSucceeds(setDoc(ref(anonymous('mobile'), '123456'), session('123456')))
+    await assertFails(deleteDoc(ref(anonymous('other'), '123456')))
+    await assertSucceeds(deleteDoc(ref(anonymous('mobile'), '123456')))
+    await assertSucceeds(setDoc(ref(anonymous('mobile'), '123457'), session('123457')))
+    await assertSucceeds(updateDoc(ref(anonymous('laptop'), '123457'), { status: 'connected', usedAt: serverTimestamp(), consumerUid: 'laptop' }))
+    await assertFails(deleteDoc(ref(anonymous('mobile'), '123457')))
   })
 })
