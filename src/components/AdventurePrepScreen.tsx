@@ -1,9 +1,7 @@
-import { useEffect, useMemo, useState, type CSSProperties, type KeyboardEvent } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import {
-  CAREER_RANGE_OPTIONS,
   GROWTH_PRIORITY_OPTIONS,
   REGION_OPTIONS,
-  SCHOOL_LEVEL_OPTIONS,
   type CareerRange,
   type GrowthPriority,
   type Region,
@@ -13,57 +11,36 @@ import { beginMainThemeReveal, noteAudioUserGesture } from '../lib/audioManager'
 import type { AudioSettings } from '../lib/audioController'
 import type { Profile } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
-import prepFourReference from '../assets/entry/prep-4.png'
-import prepTwoMaster from '../assets/classcade/master-screens/prep-02-master.png'
-import prepThreeCleanPlate from '../assets/classcade/prep-03-interactive/prep-03-clean-plate.png'
-import prepFourCleanPlate from '../assets/classcade/prep-04-interactive/prep-04-clean-plate.png'
-import choiceFrameNeutral from '../assets/classcade/prep-nav/choice-frame-neutral.png'
-import choiceFrameSelected from '../assets/classcade/prep-nav/choice-frame-selected.png'
-import loadingMaster from '../assets/classcade/master-screens/loading-master.png'
-import portalAcademy from '../assets/portal-academy-background.png'
-import prepOneWorldBackdrop from '../assets/classcade/prep-01-interactive/prep-01-world-backdrop-16x9.png'
-import prepOneCleanPlate from '../assets/classcade/prep-01-interactive/prep-01-clean-plate.png'
-import prepTwoCleanPlate from '../assets/classcade/prep-02-interactive/prep-02-clean-plate.png'
-import prepTwoPreserviceNeutral from '../assets/classcade/prep-02-interactive/prep-02-card-preservice-neutral.png'
-import prepTwoPreserviceSelected from '../assets/classcade/prep-02-interactive/prep-02-card-preservice-selected.png'
-import prepTwoOneToFiveNeutral from '../assets/classcade/prep-02-interactive/prep-02-card-1-5-neutral.png'
-import prepTwoOneToFiveSelected from '../assets/classcade/prep-02-interactive/prep-02-card-1-5-selected.png'
-import prepTwoSixToTenNeutral from '../assets/classcade/prep-02-interactive/prep-02-card-6-10-neutral.png'
-import prepTwoSixToTenSelected from '../assets/classcade/prep-02-interactive/prep-02-card-6-10-selected.png'
-import prepTwoElevenToTwentyNeutral from '../assets/classcade/prep-02-interactive/prep-02-card-11-20-neutral.png'
-import prepTwoElevenToTwentySelected from '../assets/classcade/prep-02-interactive/prep-02-card-11-20-selected.png'
-import prepTwoTwentyOnePlusNeutral from '../assets/classcade/prep-02-interactive/prep-02-card-21plus-neutral.png'
-import prepTwoTwentyOnePlusSelected from '../assets/classcade/prep-02-interactive/prep-02-card-21plus-selected.png'
-import kindergartenNeutral from '../assets/classcade/prep-01-interactive/prep-01-card-preschool-neutral.png'
-import kindergartenSelected from '../assets/classcade/prep-01-interactive/prep-01-card-preschool-selected-v4.png'
-import kindergartenHover from '../assets/classcade/prep-01-interactive/prep-01-card-preschool-hover-v4.png'
-import elementaryNeutral from '../assets/classcade/prep-01-interactive/prep-01-card-elementary-neutral.png'
-import elementarySelected from '../assets/classcade/prep-01-interactive/prep-01-card-elementary-selected-v4.png'
-import elementaryHover from '../assets/classcade/prep-01-interactive/prep-01-card-elementary-hover-v4.png'
-import middleNeutral from '../assets/classcade/prep-01-interactive/prep-01-card-middle-neutral.png'
-import middleSelected from '../assets/classcade/prep-01-interactive/prep-01-card-middle-selected-v4.png'
-import middleHover from '../assets/classcade/prep-01-interactive/prep-01-card-middle-hover-v4.png'
-import highNeutral from '../assets/classcade/prep-01-interactive/prep-01-card-high-neutral.png'
-import highSelected from '../assets/classcade/prep-01-interactive/prep-01-card-high-selected-v4.png'
-import highHover from '../assets/classcade/prep-01-interactive/prep-01-card-high-hover-v4.png'
-import specialNeutral from '../assets/classcade/prep-01-interactive/prep-01-card-special-neutral.png'
-import specialSelected from '../assets/classcade/prep-01-interactive/prep-01-card-special-selected-v4.png'
-import specialHover from '../assets/classcade/prep-01-interactive/prep-01-card-special-hover-v4.png'
-import ctaDisabled from '../assets/classcade/prep-01-interactive/prep-01-cta-disabled.png'
-import ctaEnabled from '../assets/classcade/prep-01-interactive/prep-01-cta-enabled.png'
-import ctaHover from '../assets/classcade/prep-01-interactive/prep-01-cta-hover.png'
-import ctaActive from '../assets/classcade/prep-01-interactive/prep-01-cta-active.png'
-import prepTwoBack from '../assets/classcade/prep-02-interactive/prep-02-back.png'
-import prepTwoCtaEnabled from '../assets/classcade/prep-02-interactive/prep-02-cta-enabled.png'
-import prepTwoCtaDisabled from '../assets/classcade/prep-02-interactive/prep-02-cta-disabled.png'
-import prepNavBack from '../assets/classcade/prep-nav/prep-nav-back.png'
-import prepNavCtaEnabled from '../assets/classcade/prep-nav/prep-nav-cta-enabled.png'
-import prepNavCtaDisabled from '../assets/classcade/prep-nav/prep-nav-cta-disabled.png'
-import { CompassSeal, Icon, type IconName } from './VisualPrimitives'
+import { CompassSeal, Icon } from './VisualPrimitives'
 import '../entry.css'
 import type { TunerScreen } from '../features/entry/visualTuning'
-
-type PrepStep = 1 | 2 | 3 | 4 | 'nickname' | 'loading'
+import { PrepOneChoiceCards } from './prep/PrepOneChoiceCards'
+import { PrepTwoChoiceCards } from './prep/PrepTwoChoiceCards'
+import { ChoiceCards } from './prep/ChoiceCards'
+import { PrepProgress } from './prep/PrepProgress'
+import {
+  STEP_IMAGES,
+  growthIcons,
+  choiceFrameNeutral,
+  choiceFrameSelected,
+  prepFourReference,
+  loadingMaster,
+  portalAcademy,
+  prepOneWorldBackdrop,
+  prepOneCleanPlate,
+  prepTwoCleanPlate,
+  ctaDisabled,
+  ctaEnabled,
+  ctaHover,
+  ctaActive,
+  prepTwoBack,
+  prepTwoCtaEnabled,
+  prepTwoCtaDisabled,
+  prepNavBack,
+  prepNavCtaEnabled,
+  prepNavCtaDisabled,
+  type PrepStep,
+} from './prep/prepAssets'
 
 type AdventurePrepScreenProps = {
   initialProfile: Profile | null
@@ -72,159 +49,6 @@ type AdventurePrepScreenProps = {
   isOffline: boolean
   onComplete: (profile: Profile) => Promise<{ ok: boolean }>
   onScreenChange: (screen: TunerScreen) => void
-}
-
-const STEP_IMAGES: Record<Exclude<PrepStep, 'nickname' | 'loading'>, string> = {
-  1: prepOneWorldBackdrop,
-  2: prepTwoMaster,
-  3: prepThreeCleanPlate,
-  4: prepFourCleanPlate,
-}
-
-const growthIcons: IconName[] = ['gamepad', 'school', 'spark', 'notebook', 'career', 'leaf', 'notebook', 'region', 'career', 'spark']
-
-const PREP_ONE_CARD_ASSETS: Record<SchoolLevel, { neutral: string; selected: string; hover: string }> = {
-  kindergarten: { neutral: kindergartenNeutral, selected: kindergartenSelected, hover: kindergartenHover },
-  elementary: { neutral: elementaryNeutral, selected: elementarySelected, hover: elementaryHover },
-  middle: { neutral: middleNeutral, selected: middleSelected, hover: middleHover },
-  high: { neutral: highNeutral, selected: highSelected, hover: highHover },
-  special: { neutral: specialNeutral, selected: specialSelected, hover: specialHover },
-}
-
-const PREP_ONE_CARD_POSITIONS: Record<SchoolLevel, CSSProperties> = {
-  kindergarten: { '--card-x': '14.56%', '--card-y': '55.47%', '--card-w': '10.51%', '--card-h': '15.85%' } as CSSProperties,
-  elementary: { '--card-x': '26.21%', '--card-y': '55.57%', '--card-w': '10.78%', '--card-h': '15.47%' } as CSSProperties,
-  middle: { '--card-x': '37.13%', '--card-y': '55.57%', '--card-w': '10.78%', '--card-h': '15.47%' } as CSSProperties,
-  high: { '--card-x': '48.79%', '--card-y': '55.57%', '--card-w': '10.78%', '--card-h': '15.47%' } as CSSProperties,
-  special: { '--card-x': '60.18%', '--card-y': '55.47%', '--card-w': '8.36%', '--card-h': '15.57%' } as CSSProperties,
-}
-
-// Baked card art sliced from prep-02-master (see PREP2-ASSET-SPEC). Rect = source slot in the 1484x1060 plate.
-const PREP_TWO_CARD_ART: Record<CareerRange, { neutral?: string; selected?: string; rect: CSSProperties }> = {
-  'pre-service': { neutral: prepTwoPreserviceNeutral, selected: prepTwoPreserviceSelected, rect: { '--art-x': '9.97%', '--art-y': '53.96%', '--art-w': '10.78%', '--art-h': '18.49%' } as CSSProperties },
-  '1-5': { neutral: prepTwoOneToFiveNeutral, selected: prepTwoOneToFiveSelected, rect: { '--art-x': '22.03%', '--art-y': '53.96%', '--art-w': '10.78%', '--art-h': '18.49%' } as CSSProperties },
-  '6-10': { neutral: prepTwoSixToTenNeutral, selected: prepTwoSixToTenSelected, rect: { '--art-x': '33.83%', '--art-y': '52.45%', '--art-w': '11.19%', '--art-h': '20.19%' } as CSSProperties },
-  '11-20': { neutral: prepTwoElevenToTwentyNeutral, selected: prepTwoElevenToTwentySelected, rect: { '--art-x': '46.23%', '--art-y': '53.96%', '--art-w': '10.24%', '--art-h': '18.49%' } as CSSProperties },
-  '21-plus': { neutral: prepTwoTwentyOnePlusNeutral, selected: prepTwoTwentyOnePlusSelected, rect: { '--art-x': '57.21%', '--art-y': '53.30%', '--art-w': '9.84%', '--art-h': '18.87%' } as CSSProperties },
-}
-
-function PrepOneChoiceCards({ value, previewValue, onChange, onPreviewChange }: {
-  value: SchoolLevel | null
-  previewValue: SchoolLevel | null
-  onChange: (value: SchoolLevel) => void
-  onPreviewChange: (value: SchoolLevel | null) => void
-}) {
-  const visualValue = previewValue ?? value
-
-  return <div className="entry-prep01-plate__cards" role="radiogroup" aria-label="함께하는 학생들의 학교급">
-    {SCHOOL_LEVEL_OPTIONS.map((option, index) => {
-      const selected = value === option.value
-      const visualState = visualValue === option.value ? (previewValue ? 'hover' : 'selected') : 'neutral'
-      const assets = PREP_ONE_CARD_ASSETS[option.value]
-      const moveFocus = (event: KeyboardEvent<HTMLButtonElement>) => {
-        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-          event.preventDefault()
-          const buttons = Array.from(event.currentTarget.closest('[role="radiogroup"]')?.querySelectorAll<HTMLButtonElement>('[role="radio"]') ?? [])
-          const currentIndex = buttons.indexOf(event.currentTarget)
-          const nextIndex = event.key === 'ArrowRight'
-            ? (currentIndex + 1) % buttons.length
-            : (currentIndex - 1 + buttons.length) % buttons.length
-          buttons[nextIndex]?.focus()
-          return
-        }
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault()
-          noteAudioUserGesture()
-          onChange(option.value)
-        }
-      }
-      return <button key={option.value} type="button" className={`entry-prep01-plate__card is-${visualState}`} style={PREP_ONE_CARD_POSITIONS[option.value]} role="radio" aria-checked={selected} aria-label={option.label} tabIndex={selected || (!value && index === 0) ? 0 : -1} data-tune-id={`prep-1-option-${index + 1}`} onPointerEnter={() => onPreviewChange(option.value)} onPointerLeave={() => onPreviewChange(null)} onFocus={() => onPreviewChange(option.value)} onBlur={() => onPreviewChange(null)} onKeyDown={moveFocus} onClick={() => { noteAudioUserGesture(); onChange(option.value) }}>
-        <img src={assets[visualState]} alt="" aria-hidden="true" />
-      </button>
-    })}
-  </div>
-}
-
-function PrepTwoChoiceCards({ value, previewValue, onChange, onPreviewChange }: {
-  value: CareerRange | null
-  previewValue: CareerRange | null
-  onChange: (value: CareerRange) => void
-  onPreviewChange: (value: CareerRange | null) => void
-}) {
-  return <div className="entry-prep02-plate__cards" role="radiogroup" aria-label="선생님의 교실 여정">
-    {CAREER_RANGE_OPTIONS.map((option, index) => {
-      const selected = value === option.value
-      const previewed = previewValue === option.value
-      const art = PREP_TWO_CARD_ART[option.value]
-      const artSrc = (selected && art.selected) ? art.selected : (art.neutral ?? art.selected)
-      const moveFocus = (event: KeyboardEvent<HTMLButtonElement>) => {
-        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-          event.preventDefault()
-          const buttons = Array.from(event.currentTarget.closest('[role="radiogroup"]')?.querySelectorAll<HTMLButtonElement>('[role="radio"]') ?? [])
-          const currentIndex = buttons.indexOf(event.currentTarget)
-          const nextIndex = event.key === 'ArrowRight' ? (currentIndex + 1) % buttons.length : (currentIndex - 1 + buttons.length) % buttons.length
-          buttons[nextIndex]?.focus()
-          return
-        }
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault()
-          noteAudioUserGesture()
-          onChange(option.value)
-        }
-      }
-      return <button key={option.value} type="button" className={`entry-prep02-plate__cardart ${selected ? 'is-selected' : ''} ${previewed ? 'is-hover' : ''}`} style={art.rect} role="radio" aria-checked={selected} aria-label={option.label} tabIndex={selected || (!value && index === 0) ? 0 : -1} data-tune-id={`prep-2-option-${index + 1}`} onPointerEnter={() => onPreviewChange(option.value)} onPointerLeave={() => onPreviewChange(null)} onFocus={() => onPreviewChange(option.value)} onBlur={() => onPreviewChange(null)} onKeyDown={moveFocus} onClick={() => { noteAudioUserGesture(); onChange(option.value) }}>
-        <img src={artSrc} alt="" aria-hidden="true" />
-      </button>
-    })}
-  </div>
-}
-
-function ChoiceCards<T extends string>({ options, value, onChange, onPreviewChange, previewValue, icons, tunePrefix, compact = false }: {
-  options: readonly { value: T; label: string }[]
-  value: T | null
-  onChange: (value: T) => void
-  onPreviewChange?: (value: T | null) => void
-  previewValue?: T | null
-  icons: readonly IconName[]
-  tunePrefix: string
-  compact?: boolean
-}) {
-  return (
-    <div className={`entry-choice-grid ${compact ? 'entry-choice-grid--compact' : ''}`} role="radiogroup">
-      {options.map((option, index) => {
-        const selected = value === option.value
-        const previewed = previewValue === option.value
-        const icon = icons[index % icons.length]
-        const moveFocus = (event: KeyboardEvent<HTMLButtonElement>) => {
-          if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-            event.preventDefault()
-            const buttons = Array.from(event.currentTarget.closest('[role="radiogroup"]')?.querySelectorAll<HTMLButtonElement>('[role="radio"]') ?? [])
-            const currentIndex = buttons.indexOf(event.currentTarget)
-            const nextIndex = event.key === 'ArrowRight'
-              ? (currentIndex + 1) % buttons.length
-              : (currentIndex - 1 + buttons.length) % buttons.length
-            buttons[nextIndex]?.focus()
-            return
-          }
-
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault()
-            noteAudioUserGesture()
-            onChange(option.value)
-          }
-        }
-        return <button key={option.value} type="button" className={`entry-choice-card ${selected ? 'is-selected' : ''} ${previewed ? 'is-previewed' : ''}`} style={{ '--frame-neutral': `url(${choiceFrameNeutral})`, '--frame-selected': `url(${choiceFrameSelected})` } as CSSProperties} role="radio" aria-checked={selected} tabIndex={selected || (!value && index === 0) ? 0 : -1} data-tune-id={`${tunePrefix}-option-${index + 1}`} onPointerEnter={() => onPreviewChange?.(option.value)} onPointerLeave={() => onPreviewChange?.(null)} onFocus={() => onPreviewChange?.(option.value)} onBlur={() => onPreviewChange?.(null)} onKeyDown={moveFocus} onClick={() => { noteAudioUserGesture(); onChange(option.value) }}>
-          <span className="entry-choice-card__icon"><Icon name={icon} size={compact ? 20 : 29} /></span>
-          <b>{option.label}</b>
-          {selected && <span className="entry-choice-card__check" aria-label="선택됨"><Icon name="check" size={15} /></span>}
-        </button>
-      })}
-    </div>
-  )
-}
-
-function PrepProgress({ step }: { step: 1 | 2 | 3 | 4 }) {
-  return <div className="entry-progress" aria-label={`모험 준비 ${step} / 4`}><b>{step} / 4</b><span>{[1, 2, 3, 4].map((value) => <i className={value <= step ? 'is-complete' : ''} key={value} />)}</span></div>
 }
 
 export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline, onComplete, onScreenChange }: AdventurePrepScreenProps) {
