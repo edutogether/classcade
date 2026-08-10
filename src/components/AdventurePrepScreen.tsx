@@ -19,8 +19,19 @@ import prepThreeMaster from '../assets/classcade/master-screens/prep-03-master.p
 import prepFourMaster from '../assets/classcade/master-screens/prep-04-master.png'
 import loadingMaster from '../assets/classcade/master-screens/loading-master.png'
 import portalAcademy from '../assets/portal-academy-background.png'
-import academyBackgroundMaster from '../assets/classcade/master-screens/academy-background-master.png'
+import prepOneWorldBackdrop from '../assets/classcade/prep-01-interactive/prep-01-world-backdrop-16x9.png'
 import prepOneCleanPlate from '../assets/classcade/prep-01-interactive/prep-01-clean-plate.png'
+import prepTwoCleanPlate from '../assets/classcade/prep-02-interactive/prep-02-clean-plate.png'
+import prepTwoPreserviceNeutral from '../assets/classcade/prep-02-interactive/prep-02-card-preservice-neutral.png'
+import prepTwoPreserviceSelected from '../assets/classcade/prep-02-interactive/prep-02-card-preservice-selected.png'
+import prepTwoOneToFiveNeutral from '../assets/classcade/prep-02-interactive/prep-02-card-1-5-neutral.png'
+import prepTwoOneToFiveSelected from '../assets/classcade/prep-02-interactive/prep-02-card-1-5-selected.png'
+import prepTwoSixToTenNeutral from '../assets/classcade/prep-02-interactive/prep-02-card-6-10-neutral.png'
+import prepTwoSixToTenSelected from '../assets/classcade/prep-02-interactive/prep-02-card-6-10-selected.png'
+import prepTwoElevenToTwentyNeutral from '../assets/classcade/prep-02-interactive/prep-02-card-11-20-neutral.png'
+import prepTwoElevenToTwentySelected from '../assets/classcade/prep-02-interactive/prep-02-card-11-20-selected.png'
+import prepTwoTwentyOnePlusNeutral from '../assets/classcade/prep-02-interactive/prep-02-card-21plus-neutral.png'
+import prepTwoTwentyOnePlusSelected from '../assets/classcade/prep-02-interactive/prep-02-card-21plus-selected.png'
 import kindergartenNeutral from '../assets/classcade/prep-01-interactive/prep-01-card-preschool-neutral.png'
 import kindergartenSelected from '../assets/classcade/prep-01-interactive/prep-01-card-preschool-selected-v4.png'
 import kindergartenHover from '../assets/classcade/prep-01-interactive/prep-01-card-preschool-hover-v4.png'
@@ -40,6 +51,12 @@ import ctaDisabled from '../assets/classcade/prep-01-interactive/prep-01-cta-dis
 import ctaEnabled from '../assets/classcade/prep-01-interactive/prep-01-cta-enabled.png'
 import ctaHover from '../assets/classcade/prep-01-interactive/prep-01-cta-hover.png'
 import ctaActive from '../assets/classcade/prep-01-interactive/prep-01-cta-active.png'
+import prepTwoBack from '../assets/classcade/prep-02-interactive/prep-02-back.png'
+import prepTwoCtaEnabled from '../assets/classcade/prep-02-interactive/prep-02-cta-enabled.png'
+import prepTwoCtaDisabled from '../assets/classcade/prep-02-interactive/prep-02-cta-disabled.png'
+import prepNavBack from '../assets/classcade/prep-nav/prep-nav-back.png'
+import prepNavCtaEnabled from '../assets/classcade/prep-nav/prep-nav-cta-enabled.png'
+import prepNavCtaDisabled from '../assets/classcade/prep-nav/prep-nav-cta-disabled.png'
 import { CompassSeal, Icon, type IconName } from './VisualPrimitives'
 import '../front120.css'
 import type { TunerScreen } from '../features/front120/visualTuning'
@@ -56,13 +73,12 @@ type AdventurePrepScreenProps = {
 }
 
 const STEP_IMAGES: Record<Exclude<PrepStep, 'nickname' | 'loading'>, string> = {
-  1: academyBackgroundMaster,
+  1: prepOneWorldBackdrop,
   2: prepTwoMaster,
   3: prepThreeMaster,
   4: prepFourMaster,
 }
 
-const careerIcons: IconName[] = ['leaf', 'clock', 'spark', 'notebook', 'career']
 const growthIcons: IconName[] = ['gamepad', 'school', 'spark', 'notebook', 'career', 'leaf', 'notebook', 'region', 'career', 'spark']
 
 const PREP_ONE_CARD_ASSETS: Record<SchoolLevel, { neutral: string; selected: string; hover: string }> = {
@@ -75,10 +91,19 @@ const PREP_ONE_CARD_ASSETS: Record<SchoolLevel, { neutral: string; selected: str
 
 const PREP_ONE_CARD_POSITIONS: Record<SchoolLevel, CSSProperties> = {
   kindergarten: { '--card-x': '14.56%', '--card-y': '55.47%', '--card-w': '10.51%', '--card-h': '15.85%' } as CSSProperties,
-  elementary: { '--card-x': '26.21%', '--card-y': '55.09%', '--card-w': '10.78%', '--card-h': '16.60%' } as CSSProperties,
+  elementary: { '--card-x': '26.21%', '--card-y': '55.57%', '--card-w': '10.78%', '--card-h': '15.47%' } as CSSProperties,
   middle: { '--card-x': '37.13%', '--card-y': '55.57%', '--card-w': '10.78%', '--card-h': '15.47%' } as CSSProperties,
   high: { '--card-x': '48.79%', '--card-y': '55.57%', '--card-w': '10.78%', '--card-h': '15.47%' } as CSSProperties,
   special: { '--card-x': '60.18%', '--card-y': '55.47%', '--card-w': '8.36%', '--card-h': '15.57%' } as CSSProperties,
+}
+
+// Baked card art sliced from prep-02-master (see PREP2-ASSET-SPEC). Rect = source slot in the 1484x1060 plate.
+const PREP_TWO_CARD_ART: Record<CareerRange, { neutral?: string; selected?: string; rect: CSSProperties }> = {
+  'pre-service': { neutral: prepTwoPreserviceNeutral, selected: prepTwoPreserviceSelected, rect: { '--art-x': '9.97%', '--art-y': '53.96%', '--art-w': '10.78%', '--art-h': '18.49%' } as CSSProperties },
+  '1-5': { neutral: prepTwoOneToFiveNeutral, selected: prepTwoOneToFiveSelected, rect: { '--art-x': '22.03%', '--art-y': '53.96%', '--art-w': '10.78%', '--art-h': '18.49%' } as CSSProperties },
+  '6-10': { neutral: prepTwoSixToTenNeutral, selected: prepTwoSixToTenSelected, rect: { '--art-x': '33.83%', '--art-y': '52.45%', '--art-w': '11.19%', '--art-h': '20.19%' } as CSSProperties },
+  '11-20': { neutral: prepTwoElevenToTwentyNeutral, selected: prepTwoElevenToTwentySelected, rect: { '--art-x': '46.23%', '--art-y': '53.96%', '--art-w': '10.24%', '--art-h': '18.49%' } as CSSProperties },
+  '21-plus': { neutral: prepTwoTwentyOnePlusNeutral, selected: prepTwoTwentyOnePlusSelected, rect: { '--art-x': '57.21%', '--art-y': '53.30%', '--art-w': '9.84%', '--art-h': '18.87%' } as CSSProperties },
 }
 
 function PrepOneChoiceCards({ value, previewValue, onChange, onPreviewChange }: {
@@ -113,6 +138,40 @@ function PrepOneChoiceCards({ value, previewValue, onChange, onPreviewChange }: 
       }
       return <button key={option.value} type="button" className={`front120-prep01-plate__card is-${visualState}`} style={PREP_ONE_CARD_POSITIONS[option.value]} role="radio" aria-checked={selected} aria-label={option.label} tabIndex={selected || (!value && index === 0) ? 0 : -1} data-tune-id={`prep-1-option-${index + 1}`} onPointerEnter={() => onPreviewChange(option.value)} onPointerLeave={() => onPreviewChange(null)} onFocus={() => onPreviewChange(option.value)} onBlur={() => onPreviewChange(null)} onKeyDown={moveFocus} onClick={() => { noteAudioUserGesture(); onChange(option.value) }}>
         <img src={assets[visualState]} alt="" aria-hidden="true" />
+      </button>
+    })}
+  </div>
+}
+
+function PrepTwoChoiceCards({ value, previewValue, onChange, onPreviewChange }: {
+  value: CareerRange | null
+  previewValue: CareerRange | null
+  onChange: (value: CareerRange) => void
+  onPreviewChange: (value: CareerRange | null) => void
+}) {
+  return <div className="front120-prep02-plate__cards" role="radiogroup" aria-label="선생님의 교실 여정">
+    {CAREER_RANGE_OPTIONS.map((option, index) => {
+      const selected = value === option.value
+      const previewed = previewValue === option.value
+      const art = PREP_TWO_CARD_ART[option.value]
+      const artSrc = (selected && art.selected) ? art.selected : (art.neutral ?? art.selected)
+      const moveFocus = (event: KeyboardEvent<HTMLButtonElement>) => {
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+          event.preventDefault()
+          const buttons = Array.from(event.currentTarget.closest('[role="radiogroup"]')?.querySelectorAll<HTMLButtonElement>('[role="radio"]') ?? [])
+          const currentIndex = buttons.indexOf(event.currentTarget)
+          const nextIndex = event.key === 'ArrowRight' ? (currentIndex + 1) % buttons.length : (currentIndex - 1 + buttons.length) % buttons.length
+          buttons[nextIndex]?.focus()
+          return
+        }
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          noteAudioUserGesture()
+          onChange(option.value)
+        }
+      }
+      return <button key={option.value} type="button" className={`front120-prep02-plate__cardart ${selected ? 'is-selected' : ''} ${previewed ? 'is-hover' : ''}`} style={art.rect} role="radio" aria-checked={selected} aria-label={option.label} tabIndex={selected || (!value && index === 0) ? 0 : -1} data-tune-id={`prep-2-option-${index + 1}`} onPointerEnter={() => onPreviewChange(option.value)} onPointerLeave={() => onPreviewChange(null)} onFocus={() => onPreviewChange(option.value)} onBlur={() => onPreviewChange(null)} onKeyDown={moveFocus} onClick={() => { noteAudioUserGesture(); onChange(option.value) }}>
+        <img src={artSrc} alt="" aria-hidden="true" />
       </button>
     })}
   </div>
@@ -171,6 +230,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   const [schoolLevel, setSchoolLevel] = useState<SchoolLevel | null>(initialProfile?.schoolLevel ?? null)
   const [schoolPreview, setSchoolPreview] = useState<SchoolLevel | null>(null)
   const [careerRange, setCareerRange] = useState<CareerRange | null>(initialProfile?.careerRange ?? null)
+  const [careerPreview, setCareerPreview] = useState<CareerRange | null>(null)
   const [region, setRegion] = useState<Region | null>(initialProfile?.region ?? null)
   const [growthPriorities, setGrowthPriorities] = useState<GrowthPriority[]>(initialProfile?.growthPriorities ?? [])
   const [otherText, setOtherText] = useState(initialProfile?.growthPriorityOther ?? '')
@@ -305,8 +365,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   const canContinue = step === 1 ? Boolean(schoolLevel) : step === 2 ? Boolean(careerRange) : step === 3 ? Boolean(region) : growthReady
   if (step === 1) {
     return <main className={`front120-prep front120-prep--1 front120-prep01-stage ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-1-title">
-      <img className="front120-prep01-stage__background" src={academyBackgroundMaster} alt="" aria-hidden="true" />
-      <div className="front120-prep01-stage__veil" aria-hidden="true" />
+      <img className="front120-prep01-stage__background" src={prepOneWorldBackdrop} alt="" aria-hidden="true" />
       <div className="front120-motes front120-motes--prep01" aria-hidden="true">{Array.from({ length: 20 }, (_, index) => <i key={index} />)}</div>
       <section className="front120-prep01-plate" aria-labelledby="prep-1-title">
         <img className="front120-prep01-plate__image" src={prepOneCleanPlate} alt="" aria-hidden="true" />
@@ -318,7 +377,23 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
           <img className="front120-prep01-plate__cta-hover" src={ctaHover} alt="" aria-hidden="true" />
           <img className="front120-prep01-plate__cta-active" src={ctaActive} alt="" aria-hidden="true" />
         </button>
+        <p className="front120-prep01-plate__note"><Icon name="notebook" size={13} />입력한 정보는 언제든지 변경할 수 있어요.</p>
         {isOffline && <p className="front120-prep__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
+      </section>
+    </main>
+  }
+
+  if (step === 2) {
+    return <main className={`front120-prep front120-prep--2 front120-prep02-stage ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-2-title">
+      <img className="front120-prep02-stage__plate" src={prepTwoCleanPlate} alt="" aria-hidden="true" />
+      <div className="front120-motes front120-motes--prep02" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
+      <section className="front120-prep02-plate" aria-labelledby="prep-2-title">
+        <h1 id="prep-2-title" className="sr-only">모험 준비 — 선생님의 교실 여정은 어느 정도인가요?</h1>
+        <svg className="front120-prep02-plate__path" viewBox="0 0 1484 1060" preserveAspectRatio="none" aria-hidden="true"><path d="M196 690 Q 340 706 454 672 T 634 690 T 813 672 T 993 690 Q 1080 702 1128 692" /></svg>
+        <PrepTwoChoiceCards value={careerRange} previewValue={careerPreview} onChange={setCareerRange} onPreviewChange={setCareerPreview} />
+        <button type="button" className="front120-prep02-plate__back front120-nav-img" onClick={previousStep} aria-label="이전 질문"><img src={prepTwoBack} alt="" aria-hidden="true" /></button>
+        <button type="button" className="front120-prep02-plate__cta front120-nav-img" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로"><img src={canContinue ? prepTwoCtaEnabled : prepTwoCtaDisabled} alt="" aria-hidden="true" /></button>
+        {isOffline && <p className="front120-prep02-plate__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
       </section>
     </main>
   }
@@ -326,13 +401,11 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   return <main className={`front120-prep front120-prep--${step} ${exiting ? 'is-exiting' : ''}`} aria-labelledby={`prep-${step}-title`}>
     <img className="front120-prep__world" src={portalAcademy} alt="" aria-hidden="true" />
     <img className="front120-prep__reference" src={stageImage} alt="" aria-hidden="true" data-tune-id={`prep-${step}-hero`} />
-    {step === 2 && careerRange && <div className={`front120-prep__career-path front120-prep__career-path--${CAREER_RANGE_OPTIONS.findIndex((option) => option.value === careerRange) + 1}`} aria-hidden="true"><i /><i /><i /><i /><i /></div>}
     {step === 3 && region && <i className={`front120-prep__region-marker front120-prep__region-marker--${REGION_OPTIONS.findIndex((option) => option.value === region) + 1}`} aria-hidden="true" />}
     {step === 4 && growthPriorities.length > 0 && <div className={`front120-prep__growth-nodes front120-prep__growth-nodes--${growthPriorities.length}`} aria-hidden="true">{growthPriorities.map((priority, index) => <i key={priority} style={{ '--node': index } as CSSProperties} />)}</div>}
     <div className="front120-prep__vignette" aria-hidden="true" />
     <div className="front120-motes" aria-hidden="true">{Array.from({ length: 24 }, (_, index) => <i key={index} />)}</div>
     <section className="front120-prep__panel">
-      <div className={`front120-prep__illustration front120-prep__illustration--${step}`} style={{ backgroundImage: `url(${stageImage})` }} aria-hidden="true" />
       <header className="front120-prep__header">
         <div className="front120-prep__brand"><CompassSeal /><span>CLASSCADE ADVENTURE</span></div>
         <PrepProgress step={stepNumber} />
@@ -345,7 +418,6 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         <p className="front120-prep__question-number">{title.number}</p>
         <h2 id={`prep-${step}-title`} data-tune-id={`prep-${step}-title`}>{title.question}</h2>
         <p>{title.helper} {step === 4 && <strong aria-live="polite">{growthPriorities.length} / 3</strong>}</p>
-        {step === 2 && <ChoiceCards options={CAREER_RANGE_OPTIONS} value={careerRange} onChange={setCareerRange} icons={careerIcons} tunePrefix="prep-2" />}
         {step === 3 && region && <p className="front120-prep__next-cue" role="status">지역을 선택했어요 · 아래의 다음 질문 버튼으로 이어가요 ↓</p>}
         {step === 3 && <ChoiceCards options={REGION_OPTIONS} value={region} onChange={setRegion} icons={['region']} tunePrefix="prep-3" compact />}
         {step === 4 && growthPriorities.length === 3 && <p className="front120-prep__next-cue" role="status">선택 완료 · 아래의 다음 질문 버튼으로 이어가요 ↓</p>}
@@ -359,8 +431,8 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         </div>}
       </section>
       <footer className="front120-prep__footer">
-        <button type="button" className="front120-button front120-button--back" onClick={previousStep}>← 이전 질문</button>
-        <button type="button" className="front120-button front120-button--next" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button">다음 질문으로 <Icon name="arrow" size={23} /></button>
+        <button type="button" className="front120-button front120-button--back front120-nav-img" onClick={previousStep} aria-label="이전 질문"><img src={prepNavBack} alt="" aria-hidden="true" /></button>
+        <button type="button" className="front120-button front120-button--next front120-nav-img" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로"><img src={canContinue ? prepNavCtaEnabled : prepNavCtaDisabled} alt="" aria-hidden="true" /></button>
       </footer>
       {isOffline && <p className="front120-prep__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
     </section>

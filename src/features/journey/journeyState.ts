@@ -4,7 +4,7 @@ import { resultCodeFromAnswers } from '../../data/nbtiScoring.provisional'
 import { PROVISIONAL_NBTI_RESULTS } from '../../data/nbtiResults.provisional'
 import type { JourneyStatus } from '../../data/adventure'
 import { DEFAULT_BGM_VOLUME, clampBgmVolume, type AudioSettings } from '../../lib/audioController'
-import { GAME_CANDIDATES, GAME_CONCEPTS, GAME_CONDITIONS, type GameConditions, type GameConceptId } from '../../data/classroomGameBuilder'
+import { isGameConditions, isGameComboSelection, decodeGameComboId, type GameConditions, type GameComboSelection } from '../../data/classroomGameBuilder'
 
 export type JourneyStage = 'nbti_start' | 'nbti_question' | 'nbti_result' | 'game_intro' | 'game_conditions' | 'game_concepts' | 'game_candidates' | 'game_adjust' | 'game_choice' | 'game_shake' | 'game_complete' | 'sharing'
 
@@ -24,7 +24,7 @@ export type JourneyState = {
   updatedAt: string
   completedAt: string | null
   gameConditions: GameConditions | null
-  gameConcept: GameConceptId | null
+  gameCombo: GameComboSelection | null
   selectedGameId: string | null
   gameAdjustments: Record<string, string>
   completion: CompletionState
@@ -41,7 +41,7 @@ export type JourneyAction =
   | { type: 'RESUME_JOURNEY' }
   | { type: 'OPEN_GAME_INTRO' }
   | { type: 'SET_GAME_CONDITIONS'; conditions: GameConditions }
-  | { type: 'SELECT_GAME_CONCEPT'; concept: GameConceptId }
+  | { type: 'SELECT_GAME_COMBO'; combo: GameComboSelection }
   | { type: 'SELECT_GAME_CANDIDATE'; candidateId: string }
   | { type: 'SET_GAME_ADJUSTMENT'; key: string; value: string }
   | { type: 'COMPLETE_GAME_BUILDER' }
@@ -73,7 +73,7 @@ export function createJourneyState(stage: JourneyStage = 'nbti_start', audio: Au
     updatedAt: new Date().toISOString(),
     completedAt: null,
     gameConditions: null,
-    gameConcept: null,
+    gameCombo: null,
     selectedGameId: null,
     gameAdjustments: {},
     completion: { recommendationTags: [], recommendedVideoIds: [], shareCardFormat: null, shareCardGenerated: false, lastCompletedStep: null },
@@ -91,12 +91,6 @@ function isChoiceForQuestion(questionId: string, choiceId: string) {
 
 function isCompletedNbti(answers: Record<string, string>) {
   return NBTI_QUESTIONS.every((question) => isChoiceForQuestion(question.id, answers[question.id] ?? ''))
-}
-
-function isGameConditions(value: unknown): value is GameConditions {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return false
-  const conditions = value as Record<string, unknown>
-  return (Object.keys(GAME_CONDITIONS) as (keyof GameConditions)[]).every((key) => typeof conditions[key] === 'string' && GAME_CONDITIONS[key].some((option) => option.id === conditions[key]))
 }
 
 function isGameAdjustments(value: unknown): value is Record<string, string> {
@@ -146,9 +140,9 @@ export function journeyReducer(state: JourneyState, action: JourneyAction): Jour
       return state.stage === 'nbti_result' && state.resultCode ? stamp(state, { stage: 'game_intro' }) : state
     case 'START_GAME':
       return state.stage === 'game_intro' && state.resultCode ? stamp(state, { stage: 'game_conditions', gameStep: 0, gameChoices: {}, shakeProgress: 0 }) : state
-    case 'SET_GAME_CONDITIONS': return state.stage === 'game_conditions' && isGameConditions(action.conditions) ? stamp(state, { gameConditions: action.conditions, gameConcept: null, selectedGameId: null, gameAdjustments: {}, completion: createJourneyState().completion, stage: 'game_concepts' }) : state
-    case 'SELECT_GAME_CONCEPT': return state.stage === 'game_concepts' && GAME_CONCEPTS.some((concept) => concept.id === action.concept) ? stamp(state, { gameConcept: action.concept, selectedGameId: null, gameAdjustments: {}, completion: createJourneyState().completion, stage: 'game_candidates' }) : state
-    case 'SELECT_GAME_CANDIDATE': return state.stage === 'game_candidates' && GAME_CANDIDATES.some((candidate) => candidate.id === action.candidateId) ? stamp(state, { selectedGameId: action.candidateId, stage: 'game_adjust' }) : state
+    case 'SET_GAME_CONDITIONS': return state.stage === 'game_conditions' && isGameConditions(action.conditions) ? stamp(state, { gameConditions: action.conditions, gameCombo: null, selectedGameId: null, gameAdjustments: {}, completion: createJourneyState().completion, stage: 'game_concepts' }) : state
+    case 'SELECT_GAME_COMBO': return state.stage === 'game_concepts' && isGameComboSelection(action.combo) ? stamp(state, { gameCombo: action.combo, selectedGameId: null, gameAdjustments: {}, completion: createJourneyState().completion, stage: 'game_candidates' }) : state
+    case 'SELECT_GAME_CANDIDATE': return state.stage === 'game_candidates' && !!decodeGameComboId(action.candidateId) ? stamp(state, { selectedGameId: action.candidateId, stage: 'game_adjust' }) : state
     case 'SET_GAME_ADJUSTMENT': return state.stage === 'game_adjust' ? stamp(state, { gameAdjustments: { ...state.gameAdjustments, [action.key]: action.value } }) : state
     case 'COMPLETE_GAME_BUILDER': return state.stage === 'game_adjust' && state.selectedGameId ? stamp(state, { stage: 'game_complete', completedAt: new Date().toISOString() }) : state
     case 'SET_COMPLETION_STATE': return state.stage === 'game_complete' ? stamp(state, { completion: { recommendationTags: [...new Set(action.recommendationTags)].slice(0, 12), recommendedVideoIds: [...new Set(action.recommendedVideoIds)].slice(0, 3), shareCardFormat: action.shareCardFormat, shareCardGenerated: action.shareCardGenerated, lastCompletedStep: action.lastCompletedStep } }) : state
@@ -226,8 +220,8 @@ export function validateJourneyState(value: unknown): JourneyState | null {
   if (needsResult && !isCompletedNbti(answers as Record<string, string>)) return null
 
   const gameConditions = candidate.gameConditions === undefined || candidate.gameConditions === null ? null : isGameConditions(candidate.gameConditions) ? candidate.gameConditions : null
-  const gameConcept = typeof candidate.gameConcept === 'string' && GAME_CONCEPTS.some((concept) => concept.id === candidate.gameConcept) ? candidate.gameConcept as GameConceptId : null
-  const selectedGameId = typeof candidate.selectedGameId === 'string' && GAME_CANDIDATES.some((game) => game.id === candidate.selectedGameId) ? candidate.selectedGameId : null
+  const gameCombo = typeof candidate.gameCombo === 'object' && candidate.gameCombo !== null && isGameComboSelection(candidate.gameCombo) ? candidate.gameCombo as GameComboSelection : null
+  const selectedGameId = typeof candidate.selectedGameId === 'string' && decodeGameComboId(candidate.selectedGameId) ? candidate.selectedGameId : null
   const gameAdjustments = candidate.gameAdjustments === undefined ? {} : isGameAdjustments(candidate.gameAdjustments) ? candidate.gameAdjustments : null
   const completion = candidate.completion === undefined ? { recommendationTags: [], recommendedVideoIds: [], shareCardFormat: null, shareCardGenerated: false, lastCompletedStep: null } : isCompletionState(candidate.completion) ? candidate.completion : null
   if (gameAdjustments === null) return null
@@ -235,9 +229,9 @@ export function validateJourneyState(value: unknown): JourneyState | null {
   let restoredStage = stage
   if (restoredStage === 'game_concepts' && !gameConditions) restoredStage = 'game_conditions'
   if (restoredStage === 'game_candidates' && !gameConditions) restoredStage = 'game_conditions'
-  else if (restoredStage === 'game_candidates' && !gameConcept) restoredStage = 'game_concepts'
+  else if (restoredStage === 'game_candidates' && !gameCombo) restoredStage = 'game_concepts'
   if ((restoredStage === 'game_adjust' || restoredStage === 'game_complete') && !gameConditions) restoredStage = 'game_conditions'
-  else if ((restoredStage === 'game_adjust' || restoredStage === 'game_complete') && !gameConcept) restoredStage = 'game_concepts'
+  else if ((restoredStage === 'game_adjust' || restoredStage === 'game_complete') && !gameCombo) restoredStage = 'game_concepts'
   else if ((restoredStage === 'game_adjust' || restoredStage === 'game_complete') && !selectedGameId) restoredStage = 'game_candidates'
 
   const expectedVariant = resultCode ? getGameVariantForResult(resultCode) : null
@@ -265,7 +259,7 @@ export function validateJourneyState(value: unknown): JourneyState | null {
     updatedAt: typeof candidate.updatedAt === 'string' ? candidate.updatedAt : new Date().toISOString(),
     completedAt: candidate.completedAt as string | null,
     gameConditions,
-    gameConcept,
+    gameCombo,
     selectedGameId,
     gameAdjustments,
     completion,

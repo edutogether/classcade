@@ -44,7 +44,7 @@ async function renderCard(model: ShareCardModel, format: ShareCardFormat) {
 }
 
 export function CompletionExperience({ state, onAction, onNextParticipant }: Props) {
-  const result = getProvisionalResult(state.resultCode); const candidate = getGameCandidate(state.selectedGameId)
+  const result = getProvisionalResult(state.resultCode); const candidate = getGameCandidate(state.selectedGameId, state.gameConditions)
   const tags = useMemo(() => recommendationTags(result.directions, state.gameConditions, candidate, state.gameAdjustments), [candidate, result.directions, state.gameAdjustments, state.gameConditions])
   const videos = useMemo(() => rankVideos(tags, state.gameConditions), [tags, state.gameConditions]); const [format, setFormat] = useState<ShareCardFormat>('square'); const [preview, setPreview] = useState<string | null>(null); const [message, setMessage] = useState('')
   if (!candidate) return null

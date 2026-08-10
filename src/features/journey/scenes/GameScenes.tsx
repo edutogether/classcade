@@ -2,17 +2,24 @@ import { useMemo, useState, type CSSProperties } from 'react'
 import { CompassSeal, Icon } from '../../../components/VisualPrimitives'
 import { getGameVariantForResult } from '../../../data/gameVariants.provisional'
 import { getProvisionalResult } from '../../../data/nbtiResults.provisional'
-import { GAME_CANDIDATES, GAME_CONDITIONS, candidatesForConcept, defaultGameConditions, getGameCandidate, recommendConcepts, type GameConditions } from '../../../data/classroomGameBuilder'
+import { GAME_AXES, GAME_AXIS_ORDER, GAME_CONDITIONS, buildGameFromCombo, candidatesForCombo, defaultGameConditions, getGameCandidate, recommendComboSelection, type GameAxisId, type GameCandidate, type GameComboSelection, type GameConditions } from '../../../data/classroomGameBuilder'
+import type { JourneyState } from '../journeyState'
 import { PrimaryButton, Progress, SceneFrame, SecondaryButton, type JourneySceneProps } from '../components/SceneFrame'
 import { CompletionExperience } from '../components/CompletionExperience'
 import { CanonicalGameScene, CanonicalHotspot, CanonicalMobileHero, ScreenReaderText } from '../components/CanonicalGameScene'
 import conditionsArt from '../../../assets/classcade/game-builder/classroom-conditions-master.png'
-import conceptsArt from '../../../assets/classcade/game-builder/concept-selection-master.png'
 import candidatesArt from '../../../assets/classcade/game-builder/game-candidates-master.png'
 import resultArt from '../../../assets/classcade/game-builder/game-result-master.png'
 
 const fallbackConditions: GameConditions = { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' }
 const conditionLabels: Record<keyof GameConditions, string> = { schoolLevel: '학교급', size: '참여 인원', time: '수업 시간', space: '공간', mood: '원하는 분위기' }
+
+/** Recovery fallback if a saved candidateId cannot be decoded — reconstructs a sensible candidate from state. */
+function buildFallbackCandidate(state: Pick<JourneyState, 'gameCombo' | 'gameConditions' | 'resultCode'>): GameCandidate {
+  const conditions = state.gameConditions ?? fallbackConditions
+  const combo = state.gameCombo ?? recommendComboSelection(getProvisionalResult(state.resultCode).directions, conditions)
+  return buildGameFromCombo(combo, conditions)
+}
 
 export function GameConditionsScene(props: JourneySceneProps) {
   const [conditions, setConditions] = useState(props.state.gameConditions ?? (props.profile ? defaultGameConditions(props.profile) : fallbackConditions))
@@ -32,17 +39,33 @@ export function GameConditionsScene(props: JourneySceneProps) {
 
 export function GameConceptsScene(props: JourneySceneProps) {
   const result = getProvisionalResult(props.state.resultCode)
-  const concepts = recommendConcepts(result.directions, props.state.gameConditions ?? fallbackConditions)
-  return <SceneFrame scene="game" canonicalGame {...props}>
-    <CanonicalGameScene screen="concepts" art={conceptsArt}>
-      <CanonicalMobileHero art={conceptsArt} screen="concepts" eyebrow="02 · 모험 콘셉트" title="우리 반의 첫 장면" description="원본 삽화 카드에서 우리 반의 모험을 골라요." />
-      <div className="canonical-concept-list" role="list">{concepts.map((concept, index) => <CanonicalHotspot className={`canonical-concept canonical-concept--${index + 1}`} key={concept.id} type="button" style={{ '--canonical-art': `url(${conceptsArt})`, '--canonical-row': `${index}` } as CSSProperties} onClick={() => props.onAction({ type: 'SELECT_GAME_CONCEPT', concept: concept.id })}><span className="canonical-mobile-label" aria-hidden="true">{concept.title}</span><span className="canonical-mobile-choice-note" aria-hidden="true">{concept.detail}</span><span className="canonical-mobile-reason" aria-hidden="true">{concept.direction === result.directions[2] || concept.direction === result.directions[3] ? '성향 추천' : '새로운 모험'}</span><ScreenReaderText>{`${concept.title}. ${concept.detail}`}</ScreenReaderText></CanonicalHotspot>)}</div>
-    </CanonicalGameScene>
+  const conditions = props.state.gameConditions ?? fallbackConditions
+  const recommended = useMemo(() => recommendComboSelection(result.directions, conditions), [result.directions, conditions])
+  const [combo, setCombo] = useState<GameComboSelection>(props.state.gameCombo ?? recommended)
+  const setAxis = (axis: GameAxisId, optionId: string) => setCombo((current) => ({ ...current, [axis]: optionId }))
+  return <SceneFrame scene="game" {...props}>
+    <div className="journey-panel journey-game-builder journey-enter">
+      <div className="journey-panel__topline"><p>02 · 모험 콘셉트 조합</p><Progress current={2} total={4} label="게임 만들기" /></div>
+      <h1>우리 반의 모험을 조합해요</h1><p>네 가지 요소를 하나씩 골라 조합하면, 우리 반만의 특별한 모험이 완성돼요.</p>
+      <div className="journey-builder-groups">
+        {GAME_AXIS_ORDER.map((axis, axisIndex) => <div className="journey-builder-group" key={axis} role="group" aria-label={GAME_AXES[axis].label}>
+          <b>{String(axisIndex + 1).padStart(2, '0')} {GAME_AXES[axis].label}<small style={{ display: 'block', fontWeight: 600, marginTop: '2px', opacity: .75 }}>{GAME_AXES[axis].helper}</small></b>
+          <div className="journey-builder-options" style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
+            {GAME_AXES[axis].options.map((option) => <button key={option.id} type="button" className={`journey-choice ${combo[axis] === option.id ? 'is-selected' : ''}`} aria-pressed={combo[axis] === option.id} onClick={() => setAxis(axis, option.id)}>
+              <b>{option.title}</b><small>{option.caption}</small>
+            </button>)}
+          </div>
+        </div>)}
+      </div>
+      <PrimaryButton onClick={() => props.onAction({ type: 'SELECT_GAME_COMBO', combo })}>이 조합으로 후보 만들기</PrimaryButton>
+    </div>
   </SceneFrame>
 }
 
 export function GameCandidatesScene(props: JourneySceneProps) {
-  const candidates = candidatesForConcept(props.state.gameConcept ?? 'team')
+  const conditions = props.state.gameConditions ?? fallbackConditions
+  const combo = props.state.gameCombo ?? recommendComboSelection(getProvisionalResult(props.state.resultCode).directions, conditions)
+  const candidates = candidatesForCombo(combo, conditions)
   const [selectedId, setSelectedId] = useState(candidates[0]?.id ?? '')
   const selected = candidates.find((candidate) => candidate.id === selectedId) ?? candidates[0]
   return <SceneFrame scene="game" canonicalGame {...props}>
@@ -57,7 +80,7 @@ export function GameCandidatesScene(props: JourneySceneProps) {
 
 const adjustmentFields = [['time', '게임 시간'], ['teams', '팀 구성'], ['competition', '경쟁 강도'], ['teacher', '교사 개입'], ['materials', '준비물 차이']] as const
 export function GameAdjustScene(props: JourneySceneProps) {
-  const candidate = getGameCandidate(props.state.selectedGameId) ?? GAME_CANDIDATES[0]
+  const candidate = getGameCandidate(props.state.selectedGameId, props.state.gameConditions) ?? buildFallbackCandidate(props.state)
   const adjustments = props.state.gameAdjustments
   return <SceneFrame scene="game" {...props}>
     <div className="journey-panel journey-game-builder journey-enter">
@@ -98,7 +121,7 @@ function conditionSummary(conditions: GameConditions | null) {
 }
 
 export function CompleteScene(props: JourneySceneProps) {
-  const candidate = getGameCandidate(props.state.selectedGameId) ?? GAME_CANDIDATES[0]
+  const candidate = getGameCandidate(props.state.selectedGameId, props.state.gameConditions) ?? buildFallbackCandidate(props.state)
   const result = getProvisionalResult(props.state.resultCode)
   const adjustments = Object.entries(props.state.gameAdjustments).filter(([, value]) => value !== '기본').map(([key, value]) => `${adjustmentFields.find(([id]) => id === key)?.[1]} ${value}`)
   return <SceneFrame scene="complete" canonicalGame {...props}><CanonicalGameScene screen="result" art={resultArt}>
@@ -117,7 +140,7 @@ export function CompleteScene(props: JourneySceneProps) {
 }
 
 export function ShareScene(props: JourneySceneProps) {
-  const candidate = getGameCandidate(props.state.selectedGameId) ?? GAME_CANDIDATES[0]
+  const candidate = getGameCandidate(props.state.selectedGameId, props.state.gameConditions) ?? buildFallbackCandidate(props.state)
   const result = getProvisionalResult(props.state.resultCode)
   const text = useMemo(() => `${result.title} · ${candidate.title}`, [candidate.title, result.title])
   return <SceneFrame scene="complete" {...props} compact><div className="journey-share journey-enter"><p className="journey-kicker">이전 완성 기록</p><h1>{candidate.title}</h1><p>{text}</p><SecondaryButton onClick={() => props.onAction({ type: 'CLOSE_SHARING' })}>완성 화면으로 돌아가기</SecondaryButton></div></SceneFrame>

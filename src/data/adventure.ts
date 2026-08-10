@@ -21,15 +21,22 @@ export const CAREER_RANGE_OPTIONS = [
 
 export const REGION_OPTIONS = [
   { value: 'seoul', label: '서울' },
-  { value: 'gyeonggi', label: '경기' },
+  { value: 'busan', label: '부산' },
+  { value: 'daegu', label: '대구' },
   { value: 'incheon', label: '인천' },
+  { value: 'gwangju', label: '광주' },
+  { value: 'daejeon', label: '대전' },
+  { value: 'ulsan', label: '울산' },
+  { value: 'sejong', label: '세종' },
+  { value: 'gyeonggi', label: '경기' },
   { value: 'gangwon', label: '강원' },
-  { value: 'daejeon-sejong', label: '대전·세종' },
-  { value: 'chungcheong', label: '충북·충남' },
-  { value: 'gwangju-jeonnam', label: '광주·전남' },
+  { value: 'chungbuk', label: '충북' },
+  { value: 'chungnam', label: '충남' },
   { value: 'jeonbuk', label: '전북' },
-  { value: 'busan-ulsan-gyeongnam', label: '부산·울산·경남' },
-  { value: 'daegu-gyeongbuk', label: '대구·경북' },
+  { value: 'jeonnam', label: '전남' },
+  { value: 'gyeongbuk', label: '경북' },
+  { value: 'gyeongnam', label: '경남' },
+  { value: 'jeju', label: '제주' },
 ] as const satisfies readonly Option[]
 
 export const GROWTH_PRIORITY_OPTIONS = [

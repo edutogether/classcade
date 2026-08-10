@@ -62,29 +62,37 @@
 .front120-prep--2 .front120-prep__illustration { bottom: 0; right: -5%; top: 15%; width: 48%; }
 .front120-prep__career-path{left:59%;pointer-events:none;position:absolute;top:46%;z-index:2}.front120-prep__career-path i{background:rgba(255,197,70,.18);border:1px solid rgba(255,220,116,.35);border-radius:50%;display:block;height:13px;margin:15px;width:13px}.front120-prep__career-path--1 i:nth-child(-n+1),.front120-prep__career-path--2 i:nth-child(-n+2),.front120-prep__career-path--3 i:nth-child(-n+3),.front120-prep__career-path--4 i:nth-child(-n+4),.front120-prep__career-path--5 i:nth-child(-n+5){background:#ffe18a;box-shadow:0 0 16px #ffd166}
 .front120-prep__region-marker{background:radial-gradient(circle,#fff6c9 0 16%,#ffcf58 18% 34%,rgba(255,190,53,.25) 37% 55%,transparent 58%);border:1px solid rgba(255,229,134,.9);border-radius:50%;box-shadow:0 0 17px rgba(255,197,70,.88);height:22px;pointer-events:none;position:absolute;transform:translate(-50%,-50%);width:22px;z-index:2}.front120-prep__region-marker--1{left:57.4%;top:36.1%}.front120-prep__region-marker--2{left:65.2%;top:54.1%}.front120-prep__region-marker--3{left:67.7%;top:48.6%}.front120-prep__region-marker--4{left:62.8%;top:41.3%}.front120-prep__region-marker--5{left:58.7%;top:57.1%}.front120-prep__region-marker--6{left:61.5%;top:52.5%}.front120-prep__region-marker--7{left:70.7%;top:55.8%}.front120-prep__region-marker--8{left:64.1%;top:47.1%}.front120-prep__region-marker--9{left:61.6%;top:38.9%}.front120-prep__region-marker--10{left:67.6%;top:38.7%}.front120-prep__region-marker--11{left:65.1%;top:43.2%}.front120-prep__region-marker--12{left:68.7%;top:45.7%}.front120-prep__region-marker--13{left:60.9%;top:46.8%}.front120-prep__region-marker--14{left:63.5%;top:51.7%}.front120-prep__region-marker--15{left:67.8%;top:42.2%}.front120-prep__region-marker--16{left:69.8%;top:50.5%}.front120-prep__region-marker--17{left:61.8%;top:59.9%}
-.front120-prep__growth-nodes{height:44%;pointer-events:none;position:absolute;right:11.2%;top:29%;width:23%;z-index:2}.front120-prep__growth-nodes::before{background:radial-gradient(ellipse at 51% 76%,rgba(255,223,130,.62),transparent 10%),linear-gradient(62deg,transparent 46%,rgba(255,224,137,.78) 47% 48%,transparent 49%),linear-gradient(124deg,transparent 48%,rgba(255,224,137,.68) 49% 50%,transparent 51%);content:"";inset:0;position:absolute}.front120-prep__growth-nodes i{background:radial-gradient(circle,#fff9d6 0 16%,#e8b44e 18% 38%,#375339 40% 58%,#162817 60%);border:1px solid #ffe4a0;border-radius:50%;box-shadow:0 0 15px rgba(255,210,98,.88);height:23px;left:calc(24% + var(--node) * 23%);position:absolute;top:calc(34% + (var(--node) % 2) * 27%);width:23px}.front120-prep__growth-nodes--3 i:nth-child(2){left:52%;top:16%}.front120-prep__growth-nodes--3 i:nth-child(3){left:74%;top:45%}
+.front120-prep__growth-nodes{height:44%;pointer-events:none;position:absolute;right:11.2%;top:29%;width:23%;z-index:2}.front120-prep__growth-nodes::before{background:radial-gradient(ellipse at 51% 76%,rgba(255,223,130,.4),transparent 34%);content:"";inset:0;position:absolute}.front120-prep__growth-nodes i{background:radial-gradient(circle,#fff9d6 0 16%,#e8b44e 18% 38%,#375339 40% 58%,#162817 60%);border:1px solid #ffe4a0;border-radius:50%;box-shadow:0 0 15px rgba(255,210,98,.88);height:23px;left:calc(24% + var(--node) * 23%);position:absolute;top:calc(34% + (var(--node) % 2) * 27%);width:23px}.front120-prep__growth-nodes--3 i:nth-child(2){left:52%;top:16%}.front120-prep__growth-nodes--3 i:nth-child(3){left:74%;top:45%}
 .front120-prep--3 .front120-prep__illustration { bottom: 0; right: -4%; top: 14%; width: 54%; }
 .front120-prep--4 .front120-prep__illustration { bottom: 0; right: -5%; top: 15%; width: 49%; }
-.front120-prep--3 .front120-choice-grid--compact { gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 54%; }
-.front120-prep--3 .front120-choice-grid--compact .front120-choice-card { font-size: clamp(12px, 1.08vw, 16px); min-height: 72px; white-space: normal; }
-.front120-prep--4 .front120-growth-grid { max-width: 61%; }
+.front120-prep--3 .front120-choice-grid--compact { gap: 10px; grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 58%; }
+.front120-prep--3 .front120-choice-grid--compact .front120-choice-card { font-size: clamp(12px, 1.08vw, 16px); min-height: 58px; white-space: normal; }
+.front120-prep--4 .front120-growth-grid { max-width: 72%; }
 
-@media (min-width:1101px) and (max-height:820px) {
+@media (min-width:1101px) and (max-height:940px) {
   .front120-prep--2 .front120-prep__panel,
-  .front120-prep--3 .front120-prep__panel { margin: 8px var(--front120-panel-x); min-height: calc(100svh - 16px); padding: 14px 32px 10px; }
+  .front120-prep--3 .front120-prep__panel,
+  .front120-prep--4 .front120-prep__panel { margin: 8px var(--front120-panel-x); min-height: calc(100svh - 16px); padding: 14px 32px 10px; }
   .front120-prep--2 .front120-prep__intro,
-  .front120-prep--3 .front120-prep__intro { margin-top: 8px; padding-bottom: 8px; }
+  .front120-prep--3 .front120-prep__intro,
+  .front120-prep--4 .front120-prep__intro { margin-top: 8px; padding-bottom: 8px; }
   .front120-prep--2 .front120-prep__intro h1,
-  .front120-prep--3 .front120-prep__intro h1 { font-size: 42px; }
+  .front120-prep--3 .front120-prep__intro h1,
+  .front120-prep--4 .front120-prep__intro h1 { font-size: 42px; }
   .front120-prep--2 .front120-prep__question,
-  .front120-prep--3 .front120-prep__question { padding-top: 8px; }
+  .front120-prep--3 .front120-prep__question,
+  .front120-prep--4 .front120-prep__question { padding-top: 8px; }
   .front120-prep--2 .front120-prep__question h2,
-  .front120-prep--3 .front120-prep__question h2 { font-size: 26px; }
+  .front120-prep--3 .front120-prep__question h2,
+  .front120-prep--4 .front120-prep__question h2 { font-size: 26px; }
   .front120-prep--2 .front120-choice-card { min-height: 92px; }
-  .front120-prep--3 .front120-choice-grid--compact { gap: 7px; grid-template-columns: repeat(5, minmax(0, 1fr)); max-width: 62%; }
-  .front120-prep--3 .front120-choice-grid--compact .front120-choice-card { min-height: 46px; padding: 5px 3px; }
+  .front120-prep--3 .front120-choice-grid--compact { gap: 7px; grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 62%; }
+  .front120-prep--3 .front120-choice-grid--compact .front120-choice-card { min-height: 40px; padding: 5px 3px; }
+  .front120-prep--4 .front120-growth-grid { gap: 8px; max-width: 68%; }
+  .front120-prep--4 .front120-growth-card { min-height: 52px; padding: 7px 9px; }
   .front120-prep--2 .front120-prep__footer,
-  .front120-prep--3 .front120-prep__footer { margin-top: 6px; padding-top: 7px; }
+  .front120-prep--3 .front120-prep__footer,
+  .front120-prep--4 .front120-prep__footer { margin-top: 6px; padding-top: 7px; }
 }
 
 .front120-motes {
@@ -184,7 +192,8 @@
 .front120-choice-grid--compact .front120-choice-card__icon { display: none; }
 
 .front120-growth-grid { display: grid; gap: 13px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-left: 0; max-width: min(76%, 790px); }
-.front120-growth-card { align-items: center; background: linear-gradient(145deg, rgba(255,248,220,.79), rgba(232,209,157,.75)); border: 1px solid rgba(142, 99, 39, .67); box-shadow: inset 0 0 0 2px rgba(255,248,218,.5), inset 0 -6px 10px rgba(126,80,25,.08), 0 4px 7px rgba(75,42,9,.13); color: #5c4220; cursor: pointer; display: flex; font-size: clamp(13px, 1.2vw, 18px); font-weight: 800; gap: 9px; justify-content: flex-start; min-height: clamp(64px, 7.1vw, 82px); padding: 11px 13px; position: relative; text-align: left; transition: transform .16s ease, filter .16s ease; }
+.front120-growth-card { align-items: center; background: linear-gradient(145deg, rgba(255,248,220,.79), rgba(232,209,157,.75)); border: 1px solid rgba(142, 99, 39, .67); box-shadow: inset 0 0 0 2px rgba(255,248,218,.5), inset 0 -6px 10px rgba(126,80,25,.08), 0 4px 7px rgba(75,42,9,.13); color: #5c4220; cursor: pointer; display: flex; font-size: clamp(11px, 1.05vw, 15px); font-weight: 800; gap: 9px; justify-content: flex-start; line-height: 1.25; min-height: clamp(64px, 7.1vw, 82px); min-width: 0; padding: 11px 13px; position: relative; text-align: left; transition: transform .16s ease, filter .16s ease; }
+.front120-growth-card span { min-width: 0; overflow-wrap: break-word; white-space: normal; }
 .front120-growth-card:hover { filter: brightness(1.04); transform: translateY(-1px); }
 .front120-growth-card.is-selected { background: linear-gradient(145deg, #315a38, #11281a); border-color: #ffd267; box-shadow: 0 0 0 2px rgba(154,95,16,.55), inset 0 1px rgba(255,235,145,.43), 0 0 15px rgba(239,179,50,.32); color: #fff0b5; }
 .front120-growth-card svg { color: #9a7134; flex: 0 0 auto; }.front120-growth-card.is-selected > svg { color: #ffe184; }
@@ -291,13 +300,6 @@
   transform: scale(1.012);
   width: 100%;
   z-index: -6;
-}
-.front120-prep01-stage__veil {
-  background: linear-gradient(90deg, rgba(3, 9, 5, .57) 0%, rgba(6, 14, 8, .16) 39%, rgba(4, 10, 6, .12) 68%, rgba(4, 9, 5, .46) 100%), linear-gradient(180deg, rgba(2, 7, 4, .3), transparent 35%, rgba(2, 5, 3, .45));
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
-  z-index: -5;
 }
 .front120-prep01-stage__parchment {
   background-color: #e8d9b6;
@@ -409,8 +411,7 @@
 .sr-only { clip: rect(0 0 0 0); clip-path: inset(50%); height: 1px; overflow: hidden; position: absolute; white-space: nowrap; width: 1px; }
 .front120-prep01-stage { align-items: center; display: grid; justify-items: center; min-height: 100svh; overflow: hidden; padding: 12px; }
 body:has(.front120-prep01-stage) { overflow-y: hidden; }
-.front120-prep01-stage__background { height: 100%; inset: 0; object-fit: cover; object-position: left center; position: absolute; transform: scale(1.85); transform-origin: left center; width: 100%; z-index: -6; }
-.front120-prep01-stage__veil { background: radial-gradient(ellipse at 50% 52%, transparent 15%, rgba(1, 8, 4, .22) 64%, rgba(1, 5, 3, .7) 100%); height: 100%; inset: 0; position: absolute; width: 100%; z-index: -5; }
+.front120-prep01-stage__background { height: 100%; inset: 0; object-fit: cover; object-position: center; position: absolute; transform: scale(1.22); width: 100%; z-index: -6; }
 .front120-prep01-plate { aspect-ratio: 1484 / 1060; box-shadow: 0 20px 64px rgba(0, 0, 0, .5); height: min(calc(100svh - 24px), calc((100vw - 96px) / 1.4)); isolation: isolate; position: relative; width: auto; }
 .front120-prep01-plate__image { display: block; height: 100%; user-select: none; width: 100%; }
 .front120-prep01-plate__cards { inset: 0; position: absolute; }
@@ -437,4 +438,60 @@ body:has(.front120-prep01-stage) { overflow-y: hidden; }
 .front120-prep01-plate__cta:not(:disabled):active .front120-prep01-plate__cta-hover, .front120-prep01-plate__cta:not(:disabled):active .front120-prep01-plate__cta-enabled { opacity: 0; }
 .front120-prep01-plate__cta:focus-visible { outline: 2px solid #f8e7a9; outline-offset: 3px; }
 .front120-prep01-plate .front120-prep__offline { bottom: 4.5%; font-size: clamp(8px, .75vw, 12px); left: 14%; margin: 0; max-width: 38%; position: absolute; }
-@media (max-width: 900px) { .front120-prep01-stage { align-items: start; min-height: 100svh; overflow: auto; padding: 12px; }.front120-prep01-plate { height: auto; margin: 12px auto; min-width: 720px; width: min(94vw, 1180px); }.front120-prep01-stage__background, .front120-prep01-stage__veil { position: fixed; } }
+/* Nav buttons now render their state as a real art asset (see CLASSCADE-ART-TODO.md) instead of a flat CSS box; the button itself keeps position/size, the image just fills it. */
+.front120-nav-img { background: none !important; border: 0 !important; box-shadow: none !important; color: transparent !important; overflow: hidden; padding: 0 !important; }
+.front120-nav-img img { display: block; height: 100%; object-fit: fill; pointer-events: none; width: 100%; }
+.front120-prep01-plate__note { align-items: center; background: #ede0bd; color: #4e3c1f; display: flex; font-size: clamp(9px, .82vw, 14px); font-weight: 800; gap: 6px; height: 6.6%; left: 9%; margin: 0; padding: 0 1.6%; position: absolute; top: 78.3%; white-space: nowrap; width: 34%; }
+.front120-prep01-plate__note svg { color: #a17a2c; flex: 0 0 auto; }
+
+/* Preparation 2: static official clean plate + dynamic career selection layer. */
+.front120-prep02-stage { align-items: center; display: grid; justify-items: center; min-height: 100svh; overflow: hidden; padding: 12px; }
+body:has(.front120-prep02-stage) { overflow-y: hidden; }
+.front120-prep02-stage__plate { height: 100%; inset: 0; object-fit: cover; position: absolute; user-select: none; width: 100%; z-index: -5; }
+.front120-prep02-plate { aspect-ratio: 1484 / 1060; box-shadow: 0 20px 64px rgba(0,0,0,.48); height: min(calc(100svh - 24px), calc((100vw - 96px) / 1.4)); isolation: isolate; position: relative; width: auto; }
+.front120-prep02-plate__cards { inset: 0; position: absolute; z-index: 1; }
+.front120-prep02-plate__cardart { appearance: none; background: none; border: 0; cursor: pointer; height: var(--art-h); left: var(--art-x); padding: 0; position: absolute; top: var(--art-y); transform: rotate(var(--card-tilt, 0deg)); transform-origin: 50% 100%; width: var(--art-w); }
+.front120-prep02-plate__cards .front120-prep02-plate__cardart:nth-child(1) { --card-tilt: -2.4deg; }
+.front120-prep02-plate__cards .front120-prep02-plate__cardart:nth-child(2) { --card-tilt: -1.1deg; }
+.front120-prep02-plate__cards .front120-prep02-plate__cardart:nth-child(3) { --card-tilt: 0.2deg; }
+.front120-prep02-plate__cards .front120-prep02-plate__cardart:nth-child(4) { --card-tilt: 1.3deg; }
+.front120-prep02-plate__cards .front120-prep02-plate__cardart:nth-child(5) { --card-tilt: 2.5deg; }
+.front120-prep02-plate__cardart img { display: block; height: 100%; user-select: none; width: 100%; }
+.front120-prep02-plate__cardart.is-hover:not(.is-selected) { filter: brightness(1.05) drop-shadow(0 0 8px rgba(255, 220, 127, .5)); }
+.front120-prep02-plate__cardart:focus-visible { outline: 2px solid #f9e3a1; outline-offset: 3px; }
+.front120-prep02-plate__path { height: 100%; inset: 0; pointer-events: none; position: absolute; width: 100%; z-index: 0; }
+.front120-prep02-plate__path path { fill: none; opacity: .5; stroke: #b6893a; stroke-dasharray: 1 17; stroke-linecap: round; stroke-width: 5; }
+.front120-prep02-plate__card { align-content: center; appearance: none; background: linear-gradient(150deg, rgba(255,251,225,.96), rgba(234,213,159,.94)); border: 1px solid rgba(116,75,22,.58); box-shadow: inset 0 0 0 2px rgba(255,247,215,.74), inset 0 -12px 18px rgba(103,62,13,.12), 0 4px 9px rgba(45,26,5,.2); color: #60451f; cursor: pointer; display: grid; font-family: Georgia, 'Noto Serif KR', serif; font-size: clamp(13px, 1.45vw, 28px); font-weight: 800; gap: 8%; height: var(--prep2-card-h); justify-items: center; left: var(--prep2-card-x); overflow: visible; padding: 8% 4%; position: absolute; top: var(--prep2-card-y); transition: filter 180ms ease-out; width: var(--prep2-card-w); }
+.front120-prep02-plate__card::before { border: 1px solid rgba(122,79,23,.36); clip-path: polygon(9px 0,calc(100% - 9px) 0,100% 9px,100% calc(100% - 9px),calc(100% - 9px) 100%,9px 100%,0 calc(100% - 9px),0 9px); content:''; inset:5px; pointer-events:none; position:absolute; }
+.front120-prep02-plate__card::after { background: radial-gradient(circle at 50% 8%,rgba(255,239,165,.5),transparent 29%), radial-gradient(circle at 50% 94%,rgba(96,49,9,.14),transparent 43%); content:''; inset:0; pointer-events:none; position:absolute; }
+.front120-prep02-plate__card-icon { color:#99712e; filter:drop-shadow(0 1px rgba(255,248,208,.8)); position:relative; z-index:1; }
+.front120-prep02-plate__card b { line-height:1.05; position:relative; text-align:center; z-index:1; }
+.front120-prep02-plate__card-check { align-items:center; background:#16764c; border:2px solid #f7df86; border-radius:50%; box-shadow:0 2px 8px rgba(7,37,19,.56); color:white; display:grid; height:25px; justify-items:center; position:absolute; right:-7px; top:-8px; width:25px; z-index:3; }
+.front120-prep02-plate__card.is-hover, .front120-prep02-plate__card.is-selected { background: radial-gradient(circle at 50% 10%,rgba(255,229,133,.2),transparent 29%),linear-gradient(152deg,#2b5234,#10291b 76%); border-color:#e7ba52; box-shadow: 0 0 0 2px rgba(124,73,13,.76), inset 0 0 0 2px rgba(255,231,145,.7), inset 0 0 0 5px rgba(16,61,37,.83), inset 0 -15px 21px rgba(0,12,5,.5), 0 0 17px rgba(241,189,72,.46); color:#fff1ae; }
+.front120-prep02-plate__card.is-hover { filter:brightness(1.07) drop-shadow(0 0 9px rgba(255,220,127,.62)); }
+.front120-prep02-plate__card.is-hover::after, .front120-prep02-plate__card.is-selected::after { background:radial-gradient(circle at 50% 9%,rgba(255,241,173,.26),transparent 27%),linear-gradient(180deg,rgba(255,239,161,.12),transparent 42%); }
+.front120-prep02-plate__card.is-hover .front120-prep02-plate__card-icon, .front120-prep02-plate__card.is-selected .front120-prep02-plate__card-icon { color:#ffe69a; filter:drop-shadow(0 0 6px rgba(255,216,104,.68)); }
+.front120-prep02-plate__card:focus-visible { outline:2px solid #f9e3a1; outline-offset:4px; z-index:4; }
+.front120-prep02-plate__back, .front120-prep02-plate__cta { align-items:center; appearance:none; cursor:pointer; display:flex; font-family:Georgia,'Noto Serif KR',serif; font-size:clamp(15px,1.48vw,27px); font-weight:800; height:7.4%; justify-content:center; padding:0; position:absolute; top:78.24%; z-index:2; }
+.front120-prep02-plate__back { background:linear-gradient(180deg,#fff6d9,#e4c98e); border:1px solid #9a7137; box-shadow:inset 0 1px rgba(255,255,255,.75),0 3px 6px rgba(78,42,8,.18); color:#4e3518; left:23.8%; width:17.45%; }
+.front120-prep02-plate__cta { background:linear-gradient(180deg,#304e31,#102819); border:1px solid #f3cd63; box-shadow:0 0 0 3px rgba(127,75,12,.5),inset 0 1px rgba(255,240,154,.36),inset 0 -7px 12px rgba(2,14,8,.42),0 7px 12px rgba(35,18,4,.25); color:#ffefae; gap:14px; left:46.25%; width:25.1%; }
+.front120-prep02-plate__cta:disabled { cursor:not-allowed; filter:grayscale(.7); opacity:.63; }
+.front120-prep02-plate__back:hover, .front120-prep02-plate__cta:hover:not(:disabled) { filter:brightness(1.07); }.front120-prep02-plate__cta:active:not(:disabled), .front120-prep02-plate__back:active { transform:translateY(1px); }
+.front120-prep02-plate__back:focus-visible, .front120-prep02-plate__cta:focus-visible { outline:2px solid #f8e7a9; outline-offset:3px; }
+.front120-prep02-plate__offline { bottom:4.1%; color:#675b3c; font-size:clamp(8px,.75vw,12px); left:14%; margin:0; max-width:38%; position:absolute; }
+/* 720px min-width below is a tablet-range floor; below 700px it forced phones into the same
+   fixed-width plate, causing horizontal overflow/cropping. Phones fall through to the base
+   aspect-ratio-driven sizing instead (matches the rest of the file's 700px mobile breakpoint). */
+@media (min-width:701px) and (max-width:900px) { .front120-prep02-stage { align-items:start; min-height:100svh; overflow:auto; padding:12px; }.front120-prep02-plate { height:auto; margin:12px auto; min-width:720px; width:min(94vw,1180px); }.front120-prep02-stage__plate { position:fixed; } }
+@media (min-width: 701px) and (max-width: 900px) { .front120-prep01-stage { align-items: start; min-height: 100svh; overflow: auto; padding: 12px; }.front120-prep01-plate { height: auto; margin: 12px auto; min-width: 720px; width: min(94vw, 1180px); }.front120-prep01-stage__background { position: fixed; } }
+@media (max-width: 700px) {
+  .front120-prep01-stage, .front120-prep02-stage { align-items: center; min-height: 100svh; overflow: hidden; padding: 10px; }
+  .front120-prep01-plate, .front120-prep02-plate { height: min(calc(100svh - 20px), calc((100vw - 20px) / 1.4)); margin: 0 auto; width: auto; }
+  .front120-prep02-plate__back, .front120-prep02-plate__cta { font-size: clamp(7px, 2.6vw, 12px); gap: 3px; white-space: nowrap; }
+  .front120-prep02-plate__cta svg, .front120-prep01-plate__cta svg { display: none; }
+  /* On phones the stage is portrait while the plate is a fixed 1.4:1 landscape box; letting this
+     background layer cover the whole (tall) stage independently of the plate's own centered box
+     desyncs the two, showing a wrongly-cropped/zoomed slice behind the correctly-sized hotspots.
+     Give it the exact same box so both layers line up again. */
+  .front120-prep02-stage__plate { aspect-ratio: 1484 / 1060; height: min(calc(100svh - 20px), calc((100vw - 20px) / 1.4)); inset: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); width: auto; }
+}

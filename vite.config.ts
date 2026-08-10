@@ -28,5 +28,13 @@ export default defineConfig(({ mode }) => {
   return {
     base,
     plugins: [react(), siteUrlHtmlPlugin(siteUrl)],
+    server: {
+      watch: {
+        // Windows briefly locks freshly-saved/downloaded PNGs; native fs.watch() throws EBUSY on them
+        // and crashes the whole dev server. Polling avoids touching the file while it's still being written.
+        usePolling: true,
+        interval: 300,
+      },
+    },
   }
 })

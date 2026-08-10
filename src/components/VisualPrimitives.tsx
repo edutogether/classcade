@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-export type IconName = 'clock' | 'spark' | 'gamepad' | 'arrow' | 'music' | 'speaker' | 'chevron' | 'close' | 'edit' | 'reset' | 'check' | 'school' | 'career' | 'region' | 'leaf' | 'notebook' | 'share'
+export type IconName = 'clock' | 'spark' | 'gamepad' | 'arrow' | 'music' | 'speaker' | 'chevron' | 'close' | 'edit' | 'reset' | 'check' | 'school' | 'career' | 'region' | 'leaf' | 'notebook' | 'share' | 'sprout' | 'lantern' | 'compass' | 'tree' | 'lock'
 
 export function Icon({ name, size = 22 }: { name: IconName; size?: number }) {
   const common = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true }
@@ -22,6 +22,11 @@ export function Icon({ name, size = 22 }: { name: IconName; size?: number }) {
     leaf: <path d="M20 4C10 4 4 8.2 4 15c0 2.3 1.7 4 4.1 4C15 19 20 11.4 20 4ZM5 19c2.2-4.4 5.7-7.5 10.3-9.3" />,
     notebook: <><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 3v18M12 8h4M12 12h4M12 16h3" /></>,
     share: <><circle cx="18" cy="5" r="2" /><circle cx="6" cy="12" r="2" /><circle cx="18" cy="19" r="2" /><path d="m8 11 8-5M8 13l8 5" /></>,
+    sprout: <><path d="M12 20v-8" /><path d="M12 13c0-3-2.4-5-6-5 0 3 2.4 5 6 5Z" /><path d="M12 12c0-3.2 2.6-5.4 6.5-5.4 0 3.2-2.6 5.4-6.5 5.4Z" /></>,
+    lantern: <><path d="M10.4 4.2a1.6 1.6 0 0 1 3.2 0" /><path d="M12 4.2v2.1" /><path d="M9 9a3 3 0 0 1 6 0v7.4a1.6 1.6 0 0 1-1.6 1.6h-2.8A1.6 1.6 0 0 1 9 16.4Z" /><path d="M10.4 18h3.2" /><path d="M12 11.2c1 .9 1.3 1.8.7 2.8-.5.8-1.4.8-1.9 0-.5-1 .2-1.9 1.2-2.8Z" /></>,
+    compass: <><circle cx="12" cy="12" r="9" /><path d="M12 5.5 13.4 10.6 18.5 12 13.4 13.4 12 18.5 10.6 13.4 5.5 12 10.6 10.6 12 5.5Z" /><circle cx="12" cy="12" r="0.6" fill="currentColor" /></>,
+    tree: <><path d="M12 3a5 5 0 0 0-4 8 4.6 4.6 0 0 0 1 8.6h6a4.6 4.6 0 0 0 1-8.6 5 5 0 0 0-4-8Z" /><path d="M12 20v-6" /></>,
+    lock: <><rect x="5" y="10.5" width="14" height="9.5" rx="2" /><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5" /><circle cx="12" cy="15" r="1.4" fill="currentColor" stroke="none" /></>,
   }
   return <svg {...common}>{paths[name]}</svg>
 }

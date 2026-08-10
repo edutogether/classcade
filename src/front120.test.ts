@@ -20,9 +20,10 @@ describe('Front120 entry-flow guardrails', () => {
     expect(SCHOOL_LEVEL_OPTIONS.map((option) => option.label)).toEqual(['유아', '초등', '중등', '고등', '특수'])
   })
 
-  it('uses exactly ten regional choices without Jeju', () => {
-    expect(REGION_OPTIONS).toHaveLength(10)
-    expect(REGION_OPTIONS.some((option) => option.label.includes('제주'))).toBe(false)
+  it('uses all seventeen individual regional choices including Jeju', () => {
+    expect(REGION_OPTIONS).toHaveLength(17)
+    expect(REGION_OPTIONS.some((option) => option.label.includes('제주'))).toBe(true)
+    expect(new Set(REGION_OPTIONS.map((option) => option.value)).size).toBe(17)
   })
 
   it('restores the nickname and constrains it to the safe UI length', () => {
@@ -30,9 +31,9 @@ describe('Front120 entry-flow guardrails', () => {
     expect(profile?.nickname).toBe('모험가플레이메이커선생님123456'.slice(0, 16))
   })
 
-  it('migrates existing special and regional selections into the new preparation options', () => {
-    const profile = validateProfile({ ...validProfile, schoolLevel: 'special-other', region: 'busan' })
-    expect(profile).toMatchObject({ schoolLevel: 'special', region: 'busan-ulsan-gyeongnam' })
+  it('migrates existing special selections and the briefly-merged region ids into the current options', () => {
+    const profile = validateProfile({ ...validProfile, schoolLevel: 'special-other', region: 'busan-ulsan-gyeongnam' })
+    expect(profile).toMatchObject({ schoolLevel: 'special', region: 'busan' })
   })
 
   it('enables BGM by default for a first-time journey without overriding restored preferences', () => {

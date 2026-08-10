@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { CLASSCADE_VIDEO_CATALOG, EDUTOGETHER_YOUTUBE_CHANNEL, buildShareCardModel, rankVideos, recommendationTags } from './completionExperience'
-import { GAME_CANDIDATES } from './classroomGameBuilder'
+import { buildGameFromCombo } from './classroomGameBuilder'
 import { PROVISIONAL_NBTI_RESULTS } from './nbtiResults.provisional'
 
 describe('completion recommendation and sharing contract', () => {
   const conditions = { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' }
+  const sampleCandidate = buildGameFromCombo({ scene: 'treasure-room', mechanism: 'teamwork', world: 'academy', twist: 'role-swap' }, conditions)
   it('builds result-specific recommendation tags for every provisional NBTI result', () => {
     for (const result of PROVISIONAL_NBTI_RESULTS) {
-      const tags = recommendationTags(result.directions, conditions, GAME_CANDIDATES[0], { competition: '낮게' })
+      const tags = recommendationTags(result.directions, conditions, sampleCandidate, { competition: '낮게' })
       expect(tags.length).toBeGreaterThan(3)
       expect(new Set(tags).size).toBe(tags.length)
       expect(tags).toContain('초등')
@@ -39,8 +40,8 @@ describe('completion recommendation and sharing contract', () => {
     expect(rankVideos(['협력', '교실'], { schoolLevel: 'high', size: 'large', time: 'long', space: 'outdoor', mood: 'challenge' })).toEqual([])
   })
   it('never includes direct or indirect profile identifiers in a share card model', () => {
-    const model = buildShareCardModel('든든한 항해사', '교실의 흐름을 설계합니다.', GAME_CANDIDATES[0], ['협력', '교실'])
+    const model = buildShareCardModel('든든한 항해사', '교실의 흐름을 설계합니다.', sampleCandidate, ['협력', '교실'])
     expect(JSON.stringify(model)).not.toMatch(/nickname|region|career|schoolName|email|phone|firebase|answer/i)
-    expect(model).toMatchObject({ resultTitle: '든든한 항해사', gameTitle: GAME_CANDIDATES[0].title })
+    expect(model).toMatchObject({ resultTitle: '든든한 항해사', gameTitle: sampleCandidate.title })
   })
 })

@@ -61,19 +61,13 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 const legacySchoolLevel: Record<string, SchoolLevel> = { 'special-other': 'special' }
+// Forward-compat for profiles saved during the briefly-merged 10-region period.
 const legacyRegion: Record<string, Region> = {
-  busan: 'busan-ulsan-gyeongnam',
-  ulsan: 'busan-ulsan-gyeongnam',
-  gyeongnam: 'busan-ulsan-gyeongnam',
-  daegu: 'daegu-gyeongbuk',
-  gyeongbuk: 'daegu-gyeongbuk',
-  daejeon: 'daejeon-sejong',
-  sejong: 'daejeon-sejong',
-  chungbuk: 'chungcheong',
-  chungnam: 'chungcheong',
-  gwangju: 'gwangju-jeonnam',
-  jeonnam: 'gwangju-jeonnam',
-  jeju: 'gwangju-jeonnam',
+  'busan-ulsan-gyeongnam': 'busan',
+  'daegu-gyeongbuk': 'daegu',
+  'daejeon-sejong': 'daejeon',
+  chungcheong: 'chungbuk',
+  'gwangju-jeonnam': 'gwangju',
 }
 
 function normalizeOption<T extends string>(options: readonly { value: T }[], legacy: Record<string, T>, value: unknown): T | null {

@@ -24,13 +24,7 @@ export const defaultGameConditions = (profile: Pick<Profile, 'schoolLevel' | 'gr
   mood: profile.growthPriorities.includes('class-community') ? 'cooperative' : 'calm',
 })
 
-export const GAME_CONCEPTS = [
-  { id: 'story', title: '이야기 탐험', detail: '단서와 상상으로 우리 반의 모험 지도를 완성해요.', direction: 'expansion' },
-  { id: 'team', title: '협력 미션', detail: '서로 다른 역할을 모아 함께 문제를 해결해요.', direction: 'empathy' },
-  { id: 'strategy', title: '전략 도전', detail: '명확한 규칙과 선택으로 목표를 완성해요.', direction: 'criteria' },
-  { id: 'quick', title: '빠른 변주', detail: '짧은 라운드로 교실의 에너지를 바꿔요.', direction: 'response' },
-] as const
-export type GameConceptId = (typeof GAME_CONCEPTS)[number]['id']
+export type GameConceptId = 'story' | 'team' | 'strategy' | 'quick'
 
 export type GameCandidate = {
   id: string
@@ -54,52 +48,151 @@ export type GameCandidate = {
   fit: string
 }
 
-export const GAME_CANDIDATES: readonly GameCandidate[] = [
-  {
-    id: 'story-map', concept: 'story', title: '별빛 단서 지도', intro: '팀마다 단서를 이어 우리 반의 모험 지도를 완성합니다.', people: '9~24명', duration: '20분', space: '자리·교실 전체', materials: '종이, 필기구, 포스트잇',
-    preparation: ['교실에 단서 카드 6장을 숨겨 둡니다.', '팀마다 지도 종이와 색연필을 1세트씩 둡니다.'], collaboration: '협력 중심', teacher: '차분한 안내', goal: '관찰과 이야기 연결',
-    steps: ['팀별 첫 단서를 받습니다.', '단서를 찾아 지도 조각에 기록합니다.', '조각을 이어 한 문장으로 발표합니다.'], rules: ['모든 팀원이 한 번 이상 기록합니다.', '다른 팀 단서는 허락 없이 옮기지 않습니다.'], quiet: '기록자·정리자 역할부터 맡아 말없이도 참여할 수 있어요.', conflict: '정답 대신 근거를 말하게 하고, 팀이 다음 단서를 고르게 합니다.', variation: '10분 수업에서는 단서 3장과 한 문장 발표로 줄입니다.', closing: '지도에서 발견한 가치를 다음 수업 질문으로 연결합니다.', fit: '확장 성향의 이야기를 다음 배움으로 이어 줍니다.',
-  },
-  {
-    id: 'bridge-mission', concept: 'team', title: '연결의 다리 수호대', intro: '모두의 역할을 이어 제한된 재료로 다리를 완성합니다.', people: '4~24명', duration: '20분', space: '자리 중심', materials: '종이, 테이프, 역할 카드',
-    preparation: ['팀별로 종이 10장과 테이프를 둡니다.', '설계·제작·기록·발표 역할 카드를 나눕니다.'], collaboration: '높음', teacher: '관찰·조율', goal: '역할 분담과 공동 해결',
-    steps: ['팀원이 역할 카드를 한 장씩 받습니다.', '제한 시간 안에 다리 설계를 합의합니다.', '완성 뒤 서로의 전략 한 가지를 나눕니다.'], rules: ['말하기 전에 기록한 설계안을 먼저 확인합니다.', '한 사람이 계속 제작하지 않습니다.'], quiet: '시간 지킴이·기록자도 같은 무게의 역할로 참여합니다.', conflict: '의견이 갈리면 두 안의 장점을 적고 다음 라운드에서 선택합니다.', variation: '큰 학급은 4인 팀으로 나누고 발표는 갤러리 워크로 바꿉니다.', closing: '협력으로 아낀 시간을 서로 한 번씩 말합니다.', fit: '공감 성향이 참여의 빈틈을 함께 채울 수 있어요.',
-  },
-  {
-    id: 'strategy-vault', concept: 'strategy', title: '황금 규칙 금고', intro: '선택 카드와 근거로 가장 높은 탐험 점수를 설계합니다.', people: '9~30명', duration: '20분', space: '자리 중심', materials: '선택 카드, 칠판',
-    preparation: ['선택 카드 12장과 점수판을 준비합니다.', '공통 목표와 점수 규칙을 칠판에 적습니다.'], collaboration: '전략·가벼운 경쟁', teacher: '규칙 안내', goal: '근거 있는 의사결정',
-    steps: ['공통 목표와 점수 규칙을 확인합니다.', '팀이 두 장의 선택 카드를 고릅니다.', '근거를 발표하고 점수를 계산합니다.'], rules: ['카드 선택 전 팀 모두 근거를 한 번씩 말합니다.', '점수보다 근거를 먼저 발표합니다.'], quiet: '카드를 고르고 근거를 기록한 뒤 발표에 참여할 수 있어요.', conflict: '점수 계산은 함께 보고, 다음 라운드의 전략을 바꿉니다.', variation: '10분 수업에서는 카드 6장과 한 라운드만 사용합니다.', closing: '좋았던 규칙 하나를 우리 반 약속으로 옮깁니다.', fit: '기준 성향의 명확한 목표와 피드백을 만듭니다.',
-  },
-  {
-    id: 'quick-spark', concept: 'quick', title: '번개 별빛 릴레이', intro: '짧은 라운드로 아이디어를 이어 교실 에너지를 깨웁니다.', people: '4~30명', duration: '10분', space: '자리·교실 전체', materials: '없음 또는 공 1개',
-    preparation: ['한 문장 주제와 시작 신호를 정합니다.', '교실 이동 동선을 짧게 비워 둡니다.'], collaboration: '신나는 협력', teacher: '에너지 조절', goal: '빠른 참여와 반응',
-    steps: ['한 문장 주제를 제시합니다.', '10초 안에 아이디어를 이어 갑니다.', '팀이 가장 이어진 연결 하나를 고릅니다.'], rules: ['같은 학생이 연속으로 두 번 말하지 않습니다.', '패스는 가능하지만 다음 친구를 지목합니다.'], quiet: '먼저 한 문장을 만든 뒤 신호로 참여할 수 있어요.', conflict: '속도를 낮추고 손 신호로 차례를 다시 맞춥니다.', variation: '차분한 반에서는 자리에서 카드만 넘기는 릴레이로 바꿉니다.', closing: '오늘 나온 아이디어를 한 화면에 기록합니다.', fit: '반응 성향이 교실의 현재 에너지를 주도적으로 바꿉니다.',
-  },
-] as const
+// --- 2x2 concept-combination system -----------------------------------------------------
+// Four axes, two options each (16 total combinations). Each option carries pre-written
+// complete-sentence fragments so composed text stays grammatically correct in Korean
+// regardless of which combination is picked (no runtime particle concatenation).
 
-export function recommendConcepts(directions: readonly NbtiDirection[], conditions: GameConditions) {
-  return [...GAME_CONCEPTS].sort((left, right) => scoreConcept(right, directions, conditions) - scoreConcept(left, directions, conditions))
+export type GameAxisId = 'scene' | 'mechanism' | 'world' | 'twist'
+export const GAME_AXIS_ORDER: readonly GameAxisId[] = ['scene', 'mechanism', 'world', 'twist']
+
+export type GameAxisOption = {
+  id: string
+  title: string
+  caption: string
+  introFragment: string
+  step: string
+  ruleNote: string
 }
 
-function scoreConcept(concept: (typeof GAME_CONCEPTS)[number], directions: readonly NbtiDirection[], conditions: GameConditions) {
+export const GAME_AXES: Record<GameAxisId, { label: string; helper: string; options: readonly [GameAxisOption, GameAxisOption] }> = {
+  scene: {
+    label: '장면', helper: '어떤 장소에서 모험이 펼쳐질까요?',
+    options: [
+      { id: 'treasure-room', title: '보물 교실', caption: '일상 속 숨겨진 보물이 가득한 교실', introFragment: '평범한 교실 곳곳에 숨겨진 보물을 찾는 이야기로 시작해요.', step: '교실 곳곳에 숨겨 둔 단서나 보물 카드를 확인합니다.', ruleNote: '숨겨 둔 자리는 안전하고 찾기 쉬운 곳으로 미리 확인합니다.' },
+      { id: 'mystic-library', title: '신비한 도서관', caption: '책 속 비밀이 살아 숨 쉬는 도서관', introFragment: '책과 이야기 속에 숨은 비밀을 함께 풀어 가는 도서관 모험이에요.', step: '이야기 속 단서가 담긴 책이나 카드를 펼쳐 봅니다.', ruleNote: '책이나 자료는 조심히 다루고 제자리에 정리합니다.' },
+    ],
+  },
+  mechanism: {
+    label: '메커니즘', helper: '어떤 방식으로 미션을 해결할까요?',
+    options: [
+      { id: 'relay', title: '릴레이 해결', caption: '다음 친구에게 이어지는 릴레이 미션', introFragment: '한 사람씩 이어받아 다음 단계로 전달하는 릴레이 방식으로 진행돼요.', step: '순서를 정해 한 사람씩 미션을 이어받아 해결합니다.', ruleNote: '차례를 지키고, 자기 순서가 아니면 조용히 응원합니다.' },
+      { id: 'teamwork', title: '협력 미션', caption: '함께 힘을 모아 문제를 해결해요', introFragment: '팀 전체가 역할을 나눠 함께 힘을 모으는 협력 방식으로 진행돼요.', step: '팀원이 역할을 나누고 함께 의논해 미션을 해결합니다.', ruleNote: '한 사람이 혼자 다 하지 않고, 모두가 한 번 이상 참여합니다.' },
+    ],
+  },
+  world: {
+    label: '세계관', helper: '어떤 세계관 속에서 모험할까요?',
+    options: [
+      { id: 'academy', title: '마법 아카데미', caption: '마법과 지식이 가득한 학교 세계', introFragment: '마법과 지식이 가득한 아카데미의 학생이 되어 모험을 떠나요.', step: '아카데미 속 마법 규칙이나 지식 카드를 함께 확인합니다.', ruleNote: '마법 설정은 우리 반이 정한 규칙 안에서만 사용합니다.' },
+      { id: 'space-station', title: '우주 기지', caption: '미래의 우주에서 펼쳐지는 모험', introFragment: '먼 미래의 우주 기지 대원이 되어 낯선 임무를 함께 수행해요.', step: '우주 기지의 임무 카드나 신호를 함께 확인합니다.', ruleNote: '임무 설정은 우리 반이 정한 규칙 안에서만 사용합니다.' },
+    ],
+  },
+  twist: {
+    label: '비틀기', helper: '어떤 색다른 규칙이 모험을 바꿀까요?',
+    options: [
+      { id: 'role-swap', title: '역할 교환', caption: '선생님과 학생의 역할이 바뀌어요', introFragment: '중간에 선생님과 학생의 역할이 바뀌는 특별한 반전이 있어요.', step: '정해진 순간에 선생님과 학생의 역할을 바꿔 진행합니다.', ruleNote: '역할을 바꾼 뒤에도 서로를 존중하는 말투를 유지합니다.' },
+      { id: 'time-limit', title: '시간 제한', caption: '주어진 시간 안에 미션을 완료해요', introFragment: '정해진 시간 안에 완료해야 하는 긴장감 있는 제한이 있어요.', step: '남은 시간을 확인하며 미션을 마무리합니다.', ruleNote: '시간이 부족하면 가장 중요한 목표부터 먼저 완료합니다.' },
+    ],
+  },
+}
+
+export type GameComboSelection = Record<GameAxisId, string>
+
+function axisOption(axis: GameAxisId, optionId: string): GameAxisOption {
+  const option = GAME_AXES[axis].options.find((candidate) => candidate.id === optionId)
+  if (!option) throw new Error(`Unknown ${axis} option: ${optionId}`)
+  return option
+}
+
+export function isGameConditions(value: unknown): value is GameConditions {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+  const conditions = value as Record<string, unknown>
+  return (Object.keys(GAME_CONDITIONS) as (keyof GameConditions)[]).every((key) => typeof conditions[key] === 'string' && GAME_CONDITIONS[key].some((option) => option.id === conditions[key]))
+}
+
+export function isGameComboSelection(value: unknown): value is GameComboSelection {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+  const combo = value as Record<string, unknown>
+  return GAME_AXIS_ORDER.every((axis) => typeof combo[axis] === 'string' && GAME_AXES[axis].options.some((option) => option.id === combo[axis]))
+}
+
+export function encodeGameComboId(combo: GameComboSelection): string {
+  return GAME_AXIS_ORDER.map((axis) => combo[axis]).join('.')
+}
+
+export function decodeGameComboId(id: string): GameComboSelection | null {
+  const parts = id.split('.')
+  if (parts.length !== GAME_AXIS_ORDER.length) return null
+  const combo = Object.fromEntries(GAME_AXIS_ORDER.map((axis, index) => [axis, parts[index]])) as GameComboSelection
+  return isGameComboSelection(combo) ? combo : null
+}
+
+/** Recommends a default 2x2 selection from the teacher's NBTI directions and classroom conditions. */
+export function recommendComboSelection(directions: readonly NbtiDirection[], conditions: GameConditions): GameComboSelection {
   const primary = directions[3]
-  const secondary = directions[2]
-  let score = concept.direction === primary ? 8 : concept.direction === secondary ? 4 : 0
-  if (conditions.mood === 'cooperative' && concept.id === 'team') score += 4
-  if (conditions.mood === 'challenge' && concept.id === 'strategy') score += 4
-  if (conditions.mood === 'lively' && concept.id === 'quick') score += 4
-  if (conditions.mood === 'calm' && concept.id === 'story') score += 4
-  if (conditions.time === 'short' && concept.id === 'quick') score += 2
-  if (conditions.space === 'seated' && concept.id === 'strategy') score += 2
-  if (conditions.size === 'small' && concept.id === 'team') score += 1
-  return score + GAME_CONCEPTS.findIndex((item) => item.id === concept.id) / 100
+  return {
+    scene: conditions.mood === 'calm' ? 'mystic-library' : 'treasure-room',
+    mechanism: primary === 'empathy' || conditions.mood === 'cooperative' ? 'teamwork' : 'relay',
+    world: primary === 'expansion' ? 'space-station' : 'academy',
+    twist: conditions.time === 'short' ? 'time-limit' : 'role-swap',
+  }
 }
 
-export function candidatesForConcept(concept: GameConceptId) {
-  const selected = GAME_CANDIDATES.find((candidate) => candidate.concept === concept)
-  return selected ? [selected, ...GAME_CANDIDATES.filter((candidate) => candidate.id !== selected.id)] : [...GAME_CANDIDATES]
+function conditionLabel(key: GameConditionKey, value: string) {
+  return GAME_CONDITIONS[key].find((option) => option.id === value)?.label ?? ''
 }
 
-export function getGameCandidate(candidateId: string | null) {
-  return GAME_CANDIDATES.find((candidate) => candidate.id === candidateId) ?? null
+/** Builds a full game candidate by composing the four selected axis fragments — one of 16 possible outcomes. */
+export function buildGameFromCombo(combo: GameComboSelection, conditions: GameConditions): GameCandidate {
+  const scene = axisOption('scene', combo.scene)
+  const mechanism = axisOption('mechanism', combo.mechanism)
+  const world = axisOption('world', combo.world)
+  const twist = axisOption('twist', combo.twist)
+  const sizeLabel = conditionLabel('size', conditions.size)
+  const timeLabel = conditionLabel('time', conditions.time)
+  const spaceLabel = conditionLabel('space', conditions.space)
+  return {
+    id: encodeGameComboId(combo),
+    concept: mechanism.id === 'relay' ? 'quick' : 'team',
+    title: `${scene.title} × ${world.title}`,
+    intro: `${scene.introFragment} ${world.introFragment} ${mechanism.introFragment} ${twist.introFragment}`,
+    people: sizeLabel,
+    duration: timeLabel,
+    space: spaceLabel,
+    materials: mechanism.id === 'relay' ? '순서 카드, 필기구' : '모둠 활동지, 필기구',
+    preparation: [scene.step, world.step],
+    collaboration: mechanism.id === 'teamwork' ? '협력 중심' : '순서 진행',
+    teacher: twist.id === 'role-swap' ? '학생 주도 관찰' : '시간 안내',
+    goal: `${mechanism.title}과 ${twist.title}로 완성하는 ${world.title} 모험`,
+    steps: [scene.step, mechanism.step, twist.step, world.step],
+    rules: [mechanism.ruleNote, twist.ruleNote],
+    quiet: '역할을 나눠 맡으면 말이 적은 학생도 편하게 참여할 수 있어요.',
+    conflict: '의견이 갈리면 잠시 멈추고 각자의 이유를 한 번씩 들어 봅니다.',
+    variation: `${timeLabel} 수업에서는 단계를 절반으로 줄여 진행할 수 있어요.`,
+    closing: `${world.title} 여정에서 발견한 점을 한 문장으로 나눠 봅니다.`,
+    fit: `${scene.title}과 ${twist.title}가 만나 이 반만의 특별한 모험이 됩니다.`,
+  }
+}
+
+function flipAxis(axis: GameAxisId, combo: GameComboSelection): GameComboSelection {
+  const other = GAME_AXES[axis].options.find((option) => option.id !== combo[axis])
+  return other ? { ...combo, [axis]: other.id } : combo
+}
+
+/** Presents the chosen combination plus two remixes as distinct candidates.
+ * Flips 'scene' and 'world' specifically — title is `${scene} × ${world}`, so
+ * every remix is guaranteed a visibly different title, never a same-looking duplicate. */
+export function candidatesForCombo(combo: GameComboSelection, conditions: GameConditions): GameCandidate[] {
+  const variants = [combo, flipAxis('world', combo), flipAxis('scene', combo)]
+  const seen = new Set<string>()
+  return variants
+    .map((variant) => buildGameFromCombo(variant, conditions))
+    .filter((candidate) => (seen.has(candidate.id) ? false : (seen.add(candidate.id), true)))
+}
+
+export function getGameCandidate(candidateId: string | null, conditions: GameConditions | null): GameCandidate | null {
+  if (!candidateId) return null
+  const combo = decodeGameComboId(candidateId)
+  if (!combo) return null
+  return buildGameFromCombo(combo, conditions ?? { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' })
 }

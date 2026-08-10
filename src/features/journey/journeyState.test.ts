@@ -61,12 +61,12 @@ describe('golden-path journey reducer', () => {
     state = journeyReducer(state, { type: 'START_GAME' })
     expect(state.stage).toBe('game_conditions')
     state = journeyReducer(state, { type: 'SET_GAME_CONDITIONS', conditions: { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' } })
-    state = journeyReducer(state, { type: 'SELECT_GAME_CONCEPT', concept: 'team' })
-    state = journeyReducer(state, { type: 'SELECT_GAME_CANDIDATE', candidateId: 'bridge-mission' })
+    state = journeyReducer(state, { type: 'SELECT_GAME_COMBO', combo: { scene: 'treasure-room', mechanism: 'teamwork', world: 'academy', twist: 'role-swap' } })
+    state = journeyReducer(state, { type: 'SELECT_GAME_CANDIDATE', candidateId: 'treasure-room.teamwork.academy.role-swap' })
     state = journeyReducer(state, { type: 'SET_GAME_ADJUSTMENT', key: 'time', value: '낮게' })
     state = journeyReducer(state, { type: 'COMPLETE_GAME_BUILDER' })
-    expect(state).toMatchObject({ stage: 'game_complete', selectedGameId: 'bridge-mission', gameAdjustments: { time: '낮게' } })
-    expect(validateJourneyState(state)).toMatchObject({ stage: 'game_complete', selectedGameId: 'bridge-mission' })
+    expect(state).toMatchObject({ stage: 'game_complete', selectedGameId: 'treasure-room.teamwork.academy.role-swap', gameAdjustments: { time: '낮게' } })
+    expect(validateJourneyState(state)).toMatchObject({ stage: 'game_complete', selectedGameId: 'treasure-room.teamwork.academy.role-swap' })
   })
 
   it('returns to the preceding NBTI question and preserves the selected answer', () => {
@@ -102,10 +102,10 @@ describe('golden-path journey reducer', () => {
   })
 
   it('invalidates later game outputs when a prior condition or concept is changed', () => {
-    const state = { ...completeNbti(), stage: 'game_conditions' as const, gameConcept: 'team' as const, selectedGameId: 'bridge-mission', gameAdjustments: { time: '높게' }, completion: { recommendationTags: ['협력'], recommendedVideoIds: ['video-1'], shareCardFormat: 'square' as const, shareCardGenerated: true, lastCompletedStep: 'shared' } }
+    const state = { ...completeNbti(), stage: 'game_conditions' as const, gameCombo: { scene: 'treasure-room', mechanism: 'teamwork', world: 'academy', twist: 'role-swap' }, selectedGameId: 'treasure-room.teamwork.academy.role-swap', gameAdjustments: { time: '높게' }, completion: { recommendationTags: ['협력'], recommendedVideoIds: ['video-1'], shareCardFormat: 'square' as const, shareCardGenerated: true, lastCompletedStep: 'shared' } }
     const afterConditions = journeyReducer(state, { type: 'SET_GAME_CONDITIONS', conditions: { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' } })
-    expect(afterConditions).toMatchObject({ stage: 'game_concepts', gameConcept: null, selectedGameId: null, gameAdjustments: {}, completion: { shareCardGenerated: false } })
-    const afterConcept = journeyReducer({ ...afterConditions, stage: 'game_concepts' }, { type: 'SELECT_GAME_CONCEPT', concept: 'team' })
+    expect(afterConditions).toMatchObject({ stage: 'game_concepts', gameCombo: null, selectedGameId: null, gameAdjustments: {}, completion: { shareCardGenerated: false } })
+    const afterConcept = journeyReducer({ ...afterConditions, stage: 'game_concepts' }, { type: 'SELECT_GAME_COMBO', combo: { scene: 'treasure-room', mechanism: 'teamwork', world: 'academy', twist: 'role-swap' } })
     expect(afterConcept).toMatchObject({ stage: 'game_candidates', selectedGameId: null, gameAdjustments: {}, completion: { shareCardGenerated: false } })
   })
 
