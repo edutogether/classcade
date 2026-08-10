@@ -438,10 +438,7 @@ body:has(.front120-prep01-stage) { overflow-y: hidden; }
 .front120-prep01-plate__cta:not(:disabled):active .front120-prep01-plate__cta-hover, .front120-prep01-plate__cta:not(:disabled):active .front120-prep01-plate__cta-enabled { opacity: 0; }
 .front120-prep01-plate__cta:focus-visible { outline: 2px solid #f8e7a9; outline-offset: 3px; }
 .front120-prep01-plate .front120-prep__offline { bottom: 4.5%; font-size: clamp(8px, .75vw, 12px); left: 14%; margin: 0; max-width: 38%; position: absolute; }
-/* Nav buttons now render their state as a real art asset (see CLASSCADE-ART-TODO.md) instead of a flat CSS box; the button itself keeps position/size, the image just fills it. */
-.front120-nav-img { background: none !important; border: 0 !important; box-shadow: none !important; color: transparent !important; overflow: hidden; padding: 0 !important; }
-.front120-nav-img img { display: block; height: 100%; object-fit: fill; pointer-events: none; width: 100%; }
-.front120-prep01-plate__note { align-items: center; background: #ede0bd; color: #4e3c1f; display: flex; font-size: clamp(9px, .82vw, 14px); font-weight: 800; gap: 6px; height: 6.6%; left: 9%; margin: 0; padding: 0 1.6%; position: absolute; top: 78.3%; white-space: nowrap; width: 34%; }
+.front120-prep01-plate__note { align-items: center; background: #ede0bd; color: #4e3c1f; display: flex; font-size: clamp(9px, .82vw, 14px); font-weight: 800; gap: 6px; height: 6.6%; left: 9%; margin: 0; overflow: hidden; padding: 0 1.6%; pointer-events: none; position: absolute; text-overflow: ellipsis; top: 78.3%; white-space: nowrap; width: 34%; }
 .front120-prep01-plate__note svg { color: #a17a2c; flex: 0 0 auto; }
 
 /* Preparation 2: static official clean plate + dynamic career selection layer. */

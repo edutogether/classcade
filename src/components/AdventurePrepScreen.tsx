@@ -51,12 +51,6 @@ import ctaDisabled from '../assets/classcade/prep-01-interactive/prep-01-cta-dis
 import ctaEnabled from '../assets/classcade/prep-01-interactive/prep-01-cta-enabled.png'
 import ctaHover from '../assets/classcade/prep-01-interactive/prep-01-cta-hover.png'
 import ctaActive from '../assets/classcade/prep-01-interactive/prep-01-cta-active.png'
-import prepTwoBack from '../assets/classcade/prep-02-interactive/prep-02-back.png'
-import prepTwoCtaEnabled from '../assets/classcade/prep-02-interactive/prep-02-cta-enabled.png'
-import prepTwoCtaDisabled from '../assets/classcade/prep-02-interactive/prep-02-cta-disabled.png'
-import prepNavBack from '../assets/classcade/prep-nav/prep-nav-back.png'
-import prepNavCtaEnabled from '../assets/classcade/prep-nav/prep-nav-cta-enabled.png'
-import prepNavCtaDisabled from '../assets/classcade/prep-nav/prep-nav-cta-disabled.png'
 import { CompassSeal, Icon, type IconName } from './VisualPrimitives'
 import '../front120.css'
 import type { TunerScreen } from '../features/front120/visualTuning'
@@ -352,7 +346,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         <div className="front120-nickname">
           <span className="front120-nickname__orb"><CompassSeal /></span>
           <p className="front120-kicker">✦ 여정의 마지막 준비 ✦</p>
-          <h1 id="nickname-title"><span>용사님의 닉네임을</span><span>알려주세요</span></h1>
+          <h1 id="nickname-title"><span>용사님의 닉네임을</span> <span>알려주세요</span></h1>
           <p>이 여정에서 불릴 이름이에요.</p>
           <label><span>용사 닉네임</span><input value={nickname} maxLength={16} autoComplete="off" placeholder="예: 플레이메이커쌤" onChange={(event) => setNickname(event.target.value.slice(0, 16))} /></label>
           <small>실제 이름이나 학교명 대신, 이 모험에서 사용할 별명을 적어 주세요.</small>
@@ -391,8 +385,8 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         <h1 id="prep-2-title" className="sr-only">모험 준비 — 선생님의 교실 여정은 어느 정도인가요?</h1>
         <svg className="front120-prep02-plate__path" viewBox="0 0 1484 1060" preserveAspectRatio="none" aria-hidden="true"><path d="M196 690 Q 340 706 454 672 T 634 690 T 813 672 T 993 690 Q 1080 702 1128 692" /></svg>
         <PrepTwoChoiceCards value={careerRange} previewValue={careerPreview} onChange={setCareerRange} onPreviewChange={setCareerPreview} />
-        <button type="button" className="front120-prep02-plate__back front120-nav-img" onClick={previousStep} aria-label="이전 질문"><img src={prepTwoBack} alt="" aria-hidden="true" /></button>
-        <button type="button" className="front120-prep02-plate__cta front120-nav-img" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로"><img src={canContinue ? prepTwoCtaEnabled : prepTwoCtaDisabled} alt="" aria-hidden="true" /></button>
+        <button type="button" className="front120-prep02-plate__back" onClick={previousStep} aria-label="이전 질문">← 이전 질문</button>
+        <button type="button" className="front120-prep02-plate__cta" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로">다음 질문으로 <Icon name="arrow" size={22} /></button>
         {isOffline && <p className="front120-prep02-plate__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
       </section>
     </main>
@@ -431,8 +425,8 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         </div>}
       </section>
       <footer className="front120-prep__footer">
-        <button type="button" className="front120-button front120-button--back front120-nav-img" onClick={previousStep} aria-label="이전 질문"><img src={prepNavBack} alt="" aria-hidden="true" /></button>
-        <button type="button" className="front120-button front120-button--next front120-nav-img" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로"><img src={canContinue ? prepNavCtaEnabled : prepNavCtaDisabled} alt="" aria-hidden="true" /></button>
+        <button type="button" className="front120-button front120-button--back" onClick={previousStep} aria-label="이전 질문">← 이전 질문</button>
+        <button type="button" className="front120-button front120-button--next" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로">다음 질문으로 <Icon name="arrow" size={22} /></button>
       </footer>
       {isOffline && <p className="front120-prep__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
     </section>
