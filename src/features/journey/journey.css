@@ -91,7 +91,7 @@
   .journey-start__actions .journey-button--secondary { min-height: 50px; }
 }
 
-/* Front120 main: keep the approved academy composition while making each visual group tunable. */
+/* Entry main: keep the approved academy composition while making each visual group tunable. */
 .journey-start__copy h1[data-tune-id='main-title'] { font-size: clamp(46px, 4.22vw, 79px); letter-spacing: -.105em; line-height: .96; position: relative; }
 .journey-start__copy h1[data-tune-id='main-title'] > span { display: block; white-space: nowrap; }
 .journey-start__description[data-tune-id='main-description'] { font-size: clamp(12px, .95vw, 17px); letter-spacing: -.055em; line-height: 1.4; margin: clamp(22px, 2.9vh, 34px) 0 23px; max-width: none; white-space: nowrap; }
@@ -105,7 +105,7 @@
 .journey-start__audio-note[data-tune-id='main-headphone-note'] { color: rgba(255,248,211,.88); font-size: clamp(12px, .82vw, 14px); gap: 9px; margin-top: 19px; text-shadow: 0 1px 3px rgba(0,0,0,.6); }.journey-start__audio-note[data-tune-id='main-headphone-note'] svg { color: #f4d873; filter: drop-shadow(0 0 4px rgba(255,211,92,.45)); }
 
 /* Main-scene knobs are inert unless the developer tuner writes its CSS vars. */
-.journey-start__copy { transform: translateX(calc(var(--front120-tune-main-content-x, 0) * 1%)); }.journey-scene--start .journey-art img { transform: translateX(calc(var(--front120-tune-main-character-x, 0) * 1%)); }.journey-start__cards { gap: calc(11px * var(--front120-tune-glow-strength, 1)); }.journey-start__sparkles i { opacity: calc(.68 * (var(--front120-tune-mote-opacity, .66) / .66)); }
+.journey-start__copy { transform: translateX(calc(var(--entry-tune-main-content-x, 0) * 1%)); }.journey-scene--start .journey-art img { transform: translateX(calc(var(--entry-tune-main-character-x, 0) * 1%)); }.journey-start__cards { gap: calc(11px * var(--entry-tune-glow-strength, 1)); }.journey-start__sparkles i { opacity: calc(.68 * (var(--entry-tune-mote-opacity, .66) / .66)); }
 
 /* Mobile NBTI uses clean official scene parts instead of full master screenshots.
    Every dynamic label below remains live DOM, while the academy, character, rabbit,

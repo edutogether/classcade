@@ -7,11 +7,11 @@ import { loadJourneyState, saveJourneyState } from './features/journey/journeyPe
 import { createJourneyState, journeyReducer, journeyStatusForStage, type JourneyAction, type JourneyState } from './features/journey/journeyState'
 import { resolveEntryState } from './lib/entryState'
 import { preloadMainTheme } from './lib/audioManager'
-import { Front120VisualTuner } from './features/front120/Front120VisualTuner'
+import { EntryVisualTuner } from './features/entry/EntryVisualTuner'
 import type { PairingPayload } from './features/pairing/pairingContract'
 import { restorePairingJourney } from './features/pairing/pairingContract'
 import { revokeActivePairingCode } from './features/pairing/activePairingCode'
-import { applyTuning, createTuning, type TunerScreen } from './features/front120/visualTuning'
+import { applyTuning, createTuning, type TunerScreen } from './features/entry/visualTuning'
 import {
   clearActiveSession,
   clearNbtiAndProgress,
@@ -233,7 +233,7 @@ export default function App() {
     {showJourney && (profile || pairingEntryRequested) && <JourneyApp state={journeyState} notice={notice} onAction={handleJourneyAction} onTeacherOpen={(button) => { teacherTriggerRef.current = button; setTeacherOpen(true) }} teacherTriggerRef={teacherTriggerRef} profile={profile} journeyId={journeyId} pairingEntry={pairingEntryRequested && !profile} onPaired={restorePairedJourney} onStartHere={() => { setScreen('prep'); clearPairingEntryQuery() }} onExitPairingEntry={() => { setScreen('prep'); clearPairingEntryQuery() }} onNextParticipant={() => resetActiveJourney('laptop-next-participant')} />}
     {screen === 'prep' && <AdventurePrepScreen initialProfile={profile} audio={journeyState.audio} exiting={prepExiting} isOffline={!online} onComplete={handleProfileComplete} onScreenChange={setTunerScreen} />}
     {profile && <TeacherPanel open={teacherOpen} profile={profile} journey={journey} deviceMode={deviceMode} returnFocusRef={teacherTriggerRef} onClose={() => setTeacherOpen(false)} onEdit={() => { setTeacherOpen(false); setScreen('prep') }} onRestartNbti={restartNbti} onResetAll={resetActiveJourney} onStartNewShared={resetActiveJourney} onPlaceholderAction={handleTeacherAction} />}
-    {showJourney && profile && <Front120VisualTuner screen="main" />}
-    {screen === 'prep' && <Front120VisualTuner screen={tunerScreen} />}
+    {showJourney && profile && <EntryVisualTuner screen="main" />}
+    {screen === 'prep' && <EntryVisualTuner screen={tunerScreen} />}
   </>
 }

@@ -1,10 +1,10 @@
-import officialTuning from '../../config/front120-tuning.v1.json'
+import officialTuning from '../../config/entry-tuning.v1.json'
 
-export const TUNER_STORAGE_KEY = 'classcade.front120.tuner.v1'
+export const TUNER_STORAGE_KEY = 'classcade.entry.tuner.v1'
 export const TUNER_SCREENS = ['prep-1', 'prep-2', 'prep-3', 'prep-4', 'nickname', 'loading', 'main'] as const
 export type TunerScreen = typeof TUNER_SCREENS[number]
 export type TuningValues = Record<string, number>
-export type Front120Tuning = { version: 1; updatedAt: string; global: TuningValues; screens: Record<TunerScreen, TuningValues> }
+export type EntryTuning = { version: 1; updatedAt: string; global: TuningValues; screens: Record<TunerScreen, TuningValues> }
 
 export type TuneControl = { key: string; label: string; min: number; max: number; step: number; unit: string }
 export type TuneGroup = { label: string; controls: TuneControl[] }
@@ -64,23 +64,23 @@ const defaults: TuningValues = {
   'loading-emblem-size': 190, 'loading-track-height': 22, 'main-content-x': 0, 'main-character-x': 0,
 }
 
-function cloneOfficial(): Front120Tuning {
-  return JSON.parse(JSON.stringify(officialTuning)) as Front120Tuning
+function cloneOfficial(): EntryTuning {
+  return JSON.parse(JSON.stringify(officialTuning)) as EntryTuning
 }
-export function createTuning(): Front120Tuning { return cloneOfficial() }
+export function createTuning(): EntryTuning { return cloneOfficial() }
 export function isTunerEnabled() { return import.meta.env.DEV && new URLSearchParams(window.location.search).get('tuner') === '1' }
-export function validateTuning(input: unknown): input is Front120Tuning {
+export function validateTuning(input: unknown): input is EntryTuning {
   if (!input || typeof input !== 'object') return false
-  const value = input as Partial<Front120Tuning>
+  const value = input as Partial<EntryTuning>
   if (value.version !== 1 || !value.global || !value.screens || typeof value.global !== 'object') return false
   return TUNER_SCREENS.every((screen) => value.screens?.[screen] && typeof value.screens[screen] === 'object' && validValues(value.screens[screen])) && validValues(value.global)
 }
 function validValues(values: TuningValues) { return Object.entries(values).every(([key, number]) => key in defaults && typeof number === 'number' && Number.isFinite(number) && withinRange(key, number)) }
 export function withinRange(key: string, value: number) { const control = TUNE_GROUPS.flatMap((group) => group.controls).find((item) => item.key === key); return Boolean(control && value >= control.min && value <= control.max) }
-export function valuesFor(tuning: Front120Tuning, screen: TunerScreen) { return { ...defaults, ...tuning.global, ...tuning.screens[screen] } }
-export function applyTuning(tuning: Front120Tuning, screen: TunerScreen) {
+export function valuesFor(tuning: EntryTuning, screen: TunerScreen) { return { ...defaults, ...tuning.global, ...tuning.screens[screen] } }
+export function applyTuning(tuning: EntryTuning, screen: TunerScreen) {
   const root = document.documentElement
-  for (const [key, value] of Object.entries(valuesFor(tuning, screen))) root.style.setProperty(`--front120-tune-${key}`, String(value))
-  root.dataset.front120TuneScreen = screen
+  for (const [key, value] of Object.entries(valuesFor(tuning, screen))) root.style.setProperty(`--entry-tune-${key}`, String(value))
+  root.dataset.entryTuneScreen = screen
 }
-export function cssVariableText(tuning: Front120Tuning, screen: TunerScreen) { return Object.entries(valuesFor(tuning, screen)).map(([key, value]) => `--front120-tune-${key}: ${value};`).join('\n') }
+export function cssVariableText(tuning: EntryTuning, screen: TunerScreen) { return Object.entries(valuesFor(tuning, screen)).map(([key, value]) => `--entry-tune-${key}: ${value};`).join('\n') }

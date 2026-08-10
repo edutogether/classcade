@@ -13,7 +13,7 @@ import { beginMainThemeReveal, noteAudioUserGesture } from '../lib/audioManager'
 import type { AudioSettings } from '../lib/audioController'
 import type { Profile } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
-import prepFourReference from '../assets/front120/prep-4.png'
+import prepFourReference from '../assets/entry/prep-4.png'
 import prepTwoMaster from '../assets/classcade/master-screens/prep-02-master.png'
 import prepThreeCleanPlate from '../assets/classcade/prep-03-interactive/prep-03-clean-plate.png'
 import prepFourCleanPlate from '../assets/classcade/prep-04-interactive/prep-04-clean-plate.png'
@@ -60,8 +60,8 @@ import prepNavBack from '../assets/classcade/prep-nav/prep-nav-back.png'
 import prepNavCtaEnabled from '../assets/classcade/prep-nav/prep-nav-cta-enabled.png'
 import prepNavCtaDisabled from '../assets/classcade/prep-nav/prep-nav-cta-disabled.png'
 import { CompassSeal, Icon, type IconName } from './VisualPrimitives'
-import '../front120.css'
-import type { TunerScreen } from '../features/front120/visualTuning'
+import '../entry.css'
+import type { TunerScreen } from '../features/entry/visualTuning'
 
 type PrepStep = 1 | 2 | 3 | 4 | 'nickname' | 'loading'
 
@@ -116,7 +116,7 @@ function PrepOneChoiceCards({ value, previewValue, onChange, onPreviewChange }: 
 }) {
   const visualValue = previewValue ?? value
 
-  return <div className="front120-prep01-plate__cards" role="radiogroup" aria-label="함께하는 학생들의 학교급">
+  return <div className="entry-prep01-plate__cards" role="radiogroup" aria-label="함께하는 학생들의 학교급">
     {SCHOOL_LEVEL_OPTIONS.map((option, index) => {
       const selected = value === option.value
       const visualState = visualValue === option.value ? (previewValue ? 'hover' : 'selected') : 'neutral'
@@ -138,7 +138,7 @@ function PrepOneChoiceCards({ value, previewValue, onChange, onPreviewChange }: 
           onChange(option.value)
         }
       }
-      return <button key={option.value} type="button" className={`front120-prep01-plate__card is-${visualState}`} style={PREP_ONE_CARD_POSITIONS[option.value]} role="radio" aria-checked={selected} aria-label={option.label} tabIndex={selected || (!value && index === 0) ? 0 : -1} data-tune-id={`prep-1-option-${index + 1}`} onPointerEnter={() => onPreviewChange(option.value)} onPointerLeave={() => onPreviewChange(null)} onFocus={() => onPreviewChange(option.value)} onBlur={() => onPreviewChange(null)} onKeyDown={moveFocus} onClick={() => { noteAudioUserGesture(); onChange(option.value) }}>
+      return <button key={option.value} type="button" className={`entry-prep01-plate__card is-${visualState}`} style={PREP_ONE_CARD_POSITIONS[option.value]} role="radio" aria-checked={selected} aria-label={option.label} tabIndex={selected || (!value && index === 0) ? 0 : -1} data-tune-id={`prep-1-option-${index + 1}`} onPointerEnter={() => onPreviewChange(option.value)} onPointerLeave={() => onPreviewChange(null)} onFocus={() => onPreviewChange(option.value)} onBlur={() => onPreviewChange(null)} onKeyDown={moveFocus} onClick={() => { noteAudioUserGesture(); onChange(option.value) }}>
         <img src={assets[visualState]} alt="" aria-hidden="true" />
       </button>
     })}
@@ -151,7 +151,7 @@ function PrepTwoChoiceCards({ value, previewValue, onChange, onPreviewChange }: 
   onChange: (value: CareerRange) => void
   onPreviewChange: (value: CareerRange | null) => void
 }) {
-  return <div className="front120-prep02-plate__cards" role="radiogroup" aria-label="선생님의 교실 여정">
+  return <div className="entry-prep02-plate__cards" role="radiogroup" aria-label="선생님의 교실 여정">
     {CAREER_RANGE_OPTIONS.map((option, index) => {
       const selected = value === option.value
       const previewed = previewValue === option.value
@@ -172,7 +172,7 @@ function PrepTwoChoiceCards({ value, previewValue, onChange, onPreviewChange }: 
           onChange(option.value)
         }
       }
-      return <button key={option.value} type="button" className={`front120-prep02-plate__cardart ${selected ? 'is-selected' : ''} ${previewed ? 'is-hover' : ''}`} style={art.rect} role="radio" aria-checked={selected} aria-label={option.label} tabIndex={selected || (!value && index === 0) ? 0 : -1} data-tune-id={`prep-2-option-${index + 1}`} onPointerEnter={() => onPreviewChange(option.value)} onPointerLeave={() => onPreviewChange(null)} onFocus={() => onPreviewChange(option.value)} onBlur={() => onPreviewChange(null)} onKeyDown={moveFocus} onClick={() => { noteAudioUserGesture(); onChange(option.value) }}>
+      return <button key={option.value} type="button" className={`entry-prep02-plate__cardart ${selected ? 'is-selected' : ''} ${previewed ? 'is-hover' : ''}`} style={art.rect} role="radio" aria-checked={selected} aria-label={option.label} tabIndex={selected || (!value && index === 0) ? 0 : -1} data-tune-id={`prep-2-option-${index + 1}`} onPointerEnter={() => onPreviewChange(option.value)} onPointerLeave={() => onPreviewChange(null)} onFocus={() => onPreviewChange(option.value)} onBlur={() => onPreviewChange(null)} onKeyDown={moveFocus} onClick={() => { noteAudioUserGesture(); onChange(option.value) }}>
         <img src={artSrc} alt="" aria-hidden="true" />
       </button>
     })}
@@ -190,7 +190,7 @@ function ChoiceCards<T extends string>({ options, value, onChange, onPreviewChan
   compact?: boolean
 }) {
   return (
-    <div className={`front120-choice-grid ${compact ? 'front120-choice-grid--compact' : ''}`} role="radiogroup">
+    <div className={`entry-choice-grid ${compact ? 'entry-choice-grid--compact' : ''}`} role="radiogroup">
       {options.map((option, index) => {
         const selected = value === option.value
         const previewed = previewValue === option.value
@@ -213,10 +213,10 @@ function ChoiceCards<T extends string>({ options, value, onChange, onPreviewChan
             onChange(option.value)
           }
         }
-        return <button key={option.value} type="button" className={`front120-choice-card ${selected ? 'is-selected' : ''} ${previewed ? 'is-previewed' : ''}`} style={{ '--frame-neutral': `url(${choiceFrameNeutral})`, '--frame-selected': `url(${choiceFrameSelected})` } as CSSProperties} role="radio" aria-checked={selected} tabIndex={selected || (!value && index === 0) ? 0 : -1} data-tune-id={`${tunePrefix}-option-${index + 1}`} onPointerEnter={() => onPreviewChange?.(option.value)} onPointerLeave={() => onPreviewChange?.(null)} onFocus={() => onPreviewChange?.(option.value)} onBlur={() => onPreviewChange?.(null)} onKeyDown={moveFocus} onClick={() => { noteAudioUserGesture(); onChange(option.value) }}>
-          <span className="front120-choice-card__icon"><Icon name={icon} size={compact ? 20 : 29} /></span>
+        return <button key={option.value} type="button" className={`entry-choice-card ${selected ? 'is-selected' : ''} ${previewed ? 'is-previewed' : ''}`} style={{ '--frame-neutral': `url(${choiceFrameNeutral})`, '--frame-selected': `url(${choiceFrameSelected})` } as CSSProperties} role="radio" aria-checked={selected} tabIndex={selected || (!value && index === 0) ? 0 : -1} data-tune-id={`${tunePrefix}-option-${index + 1}`} onPointerEnter={() => onPreviewChange?.(option.value)} onPointerLeave={() => onPreviewChange?.(null)} onFocus={() => onPreviewChange?.(option.value)} onBlur={() => onPreviewChange?.(null)} onKeyDown={moveFocus} onClick={() => { noteAudioUserGesture(); onChange(option.value) }}>
+          <span className="entry-choice-card__icon"><Icon name={icon} size={compact ? 20 : 29} /></span>
           <b>{option.label}</b>
-          {selected && <span className="front120-choice-card__check" aria-label="선택됨"><Icon name="check" size={15} /></span>}
+          {selected && <span className="entry-choice-card__check" aria-label="선택됨"><Icon name="check" size={15} /></span>}
         </button>
       })}
     </div>
@@ -224,7 +224,7 @@ function ChoiceCards<T extends string>({ options, value, onChange, onPreviewChan
 }
 
 function PrepProgress({ step }: { step: 1 | 2 | 3 | 4 }) {
-  return <div className="front120-progress" aria-label={`모험 준비 ${step} / 4`}><b>{step} / 4</b><span>{[1, 2, 3, 4].map((value) => <i className={value <= step ? 'is-complete' : ''} key={value} />)}</span></div>
+  return <div className="entry-progress" aria-label={`모험 준비 ${step} / 4`}><b>{step} / 4</b><span>{[1, 2, 3, 4].map((value) => <i className={value <= step ? 'is-complete' : ''} key={value} />)}</span></div>
 }
 
 export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline, onComplete, onScreenChange }: AdventurePrepScreenProps) {
@@ -327,116 +327,116 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   }
 
   if (step === 'loading') {
-    return <main className={`front120-loading ${exiting ? 'is-exiting' : ''}`} aria-live="polite">
-    <img className="front120-loading__reference" src={loadingMaster} alt="" aria-hidden="true" />
-      <div className="front120-loading__veil" aria-hidden="true" />
-      <div className="front120-motes front120-motes--loading" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
-      <section className="front120-loading__copy">
-        <span data-tune-id="loading-emblem"><CompassSeal className="front120-loading__seal" /></span>
+    return <main className={`entry-loading ${exiting ? 'is-exiting' : ''}`} aria-live="polite">
+    <img className="entry-loading__reference" src={loadingMaster} alt="" aria-hidden="true" />
+      <div className="entry-loading__veil" aria-hidden="true" />
+      <div className="entry-motes entry-motes--loading" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
+      <section className="entry-loading__copy">
+        <span data-tune-id="loading-emblem"><CompassSeal className="entry-loading__seal" /></span>
         <h1>교실 모험을 준비하는 중…</h1>
         <p>선생님의 플레이 여정을 정리하고 있어요…</p>
-        <div className="front120-loading__dots" aria-hidden="true"><i /><i /><i /></div>
-        <div className="front120-loading__track" aria-label={`모험 준비 ${loadingProgress}%`}><i style={{ width: `${loadingProgress}%` }} /></div>
-        <p className="front120-loading__wait">잠시만 기다려 주세요</p>
-        {loadingError && <p className="front120-loading__error">{loadingError}</p>}
+        <div className="entry-loading__dots" aria-hidden="true"><i /><i /><i /></div>
+        <div className="entry-loading__track" aria-label={`모험 준비 ${loadingProgress}%`}><i style={{ width: `${loadingProgress}%` }} /></div>
+        <p className="entry-loading__wait">잠시만 기다려 주세요</p>
+        {loadingError && <p className="entry-loading__error">{loadingError}</p>}
       </section>
     </main>
   }
 
   if (step === 'nickname') {
-    return <main className={`front120-prep front120-prep--nickname ${exiting ? 'is-exiting' : ''}`} aria-labelledby="nickname-title">
-      <img className="front120-prep__world" src={portalAcademy} alt="" aria-hidden="true" />
-      <img className="front120-prep__reference" src={stageImage} alt="" aria-hidden="true" />
-      <div className="front120-prep__vignette" aria-hidden="true" />
-      <div className="front120-motes" aria-hidden="true">{Array.from({ length: 20 }, (_, index) => <i key={index} />)}</div>
-      <section className="front120-prep__panel front120-prep__panel--nickname" data-tune-id="nickname-panel">
-        <header className="front120-prep__header"><div className="front120-prep__brand"><CompassSeal /><span>CLASSCADE ADVENTURE</span></div><PrepProgress step={4} /></header>
-        <div className="front120-nickname">
-          <span className="front120-nickname__orb"><CompassSeal /></span>
-          <p className="front120-kicker">✦ 여정의 마지막 준비 ✦</p>
+    return <main className={`entry-prep entry-prep--nickname ${exiting ? 'is-exiting' : ''}`} aria-labelledby="nickname-title">
+      <img className="entry-prep__world" src={portalAcademy} alt="" aria-hidden="true" />
+      <img className="entry-prep__reference" src={stageImage} alt="" aria-hidden="true" />
+      <div className="entry-prep__vignette" aria-hidden="true" />
+      <div className="entry-motes" aria-hidden="true">{Array.from({ length: 20 }, (_, index) => <i key={index} />)}</div>
+      <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
+        <header className="entry-prep__header"><div className="entry-prep__brand"><CompassSeal /><span>CLASSCADE ADVENTURE</span></div><PrepProgress step={4} /></header>
+        <div className="entry-nickname">
+          <span className="entry-nickname__orb"><CompassSeal /></span>
+          <p className="entry-kicker">✦ 여정의 마지막 준비 ✦</p>
           <h1 id="nickname-title"><span>용사님의 닉네임을</span><span>알려주세요</span></h1>
           <p>이 여정에서 불릴 이름이에요.</p>
           <label><span>용사 닉네임</span><input value={nickname} maxLength={16} autoComplete="off" placeholder="예: 플레이메이커쌤" onChange={(event) => setNickname(event.target.value.slice(0, 16))} /></label>
           <small>실제 이름이나 학교명 대신, 이 모험에서 사용할 별명을 적어 주세요.</small>
         </div>
-        <footer className="front120-prep__footer"><button type="button" className="front120-button front120-button--back" onClick={previousStep}>← 이전 질문</button><button type="button" className="front120-button front120-button--next" disabled={!nicknameReady} onClick={beginLoading} data-tune-id="prep-next-button"><CompassSeal />모험 준비 완료 <Icon name="arrow" size={22} /></button></footer>
+        <footer className="entry-prep__footer"><button type="button" className="entry-button entry-button--back" onClick={previousStep}>← 이전 질문</button><button type="button" className="entry-button entry-button--next" disabled={!nicknameReady} onClick={beginLoading} data-tune-id="prep-next-button"><CompassSeal />모험 준비 완료 <Icon name="arrow" size={22} /></button></footer>
       </section>
     </main>
   }
 
   const canContinue = step === 1 ? Boolean(schoolLevel) : step === 2 ? Boolean(careerRange) : step === 3 ? Boolean(region) : growthReady
   if (step === 1) {
-    return <main className={`front120-prep front120-prep--1 front120-prep01-stage ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-1-title">
-      <img className="front120-prep01-stage__background" src={prepOneWorldBackdrop} alt="" aria-hidden="true" />
-      <div className="front120-motes front120-motes--prep01" aria-hidden="true">{Array.from({ length: 20 }, (_, index) => <i key={index} />)}</div>
-      <section className="front120-prep01-plate" aria-labelledby="prep-1-title">
-        <img className="front120-prep01-plate__image" src={prepOneCleanPlate} alt="" aria-hidden="true" />
+    return <main className={`entry-prep entry-prep--1 entry-prep01-stage ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-1-title">
+      <img className="entry-prep01-stage__background" src={prepOneWorldBackdrop} alt="" aria-hidden="true" />
+      <div className="entry-motes entry-motes--prep01" aria-hidden="true">{Array.from({ length: 20 }, (_, index) => <i key={index} />)}</div>
+      <section className="entry-prep01-plate" aria-labelledby="prep-1-title">
+        <img className="entry-prep01-plate__image" src={prepOneCleanPlate} alt="" aria-hidden="true" />
         <h1 id="prep-1-title" className="sr-only">모험 준비 — 어느 교실에서 함께하고 있나요?</h1>
         <PrepOneChoiceCards value={schoolLevel} previewValue={schoolPreview} onChange={setSchoolLevel} onPreviewChange={setSchoolPreview} />
-        <button type="button" className="front120-prep01-plate__cta" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로">
-          <img className="front120-prep01-plate__cta-disabled" src={ctaDisabled} alt="" aria-hidden="true" />
-          <img className="front120-prep01-plate__cta-enabled" src={ctaEnabled} alt="" aria-hidden="true" />
-          <img className="front120-prep01-plate__cta-hover" src={ctaHover} alt="" aria-hidden="true" />
-          <img className="front120-prep01-plate__cta-active" src={ctaActive} alt="" aria-hidden="true" />
+        <button type="button" className="entry-prep01-plate__cta" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로">
+          <img className="entry-prep01-plate__cta-disabled" src={ctaDisabled} alt="" aria-hidden="true" />
+          <img className="entry-prep01-plate__cta-enabled" src={ctaEnabled} alt="" aria-hidden="true" />
+          <img className="entry-prep01-plate__cta-hover" src={ctaHover} alt="" aria-hidden="true" />
+          <img className="entry-prep01-plate__cta-active" src={ctaActive} alt="" aria-hidden="true" />
         </button>
-        <p className="front120-prep01-plate__note"><Icon name="notebook" size={13} />입력한 정보는 언제든지 변경할 수 있어요.</p>
-        {isOffline && <p className="front120-prep__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
+        <p className="entry-prep01-plate__note"><Icon name="notebook" size={13} />입력한 정보는 언제든지 변경할 수 있어요.</p>
+        {isOffline && <p className="entry-prep__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
       </section>
     </main>
   }
 
   if (step === 2) {
-    return <main className={`front120-prep front120-prep--2 front120-prep02-stage ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-2-title">
-      <img className="front120-prep02-stage__plate" src={prepTwoCleanPlate} alt="" aria-hidden="true" />
-      <div className="front120-motes front120-motes--prep02" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
-      <section className="front120-prep02-plate" aria-labelledby="prep-2-title">
+    return <main className={`entry-prep entry-prep--2 entry-prep02-stage ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-2-title">
+      <img className="entry-prep02-stage__plate" src={prepTwoCleanPlate} alt="" aria-hidden="true" />
+      <div className="entry-motes entry-motes--prep02" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
+      <section className="entry-prep02-plate" aria-labelledby="prep-2-title">
         <h1 id="prep-2-title" className="sr-only">모험 준비 — 선생님의 교실 여정은 어느 정도인가요?</h1>
-        <svg className="front120-prep02-plate__path" viewBox="0 0 1484 1060" preserveAspectRatio="none" aria-hidden="true"><path d="M196 690 Q 340 706 454 672 T 634 690 T 813 672 T 993 690 Q 1080 702 1128 692" /></svg>
+        <svg className="entry-prep02-plate__path" viewBox="0 0 1484 1060" preserveAspectRatio="none" aria-hidden="true"><path d="M196 690 Q 340 706 454 672 T 634 690 T 813 672 T 993 690 Q 1080 702 1128 692" /></svg>
         <PrepTwoChoiceCards value={careerRange} previewValue={careerPreview} onChange={setCareerRange} onPreviewChange={setCareerPreview} />
-        <button type="button" className="front120-prep02-plate__back front120-nav-img" onClick={previousStep} aria-label="이전 질문"><img src={prepTwoBack} alt="" aria-hidden="true" /></button>
-        <button type="button" className="front120-prep02-plate__cta front120-nav-img" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로"><img src={canContinue ? prepTwoCtaEnabled : prepTwoCtaDisabled} alt="" aria-hidden="true" /></button>
-        {isOffline && <p className="front120-prep02-plate__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
+        <button type="button" className="entry-prep02-plate__back entry-nav-img" onClick={previousStep} aria-label="이전 질문"><img src={prepTwoBack} alt="" aria-hidden="true" /></button>
+        <button type="button" className="entry-prep02-plate__cta entry-nav-img" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로"><img src={canContinue ? prepTwoCtaEnabled : prepTwoCtaDisabled} alt="" aria-hidden="true" /></button>
+        {isOffline && <p className="entry-prep02-plate__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
       </section>
     </main>
   }
 
-  return <main className={`front120-prep front120-prep--${step} ${exiting ? 'is-exiting' : ''}`} aria-labelledby={`prep-${step}-title`}>
-    <img className="front120-prep__world" src={portalAcademy} alt="" aria-hidden="true" />
-    <img className="front120-prep__reference" src={stageImage} alt="" aria-hidden="true" data-tune-id={`prep-${step}-hero`} />
-    {step === 3 && region && <i className={`front120-prep__region-marker front120-prep__region-marker--${REGION_OPTIONS.findIndex((option) => option.value === region) + 1}`} aria-hidden="true" />}
-    {step === 4 && growthPriorities.length > 0 && <div className={`front120-prep__growth-nodes front120-prep__growth-nodes--${growthPriorities.length}`} aria-hidden="true">{growthPriorities.map((priority, index) => <i key={priority} style={{ '--node': index } as CSSProperties} />)}</div>}
-    <div className="front120-prep__vignette" aria-hidden="true" />
-    <div className="front120-motes" aria-hidden="true">{Array.from({ length: 24 }, (_, index) => <i key={index} />)}</div>
-    <section className="front120-prep__panel">
-      <header className="front120-prep__header">
-        <div className="front120-prep__brand"><CompassSeal /><span>CLASSCADE ADVENTURE</span></div>
+  return <main className={`entry-prep entry-prep--${step} ${exiting ? 'is-exiting' : ''}`} aria-labelledby={`prep-${step}-title`}>
+    <img className="entry-prep__world" src={portalAcademy} alt="" aria-hidden="true" />
+    <img className="entry-prep__reference" src={stageImage} alt="" aria-hidden="true" data-tune-id={`prep-${step}-hero`} />
+    {step === 3 && region && <i className={`entry-prep__region-marker entry-prep__region-marker--${REGION_OPTIONS.findIndex((option) => option.value === region) + 1}`} aria-hidden="true" />}
+    {step === 4 && growthPriorities.length > 0 && <div className={`entry-prep__growth-nodes entry-prep__growth-nodes--${growthPriorities.length}`} aria-hidden="true">{growthPriorities.map((priority, index) => <i key={priority} style={{ '--node': index } as CSSProperties} />)}</div>}
+    <div className="entry-prep__vignette" aria-hidden="true" />
+    <div className="entry-motes" aria-hidden="true">{Array.from({ length: 24 }, (_, index) => <i key={index} />)}</div>
+    <section className="entry-prep__panel">
+      <header className="entry-prep__header">
+        <div className="entry-prep__brand"><CompassSeal /><span>CLASSCADE ADVENTURE</span></div>
         <PrepProgress step={stepNumber} />
       </header>
-      <div className="front120-prep__intro">
+      <div className="entry-prep__intro">
         <h1>모험 준비</h1>
         <p>교실 모험을 시작하기 전,<br />간단한 정보를 선택해 주세요.</p>
       </div>
-      <section className={`front120-prep__question front120-prep__question--${step}`} aria-labelledby={`prep-${step}-title`}>
-        <p className="front120-prep__question-number">{title.number}</p>
+      <section className={`entry-prep__question entry-prep__question--${step}`} aria-labelledby={`prep-${step}-title`}>
+        <p className="entry-prep__question-number">{title.number}</p>
         <h2 id={`prep-${step}-title`} data-tune-id={`prep-${step}-title`}>{title.question}</h2>
         <p>{title.helper} {step === 4 && <strong aria-live="polite">{growthPriorities.length} / 3</strong>}</p>
-        {step === 3 && region && <p className="front120-prep__next-cue" role="status">지역을 선택했어요 · 아래의 다음 질문 버튼으로 이어가요 ↓</p>}
+        {step === 3 && region && <p className="entry-prep__next-cue" role="status">지역을 선택했어요 · 아래의 다음 질문 버튼으로 이어가요 ↓</p>}
         {step === 3 && <ChoiceCards options={REGION_OPTIONS} value={region} onChange={setRegion} icons={['region']} tunePrefix="prep-3" compact />}
-        {step === 4 && growthPriorities.length === 3 && <p className="front120-prep__next-cue" role="status">선택 완료 · 아래의 다음 질문 버튼으로 이어가요 ↓</p>}
-        {step === 4 && <div className="front120-growth-grid" role="group" aria-label="교실 성장 우선순위">
+        {step === 4 && growthPriorities.length === 3 && <p className="entry-prep__next-cue" role="status">선택 완료 · 아래의 다음 질문 버튼으로 이어가요 ↓</p>}
+        {step === 4 && <div className="entry-growth-grid" role="group" aria-label="교실 성장 우선순위">
           {GROWTH_PRIORITY_OPTIONS.map((option, index) => {
             const selected = growthPriorities.includes(option.value)
-            return <button key={option.value} className={`front120-growth-card ${selected ? 'is-selected' : ''}`} type="button" style={{ '--frame-neutral': `url(${choiceFrameNeutral})`, '--frame-selected': `url(${choiceFrameSelected})` } as CSSProperties} aria-pressed={selected} data-tune-id={`prep-4-option-${index + 1}`} onClick={() => toggleGrowthPriority(option.value)}><Icon name={growthIcons[index]} size={24} /><span>{option.label}</span>{selected && <i aria-hidden="true"><Icon name="check" size={15} /></i>}</button>
+            return <button key={option.value} className={`entry-growth-card ${selected ? 'is-selected' : ''}`} type="button" style={{ '--frame-neutral': `url(${choiceFrameNeutral})`, '--frame-selected': `url(${choiceFrameSelected})` } as CSSProperties} aria-pressed={selected} data-tune-id={`prep-4-option-${index + 1}`} onClick={() => toggleGrowthPriority(option.value)}><Icon name={growthIcons[index]} size={24} /><span>{option.label}</span>{selected && <i aria-hidden="true"><Icon name="check" size={15} /></i>}</button>
           })}
-          {otherSelected && <label className="front120-growth-other"><span>기타 직접 입력</span><input value={otherText} maxLength={30} placeholder="직접 입력해 주세요." onChange={(event) => setOtherText(event.target.value.slice(0, 30))} /></label>}
-          <p className="front120-growth-message" aria-live="polite">{selectionMessage}</p>
+          {otherSelected && <label className="entry-growth-other"><span>기타 직접 입력</span><input value={otherText} maxLength={30} placeholder="직접 입력해 주세요." onChange={(event) => setOtherText(event.target.value.slice(0, 30))} /></label>}
+          <p className="entry-growth-message" aria-live="polite">{selectionMessage}</p>
         </div>}
       </section>
-      <footer className="front120-prep__footer">
-        <button type="button" className="front120-button front120-button--back front120-nav-img" onClick={previousStep} aria-label="이전 질문"><img src={prepNavBack} alt="" aria-hidden="true" /></button>
-        <button type="button" className="front120-button front120-button--next front120-nav-img" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로"><img src={canContinue ? prepNavCtaEnabled : prepNavCtaDisabled} alt="" aria-hidden="true" /></button>
+      <footer className="entry-prep__footer">
+        <button type="button" className="entry-button entry-button--back entry-nav-img" onClick={previousStep} aria-label="이전 질문"><img src={prepNavBack} alt="" aria-hidden="true" /></button>
+        <button type="button" className="entry-button entry-button--next entry-nav-img" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로"><img src={canContinue ? prepNavCtaEnabled : prepNavCtaDisabled} alt="" aria-hidden="true" /></button>
       </footer>
-      {isOffline && <p className="front120-prep__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
+      {isOffline && <p className="entry-prep__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
     </section>
   </main>
 }

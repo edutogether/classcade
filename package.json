@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "test": "vitest run && tsc -b --noEmit",
     "preview": "vite preview",
-    "front120:tune:apply": "node scripts/apply-front120-tuning.mjs",
+    "entry:tune:apply": "node scripts/apply-entry-tuning.mjs",
     "rules:test": "firebase emulators:exec --only firestore \"vitest run src/features/pairing/firestore.rules.test.ts\""
   },
   "dependencies": {

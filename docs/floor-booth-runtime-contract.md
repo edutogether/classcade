@@ -13,7 +13,7 @@ type BoothRuntimeConfig = {
 }
 ```
 
-`operatingMode: 'paused'` and `allowNewSessions: false` are the future interruption boundary. Current Front120 continues to use its existing local journey storage and does not consume this configuration yet.
+`operatingMode: 'paused'` and `allowNewSessions: false` are the future interruption boundary. Current entry flow continues to use its existing local journey storage and does not consume this configuration yet.
 
 ## Participant state
 

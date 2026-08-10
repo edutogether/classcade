@@ -15,7 +15,7 @@ const validProfile = {
   updatedAt: '2026-08-03T00:00:00.000Z',
 }
 
-describe('Front120 entry-flow guardrails', () => {
+describe('Entry entry-flow guardrails', () => {
   it('uses five school choices without the removed other option', () => {
     expect(SCHOOL_LEVEL_OPTIONS.map((option) => option.label)).toEqual(['유아', '초등', '중등', '고등', '특수'])
   })

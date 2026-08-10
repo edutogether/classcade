@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createTuning, validateTuning, valuesFor, withinRange } from './visualTuning'
 
-describe('Front120 visual tuning contract', () => {
+describe('Entry visual tuning contract', () => {
   it('starts with a complete, valid official tuning shape', () => {
     const tuning = createTuning()
     expect(validateTuning(tuning)).toBe(true)
