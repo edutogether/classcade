@@ -1,0 +1,57 @@
+/* Preparation 2: static official clean plate + dynamic career selection layer. */
+.entry-prep02-stage { align-items: center; display: grid; justify-items: center; min-height: 100svh; overflow: hidden; padding: 12px; }
+body:has(.entry-prep02-stage) { overflow-y: hidden; }
+/* Must match .entry-prep02-plate's own aspect-ratio-locked sizing exactly — using object-fit:cover
+   against the raw viewport here made the background scale independently of the card grid, so at any
+   viewport ratio other than 1484:1060 the two drifted apart and cards ended up sitting over the wrong
+   patch of the background. */
+.entry-prep02-stage__plate { aspect-ratio: 1484 / 1060; height: min(calc(100svh - 24px), calc((100vw - 96px) / 1.4)); inset: auto; left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%); user-select: none; width: auto; z-index: -5; }
+.entry-prep02-plate { aspect-ratio: 1484 / 1060; box-shadow: 0 20px 64px rgba(0,0,0,.48); height: min(calc(100svh - 24px), calc((100vw - 96px) / 1.4)); isolation: isolate; position: relative; width: auto; }
+.entry-prep02-plate__cards { inset: 0; position: absolute; z-index: 1; }
+.entry-prep02-plate__cardart { appearance: none; background: none; border: 0; cursor: pointer; height: var(--art-h); left: var(--art-x); padding: 0; position: absolute; top: var(--art-y); transform: rotate(var(--card-tilt, 0deg)); transform-origin: 50% 100%; width: var(--art-w); }
+.entry-prep02-plate__cards .entry-prep02-plate__cardart:nth-child(1) { --card-tilt: -2.4deg; }
+.entry-prep02-plate__cards .entry-prep02-plate__cardart:nth-child(2) { --card-tilt: -1.1deg; }
+.entry-prep02-plate__cards .entry-prep02-plate__cardart:nth-child(3) { --card-tilt: 0.2deg; }
+.entry-prep02-plate__cards .entry-prep02-plate__cardart:nth-child(4) { --card-tilt: 1.3deg; }
+.entry-prep02-plate__cards .entry-prep02-plate__cardart:nth-child(5) { --card-tilt: 2.5deg; }
+.entry-prep02-plate__cardart img { display: block; height: 100%; user-select: none; width: 100%; }
+.entry-prep02-plate__cardart.is-hover:not(.is-selected) { filter: brightness(1.05) drop-shadow(0 0 8px rgba(255, 220, 127, .5)); }
+.entry-prep02-plate__cardart:focus-visible { outline: 2px solid #f9e3a1; outline-offset: 3px; }
+.entry-prep02-plate__path { height: 100%; inset: 0; pointer-events: none; position: absolute; width: 100%; z-index: 0; }
+.entry-prep02-plate__path path { fill: none; opacity: .5; stroke: #b6893a; stroke-dasharray: 1 17; stroke-linecap: round; stroke-width: 5; }
+.entry-prep02-plate__card { align-content: center; appearance: none; background: linear-gradient(150deg, rgba(255,251,225,.96), rgba(234,213,159,.94)); border: 1px solid rgba(116,75,22,.58); box-shadow: inset 0 0 0 2px rgba(255,247,215,.74), inset 0 -12px 18px rgba(103,62,13,.12), 0 4px 9px rgba(45,26,5,.2); color: #60451f; cursor: pointer; display: grid; font-family: Georgia, 'Noto Serif KR', serif; font-size: clamp(13px, 1.45vw, 28px); font-weight: 800; gap: 8%; height: var(--prep2-card-h); justify-items: center; left: var(--prep2-card-x); overflow: visible; padding: 8% 4%; position: absolute; top: var(--prep2-card-y); transition: filter 180ms ease-out; width: var(--prep2-card-w); }
+.entry-prep02-plate__card::before { border: 1px solid rgba(122,79,23,.36); clip-path: polygon(9px 0,calc(100% - 9px) 0,100% 9px,100% calc(100% - 9px),calc(100% - 9px) 100%,9px 100%,0 calc(100% - 9px),0 9px); content:''; inset:5px; pointer-events:none; position:absolute; }
+.entry-prep02-plate__card::after { background: radial-gradient(circle at 50% 8%,rgba(255,239,165,.5),transparent 29%), radial-gradient(circle at 50% 94%,rgba(96,49,9,.14),transparent 43%); content:''; inset:0; pointer-events:none; position:absolute; }
+.entry-prep02-plate__card-icon { color:#99712e; filter:drop-shadow(0 1px rgba(255,248,208,.8)); position:relative; z-index:1; }
+.entry-prep02-plate__card b { line-height:1.05; position:relative; text-align:center; z-index:1; }
+.entry-prep02-plate__card-check { align-items:center; background:#16764c; border:2px solid #f7df86; border-radius:50%; box-shadow:0 2px 8px rgba(7,37,19,.56); color:white; display:grid; height:25px; justify-items:center; position:absolute; right:-7px; top:-8px; width:25px; z-index:3; }
+.entry-prep02-plate__card.is-hover, .entry-prep02-plate__card.is-selected { background: radial-gradient(circle at 50% 10%,rgba(255,229,133,.2),transparent 29%),linear-gradient(152deg,#2b5234,#10291b 76%); border-color:#e7ba52; box-shadow: 0 0 0 2px rgba(124,73,13,.76), inset 0 0 0 2px rgba(255,231,145,.7), inset 0 0 0 5px rgba(16,61,37,.83), inset 0 -15px 21px rgba(0,12,5,.5), 0 0 17px rgba(241,189,72,.46); color:#fff1ae; }
+.entry-prep02-plate__card.is-hover { filter:brightness(1.07) drop-shadow(0 0 9px rgba(255,220,127,.62)); }
+.entry-prep02-plate__card.is-hover::after, .entry-prep02-plate__card.is-selected::after { background:radial-gradient(circle at 50% 9%,rgba(255,241,173,.26),transparent 27%),linear-gradient(180deg,rgba(255,239,161,.12),transparent 42%); }
+.entry-prep02-plate__card.is-hover .entry-prep02-plate__card-icon, .entry-prep02-plate__card.is-selected .entry-prep02-plate__card-icon { color:#ffe69a; filter:drop-shadow(0 0 6px rgba(255,216,104,.68)); }
+.entry-prep02-plate__card:focus-visible { outline:2px solid #f9e3a1; outline-offset:4px; z-index:4; }
+.entry-prep02-plate__back, .entry-prep02-plate__cta { align-items:center; appearance:none; cursor:pointer; display:flex; font-family:Georgia,'Noto Serif KR',serif; font-size:clamp(15px,1.48vw,27px); font-weight:800; height:7.4%; justify-content:center; padding:0; position:absolute; top:78.24%; z-index:2; }
+.entry-prep02-plate__back { background:linear-gradient(180deg,#fff6d9,#e4c98e); border:1px solid #9a7137; box-shadow:inset 0 1px rgba(255,255,255,.75),0 3px 6px rgba(78,42,8,.18); color:#4e3518; left:23.8%; width:17.45%; }
+.entry-prep02-plate__cta { background:linear-gradient(180deg,#304e31,#102819); border:1px solid #f3cd63; box-shadow:0 0 0 3px rgba(127,75,12,.5),inset 0 1px rgba(255,240,154,.36),inset 0 -7px 12px rgba(2,14,8,.42),0 7px 12px rgba(35,18,4,.25); color:#ffefae; gap:14px; left:46.25%; width:25.1%; }
+.entry-prep02-plate__cta:disabled { cursor:not-allowed; filter:grayscale(.7); opacity:.63; }
+.entry-prep02-plate__back:hover, .entry-prep02-plate__cta:hover:not(:disabled) { filter:brightness(1.07); }.entry-prep02-plate__cta:active:not(:disabled), .entry-prep02-plate__back:active { transform:translateY(1px); }
+.entry-prep02-plate__back:focus-visible, .entry-prep02-plate__cta:focus-visible { outline:2px solid #f8e7a9; outline-offset:3px; }
+.entry-prep02-plate__offline { bottom:4.1%; color:#675b3c; font-size:clamp(8px,.75vw,12px); left:14%; margin:0; max-width:38%; position:absolute; }
+/* 720px min-width below is a tablet-range floor; below 700px it forced phones into the same
+   fixed-width plate, causing horizontal overflow/cropping. Phones fall through to the base
+   aspect-ratio-driven sizing instead (matches the rest of the file's 700px mobile breakpoint). */
+@media (min-width:701px) and (max-width:900px) { .entry-prep02-stage { align-items:start; min-height:100svh; overflow:auto; padding:12px; }.entry-prep02-plate { height:auto; margin:12px auto; min-width:720px; width:min(94vw,1180px); }.entry-prep02-stage__plate { position:fixed; } }
+@media (min-width: 701px) and (max-width: 900px) { .entry-prep01-stage { align-items: start; min-height: 100svh; overflow: auto; padding: 12px; }.entry-prep01-plate { height: auto; margin: 12px auto; min-width: 720px; width: min(94vw, 1180px); }.entry-prep01-stage__background { position: fixed; } }
+@media (max-width: 700px) {
+  /* Phones are portrait; forcing the 1.4:1 landscape plate to fit inside a narrow viewport
+     shrinks it to a small box with most of the screen left as empty background. Drop the
+     landscape lock here and let the plate grow to fill the portrait viewport instead, with
+     the background art cropping (not squeezing) into the new box via background-size:cover. */
+  .entry-prep01-stage, .entry-prep02-stage { align-items: center; min-height: 100svh; overflow: hidden; padding: 10px; }
+  .entry-prep01-plate, .entry-prep02-plate { aspect-ratio: auto; height: calc(100svh - 20px); margin: 0 auto; width: min(96vw, 560px); }
+  .entry-prep02-plate__back, .entry-prep02-plate__cta { font-size: clamp(7px, 2.6vw, 12px); gap: 3px; white-space: nowrap; }
+  .entry-prep02-plate__cta svg, .entry-prep01-plate__cta svg { display: none; }
+  /* Keep this background echo layer's box identical to .entry-prep02-plate above so the
+     baked scene art crops in sync with the interactive hotspots positioned over it. */
+  .entry-prep02-stage__plate { aspect-ratio: auto; height: calc(100svh - 20px); inset: auto; left: 50%; object-fit: cover; top: 50%; transform: translate(-50%, -50%); width: min(96vw, 560px); }
+}
