@@ -57,8 +57,8 @@
 .front120-prep--4 .front120-prep__reference { object-position: 51% center; }
 
 .front120-prep--2 .front120-prep__reference { filter: saturate(.88) brightness(.84); mask-image: linear-gradient(90deg, transparent 0 45%, rgba(0,0,0,.16) 56%, #000 82%); object-position: 58% center; }
-.front120-prep--3 .front120-prep__reference { filter: saturate(.82) brightness(.78); mask-image: linear-gradient(90deg, transparent 0 42%, rgba(0,0,0,.18) 55%, #000 82%); object-position: 55% center; }
-.front120-prep--4 .front120-prep__reference { filter: saturate(.88) brightness(.8); mask-image: linear-gradient(90deg, transparent 0 44%, rgba(0,0,0,.12) 57%, #000 82%); object-position: 58% center; }
+.front120-prep--3 .front120-prep__reference { filter: saturate(.82) brightness(.78); mask-image: linear-gradient(90deg, transparent 0 28%, rgba(0,0,0,.18) 42%, #000 68%); object-position: 42% center; }
+.front120-prep--4 .front120-prep__reference { filter: saturate(.88) brightness(.8); mask-image: linear-gradient(90deg, transparent 0 30%, rgba(0,0,0,.12) 44%, #000 68%); object-position: 45% center; }
 .front120-prep--2 .front120-prep__illustration { bottom: 0; right: -5%; top: 15%; width: 48%; }
 .front120-prep__career-path{left:59%;pointer-events:none;position:absolute;top:46%;z-index:2}.front120-prep__career-path i{background:rgba(255,197,70,.18);border:1px solid rgba(255,220,116,.35);border-radius:50%;display:block;height:13px;margin:15px;width:13px}.front120-prep__career-path--1 i:nth-child(-n+1),.front120-prep__career-path--2 i:nth-child(-n+2),.front120-prep__career-path--3 i:nth-child(-n+3),.front120-prep__career-path--4 i:nth-child(-n+4),.front120-prep__career-path--5 i:nth-child(-n+5){background:#ffe18a;box-shadow:0 0 16px #ffd166}
 .front120-prep__region-marker{background:radial-gradient(circle,#fff6c9 0 16%,#ffcf58 18% 34%,rgba(255,190,53,.25) 37% 55%,transparent 58%);border:1px solid rgba(255,229,134,.9);border-radius:50%;box-shadow:0 0 17px rgba(255,197,70,.88);height:22px;pointer-events:none;position:absolute;transform:translate(-50%,-50%);width:22px;z-index:2}.front120-prep__region-marker--1{left:57.4%;top:36.1%}.front120-prep__region-marker--2{left:65.2%;top:54.1%}.front120-prep__region-marker--3{left:67.7%;top:48.6%}.front120-prep__region-marker--4{left:62.8%;top:41.3%}.front120-prep__region-marker--5{left:58.7%;top:57.1%}.front120-prep__region-marker--6{left:61.5%;top:52.5%}.front120-prep__region-marker--7{left:70.7%;top:55.8%}.front120-prep__region-marker--8{left:64.1%;top:47.1%}.front120-prep__region-marker--9{left:61.6%;top:38.9%}.front120-prep__region-marker--10{left:67.6%;top:38.7%}.front120-prep__region-marker--11{left:65.1%;top:43.2%}.front120-prep__region-marker--12{left:68.7%;top:45.7%}.front120-prep__region-marker--13{left:60.9%;top:46.8%}.front120-prep__region-marker--14{left:63.5%;top:51.7%}.front120-prep__region-marker--15{left:67.8%;top:42.2%}.front120-prep__region-marker--16{left:69.8%;top:50.5%}.front120-prep__region-marker--17{left:61.8%;top:59.9%}
@@ -178,13 +178,13 @@
 .front120-prep__next-cue { color: #176041; font-size: 13px; font-weight: 800; margin: 0 0 10px 43px; }
 
 .front120-choice-grid { display: grid; gap: clamp(10px, 1.1vw, 18px); grid-template-columns: repeat(5, minmax(0, 1fr)); margin-left: clamp(0px, 1.6vw, 24px); max-width: min(100%, 850px); }
-.front120-choice-card { align-items: center; background: linear-gradient(140deg, rgba(255,250,222,.82), rgba(237,218,164,.82)); border: 1px solid rgba(142, 99, 39, .67); box-shadow: inset 0 0 0 2px rgba(255, 248, 218, .55), inset 0 -6px 10px rgba(126, 80, 25, .09), 0 4px 7px rgba(75, 42, 9, .16); color: #59401f; cursor: pointer; display: grid; font-family: 'Gowun Batang', serif; font-size: clamp(17px, 1.6vw, 26px); font-weight: 700; gap: 12px; justify-items: center; min-height: clamp(128px, 17vw, 184px); padding: 16px 7px; position: relative; transition: filter .16s ease, box-shadow .16s ease, transform .16s ease; }
+.front120-choice-card { align-items: center; background-color: rgba(237,218,164,.18); background-image: var(--frame-neutral); background-position: center; background-repeat: no-repeat; background-size: contain; border: 0; box-shadow: 0 4px 7px rgba(75, 42, 9, .16); color: #59401f; cursor: pointer; display: grid; font-family: 'Gowun Batang', serif; font-size: clamp(17px, 1.6vw, 26px); font-weight: 700; gap: 12px; justify-items: center; min-height: clamp(128px, 17vw, 184px); padding: 16px 7px; position: relative; transition: filter .16s ease, box-shadow .16s ease, transform .16s ease; }
 .front120-choice-card::before { border: 1px solid rgba(125, 83, 30, .38); clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px); content: ''; inset: 5px; pointer-events: none; position: absolute; }
 .front120-choice-card__icon { color: #8b6630; }
 .front120-choice-card__check { align-items: center; background: #1f5538; border: 2px solid #ffdc79; border-radius: 50%; box-shadow: 0 0 11px rgba(255,217,99,.74); color: #fff2b9; display: grid; height: 29px; justify-items: center; position: absolute; right: -7px; top: -10px; width: 29px; }
 .front120-choice-card:hover { filter: brightness(1.04); transform: translateY(-2px); }
 .front120-choice-card:active { transform: translateY(1px); }
-.front120-choice-card.is-selected { background: radial-gradient(circle at 50% 16%, rgba(253,232,132,.21), transparent 25%), linear-gradient(150deg, #294a31, #102519); border-color: #f5c959; box-shadow: 0 0 0 3px rgba(133, 79, 14, .58), inset 0 0 0 2px rgba(255,235,145,.52), inset 0 -14px 22px rgba(1,14,7,.41), 0 0 19px rgba(234,166,43,.38); color: #fff0b0; }
+.front120-choice-card.is-selected { background-color: rgba(41,74,49,.18); background-image: var(--frame-selected); background-position: center; background-repeat: no-repeat; background-size: contain; box-shadow: 0 0 19px rgba(234,166,43,.38); color: #fff0b0; }
 .front120-choice-card.is-selected .front120-choice-card__icon { color: #ffe083; filter: drop-shadow(0 0 7px rgba(255,218,105,.8)); }
 
 .front120-choice-grid--compact { gap: 10px; grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: min(73%, 530px); }
@@ -192,10 +192,10 @@
 .front120-choice-grid--compact .front120-choice-card__icon { display: none; }
 
 .front120-growth-grid { display: grid; gap: 13px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-left: 0; max-width: min(76%, 790px); }
-.front120-growth-card { align-items: center; background: linear-gradient(145deg, rgba(255,248,220,.79), rgba(232,209,157,.75)); border: 1px solid rgba(142, 99, 39, .67); box-shadow: inset 0 0 0 2px rgba(255,248,218,.5), inset 0 -6px 10px rgba(126,80,25,.08), 0 4px 7px rgba(75,42,9,.13); color: #5c4220; cursor: pointer; display: flex; font-size: clamp(11px, 1.05vw, 15px); font-weight: 800; gap: 9px; justify-content: flex-start; line-height: 1.25; min-height: clamp(64px, 7.1vw, 82px); min-width: 0; padding: 11px 13px; position: relative; text-align: left; transition: transform .16s ease, filter .16s ease; }
+.front120-growth-card { align-items: center; background-color: rgba(232,209,157,.15); background-image: var(--frame-neutral); background-position: center; background-repeat: no-repeat; background-size: contain; border: 0; box-shadow: 0 4px 7px rgba(75,42,9,.13); color: #5c4220; cursor: pointer; display: flex; font-size: clamp(11px, 1.05vw, 15px); font-weight: 800; gap: 9px; justify-content: flex-start; line-height: 1.25; min-height: clamp(64px, 7.1vw, 82px); min-width: 0; padding: 11px 13px; position: relative; text-align: left; transition: transform .16s ease, filter .16s ease; }
 .front120-growth-card span { min-width: 0; overflow-wrap: break-word; white-space: normal; }
 .front120-growth-card:hover { filter: brightness(1.04); transform: translateY(-1px); }
-.front120-growth-card.is-selected { background: linear-gradient(145deg, #315a38, #11281a); border-color: #ffd267; box-shadow: 0 0 0 2px rgba(154,95,16,.55), inset 0 1px rgba(255,235,145,.43), 0 0 15px rgba(239,179,50,.32); color: #fff0b5; }
+.front120-growth-card.is-selected { background-color: rgba(41,74,49,.15); background-image: var(--frame-selected); box-shadow: 0 0 15px rgba(239,179,50,.32); color: #fff0b5; }
 .front120-growth-card svg { color: #9a7134; flex: 0 0 auto; }.front120-growth-card.is-selected > svg { color: #ffe184; }
 .front120-growth-card i { align-items: center; background: #27583a; border: 1px solid #ffe187; border-radius: 50%; color: #fff4c6; display: grid; height: 23px; justify-items: center; position: absolute; right: -7px; top: -8px; width: 23px; }
 .front120-growth-other { align-items: center; background: rgba(255,248,222,.64); border: 1px solid rgba(142,99,39,.67); display: flex; gap: 8px; grid-column: 1 / -1; min-height: 53px; padding: 6px 10px; }.front120-growth-other span { color: #5a3f20; font-size: 13px; font-weight: 800; white-space: nowrap; }.front120-growth-other input { background: transparent; border: 0; color: #3a2710; min-height: 39px; outline: 0; padding: 0 6px; width: 100%; }.front120-growth-message { color: #a03922; font-size: 12px; font-weight: 800; grid-column: 1 / -1; margin: -5px 0 0; min-height: 16px; }
@@ -447,7 +447,11 @@ body:has(.front120-prep01-stage) { overflow-y: hidden; }
 /* Preparation 2: static official clean plate + dynamic career selection layer. */
 .front120-prep02-stage { align-items: center; display: grid; justify-items: center; min-height: 100svh; overflow: hidden; padding: 12px; }
 body:has(.front120-prep02-stage) { overflow-y: hidden; }
-.front120-prep02-stage__plate { height: 100%; inset: 0; object-fit: cover; position: absolute; user-select: none; width: 100%; z-index: -5; }
+/* Must match .front120-prep02-plate's own aspect-ratio-locked sizing exactly — using object-fit:cover
+   against the raw viewport here made the background scale independently of the card grid, so at any
+   viewport ratio other than 1484:1060 the two drifted apart and cards ended up sitting over the wrong
+   patch of the background. */
+.front120-prep02-stage__plate { aspect-ratio: 1484 / 1060; height: min(calc(100svh - 24px), calc((100vw - 96px) / 1.4)); inset: auto; left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%); user-select: none; width: auto; z-index: -5; }
 .front120-prep02-plate { aspect-ratio: 1484 / 1060; box-shadow: 0 20px 64px rgba(0,0,0,.48); height: min(calc(100svh - 24px), calc((100vw - 96px) / 1.4)); isolation: isolate; position: relative; width: auto; }
 .front120-prep02-plate__cards { inset: 0; position: absolute; z-index: 1; }
 .front120-prep02-plate__cardart { appearance: none; background: none; border: 0; cursor: pointer; height: var(--art-h); left: var(--art-x); padding: 0; position: absolute; top: var(--art-y); transform: rotate(var(--card-tilt, 0deg)); transform-origin: 50% 100%; width: var(--art-w); }
@@ -485,13 +489,15 @@ body:has(.front120-prep02-stage) { overflow-y: hidden; }
 @media (min-width:701px) and (max-width:900px) { .front120-prep02-stage { align-items:start; min-height:100svh; overflow:auto; padding:12px; }.front120-prep02-plate { height:auto; margin:12px auto; min-width:720px; width:min(94vw,1180px); }.front120-prep02-stage__plate { position:fixed; } }
 @media (min-width: 701px) and (max-width: 900px) { .front120-prep01-stage { align-items: start; min-height: 100svh; overflow: auto; padding: 12px; }.front120-prep01-plate { height: auto; margin: 12px auto; min-width: 720px; width: min(94vw, 1180px); }.front120-prep01-stage__background { position: fixed; } }
 @media (max-width: 700px) {
+  /* Phones are portrait; forcing the 1.4:1 landscape plate to fit inside a narrow viewport
+     shrinks it to a small box with most of the screen left as empty background. Drop the
+     landscape lock here and let the plate grow to fill the portrait viewport instead, with
+     the background art cropping (not squeezing) into the new box via background-size:cover. */
   .front120-prep01-stage, .front120-prep02-stage { align-items: center; min-height: 100svh; overflow: hidden; padding: 10px; }
-  .front120-prep01-plate, .front120-prep02-plate { height: min(calc(100svh - 20px), calc((100vw - 20px) / 1.4)); margin: 0 auto; width: auto; }
+  .front120-prep01-plate, .front120-prep02-plate { aspect-ratio: auto; height: calc(100svh - 20px); margin: 0 auto; width: min(96vw, 560px); }
   .front120-prep02-plate__back, .front120-prep02-plate__cta { font-size: clamp(7px, 2.6vw, 12px); gap: 3px; white-space: nowrap; }
   .front120-prep02-plate__cta svg, .front120-prep01-plate__cta svg { display: none; }
-  /* On phones the stage is portrait while the plate is a fixed 1.4:1 landscape box; letting this
-     background layer cover the whole (tall) stage independently of the plate's own centered box
-     desyncs the two, showing a wrongly-cropped/zoomed slice behind the correctly-sized hotspots.
-     Give it the exact same box so both layers line up again. */
-  .front120-prep02-stage__plate { aspect-ratio: 1484 / 1060; height: min(calc(100svh - 20px), calc((100vw - 20px) / 1.4)); inset: auto; left: 50%; top: 50%; transform: translate(-50%, -50%); width: auto; }
+  /* Keep this background echo layer's box identical to .front120-prep02-plate above so the
+     baked scene art crops in sync with the interactive hotspots positioned over it. */
+  .front120-prep02-stage__plate { aspect-ratio: auto; height: calc(100svh - 20px); inset: auto; left: 50%; object-fit: cover; top: 50%; transform: translate(-50%, -50%); width: min(96vw, 560px); }
 }

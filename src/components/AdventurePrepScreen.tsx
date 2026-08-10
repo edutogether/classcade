@@ -15,8 +15,10 @@ import type { Profile } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
 import prepFourReference from '../assets/front120/prep-4.png'
 import prepTwoMaster from '../assets/classcade/master-screens/prep-02-master.png'
-import prepThreeMaster from '../assets/classcade/master-screens/prep-03-master.png'
-import prepFourMaster from '../assets/classcade/master-screens/prep-04-master.png'
+import prepThreeCleanPlate from '../assets/classcade/prep-03-interactive/prep-03-clean-plate.png'
+import prepFourCleanPlate from '../assets/classcade/prep-04-interactive/prep-04-clean-plate.png'
+import choiceFrameNeutral from '../assets/classcade/prep-nav/choice-frame-neutral.png'
+import choiceFrameSelected from '../assets/classcade/prep-nav/choice-frame-selected.png'
 import loadingMaster from '../assets/classcade/master-screens/loading-master.png'
 import portalAcademy from '../assets/portal-academy-background.png'
 import prepOneWorldBackdrop from '../assets/classcade/prep-01-interactive/prep-01-world-backdrop-16x9.png'
@@ -75,8 +77,8 @@ type AdventurePrepScreenProps = {
 const STEP_IMAGES: Record<Exclude<PrepStep, 'nickname' | 'loading'>, string> = {
   1: prepOneWorldBackdrop,
   2: prepTwoMaster,
-  3: prepThreeMaster,
-  4: prepFourMaster,
+  3: prepThreeCleanPlate,
+  4: prepFourCleanPlate,
 }
 
 const growthIcons: IconName[] = ['gamepad', 'school', 'spark', 'notebook', 'career', 'leaf', 'notebook', 'region', 'career', 'spark']
@@ -211,7 +213,7 @@ function ChoiceCards<T extends string>({ options, value, onChange, onPreviewChan
             onChange(option.value)
           }
         }
-        return <button key={option.value} type="button" className={`front120-choice-card ${selected ? 'is-selected' : ''} ${previewed ? 'is-previewed' : ''}`} role="radio" aria-checked={selected} tabIndex={selected || (!value && index === 0) ? 0 : -1} data-tune-id={`${tunePrefix}-option-${index + 1}`} onPointerEnter={() => onPreviewChange?.(option.value)} onPointerLeave={() => onPreviewChange?.(null)} onFocus={() => onPreviewChange?.(option.value)} onBlur={() => onPreviewChange?.(null)} onKeyDown={moveFocus} onClick={() => { noteAudioUserGesture(); onChange(option.value) }}>
+        return <button key={option.value} type="button" className={`front120-choice-card ${selected ? 'is-selected' : ''} ${previewed ? 'is-previewed' : ''}`} style={{ '--frame-neutral': `url(${choiceFrameNeutral})`, '--frame-selected': `url(${choiceFrameSelected})` } as CSSProperties} role="radio" aria-checked={selected} tabIndex={selected || (!value && index === 0) ? 0 : -1} data-tune-id={`${tunePrefix}-option-${index + 1}`} onPointerEnter={() => onPreviewChange?.(option.value)} onPointerLeave={() => onPreviewChange?.(null)} onFocus={() => onPreviewChange?.(option.value)} onBlur={() => onPreviewChange?.(null)} onKeyDown={moveFocus} onClick={() => { noteAudioUserGesture(); onChange(option.value) }}>
           <span className="front120-choice-card__icon"><Icon name={icon} size={compact ? 20 : 29} /></span>
           <b>{option.label}</b>
           {selected && <span className="front120-choice-card__check" aria-label="선택됨"><Icon name="check" size={15} /></span>}
@@ -424,7 +426,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         {step === 4 && <div className="front120-growth-grid" role="group" aria-label="교실 성장 우선순위">
           {GROWTH_PRIORITY_OPTIONS.map((option, index) => {
             const selected = growthPriorities.includes(option.value)
-            return <button key={option.value} className={`front120-growth-card ${selected ? 'is-selected' : ''}`} type="button" aria-pressed={selected} data-tune-id={`prep-4-option-${index + 1}`} onClick={() => toggleGrowthPriority(option.value)}><Icon name={growthIcons[index]} size={24} /><span>{option.label}</span>{selected && <i aria-hidden="true"><Icon name="check" size={15} /></i>}</button>
+            return <button key={option.value} className={`front120-growth-card ${selected ? 'is-selected' : ''}`} type="button" style={{ '--frame-neutral': `url(${choiceFrameNeutral})`, '--frame-selected': `url(${choiceFrameSelected})` } as CSSProperties} aria-pressed={selected} data-tune-id={`prep-4-option-${index + 1}`} onClick={() => toggleGrowthPriority(option.value)}><Icon name={growthIcons[index]} size={24} /><span>{option.label}</span>{selected && <i aria-hidden="true"><Icon name="check" size={15} /></i>}</button>
           })}
           {otherSelected && <label className="front120-growth-other"><span>기타 직접 입력</span><input value={otherText} maxLength={30} placeholder="직접 입력해 주세요." onChange={(event) => setOtherText(event.target.value.slice(0, 30))} /></label>}
           <p className="front120-growth-message" aria-live="polite">{selectionMessage}</p>
