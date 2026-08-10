@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { AdventurePrepScreen } from './components/AdventurePrepScreen'
 import { SharedSessionGate } from './components/SharedSessionGate'
 import { TeacherPanel } from './components/TeacherPanel'
-import { JourneyApp } from './features/journey/JourneyApp'
+
+/** Deferred: the NBTI + game-builder flow is the heavier half of the bundle and isn't
+ *  needed until the prep screens finish, so most first loads skip downloading it. */
+const JourneyApp = lazy(() => import('./features/journey/JourneyApp').then((module) => ({ default: module.JourneyApp })))
 import { loadJourneyState, saveJourneyState } from './features/journey/journeyPersistence'
 import { createJourneyState, journeyReducer, journeyStatusForStage, type JourneyAction, type JourneyState } from './features/journey/journeyState'
 import { resolveEntryState } from './lib/entryState'
@@ -230,7 +233,7 @@ export default function App() {
 
   const showJourney = (screen === 'journey' || prepExiting) && !sharedSessionGateOpen
   return <>
-    {showJourney && (profile || pairingEntryRequested) && <JourneyApp state={journeyState} notice={notice} onAction={handleJourneyAction} onTeacherOpen={(button) => { teacherTriggerRef.current = button; setTeacherOpen(true) }} teacherTriggerRef={teacherTriggerRef} profile={profile} journeyId={journeyId} pairingEntry={pairingEntryRequested && !profile} onPaired={restorePairedJourney} onStartHere={() => { setScreen('prep'); clearPairingEntryQuery() }} onExitPairingEntry={() => { setScreen('prep'); clearPairingEntryQuery() }} onNextParticipant={() => resetActiveJourney('laptop-next-participant')} />}
+    {showJourney && (profile || pairingEntryRequested) && <Suspense fallback={<div style={{ background: '#050c07', minHeight: '100svh' }} />}><JourneyApp state={journeyState} notice={notice} onAction={handleJourneyAction} onTeacherOpen={(button) => { teacherTriggerRef.current = button; setTeacherOpen(true) }} teacherTriggerRef={teacherTriggerRef} profile={profile} journeyId={journeyId} pairingEntry={pairingEntryRequested && !profile} onPaired={restorePairedJourney} onStartHere={() => { setScreen('prep'); clearPairingEntryQuery() }} onExitPairingEntry={() => { setScreen('prep'); clearPairingEntryQuery() }} onNextParticipant={() => resetActiveJourney('laptop-next-participant')} /></Suspense>}
     {screen === 'prep' && <AdventurePrepScreen initialProfile={profile} audio={journeyState.audio} exiting={prepExiting} isOffline={!online} onComplete={handleProfileComplete} onScreenChange={setTunerScreen} />}
     {profile && <TeacherPanel open={teacherOpen} profile={profile} journey={journey} deviceMode={deviceMode} returnFocusRef={teacherTriggerRef} onClose={() => setTeacherOpen(false)} onEdit={() => { setTeacherOpen(false); setScreen('prep') }} onRestartNbti={restartNbti} onResetAll={resetActiveJourney} onStartNewShared={resetActiveJourney} onPlaceholderAction={handleTeacherAction} />}
     {showJourney && profile && <EntryVisualTuner screen="main" />}
