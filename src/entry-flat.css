@@ -1,0 +1,162 @@
+/* Flat prep mode.
+   Exactly ONE background image layer (.entry-prep__world) with object-fit:cover, and
+   every control below drawn in CSS. The art mode stacked a second master image on top
+   of the world backdrop; because the two were authored at different aspect ratios, any
+   viewport wider than 16:9 exposed the lower layer down both sides. One layer cannot
+   mismatch itself, so this mode is safe at 4:3, 16:10, 16:9 and ultrawide alike. */
+
+.entry-prep--flat .entry-prep__panel {
+  /* Opaque parchment: the art-mode panel was translucent because a second master image
+     sat behind it supplying the texture. With one background layer the world art would
+     otherwise read straight through the question text. */
+  background:
+    radial-gradient(circle at 4% 8%, rgba(255, 255, 255, .72), transparent 15%),
+    radial-gradient(circle at 92% 82%, rgba(153, 99, 35, .1), transparent 33%),
+    repeating-linear-gradient(24deg, rgba(89, 50, 16, .03) 0 1px, transparent 1px 6px),
+    linear-gradient(105deg, #e6cd97 0%, #fbf0cd 42%, #f6e8c0 78%, #e9d3a3 100%);
+  clip-path: polygon(0 2.4%, 2.2% 0, 97.8% 0, 100% 2.4%, 100% 97.6%, 97.8% 100%, 2.2% 100%, 0 97.6%);
+  margin-left: auto;
+  margin-right: auto;
+  min-height: min(78svh, 780px);
+  width: min(94vw, 1240px);
+}
+
+/* Art mode reserved the right half of the panel for .entry-prep__illustration via a
+   per-step max-width (72% / 49% / 61%). Flat mode draws no illustration, so the
+   question column takes the full panel instead of hugging the left edge. */
+.entry-prep--flat .entry-prep__question,
+.entry-prep--flat .entry-prep__question--2,
+.entry-prep--flat .entry-prep__question--3,
+.entry-prep--flat .entry-prep__question--4 { max-width: none; }
+
+.entry-prep--flat .entry-prep__question > p:not(.entry-prep__question-number) {
+  margin-bottom: clamp(10px, 1.4vh, 20px);
+}
+
+.entry-flat-cards {
+  display: grid;
+  gap: clamp(8px, .8vw, 15px);
+  grid-template-columns: repeat(var(--flat-columns, 5), minmax(0, 1fr));
+  margin-top: clamp(10px, 1.4vh, 20px);
+}
+
+.entry-flat-card {
+  align-items: center;
+  background: linear-gradient(160deg, rgba(255, 252, 236, .93), rgba(232, 214, 168, .84));
+  border: 1px solid rgba(122, 84, 30, .5);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .82), 0 4px 10px rgba(69, 42, 12, .16);
+  color: #40301a;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  font: inherit;
+  font-size: clamp(13px, .95vw, 19px);
+  font-weight: 800;
+  gap: 7px;
+  justify-content: center;
+  line-height: 1.25;
+  min-height: clamp(74px, 8.6vh, 122px);
+  padding: clamp(10px, 1vw, 18px) 8px;
+  position: relative;
+  text-align: center;
+  transition: background .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+.entry-flat-card svg { color: #9a7134; flex: 0 0 auto; }
+.entry-flat-card span { min-width: 0; overflow-wrap: break-word; }
+.entry-flat-card:hover { border-color: #b8862f; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 7px 14px rgba(69, 42, 12, .22); transform: translateY(-2px); }
+.entry-flat-card:focus-visible { outline: 3px solid #2f7d4c; outline-offset: 2px; }
+
+.entry-flat-card.is-selected {
+  background: linear-gradient(160deg, #f5fbe9, #dfeac4);
+  border: 2px solid #2c8951;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .82), 0 0 0 3px rgba(47, 132, 73, .18), 0 6px 13px rgba(52, 90, 40, .2);
+  color: #24502f;
+}
+.entry-flat-card.is-selected svg { color: #2c7a4a; }
+
+.entry-flat-card i {
+  align-items: center;
+  background: #27583a;
+  border: 1px solid #ffe187;
+  border-radius: 50%;
+  color: #fff4c6;
+  display: grid;
+  height: 22px;
+  justify-items: center;
+  position: absolute;
+  right: -7px;
+  top: -8px;
+  width: 22px;
+}
+
+.entry-flat-cards.is-compact { gap: clamp(6px, .55vw, 10px); }
+.entry-flat-cards.is-compact .entry-flat-card {
+  font-size: clamp(11px, .82vw, 16px);
+  min-height: clamp(42px, 4.8vh, 62px);
+  padding: 6px 4px;
+}
+
+/* Step 4 keeps its own grid but drops the two frame images the art mode painted on. */
+.entry-prep--flat .entry-growth-card {
+  background-color: rgba(255, 252, 236, .9);
+  background-image: linear-gradient(160deg, rgba(255, 252, 236, .93), rgba(232, 214, 168, .84));
+  border: 1px solid rgba(122, 84, 30, .5);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .82), 0 4px 10px rgba(69, 42, 12, .16);
+  color: #40301a;
+}
+.entry-prep--flat .entry-growth-card.is-selected {
+  background-color: transparent;
+  background-image: linear-gradient(160deg, #f5fbe9, #dfeac4);
+  border: 2px solid #2c8951;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .82), 0 0 0 3px rgba(47, 132, 73, .18), 0 6px 13px rgba(52, 90, 40, .2);
+  color: #24502f;
+}
+.entry-prep--flat .entry-growth-card.is-selected > svg { color: #2c7a4a; }
+.entry-prep--flat .entry-growth-grid { max-width: none; }
+
+/* Flat nav buttons replace the four-state CTA image stack. */
+.entry-button--flat {
+  align-items: center;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-weight: 900;
+  gap: 9px;
+  justify-content: center;
+  transition: filter .16s ease, transform .16s ease, box-shadow .16s ease;
+}
+.entry-button--flat.entry-button--back {
+  background: linear-gradient(165deg, rgba(255, 250, 227, .9), rgba(226, 205, 154, .84));
+  border: 1px solid rgba(120, 82, 28, .58);
+  color: #4b3718;
+  min-width: clamp(140px, 15vw, 232px);
+  padding: 0 clamp(14px, 1.4vw, 26px);
+}
+.entry-button--flat.entry-button--next {
+  background: linear-gradient(165deg, #2e7d4c, #17532f);
+  border: 1px solid #ffe08a;
+  box-shadow: inset 0 1px 0 rgba(255, 240, 189, .34), 0 7px 16px rgba(9, 43, 24, .38);
+  color: #fff6d2;
+  min-width: clamp(200px, 22vw, 360px);
+  padding: 0 clamp(18px, 1.8vw, 34px);
+}
+.entry-button--flat:hover:not(:disabled) { filter: brightness(1.07); transform: translateY(-2px); }
+.entry-button--flat:focus-visible { outline: 3px solid #ffe08a; outline-offset: 3px; }
+.entry-button--flat:disabled { cursor: not-allowed; filter: grayscale(.55); opacity: .5; }
+
+@media (max-width: 1100px) {
+  .entry-prep--flat .entry-prep__panel { width: min(96vw, 1040px); }
+}
+
+@media (max-width: 700px) {
+  .entry-flat-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .entry-flat-cards.is-compact { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .entry-flat-card { font-size: 13px; min-height: 62px; padding: 9px 6px; }
+  .entry-flat-cards.is-compact .entry-flat-card { font-size: 11px; min-height: 40px; }
+  .entry-button--flat.entry-button--back { min-width: 37%; }
+  .entry-button--flat.entry-button--next { flex: 1; min-width: 0; }
+}
