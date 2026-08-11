@@ -132,6 +132,8 @@
   aspect-ratio: 1 / 1;
   background: none;
   border: 0;
+  /* The base card's 10px radius was rounding off the artwork's own square corners. */
+  border-radius: 0;
   box-shadow: none;
   min-height: 0;
   overflow: visible;
