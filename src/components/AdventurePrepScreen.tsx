@@ -13,7 +13,7 @@ import { beginMainThemeReveal, noteAudioUserGesture } from '../lib/audioManager'
 import type { AudioSettings } from '../lib/audioController'
 import { loadPrepDraft, savePrepDraft, clearPrepDraft, type Profile, type PrepDraft } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
-import { ClasscadeWordmark, CompassSeal, Icon } from './VisualPrimitives'
+import { ClasscadeEmblem, ClasscadeWordmark, CompassSeal, Icon } from './VisualPrimitives'
 import { degradeToFlat, isFlat, type VisualScreen } from '../config/visualMode'
 import '../entry.css'
 import type { TunerScreen } from '../features/entry/visualTuning'
@@ -194,7 +194,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       <div className="entry-prep__vignette" aria-hidden="true" />
       <div className="entry-motes" aria-hidden="true">{Array.from({ length: 20 }, (_, index) => <i key={index} />)}</div>
       <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
-        <header className="entry-prep__header"><div className="entry-prep__brand"><CompassSeal /><ClasscadeWordmark /></div><PrepProgress step={4} /></header>
+        <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><PrepProgress step={4} /></header>
         <div className="entry-nickname">
           <span className="entry-nickname__orb"><CompassSeal /></span>
           <p className="entry-kicker">✦ 여정의 마지막 준비 ✦</p>
@@ -255,7 +255,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
     <div className="entry-motes" aria-hidden="true">{Array.from({ length: 24 }, (_, index) => <i key={index} />)}</div>
     <section className="entry-prep__panel">
       <header className="entry-prep__header">
-        <div className="entry-prep__brand"><CompassSeal /><ClasscadeWordmark /></div>
+        <div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div>
         <PrepProgress step={stepNumber} />
       </header>
       <div className="entry-prep__intro">

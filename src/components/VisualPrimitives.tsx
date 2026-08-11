@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import classcadeEmblem from '../assets/brand/classcade-emblem.png'
 import classcadeWordmark from '../assets/brand/classcade-wordmark.png'
+import classcadeLockup from '../assets/brand/classcade-lockup.png'
 
 export type IconName = 'clock' | 'spark' | 'gamepad' | 'arrow' | 'music' | 'speaker' | 'chevron' | 'close' | 'edit' | 'reset' | 'check' | 'school' | 'career' | 'region' | 'leaf' | 'notebook' | 'share' | 'sprout' | 'lantern' | 'compass' | 'tree' | 'lock'
 
@@ -68,6 +69,11 @@ export function ClasscadeEmblem({ className = '' }: { className?: string }) {
 /** Gold CLASSCADE wordmark. */
 export function ClasscadeWordmark({ className = '' }: { className?: string }) {
   return <img className={`classcade-wordmark ${className}`} src={classcadeWordmark} alt="CLASSCADE" />
+}
+
+/** Stacked emblem-over-wordmark lock-up, for the tall result reveal panel. */
+export function ClasscadeLockup({ className = '' }: { className?: string }) {
+  return <img className={`classcade-lockup ${className}`} src={classcadeLockup} alt="CLASSCADE" />
 }
 
 export function LogoSlot() {

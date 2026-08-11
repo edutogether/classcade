@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { CompassSeal, Icon, type IconName } from '../../../components/VisualPrimitives'
+import { ClasscadeLockup, CompassSeal, Icon, type IconName } from '../../../components/VisualPrimitives'
 import { NBTI_AXES, NBTI_QUESTIONS, NBTI_TOTAL_QUESTIONS, type NbtiAxis, type NbtiDirection } from '../../../data/nbti.provisional'
 import { getProvisionalResult } from '../../../data/nbtiResults.provisional'
 import { JOURNEY_SCENE_ASSETS } from '../../../data/sceneAssets'
@@ -173,7 +173,7 @@ export function ResultScene(props: JourneySceneProps & { onPair: () => void }) {
     <SceneFrame scene="result" {...props}>
       <div className={`journey-result journey-result--${result.palette} journey-enter`}>
         <div className="journey-result__copy"><p className="journey-kicker">✦ 나의 교실 플레이 결과 ✦</p><p className="journey-result__eyebrow">나의 교실 플레이 유형은</p><h1>{result.title}</h1><div className="journey-result__badges"><span className="journey-result__code">{nbtiTypeCode(result.directions)}</span><div className="journey-result__strengths">{result.strengths.map((strength) => <span key={strength}>{strengthEmoji(strength)} {strength}</span>)}</div></div><p className="journey-result__description">{result.description}</p><div className="journey-result__directions" aria-label="나의 네 성향">{NBTI_AXES.map((axis, index) => <span key={axis.id}><small>{axis.label}</small><b>{directionLabels[result.directions[index]]}</b></span>)}</div><p className="journey-result__caution"><b>다음 장면</b>{result.caution}</p><p className="journey-result__next">교실 속 나를 발견하다. 놀이로 확장하다.</p><p className="journey-result__disclaimer">이 결과는 선생님의 모든 모습을 규정하지 않아요. 오늘의 교실 장면에서 가장 자주 드러난 선택을 보여 줍니다.</p><div className="journey-result__actions"><PrimaryButton onClick={props.onPair}>우리 반 게임 만들기</PrimaryButton><SecondaryButton onClick={() => props.onAction({ type: 'OPEN_GAME_INTRO' })}>이 기기에서 계속하기</SecondaryButton><SecondaryButton onClick={() => props.onAction({ type: 'RESET_NBTI' })}><Icon name="reset" size={19} />다시 탐색하기</SecondaryButton></div></div>
-        <aside className="journey-result__reveal" aria-label="결과 해금 연출"><CompassSeal /><p>{result.subtitle}</p><span>빛나는 문양이 기록되었습니다</span><i /><i /><i /></aside>
+        <aside className="journey-result__reveal" aria-label="결과 해금 연출"><ClasscadeLockup /><p>{result.subtitle}</p><span>빛나는 문양이 기록되었습니다</span><i /><i /><i /></aside>
       </div>
     </SceneFrame>
   )
