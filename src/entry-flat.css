@@ -137,7 +137,13 @@
    other pages just swap their contents into it. Scoping any of this to a single
    step is what previously made page 1 render at 48px on a short board while page 4
    rendered at 31px on a tall one. */
-.entry-prep--flat .entry-prep__panel { min-height: min(88svh, 940px); }
+/* Sized so step 4 - the fullest page - sits snugly rather than floating in slack.
+   A taller fixed board just gets redistributed as centring gaps, so the height itself
+   has to come down to close the space between the question row and the cards. */
+.entry-prep--flat .entry-prep__panel {
+  min-height: min(84svh, 858px);
+  padding-bottom: clamp(14px, 1.9vh, 24px);
+}
 
 /* Question and helper share one row, helper pinned to the right edge. */
 .entry-prep--flat .entry-prep__question-head {
@@ -155,14 +161,19 @@
   min-width: 0;
   word-break: keep-all;
 }
+/* Small, heavy sans so it reads as a rule rather than competing with the serif
+   question it shares a line with. */
 .entry-prep--flat .entry-prep__question-helper {
   flex: 0 0 auto;
-  font-size: clamp(14px, 1.05vw, 19px);
+  font-family: Pretendard, 'Noto Sans KR', 'Apple SD Gothic Neo', system-ui, sans-serif;
+  font-size: clamp(11px, .8vw, 14px);
+  font-weight: 900;
+  letter-spacing: -.01em;
   margin: 0 0 0 auto;
   text-align: right;
   white-space: nowrap;
 }
-.entry-prep--flat .entry-prep__question-helper strong { margin-left: 8px; }
+.entry-prep--flat .entry-prep__question-helper strong { font-size: 1.12em; margin-left: 9px; }
 
 /* The badge sat outside the card corner and overlapped the neighbouring card. */
 .entry-prep--flat .entry-growth-card i,
@@ -182,11 +193,16 @@
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  padding: clamp(20px, 3vh, 40px) 0 clamp(20px, 3vh, 40px);
+  padding: clamp(14px, 1.9vh, 24px) 0 clamp(14px, 1.9vh, 24px);
 }
+/* Centred in the leftover space, but never opening a gap larger than this - otherwise
+   the sparse pages push the cards far from their question. */
 .entry-prep--flat .entry-flat-cards,
 .entry-prep--flat .entry-growth-grid { margin-block: auto; }
-.entry-prep--flat .entry-prep__footer { margin-top: auto; padding: clamp(20px, 3vh, 40px) 0 clamp(6px, 1.4vh, 18px); }
+.entry-prep--flat .entry-prep__question-head { margin-bottom: clamp(10px, 1.4vh, 18px); }
+/* Equal space above and below the nav row: the padding above the buttons matches the
+   panel's own bottom padding below them. */
+.entry-prep--flat .entry-prep__footer { margin-top: auto; padding: clamp(14px, 1.9vh, 24px) 0 0; }
 
 /* 6. The free-text field fills the two columns beside its own card instead of
    claiming a new row of its own. */
