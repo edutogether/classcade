@@ -165,10 +165,17 @@
   border-radius: 10px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .82), 0 4px 10px rgba(69, 42, 12, .16);
   color: #40301a;
-  font-size: clamp(12px, 1.05vw, 15px) !important;
-  min-height: clamp(58px, 6.4vw, 82px) !important;
-  padding: clamp(9px, .86vw, 12px) clamp(10px, 1vw, 14px) !important;
+  /* Sized so ten cards plus the free-text row fit the same board as steps 1-3, which
+     hold five cards. Without this the step-4 content pushed the panel 142px taller and
+     71px higher up the screen, so the board visibly jumped between steps. */
+  font-size: clamp(11px, .92vw, 14px) !important;
+  min-height: clamp(44px, 4.4vw, 58px) !important;
+  padding: clamp(6px, .6vw, 9px) clamp(8px, .8vw, 12px) !important;
 }
+.entry-prep--flat .entry-growth-card svg { height: 19px; width: 19px; }
+/* No auto centring margin here: with ten cards the leftover space is small and uneven,
+   and letting it distribute made step 4's board 9px taller than steps 1-3. */
+.entry-prep--flat .entry-growth-grid { gap: clamp(6px, .62vw, 10px); margin-block: 0 auto; }
 .entry-prep--flat .entry-growth-card.is-selected {
   background-color: transparent;
   background-image: linear-gradient(160deg, #f5fbe9, #dfeac4);
@@ -197,7 +204,10 @@
   /* Fitted to step 4's measured natural height at 1024px and 1920px width (629px and
      853px) now that every child rule is width-only - see the comment block above this
      file's imports for why height can no longer be a factor. */
-  min-height: clamp(629px, 373px + 25vw, 853px);
+  /* Fitted to step 4, the fullest page: with ten growth cards its content ran 9px past
+     the old figure, so its board grew while steps 1-3 sat exactly on the minimum and
+     the panel visibly jumped between steps. */
+  min-height: clamp(638px, 373px + 25.6vw, 863px);
   padding-bottom: var(--prep-gap);
 }
 
@@ -271,8 +281,19 @@
   min-height: 0;
   padding: 6px 14px;
 }
-.entry-prep--flat .entry-growth-other input { font-size: clamp(13px, .95vw, 16px); font-weight: 700; }
-.entry-prep--flat .entry-growth-message { grid-column: 1 / -1; margin: 4px 0 0; min-height: 1.2em; }
+.entry-prep--flat .entry-growth-other input { font-size: clamp(12px, .9vw, 15px); font-weight: 700; min-height: 32px; }
+/* Taken out of flow and hung below the grid: when it appeared in flow, every card
+   shifted up as the message pushed the grid, then dropped back when it cleared. */
+.entry-prep--flat .entry-growth-grid { position: relative; }
+.entry-prep--flat .entry-growth-message {
+  bottom: -1.45em;
+  grid-column: 1 / -1;
+  left: 0;
+  margin: 0;
+  min-height: 0;
+  position: absolute;
+  right: 0;
+}
 
 .entry-prep--flat .entry-prep__footer { gap: 16px; }
 
@@ -292,6 +313,29 @@
   width: auto;
 }
 .entry-prep--flat .entry-nav-img img { display: block; height: 100%; object-fit: contain; width: auto; }
+
+/* --- Loading screen -------------------------------------------------------
+   The art holds every element of this screen, so the only live piece is the bar fill.
+   The stage matches the picture's aspect ratio and the art is fitted with `contain`,
+   which is what lets the fill be positioned in percentages of the artwork and stay put:
+   with `cover` the picture shifts under the overlay as the viewport ratio changes, and
+   the fill would drift off its frame - the same failure that broke the prep screens. */
+.entry-loading--art { align-items: center; background: #05100a; display: flex; justify-content: center; }
+.entry-loading__stage { aspect-ratio: 1672 / 941; max-height: 100svh; max-width: 100vw; position: relative; width: min(100vw, calc(100svh * 1672 / 941)); }
+.entry-loading__art { display: block; height: 100%; object-fit: contain; width: 100%; }
+/* Frame measured from the artwork by scanning for its gold border: x 644-1028,
+   y 617-633 of 1672x941. Inset slightly so the fill sits inside the frame. */
+.entry-loading__fill {
+  background: linear-gradient(180deg, #ffeaa4, #f0ca6a 55%, #d79f34);
+  border-radius: 2px;
+  box-shadow: 0 0 12px rgba(255, 214, 110, .55);
+  height: 1.15%;
+  left: 38.9%;
+  position: absolute;
+  top: 65.85%;
+  transition: width .35s ease;
+  width: calc(22.2% * (var(--progress, 0%) / 100%));
+}
 
 /* Flat nav buttons replace the four-state CTA image stack. */
 .entry-button--flat {

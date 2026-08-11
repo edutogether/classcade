@@ -1,4 +1,6 @@
-import classcadeStartMaster from '../assets/classcade-start-master.png'
+/** 16:9 start art. The headline, sub-copy, fact chips and quest board are painted in,
+ *  so the live DOM only supplies the two buttons that sit between them. */
+import classcadeStartMaster from '../assets/classcade/master-screens/start-master-v2.png'
 import portalAcademyBackground from '../assets/portal-academy-background.png'
 import academyGatewayPlate from '../assets/classcade/master-screens/mobile-scene-parts/academy-gateway-plate.png'
 import nbtiQuestionBackdrop from '../assets/classcade/journey-interactive/nbti-question-backdrop.png'

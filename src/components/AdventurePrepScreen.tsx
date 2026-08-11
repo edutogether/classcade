@@ -13,7 +13,7 @@ import { beginMainThemeReveal, noteAudioUserGesture } from '../lib/audioManager'
 import type { AudioSettings } from '../lib/audioController'
 import { loadPrepDraft, savePrepDraft, clearPrepDraft, type Profile, type PrepDraft } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
-import { ClasscadeEmblem, ClasscadeWordmark, CompassSeal, Icon } from './VisualPrimitives'
+import { ClasscadeEmblem, ClasscadeWordmark, Icon } from './VisualPrimitives'
 import { degradeToFlat, isFlat, type VisualScreen } from '../config/visualMode'
 import '../entry.css'
 import type { TunerScreen } from '../features/entry/visualTuning'
@@ -43,7 +43,6 @@ import {
   prepNavBack,
   prepNavCtaEnabled,
   prepNavCtaDisabled,
-  PREP_ONE_CARD_ASSETS,
   type PrepStep,
 } from './prep/prepAssets'
 
@@ -195,19 +194,15 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   }
 
   if (step === 'loading') {
-    return <main className={`entry-loading ${exiting ? 'is-exiting' : ''}`} aria-live="polite">
-    <img className="entry-loading__reference" src={loadingMaster} alt="" aria-hidden="true" />
-      <div className="entry-loading__veil" aria-hidden="true" />
-      <div className="entry-motes entry-motes--loading" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
-      <section className="entry-loading__copy">
-        <span data-tune-id="loading-emblem"><CompassSeal className="entry-loading__seal" /></span>
-        <h1>교실 모험을 준비하는 중…</h1>
-        <p>선생님의 플레이 여정을 정리하고 있어요…</p>
-        <div className="entry-loading__dots" aria-hidden="true"><i /><i /><i /></div>
-        <div className="entry-loading__track" aria-label={`모험 준비 ${loadingProgress}%`}><i style={{ width: `${loadingProgress}%` }} /></div>
-        <p className="entry-loading__wait">잠시만 기다려 주세요</p>
-        {loadingError && <p className="entry-loading__error">{loadingError}</p>}
-      </section>
+    // The master art already carries the heading, sub-line, dots, bar frame and wait
+    // line. Only the bar's fill is live, so nothing here re-draws what the picture shows.
+    return <main className={`entry-loading entry-loading--art ${exiting ? 'is-exiting' : ''}`} aria-live="polite">
+      <div className="entry-loading__stage">
+        <img className="entry-loading__art" src={loadingMaster} alt="" aria-hidden="true" />
+        <i className="entry-loading__fill" style={{ '--progress': `${loadingProgress}%` } as CSSProperties} aria-hidden="true" />
+      </div>
+      <p className="sr-only" role="status">교실 모험을 준비하는 중 {loadingProgress}%</p>
+      {loadingError && <p className="entry-loading__error">{loadingError}</p>}
     </main>
   }
 
@@ -218,16 +213,19 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       <div className="entry-prep__vignette" aria-hidden="true" />
       <div className="entry-motes" aria-hidden="true">{Array.from({ length: 20 }, (_, index) => <i key={index} />)}</div>
       <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
-        <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><PrepProgress step={4} /></header>
+        <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><PrepProgress step={5} /></header>
         <div className="entry-nickname">
-          <span className="entry-nickname__orb"><CompassSeal /></span>
+          <span className="entry-nickname__orb"><ClasscadeEmblem /></span>
           <p className="entry-kicker">✦ 여정의 마지막 준비 ✦</p>
           <h1 id="nickname-title"><span>용사님의 닉네임을</span> <span>알려주세요</span></h1>
           <p>이 여정에서 불릴 이름이에요.</p>
-          <label><span>용사 닉네임</span><input value={nickname} maxLength={16} autoComplete="off" placeholder="예: 플레이메이커쌤" onChange={(event) => setNickname(event.target.value.slice(0, 16))} /></label>
-          <small>실제 이름이나 학교명 대신, 이 모험에서 사용할 별명을 적어 주세요.</small>
+          <label><input value={nickname} maxLength={16} autoComplete="off" aria-label="용사 닉네임" placeholder="예: 플레이메이커쌤" onChange={(event) => setNickname(event.target.value.slice(0, 16))} /></label>
+          <small>실제 이름이나 학교명 대신, 이 모험에서 사용할 별명을 적어주셔도 좋아요.</small>
         </div>
-        <footer className="entry-prep__footer"><button type="button" className="entry-button entry-button--back" onClick={previousStep}>← 이전 질문</button><button type="button" className="entry-button entry-button--next" disabled={!nicknameReady} onClick={beginLoading} data-tune-id="prep-next-button"><CompassSeal />모험 준비 완료 <Icon name="arrow" size={22} /></button></footer>
+        <footer className="entry-prep__footer">
+          <NavArtButton art={prepNavBack} label="← 이전 질문" onClick={previousStep} variant="back" />
+          <button type="button" className="entry-button entry-button--next entry-button--flat" disabled={!nicknameReady} onClick={beginLoading} data-tune-id="prep-next-button">모험 준비 완료 <Icon name="arrow" size={20} /></button>
+        </footer>
       </section>
     </main>
   }
@@ -292,7 +290,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
           <h2 id={`prep-${step}-title`} data-tune-id={`prep-${step}-title`}>{title.question}</h2>
           <p className="entry-prep__question-helper">{title.helper} {step === 4 && <strong aria-live="polite">{growthPriorities.length} / 3</strong>}</p>
         </div>
-        {flat && step === 1 && <PrepFlatCards options={SCHOOL_LEVEL_OPTIONS} value={schoolLevel} onChange={setSchoolLevel} tunePrefix="prep-1" ariaLabel="함께하는 학생들의 학교급" icons={SCHOOL_ICONS} columns={5} art={PREP_ONE_CARD_ASSETS} />}
+        {flat && step === 1 && <PrepFlatCards options={SCHOOL_LEVEL_OPTIONS} value={schoolLevel} onChange={setSchoolLevel} tunePrefix="prep-1" ariaLabel="함께하는 학생들의 학교급" icons={SCHOOL_ICONS} columns={5} />}
         {flat && step === 2 && <PrepFlatCards options={CAREER_RANGE_OPTIONS} value={careerRange} onChange={setCareerRange} tunePrefix="prep-2" ariaLabel="선생님의 교실 여정" icons={CAREER_ICONS} columns={5} />}
         {step === 3 && region && <p className="entry-prep__next-cue" role="status">지역을 선택했어요 · 아래의 다음 질문 버튼으로 이어가요 ↓</p>}
         {step === 3 && (flat
