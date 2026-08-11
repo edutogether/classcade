@@ -161,6 +161,8 @@ body:has(.entry-prep01-stage) { overflow-y: hidden; }
 /* Nav buttons now render their state as a real art asset (see CLASSCADE-ART-TODO.md) instead of a flat CSS box; the button itself keeps position/size, the image just fills it. */
 .entry-nav-img { background: none !important; border: 0 !important; box-shadow: none !important; color: transparent !important; overflow: hidden; padding: 0 !important; }
 .entry-nav-img img { display: block; height: 100%; object-fit: fill; pointer-events: none; width: 100%; }
-.entry-prep01-plate__note { align-items: center; background: #ede0bd; color: #4e3c1f; display: flex; font-size: clamp(9px, .82vw, 14px); font-weight: 800; gap: 6px; height: 6.6%; left: 9%; margin: 0; padding: 0 1.6%; position: absolute; top: 78.3%; white-space: nowrap; width: 34%; }
+/* Clipped and non-interactive: on phones this note overflowed its box and sat on top of
+   the "다음 질문으로" CTA, silently swallowing every tap past step 1. */
+.entry-prep01-plate__note { align-items: center; background: #ede0bd; color: #4e3c1f; display: flex; font-size: clamp(9px, .82vw, 14px); font-weight: 800; gap: 6px; height: 6.6%; left: 9%; margin: 0; overflow: hidden; padding: 0 1.6%; pointer-events: none; position: absolute; text-overflow: ellipsis; top: 78.3%; white-space: nowrap; width: 34%; }
 .entry-prep01-plate__note svg { color: #a17a2c; flex: 0 0 auto; }
 

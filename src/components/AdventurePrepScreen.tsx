@@ -199,7 +199,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         <div className="entry-nickname">
           <span className="entry-nickname__orb"><CompassSeal /></span>
           <p className="entry-kicker">✦ 여정의 마지막 준비 ✦</p>
-          <h1 id="nickname-title"><span>용사님의 닉네임을</span><span>알려주세요</span></h1>
+          <h1 id="nickname-title"><span>용사님의 닉네임을</span> <span>알려주세요</span></h1>
           <p>이 여정에서 불릴 이름이에요.</p>
           <label><span>용사 닉네임</span><input value={nickname} maxLength={16} autoComplete="off" placeholder="예: 플레이메이커쌤" onChange={(event) => setNickname(event.target.value.slice(0, 16))} /></label>
           <small>실제 이름이나 학교명 대신, 이 모험에서 사용할 별명을 적어 주세요.</small>
