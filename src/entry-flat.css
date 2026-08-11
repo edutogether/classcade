@@ -123,15 +123,21 @@
 }
 
 /* Cards drawn from finished artwork: the art carries its own frame and selected state,
-   so the CSS card chrome is dropped rather than layered behind it. */
+   so the CSS card chrome is dropped rather than layered behind it.
+   The five source files are three different sizes (156x168, 160x164, 124x165), so
+   `width:100%` gave each card a different height and let the widest ones overflow their
+   cell - which is what clipped the corners. Every cell now gets the same square box and
+   the art is fitted inside it with `contain`, so nothing is cropped and all five match. */
 .entry-flat-card.is-art {
+  aspect-ratio: 1 / 1;
   background: none;
   border: 0;
   box-shadow: none;
   min-height: 0;
+  overflow: visible;
   padding: 0;
 }
-.entry-flat-card.is-art img { display: block; height: auto; width: 100%; }
+.entry-flat-card.is-art img { display: block; height: 100%; object-fit: contain; width: 100%; }
 .entry-flat-card.is-art:hover { box-shadow: none; filter: brightness(1.05); }
 .entry-flat-card.is-art.is-selected { background: none; border: 0; box-shadow: none; }
 
