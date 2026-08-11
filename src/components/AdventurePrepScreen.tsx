@@ -14,6 +14,7 @@ import type { AudioSettings } from '../lib/audioController'
 import { loadPrepDraft, savePrepDraft, clearPrepDraft, type Profile, type PrepDraft } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
 import { CompassSeal, Icon } from './VisualPrimitives'
+import { degradeToFlat, isFlat, type VisualScreen } from '../config/visualMode'
 import '../entry.css'
 import type { TunerScreen } from '../features/entry/visualTuning'
 import { PrepOneChoiceCards } from './prep/PrepOneChoiceCards'
@@ -45,11 +46,9 @@ import {
   type PrepStep,
 } from './prep/prepAssets'
 
-/** 'flat' renders every prep step from a single background image plus CSS controls, so no
- *  screen can break when a multi-MB master fails to load and no second art layer can
- *  mismatch the viewport's aspect ratio. Flip to 'art' to restore the tuned master-art
- *  version for Prep 1/2 - both implementations stay in the tree side by side. */
-const PREP_VISUAL_MODE: 'flat' | 'art' = 'flat'
+/** Art vs flat is resolved per screen - see src/config/visualMode.ts. */
+const prepScreen = (step: PrepStep): VisualScreen | null =>
+  step === 'nickname' ? 'nickname' : step === 'loading' ? null : (`prep${step}` as VisualScreen)
 
 const SCHOOL_ICONS = ['sprout', 'leaf', 'notebook', 'school', 'spark'] as const
 const CAREER_ICONS = ['sprout', 'leaf', 'tree', 'lantern', 'compass'] as const
@@ -189,9 +188,9 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   }
 
   if (step === 'nickname') {
-    return <main className={`entry-prep entry-prep--nickname ${PREP_VISUAL_MODE === 'flat' ? 'entry-prep--flat' : ''} ${exiting ? 'is-exiting' : ''}`} aria-labelledby="nickname-title">
+    return <main className={`entry-prep entry-prep--nickname ${isFlat('nickname') ? 'entry-prep--flat' : ''} ${exiting ? 'is-exiting' : ''}`} aria-labelledby="nickname-title">
       <img className="entry-prep__world" src={portalAcademy} alt="" aria-hidden="true" />
-      {PREP_VISUAL_MODE === 'art' && <img className="entry-prep__reference" src={stageImage} alt="" aria-hidden="true" />}
+      {!isFlat('nickname') && <img className="entry-prep__reference" src={stageImage} alt="" aria-hidden="true" onError={() => degradeToFlat('nickname')} />}
       <div className="entry-prep__vignette" aria-hidden="true" />
       <div className="entry-motes" aria-hidden="true">{Array.from({ length: 20 }, (_, index) => <i key={index} />)}</div>
       <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
@@ -210,7 +209,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   }
 
   const canContinue = step === 1 ? Boolean(schoolLevel) : step === 2 ? Boolean(careerRange) : step === 3 ? Boolean(region) : growthReady
-  if (PREP_VISUAL_MODE === 'art' && step === 1) {
+  if (!isFlat('prep1') && step === 1) {
     return <main className={`entry-prep entry-prep--1 entry-prep01-stage ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-1-title">
       <img className="entry-prep01-stage__background" src={prepOneWorldBackdrop} alt="" aria-hidden="true" />
       <div className="entry-motes entry-motes--prep01" aria-hidden="true">{Array.from({ length: 20 }, (_, index) => <i key={index} />)}</div>
@@ -230,7 +229,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
     </main>
   }
 
-  if (PREP_VISUAL_MODE === 'art' && step === 2) {
+  if (!isFlat('prep2') && step === 2) {
     return <main className={`entry-prep entry-prep--2 entry-prep02-stage ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-2-title">
       <img className="entry-prep02-stage__plate" src={prepTwoCleanPlate} alt="" aria-hidden="true" />
       <div className="entry-motes entry-motes--prep02" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
@@ -245,10 +244,11 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
     </main>
   }
 
-  const flat = PREP_VISUAL_MODE === 'flat'
+  const screen = prepScreen(step)
+  const flat = screen ? isFlat(screen) : true
   return <main className={`entry-prep entry-prep--${step} ${flat ? 'entry-prep--flat' : ''} ${exiting ? 'is-exiting' : ''}`} aria-labelledby={`prep-${step}-title`}>
     <img className="entry-prep__world" src={portalAcademy} alt="" aria-hidden="true" />
-    {!flat && <img className="entry-prep__reference" src={stageImage} alt="" aria-hidden="true" data-tune-id={`prep-${step}-hero`} />}
+    {!flat && <img className="entry-prep__reference" src={stageImage} alt="" aria-hidden="true" data-tune-id={`prep-${step}-hero`} onError={() => screen && degradeToFlat(screen)} />}
     {!flat && step === 3 && region && <i className={`entry-prep__region-marker entry-prep__region-marker--${REGION_OPTIONS.findIndex((option) => option.value === region) + 1}`} aria-hidden="true" />}
     {!flat && step === 4 && growthPriorities.length > 0 && <div className={`entry-prep__growth-nodes entry-prep__growth-nodes--${growthPriorities.length}`} aria-hidden="true">{growthPriorities.map((priority, index) => <i key={priority} style={{ '--node': index } as CSSProperties} />)}</div>}
     <div className="entry-prep__vignette" aria-hidden="true" />

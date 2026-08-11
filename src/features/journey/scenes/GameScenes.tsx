@@ -7,6 +7,7 @@ import type { JourneyState } from '../journeyState'
 import { PrimaryButton, Progress, SceneFrame, SecondaryButton, type JourneySceneProps } from '../components/SceneFrame'
 import { CompletionExperience } from '../components/CompletionExperience'
 import { CanonicalGameScene, CanonicalHotspot, CanonicalMobileHero, ScreenReaderText } from '../components/CanonicalGameScene'
+import { isFlat } from '../../../config/visualMode'
 import conditionsArt from '../../../assets/classcade/game-builder/classroom-conditions-master.png'
 import candidatesArt from '../../../assets/classcade/game-builder/game-candidates-master.png'
 import resultArt from '../../../assets/classcade/game-builder/game-result-master.png'
@@ -14,11 +15,7 @@ import resultArt from '../../../assets/classcade/game-builder/game-result-master
 const fallbackConditions: GameConditions = { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' }
 const conditionLabels: Record<keyof GameConditions, string> = { schoolLevel: '학교급', size: '참여 인원', time: '수업 시간', space: '공간', mood: '원하는 분위기' }
 
-/** 'flat' skips the large canonical master-art images entirely (plain CSS cards on the
- *  shared game-scene background) so this flow can never render blank hotspots if a
- *  multi-MB master image fails to load on event wifi. Flip to 'canonical' once the art
- *  pipeline is verified solid - both versions stay in the codebase side by side. */
-const GAME_BUILDER_VISUAL_MODE: 'flat' | 'canonical' = 'flat'
+/** Art vs flat is resolved per screen - see src/config/visualMode.ts. */
 
 /** Recovery fallback if a saved candidateId cannot be decoded — reconstructs a sensible candidate from state. */
 function buildFallbackCandidate(state: Pick<JourneyState, 'gameCombo' | 'gameConditions' | 'resultCode'>): GameCandidate {
@@ -29,7 +26,7 @@ function buildFallbackCandidate(state: Pick<JourneyState, 'gameCombo' | 'gameCon
 
 export function GameConditionsScene(props: JourneySceneProps) {
   const [conditions, setConditions] = useState(props.state.gameConditions ?? (props.profile ? defaultGameConditions(props.profile) : fallbackConditions))
-  if (GAME_BUILDER_VISUAL_MODE === 'canonical') return <SceneFrame scene="game" canonicalGame {...props}>
+  if (!isFlat('gameConditions')) return <SceneFrame scene="game" canonicalGame {...props}>
     <CanonicalGameScene screen="conditions" art={conditionsArt}>
       <CanonicalMobileHero art={conditionsArt} screen="conditions" eyebrow="01 · 우리 반 조건" title="우리 반 교실의 모험 조건" description="교실 장면을 고르고, 우리 반에 맞는 게임을 준비해요." />
       {(Object.keys(GAME_CONDITIONS).filter((key) => key !== 'mood') as (keyof typeof GAME_CONDITIONS)[]).map((key) => <div className={`canonical-condition canonical-condition--${key}`} key={key} role="group" aria-label={conditionLabels[key]}>
@@ -91,7 +88,7 @@ export function GameCandidatesScene(props: JourneySceneProps) {
   const candidates = candidatesForCombo(combo, conditions)
   const [selectedId, setSelectedId] = useState(candidates[0]?.id ?? '')
   const selected = candidates.find((candidate) => candidate.id === selectedId) ?? candidates[0]
-  if (GAME_BUILDER_VISUAL_MODE === 'canonical') return <SceneFrame scene="game" canonicalGame {...props}>
+  if (!isFlat('gameCandidates')) return <SceneFrame scene="game" canonicalGame {...props}>
     <CanonicalGameScene screen="candidates" art={candidatesArt}>
       <CanonicalMobileHero art={candidatesArt} screen="candidates" eyebrow="03 · 게임 후보" title="우리 반의 모험 후보" description="캐릭터와 도시 장면에서 실제 후보를 골라요." />
       <div className="canonical-candidate-list" role="list">{candidates.map((candidate, index) => <CanonicalHotspot className={`canonical-candidate canonical-candidate--${index + 1}`} key={candidate.id} type="button" style={{ '--canonical-art': `url(${candidatesArt})`, '--canonical-row': `${index}` } as CSSProperties} selected={selectedId === candidate.id} onClick={() => setSelectedId(candidate.id)} aria-pressed={selectedId === candidate.id}><span className="canonical-mobile-label" aria-hidden="true">{candidate.title}</span><span className="canonical-mobile-choice-note" aria-hidden="true">{candidate.people} · {candidate.duration} · {candidate.space}</span><span className="canonical-mobile-reason" aria-hidden="true">{candidate.fit}</span><ScreenReaderText>{`${candidate.title}. ${candidate.intro}`}</ScreenReaderText></CanonicalHotspot>)}</div>
@@ -160,7 +157,7 @@ export function CompleteScene(props: JourneySceneProps) {
   const candidate = getGameCandidate(props.state.selectedGameId, props.state.gameConditions) ?? buildFallbackCandidate(props.state)
   const result = getProvisionalResult(props.state.resultCode)
   const adjustments = Object.entries(props.state.gameAdjustments).filter(([, value]) => value !== '기본').map(([key, value]) => `${adjustmentFields.find(([id]) => id === key)?.[1]} ${value}`)
-  if (GAME_BUILDER_VISUAL_MODE === 'canonical') return <SceneFrame scene="complete" canonicalGame {...props}><CanonicalGameScene screen="result" art={resultArt}>
+  if (!isFlat('gameComplete')) return <SceneFrame scene="complete" canonicalGame {...props}><CanonicalGameScene screen="result" art={resultArt}>
     <CanonicalMobileHero art={resultArt} screen="result" eyebrow="우리 반 게임 완성" title={candidate.title} description={`${candidate.people} · ${candidate.duration} · ${candidate.space}`} />
     <section className="canonical-result-patch"><p>우리 반 게임</p><h1>{candidate.title}</h1><span>{candidate.people} · {candidate.duration}</span></section>
     <div className="canonical-result-actions"><SecondaryButton onClick={() => props.onAction({ type: 'OPEN_RESULT' })}>NBTI 결과 보기</SecondaryButton></div>
