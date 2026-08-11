@@ -1,4 +1,4 @@
-import type { CSSProperties, KeyboardEvent } from 'react'
+import { useState, type CSSProperties, type KeyboardEvent } from 'react'
 import { noteAudioUserGesture } from '../../lib/audioManager'
 import { Icon, type IconName } from '../VisualPrimitives'
 
@@ -7,7 +7,7 @@ import { Icon, type IconName } from '../VisualPrimitives'
  * so a screen can never render blank because a master image failed to load. The art
  * version of these screens still lives in PrepOneChoiceCards / PrepTwoChoiceCards.
  */
-export function PrepFlatCards<T extends string>({ options, value, onChange, tunePrefix, ariaLabel, icons, columns, compact = false }: {
+export function PrepFlatCards<T extends string>({ options, value, onChange, tunePrefix, ariaLabel, icons, columns, compact = false, art }: {
   options: readonly { value: T; label: string }[]
   value: T | null
   onChange: (value: T) => void
@@ -16,7 +16,10 @@ export function PrepFlatCards<T extends string>({ options, value, onChange, tune
   icons?: readonly IconName[]
   columns?: number
   compact?: boolean
+  /** Finished per-option card artwork. Falls back to the CSS card if an image fails. */
+  art?: Partial<Record<T, { neutral: string; selected: string }>>
 }) {
+  const [brokenArt, setBrokenArt] = useState<Set<T>>(new Set())
   return <div className={`entry-flat-cards ${compact ? 'is-compact' : ''}`} role="radiogroup" aria-label={ariaLabel} style={columns ? ({ '--flat-columns': `${columns}` } as CSSProperties) : undefined}>
     {options.map((option, index) => {
       const selected = value === option.value
@@ -35,10 +38,12 @@ export function PrepFlatCards<T extends string>({ options, value, onChange, tune
           onChange(option.value)
         }
       }
+      const cardArt = art?.[option.value]
+      const useArt = cardArt && !brokenArt.has(option.value)
       return <button
         key={option.value}
         type="button"
-        className={`entry-flat-card ${selected ? 'is-selected' : ''}`}
+        className={`entry-flat-card ${selected ? 'is-selected' : ''} ${useArt ? 'is-art' : ''}`}
         role="radio"
         aria-checked={selected}
         tabIndex={selected || (!value && index === 0) ? 0 : -1}
@@ -46,9 +51,19 @@ export function PrepFlatCards<T extends string>({ options, value, onChange, tune
         onKeyDown={moveFocus}
         onClick={() => { noteAudioUserGesture(); onChange(option.value) }}
       >
-        {icons?.[index] && <Icon name={icons[index]} size={compact ? 17 : 27} />}
-        <span>{option.label}</span>
-        {selected && <i aria-hidden="true"><Icon name="check" size={13} /></i>}
+        {useArt ? (
+          <img
+            src={selected ? cardArt.selected : cardArt.neutral}
+            alt={option.label}
+            onError={() => setBrokenArt((current) => new Set(current).add(option.value))}
+          />
+        ) : (
+          <>
+            {icons?.[index] && <Icon name={icons[index]} size={compact ? 17 : 27} />}
+            <span>{option.label}</span>
+            {selected && <i aria-hidden="true"><Icon name="check" size={13} /></i>}
+          </>
+        )}
       </button>
     })}
   </div>

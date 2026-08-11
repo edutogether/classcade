@@ -13,7 +13,7 @@ import { beginMainThemeReveal, noteAudioUserGesture } from '../lib/audioManager'
 import type { AudioSettings } from '../lib/audioController'
 import { loadPrepDraft, savePrepDraft, clearPrepDraft, type Profile, type PrepDraft } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
-import { ClasscadeLockupH, CompassSeal, Icon } from './VisualPrimitives'
+import { ClasscadeEmblem, ClasscadeWordmark, CompassSeal, Icon } from './VisualPrimitives'
 import { degradeToFlat, isFlat, type VisualScreen } from '../config/visualMode'
 import '../entry.css'
 import type { TunerScreen } from '../features/entry/visualTuning'
@@ -43,6 +43,7 @@ import {
   prepNavBack,
   prepNavCtaEnabled,
   prepNavCtaDisabled,
+  PREP_ONE_CARD_ASSETS,
   type PrepStep,
 } from './prep/prepAssets'
 
@@ -217,7 +218,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       <div className="entry-prep__vignette" aria-hidden="true" />
       <div className="entry-motes" aria-hidden="true">{Array.from({ length: 20 }, (_, index) => <i key={index} />)}</div>
       <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
-        <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeLockupH /></div><PrepProgress step={4} /></header>
+        <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><PrepProgress step={4} /></header>
         <div className="entry-nickname">
           <span className="entry-nickname__orb"><CompassSeal /></span>
           <p className="entry-kicker">✦ 여정의 마지막 준비 ✦</p>
@@ -278,7 +279,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
     <div className="entry-motes" aria-hidden="true">{Array.from({ length: 24 }, (_, index) => <i key={index} />)}</div>
     <section className="entry-prep__panel">
       <header className="entry-prep__header">
-        <div className="entry-prep__brand"><ClasscadeLockupH /></div>
+        <div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div>
         <PrepProgress step={stepNumber} />
       </header>
       <div className="entry-prep__intro">
@@ -291,7 +292,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
           <h2 id={`prep-${step}-title`} data-tune-id={`prep-${step}-title`}>{title.question}</h2>
           <p className="entry-prep__question-helper">{title.helper} {step === 4 && <strong aria-live="polite">{growthPriorities.length} / 3</strong>}</p>
         </div>
-        {flat && step === 1 && <PrepFlatCards options={SCHOOL_LEVEL_OPTIONS} value={schoolLevel} onChange={setSchoolLevel} tunePrefix="prep-1" ariaLabel="함께하는 학생들의 학교급" icons={SCHOOL_ICONS} columns={5} />}
+        {flat && step === 1 && <PrepFlatCards options={SCHOOL_LEVEL_OPTIONS} value={schoolLevel} onChange={setSchoolLevel} tunePrefix="prep-1" ariaLabel="함께하는 학생들의 학교급" icons={SCHOOL_ICONS} columns={5} art={PREP_ONE_CARD_ASSETS} />}
         {flat && step === 2 && <PrepFlatCards options={CAREER_RANGE_OPTIONS} value={careerRange} onChange={setCareerRange} tunePrefix="prep-2" ariaLabel="선생님의 교실 여정" icons={CAREER_ICONS} columns={5} />}
         {step === 3 && region && <p className="entry-prep__next-cue" role="status">지역을 선택했어요 · 아래의 다음 질문 버튼으로 이어가요 ↓</p>}
         {step === 3 && (flat

@@ -179,10 +179,21 @@
   content: ''; filter: blur(9px); inset: -26px -34px; pointer-events: none;
   position: absolute; z-index: -1;
 }
-.entry-prep__brand .classcade-lockup-h {
+/* Two elements rather than the one-piece lock-up: the artwork bakes in a wordmark that
+   reads small against the emblem, and a single image can only scale both together. */
+.entry-prep__brand { align-items: center; display: flex; gap: clamp(6px, .7vw, 12px); }
+.entry-prep__brand .classcade-emblem {
+  filter: drop-shadow(0 2px 5px rgba(90,62,18,.3));
+  flex: 0 0 auto;
+  height: clamp(52px, 5.4vw, 88px);
+  position: relative;
+  width: clamp(52px, 5.4vw, 88px);
+}
+.entry-prep__brand .classcade-wordmark {
   display: block;
-  filter: drop-shadow(0 2px 5px rgba(90,62,18,.28));
-  height: clamp(64px, 7vw, 112px);
+  filter: drop-shadow(0 1px 4px rgba(90,62,18,.26));
+  height: clamp(34px, 3.6vw, 58px);
+  margin-top: 4px;
   position: relative;
   width: auto;
 }

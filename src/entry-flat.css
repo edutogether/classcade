@@ -122,6 +122,19 @@
   width: 22px;
 }
 
+/* Cards drawn from finished artwork: the art carries its own frame and selected state,
+   so the CSS card chrome is dropped rather than layered behind it. */
+.entry-flat-card.is-art {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  min-height: 0;
+  padding: 0;
+}
+.entry-flat-card.is-art img { display: block; height: auto; width: 100%; }
+.entry-flat-card.is-art:hover { box-shadow: none; filter: brightness(1.05); }
+.entry-flat-card.is-art.is-selected { background: none; border: 0; box-shadow: none; }
+
 .entry-flat-cards.is-compact { gap: clamp(6px, .55vw, 10px); }
 .entry-flat-cards.is-compact .entry-flat-card {
   font-size: clamp(11px, .82vw, 16px);
@@ -255,6 +268,23 @@
 
 .entry-prep--flat .entry-prep__footer { gap: 16px; }
 
+/* Art nav buttons, sized to roughly the CSS buttons they replaced (about 50px tall)
+   rather than to the artwork's own generous proportions, which rendered them oversized
+   next to the choice cards. Width follows the art's aspect ratio. */
+.entry-prep--flat .entry-nav-img {
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  flex: 0 0 auto;
+  height: clamp(44px, 4.4vw, 62px);
+  min-height: 0;
+  min-width: 0;
+  overflow: visible;
+  padding: 0 !important;
+  width: auto;
+}
+.entry-prep--flat .entry-nav-img img { display: block; height: 100%; object-fit: contain; width: auto; }
+
 /* Flat nav buttons replace the four-state CTA image stack. */
 .entry-button--flat {
   align-items: center;
@@ -298,12 +328,10 @@
   .entry-flat-cards.is-compact .entry-flat-card { font-size: 11px; min-height: 40px; }
   .entry-button--flat.entry-button--back { min-width: 37%; }
   .entry-button--flat.entry-button--next { flex: 1; min-width: 0; }
-  /* Art nav buttons: the shared mobile rule sets flex:1 + min-width:0, which collapses
-     an image-only button to zero width - the image sizes from the button and the button
-     sizes from its content, so neither has a starting number. Let the image be the
-     sizer instead: full width of its flex share, height derived from the artwork. */
-  .entry-prep--flat .entry-nav-img { flex: 1 1 42%; min-height: 0; min-width: 40%; }
-  .entry-prep--flat .entry-nav-img img { display: block; height: auto; object-fit: contain; width: 100%; }
+  /* Height-driven here too, so the shared mobile rule (flex:1 + min-width:0) cannot
+     collapse an image-only button to zero width. */
+  .entry-prep--flat .entry-nav-img { flex: 0 0 auto; height: 40px; width: auto; }
+  .entry-prep--flat .entry-nav-img img { height: 100%; width: auto; }
   /* The desktop fix put the question and its helper on one row (helper pinned right)
      because the wide board had room. On a phone width there's no room for both, so the
      question itself got squeezed into a narrow column and wrapped 4 lines deep. Stack
