@@ -5,6 +5,15 @@
    viewport wider than 16:9 exposed the lower layer down both sides. One layer cannot
    mismatch itself, so this mode is safe at 4:3, 16:10, 16:9 and ultrawide alike. */
 
+/* Art mode pinned a fixed-height panel to the top-left because the right half was
+   illustration. Flat mode has no illustration, so the panel hugs its own content and
+   sits centred - otherwise the controls bunch at the top over a large empty area. */
+.entry-prep--flat {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
 .entry-prep--flat .entry-prep__panel {
   /* Opaque parchment: the art-mode panel was translucent because a second master image
      sat behind it supplying the texture. With one background layer the world art would
@@ -14,11 +23,13 @@
     radial-gradient(circle at 92% 82%, rgba(153, 99, 35, .1), transparent 33%),
     repeating-linear-gradient(24deg, rgba(89, 50, 16, .03) 0 1px, transparent 1px 6px),
     linear-gradient(105deg, #e6cd97 0%, #fbf0cd 42%, #f6e8c0 78%, #e9d3a3 100%);
-  clip-path: polygon(0 2.4%, 2.2% 0, 97.8% 0, 100% 2.4%, 100% 97.6%, 97.8% 100%, 2.2% 100%, 0 97.6%);
-  margin-left: auto;
-  margin-right: auto;
-  min-height: min(78svh, 780px);
-  width: min(94vw, 1240px);
+  border-radius: 4px;
+  clip-path: none;
+  margin: clamp(12px, 2.4vh, 30px) auto;
+  max-height: calc(100svh - 24px);
+  min-height: 0;
+  overflow-y: auto;
+  width: var(--classcade-board);
 }
 
 /* Art mode reserved the right half of the panel for .entry-prep__illustration via a

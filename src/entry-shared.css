@@ -7,6 +7,8 @@
   --entry-green: #123324;
   --entry-panel-x: clamp(18px, 7.4vw, 142px);
   --entry-panel-width: min(69vw, 1040px);
+  /* One board size for every phase - prep panels and journey panels both read this. */
+  --classcade-board: min(94vw, 1180px);
 }
 
 .entry-prep,
