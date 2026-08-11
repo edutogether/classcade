@@ -160,7 +160,7 @@ export function CompleteScene(props: JourneySceneProps) {
   const candidate = getGameCandidate(props.state.selectedGameId, props.state.gameConditions) ?? buildFallbackCandidate(props.state)
   const result = getProvisionalResult(props.state.resultCode)
   const adjustments = Object.entries(props.state.gameAdjustments).filter(([, value]) => value !== '기본').map(([key, value]) => `${adjustmentFields.find(([id]) => id === key)?.[1]} ${value}`)
-  return <SceneFrame scene="complete" canonicalGame {...props}><CanonicalGameScene screen="result" art={resultArt}>
+  if (GAME_BUILDER_VISUAL_MODE === 'canonical') return <SceneFrame scene="complete" canonicalGame {...props}><CanonicalGameScene screen="result" art={resultArt}>
     <CanonicalMobileHero art={resultArt} screen="result" eyebrow="우리 반 게임 완성" title={candidate.title} description={`${candidate.people} · ${candidate.duration} · ${candidate.space}`} />
     <section className="canonical-result-patch"><p>우리 반 게임</p><h1>{candidate.title}</h1><span>{candidate.people} · {candidate.duration}</span></section>
     <div className="canonical-result-actions"><SecondaryButton onClick={() => props.onAction({ type: 'OPEN_RESULT' })}>NBTI 결과 보기</SecondaryButton></div>
@@ -173,6 +173,22 @@ export function CompleteScene(props: JourneySceneProps) {
     <aside><b>NBTI 반영</b><p>{candidate.fit}</p><small>{conditionSummary(props.state.gameConditions)}{adjustments.length ? ` · ${adjustments.join(' · ')}` : ''}</small></aside>
     <CompletionExperience state={props.state} onAction={props.onAction} onNextParticipant={props.onNextParticipant} />
   </article></SceneFrame>
+  return <SceneFrame scene="complete" {...props}>
+    {/* Flat: no canonical hero image, so no risk of a real button drifting off whatever
+        button-shaped area the master art happened to have drawn at a different aspect
+        ratio - the "완성된 게임 상세" header below already shows title + full facts row,
+        so nothing is lost by dropping the duplicate image-backed hero. */}
+    <article className="canonical-result-book journey-game-complete">
+      <p className="journey-kicker">완성된 게임 상세</p><h2>{candidate.title}</h2><p className="journey-complete__lead">{result.title}의 성향과 우리 반 조건을 반영한 실행 카드예요.</p>
+      <SecondaryButton onClick={() => props.onAction({ type: 'OPEN_RESULT' })}>NBTI 결과 보기</SecondaryButton>
+      <div className="journey-game-complete__facts"><span>{candidate.people}</span><span>{candidate.duration}</span><span>{candidate.space}</span><span>{candidate.materials}</span></div>
+      <section><h3>준비</h3><ul>{candidate.preparation.map((item) => <li key={item}>{item}</li>)}</ul></section>
+      <section><h3>진행 순서</h3><ol>{candidate.steps.map((item) => <li key={item}>{item}</li>)}</ol></section>
+      <section><h3>규칙과 운영</h3><p><b>규칙</b> {candidate.rules.join(' ')}</p><p><b>조용한 학생</b> {candidate.quiet}</p><p><b>의견 충돌</b> {candidate.conflict}</p><p><b>변형</b> {candidate.variation}</p><p><b>마무리</b> {candidate.closing}</p></section>
+      <aside><b>NBTI 반영</b><p>{candidate.fit}</p><small>{conditionSummary(props.state.gameConditions)}{adjustments.length ? ` · ${adjustments.join(' · ')}` : ''}</small></aside>
+      <CompletionExperience state={props.state} onAction={props.onAction} onNextParticipant={props.onNextParticipant} />
+    </article>
+  </SceneFrame>
 }
 
 export function ShareScene(props: JourneySceneProps) {
