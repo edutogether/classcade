@@ -8,6 +8,20 @@ import { PrimaryButton, Progress, SceneFrame, SecondaryButton, type JourneyScene
 const journeyItems = [{ icon: 'clock' as const, title: '약 2분', detail: '교실 장면 16개' }, { icon: 'spark' as const, title: '정답 없음', detail: '중립 선택 없음' }, { icon: 'gamepad' as const, title: '우리 반 놀이', detail: '결과로 이어져요' }]
 const directionLabels: Record<NbtiDirection, string> = { design: '설계', response: '반응', whole: '전체', individual: '개별', criteria: '기준', empathy: '공감', completion: '완성', expansion: '확장' }
 
+/** Real MBTI letters (E/I, S/N, T/F, J/P), built from the 16 questions' answers.
+ *  `result.code` (e.g. "P01") is only an internal lookup id for
+ *  PROVISIONAL_NBTI_RESULTS, never meant for display.
+ *  Each of our four axes maps onto the MBTI dichotomy it reads closest to:
+ *  participation(전체/개별) -> E/I, flow(설계/반응) -> S/N, judgment(기준/공감,
+ *  the direct match) -> T/F, learning(완성/확장) -> J/P. `directions` arrives in
+ *  NBTI_AXES order (flow, participation, judgment, learning); the output is
+ *  reassembled into MBTI's own canonical E-I-S-N-T-F-J-P slot order. */
+const mbtiLetter: Record<NbtiDirection, string> = { whole: 'E', individual: 'I', design: 'S', response: 'N', criteria: 'T', empathy: 'F', completion: 'J', expansion: 'P' }
+function nbtiTypeCode(directions: readonly NbtiDirection[]) {
+  const [flowDir, participationDir, judgmentDir, learningDir] = directions
+  return [participationDir, flowDir, judgmentDir, learningDir].map((direction) => mbtiLetter[direction]).join('')
+}
+
 /** One small line-icon per NBTI direction (not per question) — 8 icons cover all 16 questions' 32 choice slots, since each choice always maps to one of the 8 directions. Drawn locally rather than added to the shared Icon set, since these are specific to NBTI choice cards. */
 const directionIconPaths: Record<NbtiDirection, ReactNode> = {
   design: <><rect x="4.5" y="4.5" width="15" height="15" rx="1.6" /><path d="M4.5 11h15M11 4.5v15" /></>,
@@ -144,7 +158,7 @@ export function ResultScene(props: JourneySceneProps & { onPair: () => void }) {
   return (
     <SceneFrame scene="result" {...props}>
       <div className={`journey-result journey-result--${result.palette} journey-enter`}>
-        <div className="journey-result__copy"><p className="journey-kicker">✦ 나의 교실 플레이 결과 ✦</p><p className="journey-result__eyebrow">나의 교실 플레이 유형은</p><h1>{result.title}</h1><span className="journey-result__code">MBTI</span><p className="journey-result__description">{result.description}</p><div className="journey-result__directions" aria-label="나의 네 성향">{NBTI_AXES.map((axis, index) => <span key={axis.id}><small>{axis.label}</small><b>{directionLabels[result.directions[index]]}</b></span>)}</div><div className="journey-result__strengths">{result.strengths.map((strength) => <span key={strength}><Icon name="spark" size={16} />{strength}</span>)}</div><p className="journey-result__caution"><b>다음 장면</b>{result.caution}</p><p className="journey-result__next">교실 속 나를 발견하다. 놀이로 확장하다.</p><p className="journey-result__disclaimer">이 결과는 선생님의 모든 모습을 규정하지 않아요. 오늘의 교실 장면에서 가장 자주 드러난 선택을 보여 줍니다.</p><div className="journey-result__actions"><PrimaryButton onClick={props.onPair}>우리 반 게임 만들기</PrimaryButton><SecondaryButton onClick={() => props.onAction({ type: 'OPEN_GAME_INTRO' })}>이 기기에서 계속하기</SecondaryButton><SecondaryButton onClick={() => props.onAction({ type: 'RESET_NBTI' })}><Icon name="reset" size={19} />다시 탐색하기</SecondaryButton></div></div>
+        <div className="journey-result__copy"><p className="journey-kicker">✦ 나의 교실 플레이 결과 ✦</p><p className="journey-result__eyebrow">나의 교실 플레이 유형은</p><h1>{result.title}</h1><span className="journey-result__code">{nbtiTypeCode(result.directions)}</span><p className="journey-result__description">{result.description}</p><div className="journey-result__directions" aria-label="나의 네 성향">{NBTI_AXES.map((axis, index) => <span key={axis.id}><small>{axis.label}</small><b>{directionLabels[result.directions[index]]}</b></span>)}</div><div className="journey-result__strengths">{result.strengths.map((strength) => <span key={strength}><Icon name="spark" size={16} />{strength}</span>)}</div><p className="journey-result__caution"><b>다음 장면</b>{result.caution}</p><p className="journey-result__next">교실 속 나를 발견하다. 놀이로 확장하다.</p><p className="journey-result__disclaimer">이 결과는 선생님의 모든 모습을 규정하지 않아요. 오늘의 교실 장면에서 가장 자주 드러난 선택을 보여 줍니다.</p><div className="journey-result__actions"><PrimaryButton onClick={props.onPair}>우리 반 게임 만들기</PrimaryButton><SecondaryButton onClick={() => props.onAction({ type: 'OPEN_GAME_INTRO' })}>이 기기에서 계속하기</SecondaryButton><SecondaryButton onClick={() => props.onAction({ type: 'RESET_NBTI' })}><Icon name="reset" size={19} />다시 탐색하기</SecondaryButton></div></div>
         <aside className="journey-result__reveal" aria-label="결과 해금 연출"><CompassSeal /><p>{result.subtitle}</p><span>빛나는 문양이 기록되었습니다</span><i /><i /><i /></aside>
       </div>
     </SceneFrame>
