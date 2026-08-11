@@ -113,3 +113,30 @@ export function degradeToFlat(screen: VisualScreen) {
 export function visualModeSnapshot() {
   return Object.fromEntries(SCREENS.map((screen) => [screen, visualMode(screen)])) as Record<VisualScreen, VisualMode>
 }
+
+export const VISUAL_SCREENS = SCREENS
+export const VISUAL_SCREEN_LABELS: Record<VisualScreen, string> = {
+  prep1: '준비 1 · 학교급', prep2: '준비 2 · 경력', prep3: '준비 3 · 지역', prep4: '준비 4 · 성장',
+  nickname: '닉네임', gameConditions: '게임 1 · 조건', gameCandidates: '게임 3 · 후보', gameComplete: '완료 화면',
+}
+
+/** Whether a screen is currently overridden (vs just sitting on its shipped default). */
+export function hasOverride(screen: VisualScreen) { return overrides[screen] !== undefined }
+
+/**
+ * Persist an override and reload. A reload (rather than live state) is deliberate:
+ * the mode is read once per load so a screen cannot change identity mid-render, and
+ * art vs flat swap entirely different component trees.
+ */
+export function applyVisualOverride(target: VisualScreen | 'all', mode: VisualMode) {
+  const next = target === 'all'
+    ? Object.fromEntries(SCREENS.map((screen) => [screen, mode]))
+    : { ...overrides, [target]: mode }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+  location.reload()
+}
+
+export function clearVisualOverrides() {
+  localStorage.removeItem(STORAGE_KEY)
+  location.reload()
+}
