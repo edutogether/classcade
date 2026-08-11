@@ -298,4 +298,11 @@
   .entry-flat-cards.is-compact .entry-flat-card { font-size: 11px; min-height: 40px; }
   .entry-button--flat.entry-button--back { min-width: 37%; }
   .entry-button--flat.entry-button--next { flex: 1; min-width: 0; }
+  /* The desktop fix put the question and its helper on one row (helper pinned right)
+     because the wide board had room. On a phone width there's no room for both, so the
+     question itself got squeezed into a narrow column and wrapped 4 lines deep. Stack
+     them instead - full-width question, helper as its own line underneath. */
+  .entry-prep--flat .entry-prep__question-head { display: block; }
+  .entry-prep--flat .entry-prep__question-head h2 { white-space: normal; }
+  .entry-prep--flat .entry-prep__question-helper { display: block; margin: 6px 0 0; text-align: left; white-space: normal; }
 }
