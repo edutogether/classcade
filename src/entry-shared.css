@@ -9,6 +9,15 @@
   --entry-panel-width: min(69vw, 1040px);
   /* One board size for every phase - prep panels and journey panels both read this. */
   --classcade-board: min(94vw, 1180px);
+  /* Booth displays: the board is capped at 1180px so line length stays readable, which
+     on a 2560x1440 screen fills under half the width and reads small from a few steps
+     back. Scaling the whole board keeps every proportion (and the character count per
+     line) identical instead of stretching the text columns. */
+  --board-zoom: 1;
+}
+
+@media (min-width: 1800px) and (min-height: 1200px) {
+  :root { --board-zoom: 1.32; }
 }
 
 .entry-prep,

@@ -9,12 +9,14 @@
 .journey-panel {
   max-width: none;
   width: var(--classcade-board, min(94vw, 1180px));
+  zoom: var(--board-zoom, 1);
 }
 
 /* Nothing may be cut off at any resolution: the board scrolls internally rather than
-   clipping when a viewport is too short for its content. */
+   clipping when a viewport is too short for its content. svh is measured before zoom,
+   so the height budget is divided by the zoom factor. */
 .journey-scene .journey-panel {
-  max-height: calc(100svh - 96px);
+  max-height: calc((100svh - 96px) / var(--board-zoom, 1));
   overflow: hidden auto;
 }
 
@@ -24,7 +26,7 @@
 .journey-panel.journey-question {
   display: flex;
   flex-direction: column;
-  max-height: calc(100svh - 96px);
+  max-height: calc((100svh - 96px) / var(--board-zoom, 1));
   overflow: hidden;
 }
 

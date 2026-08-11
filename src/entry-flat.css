@@ -26,10 +26,13 @@
   border-radius: 4px;
   clip-path: none;
   margin: clamp(12px, 2.4vh, 30px) auto;
-  max-height: calc(100svh - 24px);
+  /* svh inside a zoomed box is measured before the zoom, so the budget is divided by it
+     - otherwise the scaled panel renders taller than the viewport. */
+  max-height: calc((100svh - 24px) / var(--board-zoom));
   min-height: 0;
   overflow-y: auto;
   width: var(--classcade-board);
+  zoom: var(--board-zoom);
 }
 
 /* Art mode reserved the right half of the panel for .entry-prep__illustration via a
