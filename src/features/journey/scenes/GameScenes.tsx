@@ -14,6 +14,12 @@ import resultArt from '../../../assets/classcade/game-builder/game-result-master
 const fallbackConditions: GameConditions = { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' }
 const conditionLabels: Record<keyof GameConditions, string> = { schoolLevel: '학교급', size: '참여 인원', time: '수업 시간', space: '공간', mood: '원하는 분위기' }
 
+/** 'flat' skips the large canonical master-art images entirely (plain CSS cards on the
+ *  shared game-scene background) so this flow can never render blank hotspots if a
+ *  multi-MB master image fails to load on event wifi. Flip to 'canonical' once the art
+ *  pipeline is verified solid - both versions stay in the codebase side by side. */
+const GAME_BUILDER_VISUAL_MODE: 'flat' | 'canonical' = 'flat'
+
 /** Recovery fallback if a saved candidateId cannot be decoded — reconstructs a sensible candidate from state. */
 function buildFallbackCandidate(state: Pick<JourneyState, 'gameCombo' | 'gameConditions' | 'resultCode'>): GameCandidate {
   const conditions = state.gameConditions ?? fallbackConditions
@@ -23,7 +29,7 @@ function buildFallbackCandidate(state: Pick<JourneyState, 'gameCombo' | 'gameCon
 
 export function GameConditionsScene(props: JourneySceneProps) {
   const [conditions, setConditions] = useState(props.state.gameConditions ?? (props.profile ? defaultGameConditions(props.profile) : fallbackConditions))
-  return <SceneFrame scene="game" canonicalGame {...props}>
+  if (GAME_BUILDER_VISUAL_MODE === 'canonical') return <SceneFrame scene="game" canonicalGame {...props}>
     <CanonicalGameScene screen="conditions" art={conditionsArt}>
       <CanonicalMobileHero art={conditionsArt} screen="conditions" eyebrow="01 · 우리 반 조건" title="우리 반 교실의 모험 조건" description="교실 장면을 고르고, 우리 반에 맞는 게임을 준비해요." />
       {(Object.keys(GAME_CONDITIONS).filter((key) => key !== 'mood') as (keyof typeof GAME_CONDITIONS)[]).map((key) => <div className={`canonical-condition canonical-condition--${key}`} key={key} role="group" aria-label={conditionLabels[key]}>
@@ -34,6 +40,23 @@ export function GameConditionsScene(props: JourneySceneProps) {
       <fieldset className="canonical-condition-mood"><legend>원하는 분위기</legend>{GAME_CONDITIONS.mood.map((option) => <CanonicalHotspot key={option.id} type="button" selected={conditions.mood === option.id} onClick={() => setConditions({ ...conditions, mood: option.id })} aria-pressed={conditions.mood === option.id}>{option.label}</CanonicalHotspot>)}</fieldset>
       <CanonicalHotspot className="canonical-next canonical-next--conditions" type="button" onClick={() => props.onAction({ type: 'SET_GAME_CONDITIONS', conditions })}><ScreenReaderText>콘셉트 카드 고르기</ScreenReaderText></CanonicalHotspot>
     </CanonicalGameScene>
+  </SceneFrame>
+  return <SceneFrame scene="game" {...props}>
+    <div className="journey-panel journey-game-builder journey-enter">
+      <div className="journey-panel__topline"><p>01 · 우리 반 조건</p><Progress current={1} total={4} label="게임 만들기" /></div>
+      <h1>우리 반 교실의 모험 조건</h1><p>교실 장면을 고르고, 우리 반에 맞는 게임을 준비해요.</p>
+      <div className="journey-builder-groups">
+        {(Object.keys(GAME_CONDITIONS) as (keyof typeof GAME_CONDITIONS)[]).map((key) => <div className="journey-builder-group" key={key} role="group" aria-label={conditionLabels[key]}>
+          <b>{conditionLabels[key]}</b>
+          <div className="journey-builder-options">
+            {GAME_CONDITIONS[key].map((option) => <button key={option.id} type="button" className={`journey-choice ${conditions[key] === option.id ? 'is-selected' : ''}`} aria-pressed={conditions[key] === option.id} onClick={() => setConditions({ ...conditions, [key]: option.id })}>
+              <b>{option.label}</b>
+            </button>)}
+          </div>
+        </div>)}
+      </div>
+      <PrimaryButton onClick={() => props.onAction({ type: 'SET_GAME_CONDITIONS', conditions })}>콘셉트 카드 고르기</PrimaryButton>
+    </div>
   </SceneFrame>
 }
 
@@ -68,13 +91,26 @@ export function GameCandidatesScene(props: JourneySceneProps) {
   const candidates = candidatesForCombo(combo, conditions)
   const [selectedId, setSelectedId] = useState(candidates[0]?.id ?? '')
   const selected = candidates.find((candidate) => candidate.id === selectedId) ?? candidates[0]
-  return <SceneFrame scene="game" canonicalGame {...props}>
+  if (GAME_BUILDER_VISUAL_MODE === 'canonical') return <SceneFrame scene="game" canonicalGame {...props}>
     <CanonicalGameScene screen="candidates" art={candidatesArt}>
       <CanonicalMobileHero art={candidatesArt} screen="candidates" eyebrow="03 · 게임 후보" title="우리 반의 모험 후보" description="캐릭터와 도시 장면에서 실제 후보를 골라요." />
       <div className="canonical-candidate-list" role="list">{candidates.map((candidate, index) => <CanonicalHotspot className={`canonical-candidate canonical-candidate--${index + 1}`} key={candidate.id} type="button" style={{ '--canonical-art': `url(${candidatesArt})`, '--canonical-row': `${index}` } as CSSProperties} selected={selectedId === candidate.id} onClick={() => setSelectedId(candidate.id)} aria-pressed={selectedId === candidate.id}><span className="canonical-mobile-label" aria-hidden="true">{candidate.title}</span><span className="canonical-mobile-choice-note" aria-hidden="true">{candidate.people} · {candidate.duration} · {candidate.space}</span><span className="canonical-mobile-reason" aria-hidden="true">{candidate.fit}</span><ScreenReaderText>{`${candidate.title}. ${candidate.intro}`}</ScreenReaderText></CanonicalHotspot>)}</div>
       {selected && <section className="canonical-candidate-detail" aria-live="polite"><b>{selected.title}</b><span>{selected.people} · {selected.duration}</span><p>{selected.intro}</p></section>}
       <CanonicalHotspot className="canonical-next canonical-next--candidates" type="button" onClick={() => selected && props.onAction({ type: 'SELECT_GAME_CANDIDATE', candidateId: selected.id })}><ScreenReaderText>{selected ? `${selected.title} 이 후보로 결정하기` : '이 후보로 결정하기'}</ScreenReaderText></CanonicalHotspot>
     </CanonicalGameScene>
+  </SceneFrame>
+  return <SceneFrame scene="game" {...props}>
+    <div className="journey-panel journey-game-builder journey-enter">
+      <div className="journey-panel__topline"><p>03 · 게임 후보</p><Progress current={3} total={4} label="게임 만들기" /></div>
+      <h1>우리 반의 모험 후보</h1><p>우리 반 조건과 성향을 반영한 실제 후보 중 하나를 골라요.</p>
+      <div className="journey-builder-cards" role="list">
+        {candidates.map((candidate) => <button key={candidate.id} type="button" className={`journey-choice ${selectedId === candidate.id ? 'is-selected' : ''}`} aria-pressed={selectedId === candidate.id} onClick={() => setSelectedId(candidate.id)}>
+          <b>{candidate.title}</b><small>{candidate.people} · {candidate.duration} · {candidate.space}</small><small>{candidate.fit}</small>
+        </button>)}
+      </div>
+      {selected && <p className="journey-panel__fineprint" aria-live="polite">{selected.intro}</p>}
+      <PrimaryButton onClick={() => selected && props.onAction({ type: 'SELECT_GAME_CANDIDATE', candidateId: selected.id })} disabled={!selected}>{selected ? `${selected.title} 이 후보로 결정하기` : '이 후보로 결정하기'}</PrimaryButton>
+    </div>
   </SceneFrame>
 }
 
