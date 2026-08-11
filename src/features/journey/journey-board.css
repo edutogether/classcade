@@ -53,7 +53,9 @@
 @media (min-width: 1101px) {
   .journey-scene--question .journey-scene__stage { padding-left: 10px; padding-right: 10px; padding-top: calc(clamp(62px, 8.3vh, 88px) + 14px); }
 }
-.journey-question-split > .journey-panel { width: auto; zoom: 1; }
+/* The base .journey-panel centres itself with margin:auto; inside the split, auto margins
+   would re-centre both boards and eat the edge-hugging this layout exists for. */
+.journey-question-split > .journey-panel { margin: 0; width: auto; zoom: 1; }
 .journey-question-split > .journey-question { flex: 0 1 850px; min-width: 0; }
 /* Rides high on the right, level with the backdrop character's eyeline, instead of
    stretching to the question board's full height. */
