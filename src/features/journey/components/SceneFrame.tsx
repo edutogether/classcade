@@ -31,11 +31,15 @@ type SceneFrameProps = SceneContext & {
   canonicalGame?: boolean
 }
 
-function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef }: Omit<SceneContext, 'notice'>) {
+function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef, scene, onRequestHome }: Omit<SceneContext, 'notice'> & { scene: SceneName }) {
   return (
     <header className="journey-header">
       <div className="logo-slot" aria-label="브랜드 로고"><CompassSeal /></div>
       <div className="journey-header__actions">
+        {scene !== 'start' && <nav className="journey-utility" aria-label="여정 제어">
+          <button type="button" onClick={() => onAction({ type: 'PREVIOUS_STAGE' })} aria-label="이전 단계로"><span aria-hidden="true">←</span> 이전</button>
+          <button type="button" onClick={() => onRequestHome?.() ?? onAction({ type: 'GO_HOME' })} aria-label="처음 화면으로"><span aria-hidden="true">×</span> 홈</button>
+        </nav>}
         <BgmControl enabled={state.audio.bgmEnabled} volume={state.audio.bgmVolume} onToggle={() => onAction({ type: 'SET_AUDIO', audio: toggleAudioChannel(state.audio, 'bgm') })} onVolumeChange={(bgmVolume) => onAction({ type: 'SET_AUDIO', audio: { ...state.audio, bgmVolume } })} />
         <AudioToggleButton kind="sfx" enabled={state.audio.sfxEnabled} onToggle={() => onAction({ type: 'SET_AUDIO', audio: toggleAudioChannel(state.audio, 'sfx') })} />
         <button className="journey-header__teacher" type="button" ref={teacherTriggerRef} onClick={() => { if (teacherTriggerRef.current) onTeacherOpen(teacherTriggerRef.current) }} aria-haspopup="dialog" aria-label="선생님 패널 열기">
@@ -61,8 +65,7 @@ export function SceneFrame({ scene, children, state, onAction, onTeacherOpen, te
   return (
     <main className={`journey-scene journey-scene--${scene}${canonicalGame ? ' journey-scene--canonical-game' : ''}${compact ? ' is-compact' : ''}`}>
       <SceneArt asset={JOURNEY_SCENE_ASSETS[scene]} artSrc={artSrc} />
-      <JourneyHeader state={state} onAction={onAction} onTeacherOpen={onTeacherOpen} teacherTriggerRef={teacherTriggerRef} />
-      {scene !== 'start' && <nav className="journey-utility" aria-label="여정 제어"><button type="button" onClick={() => onAction({ type: 'PREVIOUS_STAGE' })} aria-label="이전 단계로"><span aria-hidden="true">←</span> 이전</button><button type="button" onClick={() => onRequestHome?.() ?? onAction({ type: 'GO_HOME' })} aria-label="처음 화면으로"><span aria-hidden="true">×</span> 홈</button></nav>}
+      <JourneyHeader state={state} onAction={onAction} onTeacherOpen={onTeacherOpen} teacherTriggerRef={teacherTriggerRef} scene={scene} onRequestHome={onRequestHome} />
       <section className="journey-scene__stage">{children}</section>
       {notice && scene !== 'question' && <p className="journey-notice" aria-live="polite">{notice}</p>}
     </main>

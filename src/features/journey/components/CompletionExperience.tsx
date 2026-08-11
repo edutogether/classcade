@@ -62,7 +62,7 @@ export function CompletionExperience({ state, onAction, onNextParticipant }: Pro
       <p className="completion-share__message" aria-live="polite">{message}</p>
       <div className="completion-share__guide"><b>공유한 뒤, 실제 뽑기를 안전하게 진행하세요.</b><p>인스타그램 공유 화면을 학급 학생들에게 보여 주면 실제 뽑기에 참여할 수 있어요. 뽑기권 발급, 번호, 경품, 참여 기록은 이 서비스에서 처리하지 않습니다.</p></div>
     </section>
-    <div className="completion-share__actions"><button type="button" onClick={() => onAction({ type: 'OPEN_SHARING' })}>공유하지 않고 완료</button><button type="button" onClick={() => onAction({ type: 'GO_HOME' })}>처음으로</button>{onNextParticipant && <button type="button" onClick={onNextParticipant}>다음 참가자 준비</button>}</div>
+    <div className="completion-final-actions"><button type="button" onClick={() => onAction({ type: 'OPEN_SHARING' })}>공유하지 않고 완료</button><button type="button" onClick={() => onAction({ type: 'GO_HOME' })}>처음으로</button>{onNextParticipant && <button type="button" onClick={onNextParticipant}>다음 참가자 준비</button>}</div>
     <button className="completion-restart" type="button" onClick={() => onAction({ type: 'RESET_NBTI' })}><Icon name="reset" size={18} />처음부터 다시 시작하기</button>
   </section>
 }
