@@ -90,7 +90,7 @@ describe('golden-path journey reducer', () => {
 
   it('maps every game-builder stage to its explicit preceding stage', () => {
     const base = completeNbti()
-    const expected = [['game_intro', 'nbti_result'], ['game_conditions', 'game_intro'], ['game_concepts', 'game_conditions'], ['game_candidates', 'game_concepts'], ['game_adjust', 'game_candidates'], ['game_complete', 'game_adjust'], ['sharing', 'game_complete']] as const
+    const expected = [['game_intro', 'nbti_result'], ['game_conditions', 'nbti_result'], ['game_concepts', 'game_conditions'], ['game_candidates', 'game_concepts'], ['game_adjust', 'game_candidates'], ['game_complete', 'game_adjust'], ['sharing', 'game_complete']] as const
     for (const [stage, previous] of expected) expect(journeyReducer({ ...base, stage }, { type: 'PREVIOUS_STAGE' }).stage).toBe(previous)
   })
 

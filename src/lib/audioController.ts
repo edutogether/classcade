@@ -6,7 +6,9 @@ export type AudioSettings = {
   sfxEnabled: boolean
 }
 
-export const DEFAULT_BGM_VOLUME = .28
+/* Booth default: BGM on at full volume (2026-08-12 요청). bgmEnabled's default lives in
+   journeyTypes.defaultAudio and is already true. */
+export const DEFAULT_BGM_VOLUME = 1
 
 export function clampBgmVolume(value: number) {
   return Math.max(0, Math.min(1, Number.isFinite(value) ? value : DEFAULT_BGM_VOLUME))

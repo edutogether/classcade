@@ -14,9 +14,9 @@ describe('completion recommendation and sharing contract', () => {
       expect(tags).toContain('초등')
     }
   })
-  it('keeps the eight confirmed official videos and only supplied URL formats', () => {
-    expect(CLASSCADE_VIDEO_CATALOG).toHaveLength(8)
-    expect(new Set(CLASSCADE_VIDEO_CATALOG.map((video) => video.id)).size).toBe(8)
+  it('keeps only confirmed 같이교육 videos and supplied URL formats', () => {
+    expect(CLASSCADE_VIDEO_CATALOG).toHaveLength(27)
+    expect(new Set(CLASSCADE_VIDEO_CATALOG.map((video) => video.id)).size).toBe(27)
     expect(EDUTOGETHER_YOUTUBE_CHANNEL).toEqual({ id: 'UCxwEDzU4bGOyvIrpTkqN5jg', name: '같이교육' })
     for (const video of CLASSCADE_VIDEO_CATALOG) {
       expect(video.youtubeUrl).toBe(`https://www.youtube.com/watch?v=${video.id}`)
@@ -27,10 +27,10 @@ describe('completion recommendation and sharing contract', () => {
     const relationship = rankVideos(['협력', '전원 참여', '관계'], { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' })
     const calmIndividual = rankVideos(['개별 참여', '차분한 몰입', '자리 활동'], { schoolLevel: 'elementary', size: 'small', time: 'standard', space: 'seated', mood: 'calm' })
     const strategyYoung = rankVideos(['전략형', '도전과 전략'], { schoolLevel: 'elementary', size: 'small', time: 'standard', space: 'seated', mood: 'challenge' })
-    /* 2026-08-12: TVIEW 채널로 판명된 5건이 비공개되어 같이교육 3건만 랭킹 대상이다. */
+    /* 2026-08-12: 카탈로그를 같이교육 채널 27건으로 재구축한 뒤의 랭킹 상위값. */
     expect(relationship[0]?.video.id).toBe('QcBhWQcgZ1M')
-    expect(calmIndividual[0]?.video.id).toBe('HLx2aITlp38')
-    expect(strategyYoung[0]?.video.id).toBe('HLx2aITlp38')
+    expect(calmIndividual[0]?.video.id).toBe('WsLyuXeJYpE')
+    expect(strategyYoung[0]?.video.id).toBe('vavIDO8aylM')
     for (const entries of [relationship, calmIndividual, strategyYoung]) {
       expect(entries.length).toBeGreaterThan(0); expect(entries.length).toBeLessThanOrEqual(3)
       expect(new Set(entries.map(({ video }) => video.id)).size).toBe(entries.length)

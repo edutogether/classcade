@@ -24,18 +24,40 @@ export const EDUTOGETHER_YOUTUBE_CHANNEL = {
 } as const
 
 /** Confirmed public 같이교육 records only. No URLs are generated beyond these supplied IDs. */
+/* 2026-08-12 재구축: 같이교육 채널 업로드 탭에서 실측 수집한 26개 놀이 영상
+   (채널 페이지 videoId+제목 스크레이핑, 브이로그 3건 제외). 제목은 채널 원문 그대로.
+   태그는 rankVideos가 읽는 어휘(방향 태그·조건 태그)에 맞춰 부여했다. */
+const v = (id: string, title: string, shortDescription: string, schoolLevels: readonly string[], timeFits: readonly string[], spaces: readonly string[], duration: string, materials: string, tags: readonly string[], priority: number): RecommendationVideo =>
+  ({ id, title, youtubeUrl: `https://www.youtube.com/watch?v=${id}`, thumbnailUrl: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`, shortDescription, schoolLevels, timeFits, spaces, duration, materials, tags, published: true, priority })
+
 export const CLASSCADE_VIDEO_CATALOG: readonly RecommendationVideo[] = [
-  /* published는 채널 검증 결과다(2026-08-12, YouTube oEmbed author_name 실측):
-     같이교육 채널 영상만 true. false 5건은 TVIEW 채널이라 노출 금지 - 같이교육
-     영상 ID를 확보하면 그때 교체하고 true로 되돌린다. */
-  { id: 'QcBhWQcgZ1M', title: '학급 분위기와 관계를 여는 대화', youtubeUrl: 'https://www.youtube.com/watch?v=QcBhWQcgZ1M', thumbnailUrl: 'https://i.ytimg.com/vi/QcBhWQcgZ1M/hqdefault.jpg', shortDescription: '공통점과 관계를 발견하며 학급 분위기를 여는 활동입니다.', schoolLevels: ['elementary', 'middle', 'high'], timeFits: ['short', 'standard'], spaces: ['seated', 'room'], duration: '10~20분', materials: '거의 없음', tags: ['관계', '학급 분위기', '전원 참여', '협력', '신체 활동', '빠른 준비', '규칙 변경 가능'], published: true, priority: 8 },
-  { id: 'P-7JxuKIc9Q', title: '감정 표현과 관계를 위한 대화', youtubeUrl: 'https://www.youtube.com/watch?v=P-7JxuKIc9Q', thumbnailUrl: 'https://i.ytimg.com/vi/P-7JxuKIc9Q/hqdefault.jpg', shortDescription: '감정을 표현하고 서로를 이해하는 관계 대화 묶음입니다.', schoolLevels: ['elementary', 'middle'], timeFits: ['short', 'standard'], spaces: ['room'], duration: '10~20분', materials: '없음', tags: ['관계', '감정 표현', '협력', '전원 참여', '학기 초', '빠른 준비'], published: false, priority: 7 },
-  { id: 'KYufBL49Cik', title: '친구와 함께하는 대화', youtubeUrl: 'https://www.youtube.com/watch?v=KYufBL49Cik', thumbnailUrl: 'https://i.ytimg.com/vi/KYufBL49Cik/hqdefault.jpg', shortDescription: '친구와 함께 추리하고 질문하며 관계를 만드는 대화입니다.', schoolLevels: ['elementary', 'middle'], timeFits: ['short', 'standard'], spaces: ['room'], duration: '10~20분', materials: '거의 없음', tags: ['친구', '질문', '추리', '관계', '전원 참여', '빠른 준비'], published: false, priority: 6 },
-  { id: 'emAwxLcKBes', title: '협동능력을 키우는 대화', youtubeUrl: 'https://www.youtube.com/watch?v=emAwxLcKBes', thumbnailUrl: 'https://i.ytimg.com/vi/emAwxLcKBes/hqdefault.jpg', shortDescription: '공동 목표와 역할 분담을 경험하는 협동 활동입니다.', schoolLevels: ['elementary', 'middle'], timeFits: ['standard'], spaces: ['room', 'wide'], duration: '20분 안팎', materials: '없음', tags: ['협력', '모둠', '공동 목표', '역할', '전원 참여', '신체 활동', '관계'], published: false, priority: 10 },
-  { id: 'KjHDS59tGS4', title: '개인 활동으로 이어 보는 대화', youtubeUrl: 'https://www.youtube.com/watch?v=KjHDS59tGS4', thumbnailUrl: 'https://i.ytimg.com/vi/KjHDS59tGS4/hqdefault.jpg', shortDescription: '혼자서도 참여하며 자신의 생각과 결과를 만드는 활동입니다.', schoolLevels: ['elementary', 'middle'], timeFits: ['short', 'standard'], spaces: ['seated'], duration: '10~20분', materials: '없음', tags: ['개별 참여', '차분한 몰입', '자리 활동', '조용한 학생 참여', '빠른 준비', '마무리', '자기 표현'], published: false, priority: 8 },
-  { id: 'OXQqEbDYxBg', title: '친해지며 생각하는 대화', youtubeUrl: 'https://www.youtube.com/watch?v=OXQqEbDYxBg', thumbnailUrl: 'https://i.ytimg.com/vi/OXQqEbDYxBg/hqdefault.jpg', shortDescription: '질문과 회고로 서로를 알아가는 관계 활동입니다.', schoolLevels: ['elementary', 'middle', 'high'], timeFits: ['short', 'standard'], spaces: ['room'], duration: '10~20분', materials: '없음', tags: ['관계', '회고', '질문', '학급 분위기', '전원 참여', '빠른 준비'], published: false, priority: 9 },
-  { id: 'UcjGov-rTaE', title: '세계의 전통과 함께하는 활동', youtubeUrl: 'https://www.youtube.com/watch?v=UcjGov-rTaE', thumbnailUrl: 'https://i.ytimg.com/vi/UcjGov-rTaE/hqdefault.jpg', shortDescription: '전통 놀이를 몸과 리듬으로 함께 경험하는 활동입니다.', schoolLevels: ['elementary'], timeFits: ['short', 'standard'], spaces: ['room', 'wide'], duration: '10~20분', materials: '확인 필요', tags: ['전통 놀이', '문화', '신체 활동', '전원 참여', '리듬', '협력', '초등'], published: true, priority: 5 },
-  { id: 'HLx2aITlp38', title: '수학 보드게임 활동', youtubeUrl: 'https://www.youtube.com/watch?v=HLx2aITlp38', thumbnailUrl: 'https://i.ytimg.com/vi/HLx2aITlp38/hqdefault.jpg', shortDescription: '저학년의 전략과 수 감각을 함께 경험하는 보드게임 활동입니다.', schoolLevels: ['elementary'], timeFits: ['standard'], spaces: ['seated'], duration: '20분 안팎', materials: '보드게임 자료', tags: ['수학', '보드게임', '전략형', '저학년', '자리 활동', '도전과 전략', '소그룹'], published: true, priority: 6 },
+  v('QcBhWQcgZ1M', '학급 세우기 놀이 | 당신은 당신의 이웃과 통하십니까', '공통점을 발견하며 학급 분위기를 여는 자리 바꾸기 놀이입니다.', ['elementary', 'middle', 'high'], ['short', 'standard'], ['room'], '10~20분', '의자만 있으면 돼요', ['관계', '학급 분위기', '전원 참여', '협력', '신체 활동', '빠른 준비'], 9),
+  v('In7CdmAs1qY', '학급 세우기 놀이 | 심리다우트', '서로의 마음을 추리하며 가까워지는 학급 세우기 놀이입니다.', ['elementary', 'middle', 'high'], ['short', 'standard'], ['seated', 'room'], '10~20분', '없음', ['관계', '학급 분위기', '전원 참여', '이야기형', '규칙 기반'], 8),
+  v('rShRhcF-hzU', '소통놀이 | 뒤죽박축 글자 맞히기', '섞인 글자를 함께 맞히며 소통하는 두뇌 놀이입니다.', ['elementary', 'middle'], ['short'], ['seated', 'room'], '10분 안팎', '칠판/종이', ['관계', '전원 참여', '규칙 기반', '자리 활동', '차분한 몰입'], 7),
+  v('3Do4tKizwGo', '교실체육놀이 | 늘였다 줄였다 이어달리기', '규칙이 계속 바뀌는 이어달리기로 몸을 움직이는 체육 놀이입니다.', ['elementary', 'middle'], ['standard'], ['room', 'wide'], '20분 안팎', '거의 없음', ['신체 활동', '전원 참여', '협력', '즉흥 변주', '규칙 기반'], 8),
+  v('_YdS72-_6k8', '체육 표현활동 | 박쥐와 나방', '소리에 의지해 움직이는 표현·감각 놀이입니다.', ['elementary'], ['short', 'standard'], ['room', 'wide'], '10~20분', '안대', ['신체 활동', '전원 참여', '즉흥 변주', '개별 참여'], 6),
+  v('O-SvbyszcMI', '신체놀이 | 직업 가가볼', '직업 테마를 얹은 가가볼 변형 신체 놀이입니다.', ['elementary', 'middle'], ['standard'], ['wide'], '20분 안팎', '공', ['신체 활동', '전원 참여', '도전과 전략', '규칙 기반'], 6),
+  v('cXscAK2BNYY', '신체놀이 | 핑퐁 투호', '탁구공으로 즐기는 투호 변형 놀이입니다.', ['elementary', 'middle'], ['short', 'standard'], ['room'], '10~20분', '탁구공, 통', ['신체 활동', '도전과 전략', '전원 참여', '소규모'], 6),
+  v('V9-S5PSF18o', '신체놀이 | 책상컬링', '책상 위에서 즐기는 컬링 변형 놀이입니다.', ['elementary', 'middle'], ['short', 'standard'], ['seated', 'room'], '10~20분', '지우개/병뚜껑', ['도전과 전략', '자리 활동', '소규모', '규칙 기반'], 7),
+  v('ThrM-DF8LIk', '체육놀이 | 풍선배구', '풍선으로 안전하게 즐기는 배구형 협력 놀이입니다.', ['elementary', 'middle'], ['standard'], ['room', 'wide'], '20분 안팎', '풍선', ['신체 활동', '협력', '전원 참여', '규칙 기반'], 8),
+  v('UcjGov-rTaE', '세계 전통놀이 | 짐바놀이(아프리카)', '아프리카 전통 놀이를 몸과 리듬으로 경험하는 활동입니다.', ['elementary'], ['short', 'standard'], ['room', 'wide'], '10~20분', '확인 필요', ['전통 놀이', '문화', '신체 활동', '전원 참여', '협력'], 5),
+  v('vavIDO8aylM', '수학 보드게임 | 골드 러시', '수 감각과 전략을 함께 쓰는 수학 보드게임입니다.', ['elementary', 'middle'], ['standard'], ['seated'], '20분 안팎', '보드게임 자료', ['수학', '보드게임', '전략형', '도전과 전략', '자리 활동', '소규모'], 7),
+  v('HLx2aITlp38', '수학놀이 | 십삼지신 보드게임', '저학년의 전략과 수 감각을 키우는 보드게임 활동입니다.', ['elementary'], ['standard'], ['seated'], '20분 안팎', '보드게임 자료', ['수학', '보드게임', '전략형', '저학년', '자리 활동', '도전과 전략'], 6),
+  v('RLgcV1G-rsw', '수학놀이 | 도형 만들기', '몸과 도구로 도형을 만들며 수학 감각을 키우는 놀이입니다.', ['elementary'], ['short', 'standard'], ['seated', 'room'], '10~20분', '끈/막대', ['수학', '협력', '구조화', '자리 활동', '개별 참여'], 6),
+  v('9rBMbog0Ni0', '에듀테크 | 너의 그림이 들려', '그림과 설명을 연결하는 에듀테크 소통 놀이입니다.', ['elementary', 'middle'], ['short', 'standard'], ['seated'], '10~20분', '기기', ['자리 활동', '차분한 몰입', '개별 참여', '이야기형', '관계'], 6),
+  v('KzyngYUEm30', '에듀테크 | 이야기 핑퐁', '이야기를 주고받으며 이어 가는 에듀테크 놀이입니다.', ['elementary', 'middle'], ['short', 'standard'], ['seated'], '10~20분', '기기', ['이야기형', '즉흥 변주', '자리 활동', '개별 참여'], 6),
+  v('Xg1H8VxHHQw', '에듀테크 | 우리반 퀴즈', '우리 반 이야기로 만드는 퀴즈 놀이입니다.', ['elementary', 'middle', 'high'], ['short', 'standard'], ['seated'], '10~20분', '기기', ['규칙 기반', '전원 참여', '자리 활동', '도전과 전략', '학급 분위기'], 7),
+  v('WsLyuXeJYpE', '진로 놀이 | 감정 탐정', '감정 단서를 추리하며 서로를 이해하는 진로·정서 놀이입니다.', ['elementary', 'middle'], ['short', 'standard'], ['seated', 'room'], '10~20분', '감정 카드', ['관계', '이야기형', '개별 참여', '차분한 몰입', '자리 활동'], 7),
+  v('n-TorcNfaHE', '진로놀이 | 직업 흉내극장', '몸짓으로 직업을 표현하고 맞히는 진로 놀이입니다.', ['elementary', 'middle'], ['short', 'standard'], ['room'], '10~20분', '없음', ['즉흥 변주', '이야기형', '전원 참여', '신체 활동'], 6),
+  v('zBZhr45zjh8', '진로놀이 | 감정 딕싯', '그림 카드로 감정과 생각을 나누는 진로·정서 놀이입니다.', ['elementary', 'middle', 'high'], ['short', 'standard'], ['seated'], '10~20분', '그림 카드', ['이야기형', '개별 참여', '차분한 몰입', '관계', '자리 활동'], 7),
+  v('JfPPgWwpwIE', '보드게임 | 마음의 실타래', '마음을 나누며 관계를 잇는 보드게임 활동입니다.', ['elementary', 'middle'], ['standard'], ['seated'], '20분 안팎', '보드게임 자료', ['보드게임', '관계', '차분한 몰입', '자리 활동', '개별 참여'], 6),
+  v('e2v9haWE8l8', '보드게임 | 띵!', '순발력과 집중력을 겨루는 보드게임 놀이입니다.', ['elementary', 'middle'], ['short'], ['seated'], '10분 안팎', '보드게임 자료', ['보드게임', '규칙 기반', '도전과 전략', '자리 활동', '소규모'], 6),
+  v('7HwVXE0nn_A', '과학놀이 | 실험실 안전 수칙', '실험실 안전 수칙을 놀이로 익히는 과학 활동입니다.', ['elementary', 'middle'], ['short'], ['seated', 'room'], '10분 안팎', '없음', ['규칙 기반', '구조화', '자리 활동', '전원 참여'], 5),
+  v('2aFmilWMJp4', '사회놀이 | 라이어게임', '설명 속 거짓을 찾아내는 추리형 사회 놀이입니다.', ['elementary', 'middle', 'high'], ['short', 'standard'], ['seated', 'room'], '10~20분', '없음', ['이야기형', '즉흥 변주', '전원 참여', '관계', '규칙 기반'], 8),
+  v('lCXQViQsx68', '야 너두? | 변형놀이', '익숙한 놀이에 반전을 더한 변형 놀이입니다.', ['elementary', 'middle'], ['short'], ['room'], '10분 안팎', '없음', ['즉흥 변주', '전원 참여', '학급 분위기', '빠른 준비'], 7),
+  v('Avcj1XyY1q4', '용암 건너기 | 변형놀이', '바닥을 용암 삼아 건너는 협력 변형 놀이입니다.', ['elementary'], ['standard'], ['room', 'wide'], '20분 안팎', '매트/종이', ['신체 활동', '협력', '전원 참여', '도전과 전략', '즉흥 변주'], 7),
+  v('wlworcNm5x0', 'OOO꽃이 피었습니다! | 변형놀이', '무궁화 꽃이 피었습니다의 규칙을 비틀어 즐기는 변형 놀이입니다.', ['elementary', 'middle'], ['short', 'standard'], ['room', 'wide'], '10~20분', '없음', ['신체 활동', '전원 참여', '즉흥 변주', '규칙 기반'], 7),
+  v('MDrhMgRtZ5o', '기억의 조각 | 학기말 놀이', '한 학기의 기억을 함께 돌아보는 학기말 회고 놀이입니다.', ['elementary', 'middle', 'high'], ['short', 'standard'], ['seated'], '10~20분', '종이, 필기구', ['마무리', '회고', '차분한 몰입', '관계', '개별 참여', '자리 활동'], 6),
 ]
 
 const directionTags: Record<NbtiDirection, readonly string[]> = {

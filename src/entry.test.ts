@@ -37,6 +37,6 @@ describe('Entry entry-flow guardrails', () => {
   })
 
   it('enables BGM by default for a first-time journey without overriding restored preferences', () => {
-    expect(createJourneyState().audio).toEqual({ bgmEnabled: true, bgmVolume: .28, sfxEnabled: false })
+    expect(createJourneyState().audio).toEqual({ bgmEnabled: true, bgmVolume: 1, sfxEnabled: false })
   })
 })

@@ -28,7 +28,7 @@ export function journeyReducer(state: JourneyState, action: JourneyAction): Jour
     case 'PREVIOUS_NBTI':
       return state.stage === 'nbti_question' && state.questionIndex > 0 ? stamp(state, { questionIndex: state.questionIndex - 1 }) : state
     case 'PREVIOUS_STAGE': {
-      const previous: Partial<Record<JourneyStage, JourneyStage>> = { nbti_result: 'nbti_question', game_intro: 'nbti_result', game_conditions: 'game_intro', game_concepts: 'game_conditions', game_candidates: 'game_concepts', game_adjust: 'game_candidates', game_choice: 'game_intro', game_shake: 'game_choice', game_complete: 'game_adjust', sharing: 'game_complete' }
+      const previous: Partial<Record<JourneyStage, JourneyStage>> = { nbti_result: 'nbti_question', game_intro: 'nbti_result', game_conditions: 'nbti_result', game_concepts: 'game_conditions', game_candidates: 'game_concepts', game_adjust: 'game_candidates', game_choice: 'nbti_result', game_shake: 'game_choice', game_complete: 'game_adjust', sharing: 'game_complete' }
       if (state.stage === 'nbti_question') return state.questionIndex > 0 ? stamp(state, { questionIndex: state.questionIndex - 1 }) : stamp(state, { stage: 'nbti_start' })
       const stage = previous[state.stage]
       return stage ? stamp(state, { stage, questionIndex: stage === 'nbti_question' ? NBTI_QUESTIONS.length - 1 : state.questionIndex }) : state
@@ -36,7 +36,9 @@ export function journeyReducer(state: JourneyState, action: JourneyAction): Jour
     case 'GO_HOME': return state.stage === 'nbti_start' ? state : stamp(state, { resumeStage: state.stage, stage: 'nbti_start' })
     case 'RESUME_JOURNEY': return state.stage === 'nbti_start' && state.resumeStage ? stamp(state, { stage: state.resumeStage, resumeStage: null }) : state
     case 'OPEN_GAME_INTRO':
-      return state.stage === 'nbti_result' && state.resultCode ? stamp(state, { stage: 'game_intro' }) : state
+      /* The intro interstitial was cut (2026-08-12): continuing from the result goes
+         straight into the builder, carrying START_GAME's initialisation with it. */
+      return state.stage === 'nbti_result' && state.resultCode ? stamp(state, { stage: 'game_conditions', gameStep: 0, gameChoices: {}, shakeProgress: 0 }) : state
     case 'START_GAME':
       return state.stage === 'game_intro' && state.resultCode ? stamp(state, { stage: 'game_conditions', gameStep: 0, gameChoices: {}, shakeProgress: 0 }) : state
     case 'SET_GAME_CONDITIONS': return state.stage === 'game_conditions' && isGameConditions(action.conditions) ? stamp(state, { gameConditions: action.conditions, gameCombo: null, selectedGameId: null, gameAdjustments: {}, completion: createJourneyState().completion, stage: 'game_concepts' }) : state
