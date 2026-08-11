@@ -131,6 +131,59 @@
 .entry-prep--flat .entry-growth-card.is-selected > svg { color: #2c7a4a; }
 .entry-prep--flat .entry-growth-grid { max-width: none; }
 
+/* --- Prep 4 review pass -------------------------------------------------- */
+
+/* 1. A little more vertical room on the 4/4 board. */
+.entry-prep--flat.entry-prep--4 .entry-prep__panel { min-height: min(88svh, 940px); }
+
+/* 3 + 7. The helper sits on the question's own line, pushed to the right edge,
+   at a slightly larger size than the old sub-line. */
+.entry-prep--flat .entry-prep__question-head { display: block; }
+.entry-prep--flat .entry-prep__question-helper { margin: 15px 0 24px 43px; }
+
+.entry-prep--flat.entry-prep--4 .entry-prep__question-head {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0 18px;
+}
+/* min-width:0 lets the long question shrink so the helper never wraps to its own line.
+   Sized to fit beside the helper on one row; keep-all stops Korean from breaking
+   mid-word ("무엇 / 인가요?") if it ever does wrap. */
+.entry-prep--flat.entry-prep--4 .entry-prep__question-head h2 {
+  flex: 0 1 auto;
+  font-size: clamp(20px, 1.62vw, 31px);
+  min-width: 0;
+  word-break: keep-all;
+}
+.entry-prep--flat.entry-prep--4 .entry-prep__question-helper {
+  flex: 0 0 auto;
+  font-size: clamp(14px, 1.05vw, 19px);
+  margin: 0 0 0 auto;
+  text-align: right;
+  white-space: nowrap;
+}
+.entry-prep--flat.entry-prep--4 .entry-prep__question-helper strong { margin-left: 8px; }
+
+/* 5. The check mark inside the selected badge read as a plain filled dot. */
+.entry-prep--flat .entry-growth-card i,
+.entry-flat-card i { height: 25px; width: 25px; }
+.entry-prep--flat .entry-growth-card i svg,
+.entry-flat-card i svg { stroke-width: 3.4; }
+
+/* 6. The free-text field fills the two columns beside its own card instead of
+   claiming a new row of its own. */
+.entry-prep--flat .entry-growth-other {
+  border-radius: 10px;
+  grid-column: span 2;
+  min-height: 0;
+  padding: 6px 14px;
+}
+.entry-prep--flat .entry-growth-other input { font-size: clamp(13px, .95vw, 16px); font-weight: 700; }
+
+/* 9. Keep the footer row clear of the divider above it. */
+.entry-prep--flat .entry-prep__footer { gap: 16px; margin-top: auto; padding-top: 22px; }
+
 /* Flat nav buttons replace the four-state CTA image stack. */
 .entry-button--flat {
   align-items: center;
@@ -150,13 +203,14 @@
   min-width: clamp(140px, 15vw, 232px);
   padding: 0 clamp(14px, 1.4vw, 26px);
 }
+/* 8. Both nav buttons share the back button's footprint. */
 .entry-button--flat.entry-button--next {
   background: linear-gradient(165deg, #2e7d4c, #17532f);
   border: 1px solid #ffe08a;
   box-shadow: inset 0 1px 0 rgba(255, 240, 189, .34), 0 7px 16px rgba(9, 43, 24, .38);
   color: #fff6d2;
-  min-width: clamp(200px, 22vw, 360px);
-  padding: 0 clamp(18px, 1.8vw, 34px);
+  min-width: clamp(140px, 15vw, 232px);
+  padding: 0 clamp(14px, 1.4vw, 26px);
 }
 .entry-button--flat:hover:not(:disabled) { filter: brightness(1.07); transform: translateY(-2px); }
 .entry-button--flat:focus-visible { outline: 3px solid #ffe08a; outline-offset: 3px; }
