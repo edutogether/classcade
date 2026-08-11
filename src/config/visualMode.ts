@@ -9,19 +9,18 @@
  * time, and a single switch would force every page to art the moment the first one
  * is ready - flipping screens whose art does not exist yet into a broken state.
  *
- * Resolution order (first match wins):
- *   1. ?visual= URL parameter  - instant, no rebuild, per session. For checking a new
- *      page's art before committing to it.
- *   2. localStorage            - sticky on this device. For a booth laptop that should
- *      stay in one mode across refreshes.
- *   3. DEFAULTS below          - what ships.
+ * There is exactly one runtime switch, kept deliberately small so there is nothing to
+ * remember or mistype in front of a room:
  *
- * URL forms:
- *   ?visual=art                    every screen to art
- *   ?visual=flat                   every screen to flat
- *   ?visual=prep1:art              one screen only
- *   ?visual=prep1:art,prep2:art    several screens
- *   ?visual=reset                  clear the stored override
+ *   ?art    every screen to art
+ *   ?flat   back to the shipped defaults
+ *
+ * The choice is stored, so it survives both refreshes and the history.replaceState the
+ * pairing flow performs (which would otherwise strip the parameter mid-run).
+ *
+ * Per-screen control still exists - it lives in DEFAULTS below, which is the right place
+ * for it: art lands one page at a time, and each page is switched on for good once its
+ * artwork is finished, not toggled ad hoc from a URL.
  */
 
 export type VisualScreen =
@@ -45,41 +44,23 @@ const DEFAULTS: Record<VisualScreen, VisualMode> = {
 const STORAGE_KEY = 'classcade.visual-mode.v1'
 const SCREENS = Object.keys(DEFAULTS) as VisualScreen[]
 
-function isMode(value: string): value is VisualMode {
-  return value === 'flat' || value === 'art'
-}
-
-function isScreen(value: string): value is VisualScreen {
-  return (SCREENS as string[]).includes(value)
-}
-
-/** "art" | "flat" | "prep1:art,prep2:flat" -> partial override map. */
-function parse(spec: string): Partial<Record<VisualScreen, VisualMode>> {
-  const trimmed = spec.trim()
-  if (!trimmed) return {}
-  if (isMode(trimmed)) return Object.fromEntries(SCREENS.map((screen) => [screen, trimmed]))
-  const overrides: Partial<Record<VisualScreen, VisualMode>> = {}
-  for (const entry of trimmed.split(',')) {
-    const [screen, mode] = entry.split(':').map((part) => part.trim())
-    if (screen && mode && isScreen(screen) && isMode(mode)) overrides[screen] = mode
-  }
-  return overrides
-}
+const allScreens = (mode: VisualMode) =>
+  Object.fromEntries(SCREENS.map((screen) => [screen, mode])) as Record<VisualScreen, VisualMode>
 
 /** Read once per load: the mode must not change midway through a render pass. */
 const overrides: Partial<Record<VisualScreen, VisualMode>> = (() => {
   if (typeof window === 'undefined') return {}
   try {
-    const spec = new URLSearchParams(window.location.search).get('visual')
-    if (spec === 'reset') { localStorage.removeItem(STORAGE_KEY); return {} }
-    if (spec) {
-      const parsed = parse(spec)
-      // A URL override sticks so it survives the refreshes a real run goes through.
-      if (Object.keys(parsed).length) localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed))
-      return parsed
+    // Bare flag, so `?art` works with or without a value (`?art=1` too).
+    if (new URLSearchParams(window.location.search).has('art')) {
+      // sessionStorage, not localStorage, on purpose: the preview must survive the
+      // pairing flow's history.replaceState (which strips the query mid-run) and page
+      // refreshes, but must NOT outlive the tab. A flag left over from last night must
+      // never be able to serve unfinished art to a participant at the booth.
+      sessionStorage.setItem(STORAGE_KEY, 'art')
+      return allScreens('art')
     }
-    const stored = localStorage.getItem(STORAGE_KEY)
-    return stored ? parse(Object.entries(JSON.parse(stored) as Record<string, string>).map(([s, m]) => `${s}:${m}`).join(',')) : {}
+    return sessionStorage.getItem(STORAGE_KEY) ? allScreens('art') : {}
   } catch {
     // A malformed override must never take the app down - fall back to what ships.
     return {}
@@ -109,34 +90,7 @@ export function degradeToFlat(screen: VisualScreen) {
   window.dispatchEvent(new CustomEvent('classcade:visual-degraded', { detail: { screen } }))
 }
 
-/** Current resolved state, for the visual tuner and for debugging in the field. */
+/** Current resolved state, for debugging in the field. */
 export function visualModeSnapshot() {
   return Object.fromEntries(SCREENS.map((screen) => [screen, visualMode(screen)])) as Record<VisualScreen, VisualMode>
-}
-
-export const VISUAL_SCREENS = SCREENS
-export const VISUAL_SCREEN_LABELS: Record<VisualScreen, string> = {
-  prep1: '준비 1 · 학교급', prep2: '준비 2 · 경력', prep3: '준비 3 · 지역', prep4: '준비 4 · 성장',
-  nickname: '닉네임', gameConditions: '게임 1 · 조건', gameCandidates: '게임 3 · 후보', gameComplete: '완료 화면',
-}
-
-/** Whether a screen is currently overridden (vs just sitting on its shipped default). */
-export function hasOverride(screen: VisualScreen) { return overrides[screen] !== undefined }
-
-/**
- * Persist an override and reload. A reload (rather than live state) is deliberate:
- * the mode is read once per load so a screen cannot change identity mid-render, and
- * art vs flat swap entirely different component trees.
- */
-export function applyVisualOverride(target: VisualScreen | 'all', mode: VisualMode) {
-  const next = target === 'all'
-    ? Object.fromEntries(SCREENS.map((screen) => [screen, mode]))
-    : { ...overrides, [target]: mode }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-  location.reload()
-}
-
-export function clearVisualOverrides() {
-  localStorage.removeItem(STORAGE_KEY)
-  location.reload()
 }

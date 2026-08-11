@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { TUNE_GROUPS, TUNER_STORAGE_KEY, type EntryTuning, type TunerScreen, applyTuning, createTuning, cssVariableText, isTunerEnabled, validateTuning, valuesFor } from './visualTuning'
-import { VISUAL_SCREENS, VISUAL_SCREEN_LABELS, applyVisualOverride, clearVisualOverrides, hasOverride, visualMode } from '../../config/visualMode'
 import './entryTuner.css'
 
 type Props = { screen: TunerScreen }
@@ -36,22 +35,6 @@ export function EntryVisualTuner({ screen }: Props) {
     {open && <div className="entry-tuner__sheet">
       <header><strong>Entry Visual Tuner</strong><span>{title}</span><button type="button" onClick={() => setOpen(false)}>닫기</button></header>
       <p className="entry-tuner__note">개발 전용 · 현재 화면의 CSS 값만 조정합니다.</p>
-      <details className="entry-tuner__visual" open>
-        <summary>고퀄(아트) / 저퀄(플랫) 전환</summary>
-        <div className="entry-tuner__visual-all">
-          <button type="button" onClick={() => applyVisualOverride('all', 'art')}>전부 아트</button>
-          <button type="button" onClick={() => applyVisualOverride('all', 'flat')}>전부 플랫</button>
-          <button type="button" onClick={clearVisualOverrides}>기본값으로</button>
-        </div>
-        {VISUAL_SCREENS.map((visualScreen) => {
-          const mode = visualMode(visualScreen)
-          return <div className="entry-tuner__visual-row" key={visualScreen}>
-            <span>{VISUAL_SCREEN_LABELS[visualScreen]}{hasOverride(visualScreen) && <em> ·임시</em>}</span>
-            <button type="button" className={mode === 'art' ? 'is-on' : ''} onClick={() => applyVisualOverride(visualScreen, 'art')}>아트</button>
-            <button type="button" className={mode === 'flat' ? 'is-on' : ''} onClick={() => applyVisualOverride(visualScreen, 'flat')}>플랫</button>
-          </div>
-        })}
-      </details>
       {TUNE_GROUPS.map((group) => <details key={group.label} open><summary>{group.label}</summary>{group.controls.map((control) => <label key={control.key}><span>{control.label}</span><input aria-label={`${control.label} 슬라이더`} type="range" min={control.min} max={control.max} step={control.step} value={resolvedValues[control.key]} onChange={(event) => update(control.key, Number(event.target.value))} /><input aria-label={`${control.label} 숫자 입력`} type="number" min={control.min} max={control.max} step={control.step} value={resolvedValues[control.key]} onChange={(event) => { const value = Number(event.target.value); if (Number.isFinite(value)) update(control.key, value) }} /><em>{screenValues[control.key] ?? '기본'}{control.unit}</em></label>)}</details>)}
       <div className="entry-tuner__actions"><button onClick={undo} disabled={!history.length}>Undo</button><button onClick={redo} disabled={!future.length}>Redo</button><button onClick={resetScreen}>현재 화면 초기화</button><button onClick={() => { setHistory((items) => [...items, tuning]); setTuning(createTuning()) }}>전체 초기화</button></div>
       <div className="entry-tuner__io"><button onClick={exportJson}>JSON 내보내기</button><button onClick={() => setIo(cssVariableText(tuning, screen))}>CSS 변수 복사</button><textarea value={io} onChange={(event) => setIo(event.target.value)} placeholder="JSON을 붙여 넣어 가져오기" /><button onClick={importJson}>JSON 가져오기</button></div>
