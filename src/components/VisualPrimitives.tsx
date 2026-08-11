@@ -4,7 +4,7 @@ import classcadeWordmark from '../assets/brand/classcade-wordmark.png'
 import classcadeLockup from '../assets/brand/classcade-lockup.png'
 import classcadeLockupH from '../assets/brand/classcade-lockup-h.png'
 
-export type IconName = 'clock' | 'spark' | 'gamepad' | 'arrow' | 'music' | 'speaker' | 'chevron' | 'close' | 'edit' | 'reset' | 'check' | 'school' | 'career' | 'region' | 'leaf' | 'notebook' | 'share' | 'sprout' | 'lantern' | 'compass' | 'tree' | 'lock'
+export type IconName = 'clock' | 'spark' | 'gamepad' | 'arrow' | 'music' | 'speaker' | 'chevron' | 'close' | 'edit' | 'reset' | 'check' | 'school' | 'career' | 'region' | 'leaf' | 'notebook' | 'share' | 'sprout' | 'lantern' | 'compass' | 'tree' | 'lock' | 'bell'
 
 export function Icon({ name, size = 22 }: { name: IconName; size?: number }) {
   const common = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true }
@@ -31,6 +31,7 @@ export function Icon({ name, size = 22 }: { name: IconName; size?: number }) {
     compass: <><circle cx="12" cy="12" r="9" /><path d="M12 5.5 13.4 10.6 18.5 12 13.4 13.4 12 18.5 10.6 13.4 5.5 12 10.6 10.6 12 5.5Z" /><circle cx="12" cy="12" r="0.6" fill="currentColor" /></>,
     tree: <><path d="M12 3a5 5 0 0 0-4 8 4.6 4.6 0 0 0 1 8.6h6a4.6 4.6 0 0 0 1-8.6 5 5 0 0 0-4-8Z" /><path d="M12 20v-6" /></>,
     lock: <><rect x="5" y="10.5" width="14" height="9.5" rx="2" /><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5" /><circle cx="12" cy="15" r="1.4" fill="currentColor" stroke="none" /></>,
+    bell: <><path d="M18 15.5V11a6 6 0 1 0-12 0v4.5L4.5 18h15L18 15.5Z" /><path d="M10 20.5a2.2 2.2 0 0 0 4 0" /></>,
   }
   return <svg {...common}>{paths[name]}</svg>
 }

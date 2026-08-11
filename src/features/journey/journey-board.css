@@ -34,10 +34,25 @@
 .journey-question > .journey-panel__footer,
 .journey-question > .journey-panel__fineprint { flex: 0 0 auto; }
 
+/* Two boards side by side with an open gap: the backdrop's centre subject stays
+   visible between the question board and the player board. The wrapper owns the
+   shared board width and zoom; the panels inside size by flex, not by the token. */
+.journey-question-split {
+  align-items: stretch;
+  display: flex;
+  gap: clamp(24px, 4vw, 90px);
+  justify-content: space-between;
+  width: var(--classcade-board, min(94vw, 1180px));
+  zoom: var(--board-zoom, 1);
+}
+.journey-question-split > .journey-panel { width: auto; zoom: 1; }
+.journey-question-split > .journey-question { flex: 1 1 auto; min-width: 0; }
+.journey-question-split > .journey-question__sidebar { flex: 0 0 clamp(232px, 23%, 300px); }
+
 .journey-question__body {
   align-items: start;
   flex: 1 1 auto;
-  grid-template-columns: 1fr minmax(0, .52fr);
+  grid-template-columns: 1fr;
   min-height: 0;
   overflow-y: auto;
   padding: clamp(18px, 2.2vw, 34px) 0 20px;
@@ -45,9 +60,19 @@
 
 .journey-question__copy { grid-column: 1; grid-row: 1; }
 
-/* The sidebar spans both rows. Left in row 1 only, its height became dead space
-   between the question and the choices, pushing the cards below the fold. */
-.journey-question__sidebar { grid-column: 2; grid-row: 1 / span 2; }
+/* The sidebar is now its own board (aside), no longer a grid column of the question. */
+.journey-question-split .journey-question__sidebar { align-self: stretch; max-width: none; overflow: hidden auto; }
+
+/* Labeled skill/item slots: icon box with its name underneath. */
+.journey-question__sidebar-slots--labeled { align-items: start; }
+.journey-question__sidebar-slots--labeled figure { display: grid; gap: 4px; justify-items: center; margin: 0; }
+.journey-question__sidebar-slots--labeled figcaption { color: #77531d; font-size: 10px; font-weight: 800; letter-spacing: -.04em; line-height: 1.2; text-align: center; white-space: nowrap; }
+
+/* The drawn nav plaques, sized like the prep flow's. */
+.journey-nav-img { background: none; border: 0; cursor: pointer; flex: 0 0 auto; padding: 0; width: clamp(200px, 18.5vw, 280px); }
+.journey-nav-img img { display: block; height: auto; width: 100%; }
+.journey-nav-img:disabled { cursor: default; }
+.journey-nav-img:not(:disabled):hover img, .journey-nav-img:focus-visible img { filter: brightness(1.09); }
 
 /* Stacked full-width choices. Side-by-side halves of an already narrow column were
    what forced the three-characters-per-line wrapping. */
@@ -100,4 +125,7 @@
   .journey-question__body { grid-template-columns: 1fr; }
   .journey-question__copy,
   .journey-question__choices { grid-column: 1; grid-row: auto; }
+  /* Narrow screens stack the two boards; the question board comes first. */
+  .journey-question-split { display: block; }
+  .journey-question-split > .journey-question__sidebar { margin-top: 14px; }
 }

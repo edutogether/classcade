@@ -299,20 +299,28 @@
 
 /* Art nav buttons, sized to roughly the CSS buttons they replaced (about 50px tall)
    rather than to the artwork's own generous proportions, which rendered them oversized
-   next to the choice cards. Width follows the art's aspect ratio. */
+   next to the choice cards.
+   Sized by WIDTH, not height: the three source drawings have different aspect ratios
+   (4.74 / 4.81 / 4.01), so a shared height made the plaques different widths — and the
+   CTA visibly jumped size the moment it went from disabled to enabled. The `-norm` art
+   puts all three plaques on one 1505x392 canvas at equal width, so fixing the width here
+   makes every state render the same box. */
 .entry-prep--flat .entry-nav-img {
   background: none !important;
   border: 0 !important;
   box-shadow: none !important;
   flex: 0 0 auto;
-  height: clamp(44px, 4.4vw, 62px);
+  height: auto;
   min-height: 0;
   min-width: 0;
   overflow: visible;
   padding: 0 !important;
-  width: auto;
+  width: clamp(209px, 20.9vw, 294px);
 }
-.entry-prep--flat .entry-nav-img img { display: block; height: 100%; object-fit: contain; width: auto; }
+.entry-prep--flat .entry-nav-img img { display: block; height: auto; object-fit: contain; width: 100%; }
+/* The final plaque's canvas carries transparent margin around the frame (glow room), so it
+   renders wider than the nav buttons for the same visible plaque size. */
+.entry-prep--flat .entry-nav-img--final { width: clamp(240px, 24vw, 342px); }
 
 /* --- Loading screen -------------------------------------------------------
    The art holds every element of this screen, so the only live piece is the bar fill.
@@ -382,8 +390,8 @@
   .entry-button--flat.entry-button--next { flex: 1; min-width: 0; }
   /* Height-driven here too, so the shared mobile rule (flex:1 + min-width:0) cannot
      collapse an image-only button to zero width. */
-  .entry-prep--flat .entry-nav-img { flex: 0 0 auto; height: 40px; width: auto; }
-  .entry-prep--flat .entry-nav-img img { height: 100%; width: auto; }
+  .entry-prep--flat .entry-nav-img { flex: 0 0 auto; height: auto; width: 190px; }
+  .entry-prep--flat .entry-nav-img img { height: auto; width: 100%; }
   /* The desktop fix put the question and its helper on one row (helper pinned right)
      because the wide board had room. On a phone width there's no room for both, so the
      question itself got squeezed into a narrow column and wrapped 4 lines deep. Stack

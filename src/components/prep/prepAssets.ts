@@ -47,9 +47,16 @@ import ctaActive from '../../assets/classcade/prep-01-interactive/prep-01-cta-ac
 import prepTwoBack from '../../assets/classcade/prep-02-interactive/prep-02-back.png'
 import prepTwoCtaEnabled from '../../assets/classcade/prep-02-interactive/prep-02-cta-enabled.png'
 import prepTwoCtaDisabled from '../../assets/classcade/prep-02-interactive/prep-02-cta-disabled.png'
-import prepNavBack from '../../assets/classcade/prep-nav/prep-nav-back.png'
-import prepNavCtaEnabled from '../../assets/classcade/prep-nav/prep-nav-cta-enabled.png'
-import prepNavCtaDisabled from '../../assets/classcade/prep-nav/prep-nav-cta-disabled.png'
+import prepNavBack from '../../assets/classcade/prep-nav/prep-nav-back-norm.png'
+import prepNavCtaEnabled from '../../assets/classcade/prep-nav/prep-nav-cta-enabled-norm.png'
+import prepNavCtaDisabled from '../../assets/classcade/prep-nav/prep-nav-cta-disabled-norm.png'
+/* Final "모험 준비 완료" plaque. The four drawings arrived on four different canvases with
+   different frame thicknesses, so they were re-registered onto one 1505x470 canvas with the
+   green enamel panel pinned to identical pixels — state changes must not move the plaque. */
+import prepFinalCtaEnabled from '../../assets/classcade/prep-nav/prep-final-cta-enabled.png'
+import prepFinalCtaDisabled from '../../assets/classcade/prep-nav/prep-final-cta-disabled.png'
+import prepFinalCtaHover from '../../assets/classcade/prep-nav/prep-final-cta-hover.png'
+import prepFinalCtaActive from '../../assets/classcade/prep-nav/prep-final-cta-active.png'
 
 export {
   prepFourReference,
@@ -73,6 +80,10 @@ export {
   prepNavBack,
   prepNavCtaEnabled,
   prepNavCtaDisabled,
+  prepFinalCtaEnabled,
+  prepFinalCtaDisabled,
+  prepFinalCtaHover,
+  prepFinalCtaActive,
 }
 
 export type PrepStep = 1 | 2 | 3 | 4 | 'nickname' | 'loading'

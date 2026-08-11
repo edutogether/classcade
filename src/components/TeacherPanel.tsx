@@ -127,7 +127,7 @@ export function TeacherPanel({ open, profile, journey, deviceMode, returnFocusRe
     <div className="teacher-panel-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) closePanel() }}>
       <aside className="teacher-panel" role="dialog" aria-modal="true" aria-labelledby="teacher-panel-title" ref={panelRef} tabIndex={-1}>
         <header className="teacher-panel__header">
-          <div><p>{deviceMode === 'shared' ? '공용 기기 · 현재 세션' : '나의 모험 기록'}</p><h2 id="teacher-panel-title">선생님</h2></div>
+          <div><p>{deviceMode === 'shared' ? '공용 기기 · 현재 세션' : '나의 모험 기록'}</p><h2 id="teacher-panel-title">{profile.nickname?.trim() ? `${profile.nickname.trim()} 선생님` : '선생님'}</h2></div>
           <button className="panel-close" type="button" onClick={closePanel} aria-label="선생님 패널 닫기"><Icon name="close" /></button>
         </header>
 
@@ -137,7 +137,7 @@ export function TeacherPanel({ open, profile, journey, deviceMode, returnFocusRe
             <div><dt>학교급</dt><dd>{optionLabel(SCHOOL_LEVEL_OPTIONS, profile.schoolLevel)}</dd></div>
             <div><dt>교직 경력</dt><dd>{optionLabel(CAREER_RANGE_OPTIONS, profile.careerRange)}</dd></div>
             <div><dt>지역</dt><dd>{optionLabel(REGION_OPTIONS, profile.region)}</dd></div>
-            <div><dt>더 키우고 싶은 것</dt><dd>{growthLabels.join(' · ')}</dd></div>
+            <div><dt>더 키우고 싶은 것</dt><dd><ul className="profile-summary__growth">{growthLabels.map((label) => <li key={label}>{label}</li>)}</ul></dd></div>
           </dl>
           <button className="panel-action panel-action--edit" type="button" onClick={onEdit}><Icon name="edit" size={17} /> 선택 정보 수정</button>
         </section>

@@ -1,8 +1,8 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
+import { prepNavBack, prepNavCtaEnabled, prepNavCtaDisabled } from '../../../components/prep/prepAssets'
 import { ClasscadeLockup, CompassSeal, Icon, type IconName } from '../../../components/VisualPrimitives'
 import { NBTI_AXES, NBTI_QUESTIONS, NBTI_TOTAL_QUESTIONS, type NbtiAxis, type NbtiDirection } from '../../../data/nbti.provisional'
 import { getProvisionalResult } from '../../../data/nbtiResults.provisional'
-import { JOURNEY_SCENE_ASSETS } from '../../../data/sceneAssets'
 import { PrimaryButton, Progress, SceneFrame, SecondaryButton, type JourneySceneProps } from '../components/SceneFrame'
 
 const journeyItems = [{ icon: 'clock' as const, title: '약 2분', detail: '교실 장면 16개' }, { icon: 'spark' as const, title: '정답 없음', detail: '중립 선택 없음' }, { icon: 'gamepad' as const, title: '우리 반 놀이', detail: '결과로 이어져요' }]
@@ -68,13 +68,24 @@ function axisLeaning(axis: NbtiAxis, answers: Record<string, string>): NbtiDirec
   return scoreA > scoreB ? axisDef.directions[0] : axisDef.directions[1]
 }
 
-const SKILL_ICONS: readonly IconName[] = ['sprout', 'lantern', 'compass', 'tree']
+const SKILLS: readonly { icon: IconName; name: string }[] = [
+  { icon: 'sprout', name: '새싹 감각' },
+  { icon: 'lantern', name: '마음 등불' },
+  { icon: 'compass', name: '방향 감각' },
+  { icon: 'tree', name: '든든한 뿌리' },
+]
+const ITEMS: readonly { icon: IconName | null; name: string }[] = [
+  { icon: 'notebook', name: '모험 노트' },
+  { icon: 'compass', name: '나침반' },
+  { icon: null, name: '빈 슬롯' },
+  { icon: null, name: '빈 슬롯' },
+]
 
 /** Placeholder character emblem until a growing-character illustration set exists — the panel's data (axis leanings, skill/item unlocks) is real and swaps in cleanly once art lands. */
 function GrowingPlayerPanel({ growth, answers }: { growth: number; answers: Record<string, string> }) {
-  const unlockedSkills = Math.min(SKILL_ICONS.length, Math.floor(growth / 25))
+  const unlockedSkills = Math.min(SKILLS.length, Math.floor(growth / 25))
   return (
-    <aside className="journey-question__sidebar" aria-label="만들어지는 나의 교실 플레이어">
+    <aside className="journey-panel journey-question__sidebar" aria-label="만들어지는 나의 교실 플레이어">
       <p className="journey-kicker">✦ 만들어지는</p>
       <h2>나의 교실 플레이어</h2>
       <div className="journey-question__sidebar-emblem" aria-hidden="true"><CompassSeal /></div>
@@ -91,17 +102,24 @@ function GrowingPlayerPanel({ growth, answers }: { growth: number; answers: Reco
       </div>
       <div className="journey-question__sidebar-block">
         <p>보유 스킬 <small>(잠금 해제 예정)</small></p>
-        <div className="journey-question__sidebar-slots">
-          {SKILL_ICONS.map((icon, index) => <span key={icon} className={index < unlockedSkills ? 'is-unlocked' : ''}><Icon name={index < unlockedSkills ? icon : 'lock'} size={18} /></span>)}
+        <div className="journey-question__sidebar-slots journey-question__sidebar-slots--labeled">
+          {SKILLS.map((skill, index) => (
+            <figure key={skill.name}>
+              <span className={index < unlockedSkills ? 'is-unlocked' : ''}><Icon name={index < unlockedSkills ? skill.icon : 'lock'} size={18} /></span>
+              <figcaption>{skill.name}</figcaption>
+            </figure>
+          ))}
         </div>
       </div>
       <div className="journey-question__sidebar-block">
         <p>소지 아이템</p>
-        <div className="journey-question__sidebar-slots">
-          <span className="is-unlocked"><Icon name="notebook" size={18} /></span>
-          <span className="is-unlocked"><Icon name="compass" size={18} /></span>
-          <span aria-hidden="true">+</span>
-          <span aria-hidden="true">+</span>
+        <div className="journey-question__sidebar-slots journey-question__sidebar-slots--labeled">
+          {ITEMS.map((item, index) => (
+            <figure key={`${item.name}-${index}`}>
+              {item.icon ? <span className="is-unlocked"><Icon name={item.icon} size={18} /></span> : <span aria-hidden="true">+</span>}
+              <figcaption>{item.name}</figcaption>
+            </figure>
+          ))}
         </div>
       </div>
     </aside>
@@ -111,12 +129,14 @@ function GrowingPlayerPanel({ growth, answers }: { growth: number; answers: Reco
 export function StartScene(props: JourneySceneProps) {
   return (
     <SceneFrame scene="start" {...props}>
+      {/* Desktop paints the headline, sub-copy, chips and headphone note into start-master-v3,
+          so CSS hides everything here except the buttons. Phones swap to a textless plate, so
+          the same markup still has to carry the copy there — hence hidden, not deleted. */}
       <div className="journey-start__copy journey-enter">
         <p className="journey-kicker"><span>✦</span> NBTI ADVENTURE <span>✦</span></p>
         <h1 data-tune-id="main-title"><span>교실 속 나를 발견하다.</span><span><em>놀이로</em> 확장하다.</span></h1>
         <p className="journey-start__description" data-tune-id="main-description">16개의 교실 장면에서 발견한 성향이, 우리 반 놀이의 시작점이 됩니다.</p>
         <p className="journey-start__guide">평소의 성격이 아니라, 학생들 앞에 선 순간의 나를 떠올려 주세요.<br />두 선택 모두 좋은 교사의 방식입니다. 완전히 같지 않아도 교실에서 조금 더 자주 하는 쪽을 골라 주세요.</p>
-        <div className="journey-start__sparkles" aria-hidden="true">{Array.from({ length: 9 }, (_, index) => <i key={index} />)}</div>
         <ul className="journey-start__cards" aria-label="여정 정보">
           {journeyItems.map((item) => <li key={item.title}><Icon name={item.icon} size={25} /><span><b>{item.title}</b><small>{item.detail}</small></span></li>)}
         </ul>
@@ -126,12 +146,6 @@ export function StartScene(props: JourneySceneProps) {
         </div>
         <p className="journey-start__audio-note" data-tune-id="main-headphone-note"><Icon name="speaker" size={17} />헤드폰을 착용하면 BGM과 효과음이 더욱 몰입감을 높여줘요.</p>
       </div>
-      {JOURNEY_SCENE_ASSETS.start.showQuestBoard && <aside className="journey-start__quest-board" aria-hidden="true">
-        <b>✦ 오늘의 모험 안내 ✦</b>
-        <span><Icon name="notebook" size={16} />나의 교실 유형 찾기</span>
-        <span><Icon name="spark" size={16} />캐릭터 성장</span>
-        <span><Icon name="gamepad" size={16} />학급 게임 연결</span>
-      </aside>}
     </SceneFrame>
   )
 }
@@ -144,26 +158,51 @@ export function QuestionScene(props: JourneySceneProps) {
   const growth = Math.round(((props.state.questionIndex + (selected ? 1 : 0)) / NBTI_TOTAL_QUESTIONS) * 100)
   return (
     <SceneFrame scene="question" {...props} compact>
-      <div className="journey-panel journey-question journey-enter">
-        <div className="journey-panel__topline"><p>{`장면 ${question.scene}`}</p><Progress current={props.state.questionIndex + 1} total={NBTI_TOTAL_QUESTIONS} label="진행률" /></div>
-        <div className="journey-question__body">
-          <div className="journey-question__copy"><p className="journey-kicker">{question.chapter}</p><h1>{question.prompt}</h1><p>{question.helper}</p><div className="journey-question__growth" aria-label={`캐릭터 성장 ${growth}%`}><CompassSeal /><span>성장</span><div className="journey-question__growth-track" aria-hidden="true"><i style={{ width: `${growth}%` }} /></div><b>{growth}%</b></div></div>
-          <div className="journey-question__choices" role="group" aria-label={question.prompt}>
-            {question.choices.map((choice, index) => (
-              <button className={`journey-choice ${selected === choice.id ? 'is-selected' : ''}`} type="button" key={choice.id} onClick={() => props.onAction({ type: 'ANSWER_NBTI', questionId: question.id, choiceId: choice.id })} aria-pressed={selected === choice.id}>
-                <span className="journey-choice__number">0{index + 1}</span><b>{choice.label}</b><small>{choice.detail}</small><i aria-hidden="true"><DirectionIcon direction={axisDirections[choice.direction]} size={29} /></i>
-              </button>
-            ))}
+      {/* Two separate boards with an open gap between them, so the backdrop's centre —
+          where the painting's subject sits — stays visible instead of being covered by
+          one full-width panel. */}
+      <div className="journey-question-split journey-enter">
+        <div className="journey-panel journey-question">
+          <div className="journey-panel__topline"><p>{`장면 ${question.scene}`}</p><Progress current={props.state.questionIndex + 1} total={NBTI_TOTAL_QUESTIONS} label="진행률" /></div>
+          <div className="journey-question__body">
+            <div className="journey-question__copy"><p className="journey-kicker">{question.chapter}</p><h1>{question.prompt}</h1><p>{question.helper}</p><div className="journey-question__growth" aria-label={`캐릭터 성장 ${growth}%`}><CompassSeal /><span>성장</span><div className="journey-question__growth-track" aria-hidden="true"><i style={{ width: `${growth}%` }} /></div><b>{growth}%</b></div></div>
+            <div className="journey-question__choices" role="group" aria-label={question.prompt}>
+              {question.choices.map((choice, index) => (
+                <button className={`journey-choice ${selected === choice.id ? 'is-selected' : ''}`} type="button" key={choice.id} onClick={() => props.onAction({ type: 'ANSWER_NBTI', questionId: question.id, choiceId: choice.id })} aria-pressed={selected === choice.id}>
+                  <span className="journey-choice__number">0{index + 1}</span><b>{choice.label}</b><small>{choice.detail}</small><i aria-hidden="true"><DirectionIcon direction={axisDirections[choice.direction]} size={29} /></i>
+                </button>
+              ))}
+            </div>
           </div>
-          <GrowingPlayerPanel growth={growth} answers={props.state.answers} />
+          <div className="journey-panel__footer">
+            <JourneyNavArt art={prepNavBack} label="← 이전 질문" onClick={() => props.onAction({ type: 'PREVIOUS_NBTI' })} variant="back" />
+            {/* The drawn plaque says "다음 질문으로"; the final question needs different
+                copy, so it keeps the CSS button. */}
+            {last
+              ? <PrimaryButton onClick={() => props.onAction({ type: 'NEXT_NBTI' })} disabled={!selected}>나의 플레이 결과 보기</PrimaryButton>
+              : <JourneyNavArt art={selected ? prepNavCtaEnabled : prepNavCtaDisabled} label="다음 질문으로" onClick={() => props.onAction({ type: 'NEXT_NBTI' })} disabled={!selected} variant="next" />}
+          </div>
+          <p className="journey-panel__fineprint">이 탐색은 체험용 교실 플레이 안내이며, 과학적 성격 진단이 아닙니다.</p>
         </div>
-        <div className="journey-panel__footer">
-          <SecondaryButton onClick={() => props.onAction({ type: 'PREVIOUS_NBTI' })} className="journey-button--back"><span aria-hidden="true">←</span> 이전 질문</SecondaryButton>
-          <PrimaryButton onClick={() => props.onAction({ type: 'NEXT_NBTI' })} disabled={!selected}>{last ? '나의 플레이 결과 보기' : '다음 질문으로'}</PrimaryButton>
-        </div>
-        <p className="journey-panel__fineprint">이 탐색은 체험용 교실 플레이 안내이며, 과학적 성격 진단이 아닙니다.</p>
+        <GrowingPlayerPanel growth={growth} answers={props.state.answers} />
       </div>
     </SceneFrame>
+  )
+}
+
+/** Same drawn nav plaques as the prep flow, with the same guarantee: if the image fails
+ *  to load, the flat CSS button comes back instead of an invisible click target. */
+function JourneyNavArt({ art, label, onClick, disabled, variant }: { art: string; label: string; onClick: () => void; disabled?: boolean; variant: 'back' | 'next' }) {
+  const [failed, setFailed] = useState(false)
+  if (failed) {
+    return variant === 'back'
+      ? <SecondaryButton onClick={onClick} className="journey-button--back">{label}</SecondaryButton>
+      : <PrimaryButton onClick={onClick} disabled={disabled}>{label}</PrimaryButton>
+  }
+  return (
+    <button type="button" className="journey-nav-img" onClick={onClick} disabled={disabled} aria-label={label}>
+      <img src={art} alt="" aria-hidden="true" onError={() => setFailed(true)} />
+    </button>
   )
 }
 

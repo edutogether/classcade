@@ -13,7 +13,7 @@ import { beginMainThemeReveal, noteAudioUserGesture } from '../lib/audioManager'
 import type { AudioSettings } from '../lib/audioController'
 import { loadPrepDraft, savePrepDraft, clearPrepDraft, type Profile, type PrepDraft } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
-import { ClasscadeEmblem, ClasscadeWordmark, Icon } from './VisualPrimitives'
+import { ClasscadeEmblem, ClasscadeLockup, ClasscadeWordmark, Icon } from './VisualPrimitives'
 import { degradeToFlat, isFlat, type VisualScreen } from '../config/visualMode'
 import '../entry.css'
 import type { TunerScreen } from '../features/entry/visualTuning'
@@ -43,6 +43,10 @@ import {
   prepNavBack,
   prepNavCtaEnabled,
   prepNavCtaDisabled,
+  prepFinalCtaEnabled,
+  prepFinalCtaDisabled,
+  prepFinalCtaHover,
+  prepFinalCtaActive,
   type PrepStep,
 } from './prep/prepAssets'
 
@@ -69,6 +73,34 @@ function NavArtButton({ art, label, onClick, disabled, variant, tuneId }: {
       aria-label={label}
     >
       {failed ? label : <img src={art} alt="" aria-hidden="true" onError={() => setFailed(true)} />}
+    </button>
+  )
+}
+
+/** The final "모험 준비 완료" plaque, with hover/active swaps done in JS rather than CSS
+ *  background tricks so a load failure of ANY state can fall back to the flat button. */
+function FinalCtaButton({ disabled, onClick }: { disabled: boolean; onClick: () => void }) {
+  const [failed, setFailed] = useState(false)
+  const [hovered, setHovered] = useState(false)
+  const [pressed, setPressed] = useState(false)
+  const art = disabled ? prepFinalCtaDisabled : pressed ? prepFinalCtaActive : hovered ? prepFinalCtaHover : prepFinalCtaEnabled
+  if (failed) {
+    return <button type="button" className="entry-button entry-button--next entry-button--flat" disabled={disabled} onClick={onClick} data-tune-id="prep-next-button">모험 준비 완료 <Icon name="arrow" size={20} /></button>
+  }
+  return (
+    <button
+      type="button"
+      className="entry-button entry-button--next entry-nav-img entry-nav-img--final"
+      disabled={disabled}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => { setHovered(false); setPressed(false) }}
+      onMouseDown={() => setPressed(true)}
+      onMouseUp={() => setPressed(false)}
+      data-tune-id="prep-next-button"
+      aria-label="모험 준비 완료"
+    >
+      <img src={art} alt="" aria-hidden="true" onError={() => setFailed(true)} />
     </button>
   )
 }
@@ -215,7 +247,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
         <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><PrepProgress step={5} /></header>
         <div className="entry-nickname">
-          <span className="entry-nickname__orb"><ClasscadeEmblem /></span>
+          <span className="entry-nickname__orb entry-nickname__orb--lockup"><ClasscadeLockup /></span>
           <p className="entry-kicker">✦ 여정의 마지막 준비 ✦</p>
           <h1 id="nickname-title"><span>용사님의 닉네임을</span> <span>알려주세요</span></h1>
           <p>이 여정에서 불릴 이름이에요.</p>
@@ -224,7 +256,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         </div>
         <footer className="entry-prep__footer">
           <NavArtButton art={prepNavBack} label="← 이전 질문" onClick={previousStep} variant="back" />
-          <button type="button" className="entry-button entry-button--next entry-button--flat" disabled={!nicknameReady} onClick={beginLoading} data-tune-id="prep-next-button">모험 준비 완료 <Icon name="arrow" size={20} /></button>
+          <FinalCtaButton disabled={!nicknameReady} onClick={beginLoading} />
         </footer>
       </section>
     </main>

@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode, RefObject } from 'react'
 import { BgmControl } from '../../../components/BgmControl'
-import { AudioToggleButton } from '../../../components/AudioToggleButton'
 import { ClasscadeEmblem, ClasscadeWordmark, CompassSeal, Icon } from '../../../components/VisualPrimitives'
+import profileAvatar from '../../../assets/brand/profile-avatar-front.png'
 import { JOURNEY_SCENE_ASSETS, type JourneySceneAsset } from '../../../data/sceneAssets'
 import { toggleAudioChannel } from '../../../lib/audioController'
 import type { JourneyAction, JourneyState } from '../journeyState'
@@ -31,20 +31,26 @@ type SceneFrameProps = SceneContext & {
   canonicalGame?: boolean
 }
 
-function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef, scene, onRequestHome }: Omit<SceneContext, 'notice'> & { scene: SceneName }) {
+export const BGM_TITLE = 'CLASSCADE - 담쟁이 서고의 오후'
+
+function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef, profile }: Omit<SceneContext, 'notice'>) {
   return (
     <header className="journey-header">
       <div className="journey-brand" aria-label="브랜드 로고"><ClasscadeEmblem /><ClasscadeWordmark /></div>
       <div className="journey-header__actions">
-        {scene !== 'start' && <nav className="journey-utility" aria-label="여정 제어">
-          <button type="button" onClick={() => onAction({ type: 'PREVIOUS_STAGE' })} aria-label="이전 단계로"><span aria-hidden="true">←</span> 이전</button>
-          <button type="button" onClick={() => onRequestHome?.() ?? onAction({ type: 'GO_HOME' })} aria-label="처음 화면으로"><span aria-hidden="true">×</span> 홈</button>
-        </nav>}
-        <BgmControl enabled={state.audio.bgmEnabled} volume={state.audio.bgmVolume} onToggle={() => onAction({ type: 'SET_AUDIO', audio: toggleAudioChannel(state.audio, 'bgm') })} onVolumeChange={(bgmVolume) => onAction({ type: 'SET_AUDIO', audio: { ...state.audio, bgmVolume } })} />
-        <AudioToggleButton kind="sfx" enabled={state.audio.sfxEnabled} onToggle={() => onAction({ type: 'SET_AUDIO', audio: toggleAudioChannel(state.audio, 'sfx') })} />
-        <button className="journey-header__teacher" type="button" ref={teacherTriggerRef} onClick={() => { if (teacherTriggerRef.current) onTeacherOpen(teacherTriggerRef.current) }} aria-haspopup="dialog" aria-label="선생님 패널 열기">
-          <span aria-hidden="true">교</span><b>선생님</b><Icon name="chevron" size={16} />
-        </button>
+        {/* One translucent pill holding the whole cluster, as in the reference header. */}
+        <div className="journey-cluster">
+          <BgmControl enabled={state.audio.bgmEnabled} volume={state.audio.bgmVolume} onToggle={() => onAction({ type: 'SET_AUDIO', audio: toggleAudioChannel(state.audio, 'bgm') })} onVolumeChange={(bgmVolume) => onAction({ type: 'SET_AUDIO', audio: { ...state.audio, bgmVolume } })} />
+          <span className="journey-song" title={BGM_TITLE}>{BGM_TITLE}</span>
+          <span className={`journey-equalizer ${state.audio.bgmEnabled ? 'is-playing' : ''}`} aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</span>
+          <span className="journey-cluster__divider" aria-hidden="true" />
+          {/* The profile IS the teacher-panel trigger now — there is no second button. */}
+          <button className="journey-header__profile" type="button" ref={teacherTriggerRef} onClick={() => { if (teacherTriggerRef.current) onTeacherOpen(teacherTriggerRef.current) }} aria-haspopup="dialog" aria-label="선생님 패널 열기">
+            <img src={profileAvatar} alt="" aria-hidden="true" />
+            <span className="journey-header__identity"><small>교실 탐험가</small><strong>{profile?.nickname ?? '선생님'}</strong></span>
+            <Icon name="chevron" size={16} />
+          </button>
+        </div>
       </div>
     </header>
   )
@@ -61,11 +67,11 @@ function SceneArt({ asset, artSrc }: { asset: JourneySceneAsset; artSrc?: string
   )
 }
 
-export function SceneFrame({ scene, children, state, onAction, onTeacherOpen, teacherTriggerRef, notice, onRequestHome, compact = false, artSrc, canonicalGame = false }: SceneFrameProps) {
+export function SceneFrame({ scene, children, state, onAction, onTeacherOpen, teacherTriggerRef, notice, profile, compact = false, artSrc, canonicalGame = false }: SceneFrameProps) {
   return (
     <main className={`journey-scene journey-scene--${scene}${canonicalGame ? ' journey-scene--canonical-game' : ''}${compact ? ' is-compact' : ''}`}>
       <SceneArt asset={JOURNEY_SCENE_ASSETS[scene]} artSrc={artSrc} />
-      <JourneyHeader state={state} onAction={onAction} onTeacherOpen={onTeacherOpen} teacherTriggerRef={teacherTriggerRef} scene={scene} onRequestHome={onRequestHome} />
+      <JourneyHeader state={state} onAction={onAction} onTeacherOpen={onTeacherOpen} teacherTriggerRef={teacherTriggerRef} profile={profile} />
       <section className="journey-scene__stage">{children}</section>
       {notice && scene !== 'question' && <p className="journey-notice" aria-live="polite">{notice}</p>}
     </main>
