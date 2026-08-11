@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { prepNavBack, prepNavCtaEnabled, prepNavCtaDisabled } from '../../../components/prep/prepAssets'
 import profileAvatar from '../../../assets/brand/profile-avatar-front.png'
-import { ClasscadeLockup, CompassSeal, Icon, type IconName } from '../../../components/VisualPrimitives'
+import { ClasscadeEmblem, ClasscadeLockup, Icon, type IconName } from '../../../components/VisualPrimitives'
 import { NBTI_AXES, NBTI_QUESTIONS, NBTI_TOTAL_QUESTIONS, type NbtiAxis, type NbtiDirection } from '../../../data/nbti.provisional'
 import { getProvisionalResult } from '../../../data/nbtiResults.provisional'
 import { PrimaryButton, Progress, SceneFrame, SecondaryButton, type JourneySceneProps } from '../components/SceneFrame'
@@ -167,7 +167,8 @@ export function QuestionScene(props: JourneySceneProps) {
         <div className="journey-panel journey-question">
           <div className="journey-panel__topline"><p>{`장면 ${question.scene}`}</p><Progress current={props.state.questionIndex + 1} total={NBTI_TOTAL_QUESTIONS} label="진행률" /></div>
           <div className="journey-question__body">
-            <div className="journey-question__copy"><p className="journey-kicker">{question.chapter}</p><h1>{question.prompt}</h1><p>{question.helper}</p><div className="journey-question__growth" aria-label={`캐릭터 성장 ${growth}%`}><CompassSeal /><span>성장</span><div className="journey-question__growth-track" aria-hidden="true"><i style={{ width: `${growth}%` }} /></div><b>{growth}%</b></div></div>
+            <div className="journey-question__copy"><p className="journey-kicker">{question.chapter}</p><h1>{question.prompt}</h1><p>{question.helper}</p><div className="journey-question__growth" aria-label={`캐릭터 성장 ${growth}%`}><ClasscadeEmblem /><span>성장</span><div className="journey-question__growth-track" aria-hidden="true"><i style={{ width: `${growth}%` }} /></div><b>{growth}%</b></div></div>
+            <p className="journey-panel__fineprint journey-panel__fineprint--above">이 탐색은 체험용 교실 플레이 안내이며, 과학적 성격 진단이 아닙니다.</p>
             <div className="journey-question__choices" role="group" aria-label={question.prompt}>
               {question.choices.map((choice, index) => (
                 <button className={`journey-choice ${selected === choice.id ? 'is-selected' : ''}`} type="button" key={choice.id} onClick={() => props.onAction({ type: 'ANSWER_NBTI', questionId: question.id, choiceId: choice.id })} aria-pressed={selected === choice.id}>
@@ -184,7 +185,6 @@ export function QuestionScene(props: JourneySceneProps) {
               ? <PrimaryButton onClick={() => props.onAction({ type: 'NEXT_NBTI' })} disabled={!selected}>나의 플레이 결과 보기</PrimaryButton>
               : <JourneyNavArt art={selected ? prepNavCtaEnabled : prepNavCtaDisabled} label="다음 질문으로" onClick={() => props.onAction({ type: 'NEXT_NBTI' })} disabled={!selected} variant="next" />}
           </div>
-          <p className="journey-panel__fineprint">이 탐색은 체험용 교실 플레이 안내이며, 과학적 성격 진단이 아닙니다.</p>
         </div>
         <GrowingPlayerPanel growth={growth} answers={props.state.answers} nickname={props.profile?.nickname} />
       </div>

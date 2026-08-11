@@ -46,11 +46,15 @@
 /* Poster-scale start copy: the headline owns the dark left half of the art. Placed after
    the base rules (and matching the height-capped override below by scope) so it wins. */
 @media (min-width: 701px) {
-  .journey-scene--start .journey-start__copy { margin-left: clamp(4px, 1.2vw, 30px); max-width: min(44vw, 800px); }
-  .journey-scene--start .journey-kicker { font-size: clamp(13px, 1vw, 19px); margin-bottom: clamp(16px, 2.2vh, 30px); }
-  .journey-scene--start .journey-start__copy h1 { font-size: clamp(52px, 5.5vw, 112px); line-height: 1.04; }
+  .journey-scene--start .journey-start__copy { margin-left: clamp(4px, 1.2vw, 30px); max-width: min(46vw, 880px); }
+  .journey-scene--start .journey-kicker { font-size: clamp(15px, 1.25vw, 24px); margin-bottom: clamp(22px, 3.2vh, 42px); }
+  /* The [data-tune-id] variants exist to outrank the visual-tuning stylesheet, whose
+     per-element rules carry the same specificity and load later. */
+  .journey-scene--start .journey-start__copy h1,
+  .journey-scene--start .journey-start__copy h1[data-tune-id='main-title'] { font-size: clamp(58px, 6.5vw, 132px); line-height: 1.06; }
   .journey-scene--start .journey-start__copy h1 span { display: block; }
-  .journey-scene--start .journey-start__description { font-size: clamp(16px, 1.25vw, 23px); line-height: 1.75; margin: clamp(26px, 4vh, 48px) 0 clamp(24px, 3.6vh, 44px); }
+  .journey-scene--start .journey-start__description,
+  .journey-scene--start .journey-start__description[data-tune-id='main-description'] { font-size: clamp(18px, 1.5vw, 28px); letter-spacing: -.02em; line-height: 1.8; margin: clamp(32px, 5vh, 60px) 0 clamp(28px, 4.4vh, 54px); }
   .journey-scene--start .journey-start__cards { gap: clamp(11px, 1vw, 18px); margin-bottom: clamp(24px, 3.6vh, 46px); max-width: 760px; }
   .journey-scene--start .journey-start__cards li { min-height: clamp(84px, 9.4vh, 108px); padding: 12px 15px; }
   .journey-scene--start .journey-start__cards b { font-size: clamp(14px, 1.05vw, 19px); }
@@ -59,7 +63,10 @@
   .journey-scene--start .journey-start__actions { gap: clamp(12px, 1.4vh, 18px); max-width: 660px; }
   .journey-scene--start .journey-start__actions .journey-button--primary { font-size: clamp(17px, 1.35vw, 25px); min-height: clamp(64px, 7.6vh, 84px); }
   .journey-scene--start .journey-start__actions .journey-button--secondary { font-size: clamp(13px, 1vw, 18px); min-height: clamp(50px, 5.8vh, 64px); min-width: 300px; }
-  .journey-scene--start .journey-start__audio-note { font-size: clamp(12px, .9vw, 16px); margin-top: clamp(16px, 2.4vh, 28px); }
+  /* Headphone note sits in its own rounded bar, like the reference lockup. */
+  .journey-scene--start .journey-start__audio-note,
+  .journey-scene--start .journey-start__audio-note[data-tune-id='main-headphone-note'] { background: rgba(9,25,15,.66); border: 1px solid rgba(255,244,204,.28); border-radius: 999px; box-shadow: inset 0 1px rgba(255,255,255,.1); display: inline-flex; font-size: clamp(15px, 1.25vw, 23px); margin-top: clamp(22px, 3.4vh, 40px); padding: clamp(10px, 1.3vh, 15px) clamp(18px, 1.6vw, 30px); width: fit-content; }
+  .journey-scene--start .journey-start__audio-note svg { height: clamp(17px, 1.3vw, 24px); width: clamp(17px, 1.3vw, 24px); }
 }.journey-enter { animation: journey-enter .22s both cubic-bezier(.2,.8,.2,1); }.journey-kicker { color: var(--gold); font-size: clamp(11px, .82vw, 15px); font-weight: 900; letter-spacing: .16em; margin: 0 0 16px; text-transform: uppercase; }.journey-kicker span { padding: 0 5px; }.journey-notice { background: rgba(8,23,13,.88); border: 1px solid rgba(246,216,127,.54); border-radius: 10px; bottom: 21px; color: #fff4cb; font-size: 13px; font-weight: 700; left: 50%; margin: 0; max-width: min(90vw, 560px); padding: 10px 16px; position: fixed; text-align: center; transform: translateX(-50%); z-index: 20; }
 
 .journey-button { align-items: center; border-radius: 12px; cursor: pointer; display: inline-flex; font-weight: 900; justify-content: center; transition: background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease; }.journey-button:hover:not(:disabled), .journey-button:focus-visible:not(:disabled) { box-shadow: inset 0 1px rgba(255,255,255,.62), 0 8px 16px rgba(0,0,0,.3); transform: translateY(-1px); }.journey-button:active:not(:disabled) { transform: translateY(1px); }.journey-button:disabled { cursor: not-allowed; opacity: .55; }.journey-button--primary { background: linear-gradient(112deg, #70ad4b 0%, #2f884f 48%, #07563a 100%); border: 1px solid #eadb9c; border-bottom: 4px solid #0a422d; box-shadow: 0 0 0 1px rgba(237,211,124,.3), inset 0 2px rgba(255,255,255,.5), inset 0 -8px 17px rgba(0,48,27,.24), 0 8px 15px rgba(0,0,0,.34); color: #fffdee; font-size: clamp(15px,1.25vw,21px); gap: 12px; min-height: 65px; padding: 0 22px; text-shadow: 0 2px 3px rgba(0,0,0,.3); }.journey-button--primary > span { flex: 1; text-align: center; }.journey-button__seal { height: 31px; width: 31px; }.journey-button--secondary { background: linear-gradient(135deg,#f6f1df,#d8c8a6); border: 1px solid #c8aa6b; border-bottom: 3px solid #947b54; box-shadow: inset 0 1px rgba(255,255,255,.82), inset 0 -5px 10px rgba(113,80,35,.08), 0 4px 10px rgba(0,0,0,.22); color: #3d3425; font-size: 14px; gap: 8px; min-height: 50px; padding: 0 18px; }

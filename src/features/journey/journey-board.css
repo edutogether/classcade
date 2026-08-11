@@ -51,7 +51,7 @@
 /* The stage's generous side padding is for centred boards; this screen pins hard to the
    edges and rides higher than the other scenes. */
 @media (min-width: 1101px) {
-  .journey-scene--question .journey-scene__stage { padding-left: clamp(72px, 6vw, 120px); padding-right: clamp(48px, 4vw, 80px); padding-top: calc(clamp(62px, 8.3vh, 88px) + 14px); }
+  .journey-scene--question .journey-scene__stage { padding-left: clamp(72px, 6vw, 120px); padding-right: clamp(48px, 4vw, 80px); padding-top: calc(clamp(62px, 8.3vh, 88px) + 4px); }
 }
 /* The base .journey-panel centres itself with margin:auto; inside the split, auto margins
    would re-centre both boards and eat the edge-hugging this layout exists for. */
@@ -90,8 +90,26 @@
 .journey-question__sidebar-slots--labeled figcaption { color: #5c4118; font-size: 11px; font-weight: 800; letter-spacing: -.04em; line-height: 1.2; text-align: center; white-space: nowrap; }
 
 /* Constant board size: the same fixed height on every question — no grow/shrink between
-   questions. Small screens still cap at the viewport and scroll the body internally. */
-.journey-question-split > .journey-question { height: min(820px, calc((100svh - 96px) / var(--board-zoom, 1))); }
+   questions, trimmed so no dead band is left under the nav row. Small screens still cap
+   at the viewport and scroll the body internally. */
+.journey-question-split > .journey-question { height: min(820px, calc(100svh - 108px)); }
+
+/* Disclaimer rides directly above the choice cards instead of below the footer.
+   The body grid pins choices to row 2, so the fineprint must claim row 2 itself and
+   push the choices to row 3 — auto-placement would drop it BELOW them. */
+.journey-panel__fineprint--above { grid-column: 1; grid-row: 2; margin: 0 0 2px; text-align: left; }
+.journey-question-split .journey-question__choices { grid-row: 3; }
+
+/* Growth meter runs the full content width, reads as a real bar, and carries the brand
+   emblem instead of the generic compass. */
+.journey-question-split .journey-question__growth { font-size: 12px; gap: 9px; max-width: none; }
+.journey-question-split .journey-question__growth-track { height: 12px; }
+.journey-question-split .journey-question__growth .classcade-emblem { flex: 0 0 auto; height: 30px; width: 30px; }
+
+/* The parchment frame's painted border needs clearance — without the extra padding the
+   slot labels and progress bar sit on top of the frame art. Also pulled well off the
+   right edge toward the centre. */
+.journey-question-split > .journey-question__sidebar { margin-right: clamp(80px, 11vw, 250px); margin-top: clamp(-52px, -4.5vh, -24px); padding: clamp(22px, 1.9vw, 34px) clamp(20px, 1.7vw, 30px); }
 
 /* Fully opaque player board — translucency over the busy backdrop hurt readability. */
 .journey-question-split > .journey-question__sidebar { background: linear-gradient(160deg, #fffbe8, #e9d3a0); }
