@@ -1,5 +1,5 @@
-import { useState, type ReactNode } from 'react'
-import { prepNavBack, prepNavCtaEnabled, prepNavCtaDisabled } from '../../../components/prep/prepAssets'
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
+import { prepNavBack, prepNavCtaEnabled, prepNavCtaDisabled, loadingMaster } from '../../../components/prep/prepAssets'
 import profileAvatar from '../../../assets/brand/profile-avatar-front.png'
 import { ClasscadeEmblem, ClasscadeLockup, Icon, type IconName } from '../../../components/VisualPrimitives'
 import { NBTI_AXES, NBTI_QUESTIONS, NBTI_TOTAL_QUESTIONS, type NbtiAxis, type NbtiDirection } from '../../../data/nbti.provisional'
@@ -159,6 +159,32 @@ export function QuestionScene(props: JourneySceneProps) {
   const selected = props.state.answers[question.id]
   const last = props.state.questionIndex === NBTI_TOTAL_QUESTIONS - 1
   const growth = Math.round(((props.state.questionIndex + (selected ? 1 : 0)) / NBTI_TOTAL_QUESTIONS) * 100)
+  /* Same loading interlude the prep flow uses, played before the 16th answer reveals the
+     result — the reveal itself is instant, so the bar is pure theatre (~2.6s). */
+  const [revealing, setRevealing] = useState(false)
+  const [revealProgress, setRevealProgress] = useState(0)
+  const onActionRef = props.onAction
+  useEffect(() => {
+    if (!revealing) return
+    const startedAt = Date.now()
+    const timer = window.setInterval(() => {
+      const percent = Math.min(100, Math.round((Date.now() - startedAt) / 26))
+      setRevealProgress(percent)
+      if (percent >= 100) { window.clearInterval(timer); onActionRef({ type: 'NEXT_NBTI' }) }
+    }, 80)
+    return () => window.clearInterval(timer)
+  }, [revealing, onActionRef])
+  if (revealing) {
+    return (
+      <main className="entry-loading entry-loading--art" aria-live="polite">
+        <div className="entry-loading__stage">
+          <img className="entry-loading__art" src={loadingMaster} alt="" aria-hidden="true" />
+          <i className="entry-loading__fill" style={{ '--progress': `${revealProgress}%` } as CSSProperties} aria-hidden="true" />
+        </div>
+        <p className="sr-only" role="status">나의 플레이 결과를 여는 중 {revealProgress}%</p>
+      </main>
+    )
+  }
   return (
     <SceneFrame scene="question" {...props} compact>
       {/* Two separate boards with an open gap between them, so the backdrop's centre —
@@ -183,7 +209,7 @@ export function QuestionScene(props: JourneySceneProps) {
             {/* The drawn plaque says "다음 질문으로"; the final question needs different
                 copy, so it keeps the CSS button. */}
             {last
-              ? <PrimaryButton onClick={() => props.onAction({ type: 'NEXT_NBTI' })} disabled={!selected}>나의 플레이 결과 보기</PrimaryButton>
+              ? <PrimaryButton onClick={() => setRevealing(true)} disabled={!selected}>나의 플레이 결과 보기</PrimaryButton>
               : <JourneyNavArt art={selected ? prepNavCtaEnabled : prepNavCtaDisabled} label="다음 질문으로" onClick={() => props.onAction({ type: 'NEXT_NBTI' })} disabled={!selected} variant="next" />}
           </div>
         </div>

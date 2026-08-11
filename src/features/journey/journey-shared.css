@@ -293,12 +293,31 @@
 }
 
 /* Firebase pairing remains inside the existing result/start scenes, not a separate generic modal. */
-/* Per-type result backdrops are bright daylight paintings; the copy needs its own dark
-   glass slab to stay readable, and the shared dark wash would muddy the art. */
-.journey-result--art .journey-result__copy { backdrop-filter: blur(14px) saturate(1.05); background: linear-gradient(160deg, rgba(7,22,13,.78), rgba(4,14,8,.72)); border: 1px solid rgba(255,244,204,.22); border-radius: 14px; box-shadow: 0 22px 55px rgba(0,0,0,.4); padding: clamp(22px, 2.4vw, 40px); }
+/* Per-type result backdrops are bright daylight paintings whose left half is pale haze —
+   so no box at all: dark ink typography straight on the art, poster-style, with generous
+   vertical rhythm. The base result styles assume a dark backdrop and are overridden here. */
 .journey-scene--result:has(.journey-result--art) .journey-art__wash,
 .journey-scene--result:has(.journey-result--art) .journey-art__motes,
 .journey-scene--result:has(.journey-result--art) .journey-art__leaves { display: none; }
+.journey-result--art .journey-result__copy { backdrop-filter: none; background: none; border: 0; box-shadow: none; max-width: min(44vw, 720px); padding: 0; }
+.journey-result--art .journey-kicker { color: #8a6b22; font-size: clamp(12px, .95vw, 17px); margin-bottom: clamp(14px, 2vh, 24px); }
+.journey-result--art .journey-result__eyebrow { color: #3c4a36; font-size: clamp(17px, 1.35vw, 25px); font-weight: 800; }
+.journey-result--art .journey-result__copy h1 { color: #1d4a33; font-size: clamp(46px, 4.4vw, 78px); letter-spacing: -.06em; margin: clamp(6px, 1vh, 12px) 0 clamp(16px, 2.4vh, 28px); text-shadow: 0 2px 18px rgba(255,255,255,.65), 0 1px 2px rgba(255,255,255,.5); }
+.journey-result--art .journey-result__badges { align-items: center; margin: 0 0 clamp(16px, 2.4vh, 28px); }
+.journey-result--art .journey-result__code { background: #1d4a33; border-color: #1d4a33; box-shadow: 0 4px 12px rgba(29,74,51,.3); color: #fdf6dc; }
+.journey-result--art .journey-result__strengths span { background: rgba(255,255,255,.78); border: 1px solid rgba(90,110,70,.34); box-shadow: 0 2px 8px rgba(60,70,40,.12); color: #2f3b28; }
+.journey-result--art .journey-result__description { color: #333f2d; font-size: clamp(15px, 1.2vw, 21px); font-weight: 700; line-height: 1.85; margin: 0 0 clamp(20px, 3vh, 34px); text-shadow: 0 1px 8px rgba(255,255,255,.5); }
+.journey-result--art .journey-result__directions span { background: rgba(255,255,255,.74); border: 1px solid rgba(90,110,70,.3); box-shadow: 0 2px 8px rgba(60,70,40,.1); }
+.journey-result--art .journey-result__directions small { color: #6b7b58; }
+.journey-result--art .journey-result__directions b { color: #20301e; }
+.journey-result--art .journey-result__caution { color: #4a4030; margin-top: clamp(18px, 2.6vh, 30px); }
+.journey-result--art .journey-result__caution b { color: #8a6b22; }
+.journey-result--art .journey-result__next { color: #2c5a3c; font-weight: 800; margin-top: clamp(14px, 2vh, 24px); }
+.journey-result--art .journey-result__disclaimer { color: #707a63; margin-top: clamp(10px, 1.6vh, 18px); }
+.journey-result--art .journey-result__actions { margin-top: clamp(24px, 3.6vh, 44px); }
+/* On the per-type art the painting's own character carries the reveal; the CSS lockup
+   overlay just collided with him. */
+.journey-result--art .journey-result__reveal { display: none; }
 
 /* Desktop pairing: gate card left, personalised video panel right on its own modal
    board — two videos stacked. Aligned button column inside the gate. */
