@@ -12,6 +12,13 @@
   align-items: center;
   display: flex;
   justify-content: center;
+  /* Every spacing value below reads from this one width-driven token instead of vh.
+     vh made the board's natural content height depend on viewport HEIGHT while the
+     board's own min-height (further down) is deliberately width-only - two viewports
+     with the same width but different heights then disagreed on how tall the content
+     "needed" to be, opening a gap that was symmetric but wrong-sized. Everything now
+     scales off width alone, so content height and the fixed board height move together. */
+  --prep-gap: clamp(14px, 1.1vw, 22px);
 }
 
 .entry-prep--flat .entry-prep__panel {
@@ -25,14 +32,24 @@
     linear-gradient(105deg, #e6cd97 0%, #fbf0cd 42%, #f6e8c0 78%, #e9d3a3 100%);
   border-radius: 4px;
   clip-path: none;
-  margin: clamp(12px, 2.4vh, 30px) auto;
+  margin: clamp(12px, 1.7vw, 30px) auto;
   /* svh inside a zoomed box is measured before the zoom, so the budget is divided by it
-     - otherwise the scaled panel renders taller than the viewport. */
-  max-height: calc((100svh - 24px) / var(--board-zoom));
+     - otherwise the scaled panel renders taller than the viewport. 64px clears the
+     panel's own margin (up to 30px top+bottom); a tighter buffer let the panel's
+     min-height land exactly on the ceiling at 720px-tall viewports, squeezing the
+     bottom nav padding down to a few px instead of matching the top. */
+  max-height: calc((100svh - 64px) / var(--board-zoom));
   min-height: 0;
   overflow-y: auto;
   width: var(--classcade-board);
   zoom: var(--board-zoom);
+}
+
+/* The shared (art-mode-authored) intro rule was also vh-driven, the last remaining
+   source of same-width-different-height mismatch. */
+.entry-prep--flat .entry-prep__intro {
+  margin-top: clamp(14px, 1.3vw, 26px);
+  padding: 0 0 clamp(16px, 1.4vw, 28px);
 }
 
 /* Art mode reserved the right half of the panel for .entry-prep__illustration via a
@@ -44,14 +61,14 @@
 .entry-prep--flat .entry-prep__question--4 { max-width: none; }
 
 .entry-prep--flat .entry-prep__question > p:not(.entry-prep__question-number) {
-  margin-bottom: clamp(10px, 1.4vh, 20px);
+  margin-bottom: clamp(10px, .9vw, 20px);
 }
 
 .entry-flat-cards {
   display: grid;
   gap: clamp(8px, .8vw, 15px);
   grid-template-columns: repeat(var(--flat-columns, 5), minmax(0, 1fr));
-  margin-top: clamp(10px, 1.4vh, 20px);
+  margin-top: clamp(10px, .9vw, 20px);
 }
 
 .entry-flat-card {
@@ -70,7 +87,7 @@
   gap: 7px;
   justify-content: center;
   line-height: 1.25;
-  min-height: clamp(74px, 8.6vh, 122px);
+  min-height: clamp(64px, 6.4vw, 96px);
   padding: clamp(10px, 1vw, 18px) 8px;
   position: relative;
   text-align: center;
@@ -108,11 +125,18 @@
 .entry-flat-cards.is-compact { gap: clamp(6px, .55vw, 10px); }
 .entry-flat-cards.is-compact .entry-flat-card {
   font-size: clamp(11px, .82vw, 16px);
-  min-height: clamp(42px, 4.8vh, 62px);
+  min-height: clamp(38px, 3.5vw, 54px);
   padding: 6px 4px;
 }
 
-/* Step 4 keeps its own grid but drops the two frame images the art mode painted on. */
+/* Step 4 keeps its own grid but drops the two frame images the art mode painted on.
+   The base rule this replaces (entry-shared.css) is wrapped in ~5 overlapping
+   height-based @media breakpoints tuned for the old art-mode layout, each setting a
+   different font-size/min-height for a different laptop-height band. Those still
+   applied here since flat mode never overrode font-size/min-height specifically, so
+   two viewports of the same WIDTH but different HEIGHT landed in different bands and
+   got different card sizes - !important pins flat mode's own width-only sizing so no
+   height breakpoint can reach it. */
 .entry-prep--flat .entry-growth-card {
   background-color: rgba(255, 252, 236, .9);
   background-image: linear-gradient(160deg, rgba(255, 252, 236, .93), rgba(232, 214, 168, .84));
@@ -120,6 +144,9 @@
   border-radius: 10px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .82), 0 4px 10px rgba(69, 42, 12, .16);
   color: #40301a;
+  font-size: clamp(12px, 1.05vw, 15px) !important;
+  min-height: clamp(58px, 6.4vw, 82px) !important;
+  padding: clamp(9px, .86vw, 12px) clamp(10px, 1vw, 14px) !important;
 }
 .entry-prep--flat .entry-growth-card.is-selected {
   background-color: transparent;
@@ -141,8 +168,16 @@
    A taller fixed board just gets redistributed as centring gaps, so the height itself
    has to come down to close the space between the question row and the cards. */
 .entry-prep--flat .entry-prep__panel {
-  min-height: min(84svh, 858px);
-  padding-bottom: clamp(14px, 1.9vh, 24px);
+  /* Fixed to step 4's natural width-driven content height (measured directly, not
+     approximated via svh - see the sweep in the entry above). Content height now only
+     depends on viewport width, so this single width-only clamp stays snug at every
+     width/height combination instead of drifting apart from the content like the old
+     svh-based min-height did. */
+  /* Fitted to step 4's measured natural height at 1024px and 1920px width (629px and
+     853px) now that every child rule is width-only - see the comment block above this
+     file's imports for why height can no longer be a factor. */
+  min-height: clamp(629px, 373px + 25vw, 853px);
+  padding-bottom: var(--prep-gap);
 }
 
 /* Question and helper share one row, helper pinned to the right edge. */
@@ -193,18 +228,19 @@
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  /* Bottom matches the question-head's own bottom margin so the gap above the cards and
-     the gap below them (down to the footer rule) read as the same size. */
-  padding: clamp(14px, 1.9vh, 24px) 0 clamp(10px, 1.4vh, 18px);
+  /* Top and bottom both read from --prep-gap so the gap above the cards and the gap
+     below them (down to the footer rule) are the exact same value, not just visually
+     close. */
+  padding: var(--prep-gap) 0 var(--prep-gap);
 }
 /* Centred in the leftover space, but never opening a gap larger than this - otherwise
    the sparse pages push the cards far from their question. */
 .entry-prep--flat .entry-flat-cards,
 .entry-prep--flat .entry-growth-grid { margin-block: auto; }
-.entry-prep--flat .entry-prep__question-head { margin-bottom: clamp(10px, 1.4vh, 18px); }
+.entry-prep--flat .entry-prep__question-head { margin-bottom: var(--prep-gap); }
 /* Equal space above and below the nav row: the padding above the buttons matches the
    panel's own bottom padding below them. */
-.entry-prep--flat .entry-prep__footer { margin-top: auto; padding: clamp(14px, 1.9vh, 24px) 0 0; }
+.entry-prep--flat .entry-prep__footer { margin-top: auto; padding: var(--prep-gap) 0 0; }
 
 /* 6. The free-text field fills the two columns beside its own card instead of
    claiming a new row of its own. */
