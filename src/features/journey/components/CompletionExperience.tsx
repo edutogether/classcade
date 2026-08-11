@@ -1,4 +1,4 @@
-import { useMemo, useState, type ChangeEvent } from 'react'
+import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
 import { CompassSeal, Icon } from '../../../components/VisualPrimitives'
 import { buildShareCardModel, rankVideos, recommendationTags, type ShareCardFormat, type ShareCardModel } from '../../../data/completionExperience'
 import { getGameCandidate } from '../../../data/classroomGameBuilder'
@@ -24,6 +24,18 @@ function wrap(ctx: CanvasRenderingContext2D, value: string, width: number, lineH
 }
 
 async function loadImage(src: string) { return new Promise<HTMLImageElement>((resolve, reject) => { const image = new Image(); image.onload = () => resolve(image); image.onerror = reject; image.src = src }) }
+
+/** iOS Safari only allows navigator.share() when called synchronously inside the
+ *  click handler - any `await` before it silently drops the user-gesture and the
+ *  call throws. Decoding the data URL with atob keeps this fully synchronous. */
+function dataUrlToFile(dataUrl: string, filename: string) {
+  const [header, base64] = dataUrl.split(',')
+  const mime = /data:(.*?);base64/.exec(header)?.[1] ?? 'image/png'
+  const binary = atob(base64)
+  const bytes = new Uint8Array(binary.length)
+  for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index)
+  return new File([bytes], filename, { type: mime })
+}
 
 function drawCoverImage(ctx: CanvasRenderingContext2D, image: HTMLImageElement, width: number, height: number, alpha = 1) {
   const ratio = Math.max(width / image.width, height / image.height)
@@ -78,14 +90,14 @@ export function CompletionExperience({ state, onAction, onNextParticipant }: Pro
   const [preview, setPreview] = useState<string | null>(null)
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
-  if (!candidate) return null
 
   const markGenerated = () => onAction({ type: 'SET_COMPLETION_STATE', recommendationTags: tags, recommendedVideoIds: videos.map(({ video }) => video.id), shareCardFormat: format, shareCardGenerated: true, lastCompletedStep: 'share-card-generated' })
 
   async function generate() {
+    if (!candidate) return null
     setBusy(true)
     try {
-      const value = await renderCard(buildShareCardModel(result.title, result.description, candidate!, tags), format, photoDataUrl)
+      const value = await renderCard(buildShareCardModel(result.title, result.description, candidate, tags), format, photoDataUrl)
       setPreview(value)
       markGenerated()
       return value
@@ -97,6 +109,16 @@ export function CompletionExperience({ state, onAction, onNextParticipant }: Pro
     }
   }
 
+  // Pre-generate the card in the background (photo added/removed, or on first render)
+  // so the "공유하기" click handler can call navigator.share() synchronously - see dataUrlToFile.
+  useEffect(() => {
+    if (preview || busy || !candidate) return
+    void generate()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [photoDataUrl, preview, busy, candidate])
+
+  if (!candidate) return null
+
   function handlePhotoChosen(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     if (!file) return
@@ -105,20 +127,36 @@ export function CompletionExperience({ state, onAction, onNextParticipant }: Pro
     reader.readAsDataURL(file)
   }
 
-  async function shareNow() {
+  function downloadImage(imageData: string) {
+    const link = document.createElement('a'); link.href = imageData; link.download = 'classcade-share.png'; link.click()
+    setMessage('이 기기에서는 직접 공유를 지원하지 않아 이미지를 다운로드했어요. 인스타그램·카카오톡에 직접 첨부해 주세요.')
+  }
+
+  function shareNow() {
     setMessage('')
-    const imageData = preview ?? await generate()
+    if (!preview) { void generateThenShare(); return }
+    const file = dataUrlToFile(preview, 'classcade-share.png')
+    if (!navigator.share || !navigator.canShare?.({ files: [file] })) { downloadImage(preview); return }
+    navigator.share({ title: 'CLASSCADE 우리 반 게임', text: `${result.title} · ${candidate!.title}`, files: [file] })
+      .then(() => setMessage('공유 창을 열었어요 - 인스타그램, 카카오톡(나와의 채팅 포함) 등 원하는 곳에 올려 주세요.'))
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError') { setMessage('공유를 취소했어요.'); return }
+        downloadImage(preview)
+      })
+  }
+
+  // Fallback for the rare case a click lands before the background pre-generation finishes.
+  async function generateThenShare() {
+    const imageData = await generate()
     if (!imageData) return
+    const file = dataUrlToFile(imageData, 'classcade-share.png')
+    if (!navigator.share || !navigator.canShare?.({ files: [file] })) { downloadImage(imageData); return }
     try {
-      const blob = await (await fetch(imageData)).blob()
-      const file = new File([blob], `classcade-share.png`, { type: 'image/png' })
-      if (!navigator.share || !navigator.canShare?.({ files: [file] })) throw new Error('unsupported')
       await navigator.share({ title: 'CLASSCADE 우리 반 게임', text: `${result.title} · ${candidate!.title}`, files: [file] })
       setMessage('공유 창을 열었어요 - 인스타그램, 카카오톡(나와의 채팅 포함) 등 원하는 곳에 올려 주세요.')
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') { setMessage('공유를 취소했어요.'); return }
-      const link = document.createElement('a'); link.href = imageData; link.download = 'classcade-share.png'; link.click()
-      setMessage('이 기기에서는 직접 공유를 지원하지 않아 이미지를 다운로드했어요. 인스타그램·카카오톡에 직접 첨부해 주세요.')
+      downloadImage(imageData)
     }
   }
 
