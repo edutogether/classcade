@@ -47,6 +47,9 @@ import {
   prepFinalCtaDisabled,
   prepFinalCtaHover,
   prepFinalCtaActive,
+  prepThreeMapMaster,
+  PREP3_PLAQUES,
+  PREP3_GLOWS,
   type PrepStep,
 } from './prep/prepAssets'
 
@@ -295,6 +298,34 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         <button type="button" className="entry-prep02-plate__cta entry-nav-img" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로"><img src={canContinue ? prepTwoCtaEnabled : prepTwoCtaDisabled} alt="" aria-hidden="true" /></button>
         {isOffline && <p className="entry-prep02-plate__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
       </section>
+    </main>
+  }
+
+  if (!isFlat('prep3') && step === 3) {
+    /* Full-board map master: everything (title, plaque labels, map, nav plaques) is painted
+       into the image; the DOM contributes invisible hit targets over the painted plaques,
+       a selected-state overlay that repaints the label, and the per-region map glow. */
+    return <main className={`entry-prep entry-prep--3 entry-prep03-map ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-3-title">
+      <h1 id="prep-3-title" className="sr-only">모험 준비 — 어느 지역에서 오셨나요?</h1>
+      <div className="prep3-map">
+        <img className="prep3-map__bg" src={prepThreeMapMaster} alt="" aria-hidden="true" onError={() => degradeToFlat('prep3')} />
+        {REGION_OPTIONS.map((option, index) => {
+          const pos = PREP3_PLAQUES[index]
+          return (
+            <button key={option.value} type="button"
+              className={`prep3-map__plaque ${region === option.value ? 'is-selected' : ''}`}
+              style={{ left: `${pos.l}%`, top: `${pos.t}%` }}
+              data-label={option.label} aria-pressed={region === option.value}
+              onClick={() => setRegion(option.value)}>
+              <span className="sr-only">{option.label}</span>
+            </button>
+          )
+        })}
+        {region && PREP3_GLOWS[region] && <i className="prep3-map__glow" style={{ left: `${PREP3_GLOWS[region].l}%`, top: `${PREP3_GLOWS[region].t}%` }} aria-hidden="true" />}
+        <button type="button" className="prep3-map__nav prep3-map__nav--back" onClick={previousStep} aria-label="이전 질문" />
+        <button type="button" className="prep3-map__nav prep3-map__nav--next" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로" />
+      </div>
+      {isOffline && <p className="entry-prep__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
     </main>
   }
 

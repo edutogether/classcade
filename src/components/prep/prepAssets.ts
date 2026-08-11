@@ -53,6 +53,10 @@ import prepNavCtaDisabled from '../../assets/classcade/prep-nav/prep-nav-cta-dis
 /* Final "모험 준비 완료" plaque. The four drawings arrived on four different canvases with
    different frame thicknesses, so they were re-registered onto one 1505x470 canvas with the
    green enamel panel pinned to identical pixels — state changes must not move the plaque. */
+/* Full-board region-map master for step 3 (art mode): buttons painted on the left,
+   Korea map on the right that lights up per selected region. NOTE: currently a stand-in
+   binary — swap the real drawing in at this exact path, no code change needed. */
+import prepThreeMapMaster from '../../assets/classcade/prep-03-interactive/prep-03-map-master.png'
 import prepFinalCtaEnabled from '../../assets/classcade/prep-nav/prep-final-cta-enabled.png'
 import prepFinalCtaDisabled from '../../assets/classcade/prep-nav/prep-final-cta-disabled.png'
 import prepFinalCtaHover from '../../assets/classcade/prep-nav/prep-final-cta-hover.png'
@@ -84,6 +88,36 @@ export {
   prepFinalCtaDisabled,
   prepFinalCtaHover,
   prepFinalCtaActive,
+  prepThreeMapMaster,
+}
+
+/* Geometry for the step-3 map master, all in % of the image so every viewport lands on
+   the painting. Plaques: 4 columns x 4 rows + 제주 centred on column 2; same order as
+   REGION_OPTIONS. Glows: one anchor per region on the painted Korea map. */
+const plaqueCol = [19.7, 28.5, 37.3, 45.9]
+const plaqueRow = [54.8, 60.2, 65.5, 70.8, 75.75]
+export const PREP3_PLAQUES: readonly { l: number; t: number }[] = [
+  ...plaqueRow.slice(0, 4).flatMap((t) => plaqueCol.map((l) => ({ l, t }))),
+  { l: plaqueCol[1], t: plaqueRow[4] },
+]
+export const PREP3_GLOWS: Record<string, { l: number; t: number }> = {
+  seoul: { l: 58.0, t: 33.5 },
+  busan: { l: 66.5, t: 56.5 },
+  daegu: { l: 64.0, t: 51.5 },
+  incheon: { l: 56.3, t: 35.5 },
+  gwangju: { l: 57.5, t: 58.0 },
+  daejeon: { l: 60.0, t: 47.0 },
+  ulsan: { l: 67.5, t: 53.5 },
+  sejong: { l: 59.0, t: 44.5 },
+  gyeonggi: { l: 59.5, t: 36.5 },
+  gangwon: { l: 63.5, t: 31.5 },
+  chungbuk: { l: 62.0, t: 43.0 },
+  chungnam: { l: 57.5, t: 45.5 },
+  jeonbuk: { l: 59.0, t: 52.5 },
+  jeonnam: { l: 56.5, t: 61.0 },
+  gyeongbuk: { l: 65.0, t: 45.5 },
+  gyeongnam: { l: 62.5, t: 56.0 },
+  jeju: { l: 57.0, t: 74.5 },
 }
 
 export type PrepStep = 1 | 2 | 3 | 4 | 'nickname' | 'loading'

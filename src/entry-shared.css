@@ -325,4 +325,23 @@
 }
 
 @media (prefers-reduced-motion: reduce) { .entry-prep *, .entry-prep *::before, .entry-prep *::after, .entry-loading *, .entry-loading *::before, .entry-loading *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
-
+
+/* --- Step 3 map master (art mode) ---------------------------------------------------
+   The whole board is one painting; the stage box reproduces the exact rectangle the
+   image occupies (contain-fit, centred), so the % coordinates from prepAssets land on
+   the painted plaques and map at every viewport. --prep3-ratio must match the image. */
+.entry-prep03-map { align-items: center; background: #120e08; display: grid; justify-items: center; min-height: 100svh; }
+.prep3-map { --prep3-ratio: 1.3736; aspect-ratio: var(--prep3-ratio); max-height: 100svh; position: relative; width: min(100vw, calc(100svh * var(--prep3-ratio))); }
+.prep3-map__bg { display: block; height: 100%; object-fit: fill; width: 100%; }
+.prep3-map__plaque { background: transparent; border: 0; border-radius: 8px; cursor: pointer; height: 4.8%; position: absolute; transform: translate(-50%, -50%); width: 8.8%; }
+.prep3-map__plaque:hover, .prep3-map__plaque:focus-visible { box-shadow: 0 0 0 2px rgba(240,208,110,.6), 0 0 16px rgba(240,208,110,.4); outline: none; }
+.prep3-map__plaque.is-selected { align-items: center; background: linear-gradient(150deg, rgba(24,62,39,.92), rgba(8,34,20,.94)); border: 2px solid #ecc568; box-shadow: 0 0 18px rgba(236,197,104,.55), inset 0 1px rgba(255,255,255,.16); display: flex; justify-content: center; }
+.prep3-map__plaque.is-selected::after { color: #f7e7ae; content: attr(data-label); font-family: 'Gowun Batang', serif; font-size: clamp(11px, 1.15vw, 19px); font-weight: 800; letter-spacing: .02em; }
+.prep3-map__glow { animation: prep3-glow 1.5s ease-in-out infinite alternate; aspect-ratio: 1; background: radial-gradient(circle, rgba(255,238,170,.95), rgba(255,215,120,.5) 42%, transparent 72%); border-radius: 50%; pointer-events: none; position: absolute; transform: translate(-50%, -50%); width: 5.4%; }
+@keyframes prep3-glow { from { opacity: .75; scale: .92; } to { opacity: 1; scale: 1.1; } }
+.prep3-map__nav { background: transparent; border: 0; border-radius: 12px; cursor: pointer; position: absolute; }
+.prep3-map__nav--back { height: 7%; left: 18.5%; top: 80.6%; width: 26%; }
+.prep3-map__nav--next { height: 7.5%; left: 47.5%; top: 79.6%; width: 22.5%; }
+.prep3-map__nav:hover:not(:disabled), .prep3-map__nav:focus-visible { box-shadow: 0 0 0 2px rgba(240,208,110,.55), 0 0 18px rgba(240,208,110,.35); outline: none; }
+.prep3-map__nav:disabled { backdrop-filter: grayscale(.85) brightness(.75); border-radius: 12px; cursor: default; }
+.entry-prep03-map .entry-prep__offline { bottom: 10px; position: fixed; }
