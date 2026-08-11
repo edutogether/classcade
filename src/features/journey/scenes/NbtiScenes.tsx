@@ -1,11 +1,12 @@
 import { useState, type ReactNode } from 'react'
 import { prepNavBack, prepNavCtaEnabled, prepNavCtaDisabled } from '../../../components/prep/prepAssets'
+import profileAvatar from '../../../assets/brand/profile-avatar-front.png'
 import { ClasscadeLockup, CompassSeal, Icon, type IconName } from '../../../components/VisualPrimitives'
 import { NBTI_AXES, NBTI_QUESTIONS, NBTI_TOTAL_QUESTIONS, type NbtiAxis, type NbtiDirection } from '../../../data/nbti.provisional'
 import { getProvisionalResult } from '../../../data/nbtiResults.provisional'
 import { PrimaryButton, Progress, SceneFrame, SecondaryButton, type JourneySceneProps } from '../components/SceneFrame'
 
-const journeyItems = [{ icon: 'clock' as const, title: '약 2분', detail: '교실 장면 16개' }, { icon: 'spark' as const, title: '정답 없음', detail: '중립 선택 없음' }, { icon: 'gamepad' as const, title: '우리 반 놀이', detail: '결과로 이어져요' }]
+const journeyItems = [{ icon: 'clock' as const, title: '약 1분', detail: '간단한 여정' }, { icon: 'spark' as const, title: '캐릭터 성장', detail: '선택이 힘이 돼요' }, { icon: 'gamepad' as const, title: '우리 반 게임', detail: '까지 연결돼요' }]
 const directionLabels: Record<NbtiDirection, string> = { design: '설계', response: '반응', whole: '전체', individual: '개별', criteria: '기준', empathy: '공감', completion: '완성', expansion: '확장' }
 
 /** Real MBTI letters (E/I, S/N, T/F, J/P), built from the 16 questions' answers.
@@ -81,14 +82,16 @@ const ITEMS: readonly { icon: IconName | null; name: string }[] = [
   { icon: null, name: '빈 슬롯' },
 ]
 
-/** Placeholder character emblem until a growing-character illustration set exists — the panel's data (axis leanings, skill/item unlocks) is real and swaps in cleanly once art lands. */
-function GrowingPlayerPanel({ growth, answers }: { growth: number; answers: Record<string, string> }) {
+function GrowingPlayerPanel({ growth, answers, nickname }: { growth: number; answers: Record<string, string>; nickname?: string }) {
   const unlockedSkills = Math.min(SKILLS.length, Math.floor(growth / 25))
   return (
     <aside className="journey-panel journey-question__sidebar" aria-label="만들어지는 나의 교실 플레이어">
       <p className="journey-kicker">✦ 만들어지는</p>
       <h2>나의 교실 플레이어</h2>
-      <div className="journey-question__sidebar-emblem" aria-hidden="true"><CompassSeal /></div>
+      <div className="journey-question__sidebar-profile">
+        <img src={profileAvatar} alt="" aria-hidden="true" />
+        <span><small>교실 탐험가</small><strong>{nickname ?? '선생님'}</strong></span>
+      </div>
       <div className="journey-question__sidebar-stat"><span>현재 완성도</span><b>{growth}%</b></div>
       <div className="journey-question__sidebar-track" aria-hidden="true"><i style={{ width: `${growth}%` }} /></div>
       <div className="journey-question__sidebar-block">
@@ -129,19 +132,18 @@ function GrowingPlayerPanel({ growth, answers }: { growth: number; answers: Reco
 export function StartScene(props: JourneySceneProps) {
   return (
     <SceneFrame scene="start" {...props}>
-      {/* Desktop paints the headline, sub-copy, chips and headphone note into start-master-v3,
-          so CSS hides everything here except the buttons. Phones swap to a textless plate, so
-          the same markup still has to carry the copy there — hence hidden, not deleted. */}
+      {/* v4 art carries no UI text on the left, so the copy is live DOM again, matching the
+          reference lockup: kicker, headline with the gold word, sub-copy, fact chips,
+          stacked buttons, headphone note. The quest board is painted into the art. */}
       <div className="journey-start__copy journey-enter">
         <p className="journey-kicker"><span>✦</span> NBTI ADVENTURE <span>✦</span></p>
-        <h1 data-tune-id="main-title"><span>교실 속 나를 발견하다.</span><span><em>놀이로</em> 확장하다.</span></h1>
-        <p className="journey-start__description" data-tune-id="main-description">16개의 교실 장면에서 발견한 성향이, 우리 반 놀이의 시작점이 됩니다.</p>
-        <p className="journey-start__guide">평소의 성격이 아니라, 학생들 앞에 선 순간의 나를 떠올려 주세요.<br />두 선택 모두 좋은 교사의 방식입니다. 완전히 같지 않아도 교실에서 조금 더 자주 하는 쪽을 골라 주세요.</p>
+        <h1 data-tune-id="main-title"><span>당신의 교실 플레이</span><span><em>모험이</em> 시작됩니다</span></h1>
+        <p className="journey-start__description" data-tune-id="main-description">여러분의 선택으로 나의 교실 유형을 발견하고,<br />선생님 캐릭터를 성장시켜 보세요.</p>
         <ul className="journey-start__cards" aria-label="여정 정보">
           {journeyItems.map((item) => <li key={item.title}><Icon name={item.icon} size={25} /><span><b>{item.title}</b><small>{item.detail}</small></span></li>)}
         </ul>
         <div className="journey-start__actions">
-          <PrimaryButton onClick={() => props.onAction({ type: 'START_NBTI' })} tuneId="main-primary-cta">16개의 교실 장면 시작하기</PrimaryButton>
+          <PrimaryButton onClick={() => props.onAction({ type: 'START_NBTI' })} tuneId="main-primary-cta">교실 NBTI 시작하기</PrimaryButton>
           {props.state.resumeStage ? <SecondaryButton onClick={() => props.onAction({ type: 'RESUME_JOURNEY' })} tuneId="main-resume-cta"><Icon name="reset" size={20} />이전 여정 이어가기</SecondaryButton> : <SecondaryButton onClick={() => props.onAction({ type: 'RESET_NBTI' })} tuneId="main-resume-cta"><Icon name="reset" size={20} />새로 시작하기</SecondaryButton>}
         </div>
         <p className="journey-start__audio-note" data-tune-id="main-headphone-note"><Icon name="speaker" size={17} />헤드폰을 착용하면 BGM과 효과음이 더욱 몰입감을 높여줘요.</p>
@@ -184,7 +186,7 @@ export function QuestionScene(props: JourneySceneProps) {
           </div>
           <p className="journey-panel__fineprint">이 탐색은 체험용 교실 플레이 안내이며, 과학적 성격 진단이 아닙니다.</p>
         </div>
-        <GrowingPlayerPanel growth={growth} answers={props.state.answers} />
+        <GrowingPlayerPanel growth={growth} answers={props.state.answers} nickname={props.profile?.nickname} />
       </div>
     </SceneFrame>
   )

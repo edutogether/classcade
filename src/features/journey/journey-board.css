@@ -42,12 +42,30 @@
   display: flex;
   gap: clamp(24px, 4vw, 90px);
   justify-content: space-between;
-  width: var(--classcade-board, min(94vw, 1180px));
-  zoom: var(--board-zoom, 1);
+  /* Full stage width, hard against both edges: the question board hugs the left and the
+     player board hugs the right, leaving the backdrop's subject open between them.
+     No zoom here — at 1.32 the zoomed width would overflow the viewport. */
+  width: 100%;
+  zoom: 1;
+}
+/* The stage's generous side padding is for centred boards; this screen pins hard to the
+   edges and rides higher than the other scenes. */
+@media (min-width: 1101px) {
+  .journey-scene--question .journey-scene__stage { padding-left: 10px; padding-right: 10px; padding-top: calc(clamp(62px, 8.3vh, 88px) + 14px); }
 }
 .journey-question-split > .journey-panel { width: auto; zoom: 1; }
-.journey-question-split > .journey-question { flex: 1 1 auto; min-width: 0; }
-.journey-question-split > .journey-question__sidebar { flex: 0 0 clamp(232px, 23%, 300px); }
+.journey-question-split > .journey-question { flex: 0 1 850px; min-width: 0; }
+/* Rides high on the right, level with the backdrop character's eyeline, instead of
+   stretching to the question board's full height. */
+.journey-question-split > .journey-question__sidebar { align-self: flex-start; flex: 0 0 clamp(240px, 17.5vw, 300px); margin-top: 0; }
+
+/* Compact type so the left board fits common laptop heights without its inner scrollbar. */
+.journey-question-split .journey-question__copy h1 { font-size: clamp(21px, 1.75vw, 29px); }
+.journey-question-split .journey-question__copy > p:last-of-type { font-size: clamp(11px, .85vw, 13px); }
+.journey-question-split .journey-question__choices .journey-choice b { font-size: clamp(15px, 1.15vw, 20px); }
+.journey-question-split .journey-question__choices .journey-choice small { font-size: clamp(11px, .85vw, 13px); }
+.journey-question-split .journey-question__choices .journey-choice { padding: clamp(12px, 1.1vw, 18px) clamp(14px, 1.3vw, 22px); }
+.journey-question-split .journey-question__body { padding: clamp(12px, 1.4vw, 22px) 0 12px; }
 
 .journey-question__body {
   align-items: start;
@@ -65,11 +83,18 @@
 
 /* Labeled skill/item slots: icon box with its name underneath. */
 .journey-question__sidebar-slots--labeled { align-items: start; }
-.journey-question__sidebar-slots--labeled figure { display: grid; gap: 4px; justify-items: center; margin: 0; }
-.journey-question__sidebar-slots--labeled figcaption { color: #77531d; font-size: 10px; font-weight: 800; letter-spacing: -.04em; line-height: 1.2; text-align: center; white-space: nowrap; }
+.journey-question__sidebar-slots--labeled figure { display: grid; gap: 5px; justify-items: center; margin: 0; }
+.journey-question__sidebar-slots--labeled figcaption { color: #5c4118; font-size: 11px; font-weight: 800; letter-spacing: -.04em; line-height: 1.2; text-align: center; white-space: nowrap; }
+
+/* Constant board size: the panel's height comes from the viewport, not from how long
+   this particular question's text happens to be — no grow/shrink between questions. */
+.journey-question-split > .journey-question { height: min(820px, calc((100svh - 96px) / var(--board-zoom, 1))); }
+
+/* Fully opaque player board — translucency over the busy backdrop hurt readability. */
+.journey-question-split > .journey-question__sidebar { background: linear-gradient(160deg, #fffbe8, #e9d3a0); }
 
 /* The drawn nav plaques, sized like the prep flow's. */
-.journey-nav-img { background: none; border: 0; cursor: pointer; flex: 0 0 auto; padding: 0; width: clamp(200px, 18.5vw, 280px); }
+.journey-nav-img { background: none; border: 0; cursor: pointer; flex: 0 0 auto; padding: 0; width: clamp(180px, 15vw, 236px); }
 .journey-nav-img img { display: block; height: auto; width: 100%; }
 .journey-nav-img:disabled { cursor: default; }
 .journey-nav-img:not(:disabled):hover img, .journey-nav-img:focus-visible img { filter: brightness(1.09); }

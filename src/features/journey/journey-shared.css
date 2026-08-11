@@ -7,35 +7,14 @@
 
 .journey-header { align-items: center; border-bottom: 1px solid rgba(255,242,201,.15); display: flex; height: clamp(66px, 8.3vh, 88px); justify-content: space-between; left: 0; padding: 0 clamp(22px, 4.1vw, 78px); position: absolute; right: 0; top: 0; z-index: 5; }.journey-header .logo-slot { align-items: center; background: radial-gradient(circle at 35% 28%, rgba(255,242,184,.2), transparent 31%), rgba(4,18,11,.68); border: 1px solid rgba(232,202,112,.72); border-radius: 50%; box-shadow: inset 0 0 0 2px rgba(255,246,204,.08), 0 4px 12px rgba(0,0,0,.28); color: #f3d982; display: grid; height: 44px; justify-items: center; padding: 3px; position: relative; width: 44px; }.journey-header .logo-slot::after { content: none; }.journey-header .logo-slot > svg { height: 34px; width: 34px; }.journey-header__actions { align-items: center; display: flex; gap: 8px; }.journey-header .audio-toggle { align-items: center; background: linear-gradient(145deg, rgba(32,54,31,.9), rgba(7,24,14,.92)); border: 1px solid rgba(235,207,115,.48); border-radius: 12px; box-shadow: inset 0 1px rgba(255,255,255,.11), 0 4px 10px rgba(0,0,0,.22); color: #fff2be; cursor: pointer; display: inline-flex; height: 44px; justify-content: center; position: relative; transition: background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease; width: 44px; }.journey-header .audio-toggle:hover, .journey-header .audio-toggle:focus-visible { background: linear-gradient(145deg, rgba(59,101,52,.96), rgba(13,55,30,.96)); border-color: #f2d77a; box-shadow: inset 0 1px rgba(255,255,255,.18), 0 5px 12px rgba(0,0,0,.28); transform: translateY(-1px); }.journey-header .audio-toggle.is-enabled { background: linear-gradient(145deg, #4d9654, #1f633e); }.journey-header .audio-toggle__slash { background: #f3d274; height: 2px; position: absolute; transform: rotate(-45deg); width: 25px; }.journey-header__teacher { align-items: center; background: linear-gradient(135deg, rgba(49,66,34,.96), rgba(20,40,23,.96)); border: 1px solid rgba(235,207,115,.58); border-radius: 12px; box-shadow: inset 0 1px rgba(255,255,255,.12), 0 4px 11px rgba(0,0,0,.24); color: #fff3c6; cursor: pointer; display: inline-flex; font-size: 13px; font-weight: 800; gap: 7px; height: 44px; margin-left: 2px; padding: 0 12px 0 5px; transition: background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease; }.journey-header__teacher:hover, .journey-header__teacher:focus-visible { background: linear-gradient(135deg, rgba(71,94,45,.98), rgba(25,55,29,.98)); border-color: #f2d77a; box-shadow: inset 0 1px rgba(255,255,255,.17), 0 5px 12px rgba(0,0,0,.28); transform: translateY(-1px); }.journey-header__teacher > span { align-items: center; background: linear-gradient(145deg, #507d4a, #a47b32); border: 1px solid rgba(255,242,194,.72); border-radius: 50%; color: #fff8db; display: inline-flex; font-size: 10px; height: 31px; justify-content: center; width: 31px; }
 
-/* Start screen, wide layout: start-master-v3 already paints the kicker, headline, sub-copy,
-   fact chips, quest board and headphone note, so the DOM only contributes the two buttons.
-   The copy stays in the markup because phones swap to a textless plate and still need it. */
-@media (min-width: 701px) {
-  .journey-scene--start .journey-start__copy > :not(.journey-start__actions) { display: none; }
-  /* The painting carries its own darkening; the shared wash would double it and muddy the art. */
-  .journey-scene--start .journey-art__wash,
-  .journey-scene--start .journey-art__motes,
-  .journey-scene--start .journey-art__leaves { display: none; }
-  /* fill, not cover or contain: this master is a layout whose painted copy has to stay
-     under buttons pinned to percentages of it. cover crops (moving the copy sideways) and
-     contain letterboxes; fill maps the image 1:1 onto the viewport, so every percentage
-     below is exact and no edge is lost. The 16:9 -> 16:10 stretch is imperceptible here. */
-  .journey-scene--start .journey-art img { object-fit: fill; }
-  .journey-scene--start .journey-scene__stage { padding: 0; }
-  .journey-scene--start .journey-start__copy { align-self: stretch; height: 100%; justify-self: stretch; margin: 0; max-width: none; padding: 0; position: relative; width: 100%; }
-  /* Spans exactly the three painted fact chips above it (8.07%-41.27% of the master),
-     in the empty band between those chips and the headphone note. */
-  .journey-scene--start .journey-start__actions { align-items: center; display: flex; gap: clamp(8px, .7vw, 14px); left: 8.07%; max-width: none; position: absolute; top: 74.5%; width: 33.2%; }
-  .journey-scene--start .journey-start__actions .journey-button { flex: 1 1 0; font-size: clamp(11px, .95vw, 16px); gap: 7px; min-height: clamp(38px, 6.4svh, 58px); min-width: 0; padding: 0 clamp(6px, .7vw, 14px); }
-  .journey-scene--start .journey-start__actions .journey-button--secondary { justify-self: stretch; }
-  .journey-scene--start .journey-start__actions .journey-button__seal { flex: 0 0 auto; height: clamp(18px, 1.5vw, 26px); width: clamp(18px, 1.5vw, 26px); }
-  .journey-scene--start .journey-start__actions .journey-button > svg { flex: 0 0 auto; height: clamp(15px, 1.2vw, 21px); width: clamp(15px, 1.2vw, 21px); }
-}
-
 /* Header cluster — one translucent glass pill holding bgm button, song title, equalizer,
    and the profile trigger, mirroring Be a Googler's desktop cluster shape. */
 .journey-cluster { align-items: center; backdrop-filter: blur(22px) saturate(1.08); background: linear-gradient(128deg, rgba(20,42,26,.62), rgba(8,26,15,.5)); border: 1px solid rgba(255,244,204,.34); border-radius: 34px; box-shadow: 0 10px 24px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,252,230,.22); display: flex; gap: 10px; min-height: 58px; padding: 0 8px 0 8px; }
-.journey-song { color: #fff3c6; display: block; flex: 0 1 auto; font-size: clamp(12px, .72vw, 14px); font-weight: 700; letter-spacing: -.02em; line-height: 1.4; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.journey-song { color: #fff3c6; display: block; flex: 0 1 auto; font-size: clamp(12px, .72vw, 14px); font-weight: 700; letter-spacing: -.02em; line-height: 1.4; mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent); max-width: clamp(150px, 14vw, 240px); min-width: 0; overflow: hidden; position: relative; white-space: nowrap; }
+.journey-song__track { animation: journey-song-marquee 16s linear infinite; display: flex; width: max-content; }
+.journey-song__track > span { flex: 0 0 auto; padding-right: 8.5em; }
+@keyframes journey-song-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .journey-song__track { animation: none; } .journey-song__track > span:last-child { display: none; } }
 .journey-equalizer { align-items: end; display: grid; flex: 0 0 auto; gap: 3px; grid-template-columns: repeat(6, 3px); height: 24px; justify-content: center; width: 40px; }
 .journey-equalizer i { background: linear-gradient(#ffe9a0, #e0ab3c); border-radius: 99px; box-shadow: 0 0 6px rgba(255,222,130,.45); height: 6px; opacity: .5; }
 .journey-equalizer.is-playing i { animation: journey-equalize .78s ease-in-out infinite alternate; opacity: 1; }
@@ -63,7 +42,25 @@
 @media (max-width: 1280px) { .journey-song, .journey-equalizer { display: none; } }
 @media (max-width: 900px) { .journey-cluster { backdrop-filter: none; background: rgba(7,24,14,.72); gap: 6px; min-height: 50px; } .journey-cluster__divider { display: none; } .journey-header__identity { display: none; } .journey-header__profile { padding: 2px; } .journey-header__profile img { height: 38px; width: 38px; } .journey-header__profile > svg { display: none; } }
 
-.journey-scene__stage { align-items: center; display: grid; min-height: 100svh; padding: calc(clamp(62px, 8.3vh, 88px) + clamp(24px, 4.2vh, 64px)) clamp(24px, 5.1vw, 98px) clamp(26px, 4.3vh, 55px); position: relative; width: 100%; }.journey-enter { animation: journey-enter .22s both cubic-bezier(.2,.8,.2,1); }.journey-kicker { color: var(--gold); font-size: clamp(11px, .82vw, 15px); font-weight: 900; letter-spacing: .16em; margin: 0 0 16px; text-transform: uppercase; }.journey-kicker span { padding: 0 5px; }.journey-notice { background: rgba(8,23,13,.88); border: 1px solid rgba(246,216,127,.54); border-radius: 10px; bottom: 21px; color: #fff4cb; font-size: 13px; font-weight: 700; left: 50%; margin: 0; max-width: min(90vw, 560px); padding: 10px 16px; position: fixed; text-align: center; transform: translateX(-50%); z-index: 20; }
+.journey-scene__stage { align-items: center; display: grid; min-height: 100svh; padding: calc(clamp(62px, 8.3vh, 88px) + clamp(24px, 4.2vh, 64px)) clamp(24px, 5.1vw, 98px) clamp(26px, 4.3vh, 55px); position: relative; width: 100%; }
+/* Poster-scale start copy: the headline owns the dark left half of the art. Placed after
+   the base rules (and matching the height-capped override below by scope) so it wins. */
+@media (min-width: 701px) {
+  .journey-scene--start .journey-start__copy { margin-left: clamp(4px, 1.2vw, 30px); max-width: min(44vw, 800px); }
+  .journey-scene--start .journey-kicker { font-size: clamp(13px, 1vw, 19px); margin-bottom: clamp(16px, 2.2vh, 30px); }
+  .journey-scene--start .journey-start__copy h1 { font-size: clamp(52px, 5.5vw, 112px); line-height: 1.04; }
+  .journey-scene--start .journey-start__copy h1 span { display: block; }
+  .journey-scene--start .journey-start__description { font-size: clamp(16px, 1.25vw, 23px); line-height: 1.75; margin: clamp(26px, 4vh, 48px) 0 clamp(24px, 3.6vh, 44px); }
+  .journey-scene--start .journey-start__cards { gap: clamp(11px, 1vw, 18px); margin-bottom: clamp(24px, 3.6vh, 46px); max-width: 760px; }
+  .journey-scene--start .journey-start__cards li { min-height: clamp(84px, 9.4vh, 108px); padding: 12px 15px; }
+  .journey-scene--start .journey-start__cards b { font-size: clamp(14px, 1.05vw, 19px); }
+  .journey-scene--start .journey-start__cards small { font-size: clamp(11px, .85vw, 15px); }
+  .journey-scene--start .journey-start__cards svg { height: clamp(30px, 2.4vw, 44px); width: clamp(30px, 2.4vw, 44px); }
+  .journey-scene--start .journey-start__actions { gap: clamp(12px, 1.4vh, 18px); max-width: 660px; }
+  .journey-scene--start .journey-start__actions .journey-button--primary { font-size: clamp(17px, 1.35vw, 25px); min-height: clamp(64px, 7.6vh, 84px); }
+  .journey-scene--start .journey-start__actions .journey-button--secondary { font-size: clamp(13px, 1vw, 18px); min-height: clamp(50px, 5.8vh, 64px); min-width: 300px; }
+  .journey-scene--start .journey-start__audio-note { font-size: clamp(12px, .9vw, 16px); margin-top: clamp(16px, 2.4vh, 28px); }
+}.journey-enter { animation: journey-enter .22s both cubic-bezier(.2,.8,.2,1); }.journey-kicker { color: var(--gold); font-size: clamp(11px, .82vw, 15px); font-weight: 900; letter-spacing: .16em; margin: 0 0 16px; text-transform: uppercase; }.journey-kicker span { padding: 0 5px; }.journey-notice { background: rgba(8,23,13,.88); border: 1px solid rgba(246,216,127,.54); border-radius: 10px; bottom: 21px; color: #fff4cb; font-size: 13px; font-weight: 700; left: 50%; margin: 0; max-width: min(90vw, 560px); padding: 10px 16px; position: fixed; text-align: center; transform: translateX(-50%); z-index: 20; }
 
 .journey-button { align-items: center; border-radius: 12px; cursor: pointer; display: inline-flex; font-weight: 900; justify-content: center; transition: background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease; }.journey-button:hover:not(:disabled), .journey-button:focus-visible:not(:disabled) { box-shadow: inset 0 1px rgba(255,255,255,.62), 0 8px 16px rgba(0,0,0,.3); transform: translateY(-1px); }.journey-button:active:not(:disabled) { transform: translateY(1px); }.journey-button:disabled { cursor: not-allowed; opacity: .55; }.journey-button--primary { background: linear-gradient(112deg, #70ad4b 0%, #2f884f 48%, #07563a 100%); border: 1px solid #eadb9c; border-bottom: 4px solid #0a422d; box-shadow: 0 0 0 1px rgba(237,211,124,.3), inset 0 2px rgba(255,255,255,.5), inset 0 -8px 17px rgba(0,48,27,.24), 0 8px 15px rgba(0,0,0,.34); color: #fffdee; font-size: clamp(15px,1.25vw,21px); gap: 12px; min-height: 65px; padding: 0 22px; text-shadow: 0 2px 3px rgba(0,0,0,.3); }.journey-button--primary > span { flex: 1; text-align: center; }.journey-button__seal { height: 31px; width: 31px; }.journey-button--secondary { background: linear-gradient(135deg,#f6f1df,#d8c8a6); border: 1px solid #c8aa6b; border-bottom: 3px solid #947b54; box-shadow: inset 0 1px rgba(255,255,255,.82), inset 0 -5px 10px rgba(113,80,35,.08), 0 4px 10px rgba(0,0,0,.22); color: #3d3425; font-size: 14px; gap: 8px; min-height: 50px; padding: 0 18px; }
 
@@ -96,8 +93,8 @@
 .journey-header .classcade-wordmark {
   display: block;
   filter: drop-shadow(0 0 10px rgba(255,214,110,.4)) drop-shadow(0 1px 4px rgba(0,0,0,.5));
-  height: 42px;
-  margin: 5px 0 0 -8px;
+  height: 33px;
+  margin: 14px 0 0 -10px;
   object-fit: contain;
   position: relative;
   width: auto;
@@ -118,8 +115,12 @@
 .journey-question__sidebar { background: linear-gradient(160deg, rgba(255,251,232,.7), rgba(228,203,140,.55)); border: 1px solid rgba(123,82,27,.32); border-radius: 4px; box-shadow: inset 0 1px rgba(255,255,255,.6); color: #4a3819; padding: 16px 15px; }
 .journey-question__sidebar > .journey-kicker { color: #8c672a; font-size: 10px; margin: 0; }
 .journey-question__sidebar > h2 { color: #2f2718; font-family: 'Gowun Batang', serif; font-size: 17px; letter-spacing: -.04em; margin: 2px 0 10px; }
-.journey-question__sidebar-emblem { display: grid; place-items: center; margin: 0 auto 10px; width: 58px; }
-.journey-question__sidebar-emblem svg { filter: drop-shadow(0 2px 6px rgba(60,38,10,.28)); height: 58px; width: 58px; }
+/* Same circle size the old compass emblem used (58px), left-aligned with the name beside it. */
+.journey-question__sidebar-profile { align-items: center; display: flex; gap: 9px; margin: 0 0 10px; }
+.journey-question__sidebar-profile img { border: 2px solid rgba(255,250,224,.9); border-radius: 50%; box-shadow: 0 2px 8px rgba(60,38,10,.3); flex: 0 0 auto; height: 58px; object-fit: cover; width: 58px; }
+.journey-question__sidebar-profile span { display: grid; gap: 1px; min-width: 0; }
+.journey-question__sidebar-profile small { color: #8c672a; font-size: 10px; font-weight: 800; letter-spacing: -.02em; }
+.journey-question__sidebar-profile strong { color: #2f2718; font-size: 15px; font-weight: 820; letter-spacing: -.03em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .journey-question__sidebar-stat { align-items: baseline; display: flex; font-size: 11px; font-weight: 800; justify-content: space-between; }
 .journey-question__sidebar-stat b { color: #2d7d49; font-size: 15px; }
 .journey-question__sidebar-track { background: rgba(88,112,57,.18); border: 1px solid rgba(70,104,43,.25); border-radius: 999px; height: 6px; margin: 6px 0 14px; overflow: hidden; }
@@ -131,8 +132,9 @@
 .journey-question__sidebar-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .journey-question__sidebar-chips span { background: rgba(255,255,255,.55); border: 1px solid rgba(123,82,27,.3); border-radius: 999px; color: #8c7749; font-size: 11px; font-weight: 800; padding: 5px 10px; }
 .journey-question__sidebar-chips span.is-revealed { background: rgba(58,123,64,.14); border-color: #3a7b40; color: #2d7d49; }
-.journey-question__sidebar-slots { display: grid; gap: 7px; grid-template-columns: repeat(4, 1fr); }
-.journey-question__sidebar-slots span { align-items: center; aspect-ratio: 1; background: rgba(255,255,255,.5); border: 1px solid rgba(123,82,27,.28); border-radius: 8px; color: #a4915f; display: grid; font-size: 15px; font-weight: 800; justify-content: center; }
+.journey-question__sidebar-slots { display: grid; gap: 8px; grid-template-columns: repeat(4, 1fr); }
+.journey-question__sidebar-slots span { align-items: center; aspect-ratio: 1; background: rgba(255,255,255,.5); border: 1px solid rgba(123,82,27,.28); border-radius: 8px; color: #a4915f; display: grid; font-size: 17px; font-weight: 800; justify-content: center; }
+.journey-question__sidebar-slots span > svg { height: 24px; width: 24px; }
 .journey-question__sidebar-slots span.is-unlocked { background: rgba(58,123,64,.14); border-color: #3a7b40; color: #2d7d49; }
 .journey-game-choice { max-width: 920px; }.journey-game-choice__body { padding: clamp(28px,4vw,58px) 0 26px; position: relative; text-align: center; z-index: 1; }.journey-game-choice__body > p:last-of-type { margin-left: auto; margin-right: auto; max-width: 560px; }.journey-game-choice__options { margin: 29px auto 0; max-width: 720px; }.journey-choice--game { min-height: 166px; }.journey-choice--game b, .journey-choice--game small { max-width: 82%; }
 

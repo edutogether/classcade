@@ -251,7 +251,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
           <p className="entry-kicker">✦ 여정의 마지막 준비 ✦</p>
           <h1 id="nickname-title"><span>용사님의 닉네임을</span> <span>알려주세요</span></h1>
           <p>이 여정에서 불릴 이름이에요.</p>
-          <label><input value={nickname} maxLength={16} autoComplete="off" aria-label="용사 닉네임" placeholder="예: 플레이메이커쌤" onChange={(event) => setNickname(event.target.value.slice(0, 16))} /></label>
+          <label><input value={nickname} maxLength={16} autoComplete="off" aria-label="용사 닉네임" placeholder="예: 우리 같이 놀아요" onChange={(event) => setNickname(event.target.value.slice(0, 16))} /></label>
           <small>실제 이름이나 학교명 대신, 이 모험에서 사용할 별명을 적어주셔도 좋아요.</small>
         </div>
         <footer className="entry-prep__footer">
@@ -326,7 +326,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         {flat && step === 2 && <PrepFlatCards options={CAREER_RANGE_OPTIONS} value={careerRange} onChange={setCareerRange} tunePrefix="prep-2" ariaLabel="선생님의 교실 여정" icons={CAREER_ICONS} columns={5} />}
         {step === 3 && region && <p className="entry-prep__next-cue" role="status">지역을 선택했어요 · 아래의 다음 질문 버튼으로 이어가요 ↓</p>}
         {step === 3 && (flat
-          ? <PrepFlatCards options={REGION_OPTIONS} value={region} onChange={setRegion} tunePrefix="prep-3" ariaLabel="지역" columns={6} compact />
+          ? <PrepFlatCards options={REGION_OPTIONS} value={region} onChange={setRegion} tunePrefix="prep-3" ariaLabel="지역" columns={9} compact />
           : <ChoiceCards options={REGION_OPTIONS} value={region} onChange={setRegion} icons={['region']} tunePrefix="prep-3" compact />)}
         {step === 4 && <div className="entry-growth-grid" role="group" aria-label="교실 성장 우선순위">
           {GROWTH_PRIORITY_OPTIONS.map((option, index) => {

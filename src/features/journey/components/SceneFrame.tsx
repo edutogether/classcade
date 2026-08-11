@@ -41,7 +41,10 @@ function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef, prof
         {/* One translucent pill holding the whole cluster, as in the reference header. */}
         <div className="journey-cluster">
           <BgmControl enabled={state.audio.bgmEnabled} volume={state.audio.bgmVolume} onToggle={() => onAction({ type: 'SET_AUDIO', audio: toggleAudioChannel(state.audio, 'bgm') })} onVolumeChange={(bgmVolume) => onAction({ type: 'SET_AUDIO', audio: { ...state.audio, bgmVolume } })} />
-          <span className="journey-song" title={BGM_TITLE}>{BGM_TITLE}</span>
+          {/* Leftward tape marquee; the text is doubled so the loop has no visible seam. */}
+          <span className="journey-song" aria-label={BGM_TITLE}>
+            <span className="journey-song__track" aria-hidden="true"><span>{BGM_TITLE}</span><span>{BGM_TITLE}</span></span>
+          </span>
           <span className={`journey-equalizer ${state.audio.bgmEnabled ? 'is-playing' : ''}`} aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</span>
           <span className="journey-cluster__divider" aria-hidden="true" />
           {/* The profile IS the teacher-panel trigger now — there is no second button. */}
