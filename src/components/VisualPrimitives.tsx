@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import classcadeEmblem from '../assets/brand/classcade-emblem.png'
 import classcadeWordmark from '../assets/brand/classcade-wordmark.png'
 import classcadeLockup from '../assets/brand/classcade-lockup.png'
+import classcadeLockupH from '../assets/brand/classcade-lockup-h.png'
 
 export type IconName = 'clock' | 'spark' | 'gamepad' | 'arrow' | 'music' | 'speaker' | 'chevron' | 'close' | 'edit' | 'reset' | 'check' | 'school' | 'career' | 'region' | 'leaf' | 'notebook' | 'share' | 'sprout' | 'lantern' | 'compass' | 'tree' | 'lock'
 
@@ -74,6 +75,21 @@ export function ClasscadeWordmark({ className = '' }: { className?: string }) {
 /** Stacked emblem-over-wordmark lock-up, for the tall result reveal panel. */
 export function ClasscadeLockup({ className = '' }: { className?: string }) {
   return <img className={`classcade-lockup ${className}`} src={classcadeLockup} alt="CLASSCADE" />
+}
+
+/**
+ * Horizontal emblem + wordmark as one image, for header brand slots.
+ * One asset rather than two composed elements: emblem and wordmark then keep the
+ * artwork's own spacing and optical alignment instead of being nudged into agreement
+ * with margins. viewBox crops the file's transparent padding (art spans x 6-1510,
+ * y 84-900 of 1536x1024).
+ */
+export function ClasscadeLockupH({ className = '' }: { className?: string }) {
+  return (
+    <svg className={`classcade-lockup-h ${className}`} viewBox="6 84 1504 816" aria-label="CLASSCADE" role="img">
+      <image href={classcadeLockupH} x="0" y="0" width="1536" height="1024" />
+    </svg>
+  )
 }
 
 export function LogoSlot() {

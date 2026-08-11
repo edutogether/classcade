@@ -13,7 +13,7 @@ import { beginMainThemeReveal, noteAudioUserGesture } from '../lib/audioManager'
 import type { AudioSettings } from '../lib/audioController'
 import { loadPrepDraft, savePrepDraft, clearPrepDraft, type Profile, type PrepDraft } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
-import { ClasscadeEmblem, ClasscadeWordmark, CompassSeal, Icon } from './VisualPrimitives'
+import { ClasscadeLockupH, CompassSeal, Icon } from './VisualPrimitives'
 import { degradeToFlat, isFlat, type VisualScreen } from '../config/visualMode'
 import '../entry.css'
 import type { TunerScreen } from '../features/entry/visualTuning'
@@ -49,6 +49,29 @@ import {
 /** Art vs flat is resolved per screen - see src/config/visualMode.ts. */
 const prepScreen = (step: PrepStep): VisualScreen | null =>
   step === 'nickname' ? 'nickname' : step === 'loading' ? null : (`prep${step}` as VisualScreen)
+
+/**
+ * Nav button drawn from finished artwork, falling back to the CSS button if the image
+ * fails. The fallback matters: the art variant sets `color: transparent`, so a missing
+ * image would leave a working but completely invisible button.
+ */
+function NavArtButton({ art, label, onClick, disabled, variant, tuneId }: {
+  art: string; label: string; onClick: () => void; disabled?: boolean; variant: 'back' | 'next'; tuneId?: string
+}) {
+  const [failed, setFailed] = useState(false)
+  return (
+    <button
+      type="button"
+      className={`entry-button entry-button--${variant} ${failed ? 'entry-button--flat' : 'entry-nav-img'}`}
+      onClick={onClick}
+      disabled={disabled}
+      data-tune-id={tuneId}
+      aria-label={label}
+    >
+      {failed ? label : <img src={art} alt="" aria-hidden="true" onError={() => setFailed(true)} />}
+    </button>
+  )
+}
 
 const SCHOOL_ICONS = ['sprout', 'leaf', 'notebook', 'school', 'spark'] as const
 const CAREER_ICONS = ['sprout', 'leaf', 'tree', 'lantern', 'compass'] as const
@@ -194,7 +217,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       <div className="entry-prep__vignette" aria-hidden="true" />
       <div className="entry-motes" aria-hidden="true">{Array.from({ length: 20 }, (_, index) => <i key={index} />)}</div>
       <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
-        <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><PrepProgress step={4} /></header>
+        <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeLockupH /></div><PrepProgress step={4} /></header>
         <div className="entry-nickname">
           <span className="entry-nickname__orb"><CompassSeal /></span>
           <p className="entry-kicker">✦ 여정의 마지막 준비 ✦</p>
@@ -255,7 +278,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
     <div className="entry-motes" aria-hidden="true">{Array.from({ length: 24 }, (_, index) => <i key={index} />)}</div>
     <section className="entry-prep__panel">
       <header className="entry-prep__header">
-        <div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div>
+        <div className="entry-prep__brand"><ClasscadeLockupH /></div>
         <PrepProgress step={stepNumber} />
       </header>
       <div className="entry-prep__intro">
@@ -286,8 +309,8 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       </section>
       <footer className="entry-prep__footer">
         {flat ? <>
-          <button type="button" className="entry-button entry-button--back entry-button--flat" onClick={previousStep} disabled={step === 1}>← 이전 질문</button>
-          <button type="button" className="entry-button entry-button--next entry-button--flat" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button">다음 질문 <Icon name="arrow" size={20} /></button>
+          <NavArtButton art={prepNavBack} label="← 이전 질문" onClick={previousStep} disabled={step === 1} variant="back" />
+          <NavArtButton art={canContinue ? prepNavCtaEnabled : prepNavCtaDisabled} label="다음 질문" onClick={nextStep} disabled={!canContinue} variant="next" tuneId="prep-next-button" />
         </> : <>
           <button type="button" className="entry-button entry-button--back entry-nav-img" onClick={previousStep} aria-label="이전 질문"><img src={prepNavBack} alt="" aria-hidden="true" /></button>
           <button type="button" className="entry-button entry-button--next entry-nav-img" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로"><img src={canContinue ? prepNavCtaEnabled : prepNavCtaDisabled} alt="" aria-hidden="true" /></button>

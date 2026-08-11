@@ -298,6 +298,12 @@
   .entry-flat-cards.is-compact .entry-flat-card { font-size: 11px; min-height: 40px; }
   .entry-button--flat.entry-button--back { min-width: 37%; }
   .entry-button--flat.entry-button--next { flex: 1; min-width: 0; }
+  /* Art nav buttons: the shared mobile rule sets flex:1 + min-width:0, which collapses
+     an image-only button to zero width - the image sizes from the button and the button
+     sizes from its content, so neither has a starting number. Let the image be the
+     sizer instead: full width of its flex share, height derived from the artwork. */
+  .entry-prep--flat .entry-nav-img { flex: 1 1 42%; min-height: 0; min-width: 40%; }
+  .entry-prep--flat .entry-nav-img img { display: block; height: auto; object-fit: contain; width: 100%; }
   /* The desktop fix put the question and its helper on one row (helper pinned right)
      because the wide board had room. On a phone width there's no room for both, so the
      question itself got squeezed into a narrow column and wrapped 4 lines deep. Stack

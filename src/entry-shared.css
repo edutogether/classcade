@@ -169,16 +169,23 @@
 .entry-prep__header { align-items: center; display: flex; justify-content: space-between; }
 .entry-prep__brand { align-items: center; color: #57401d; display: flex; font-family: 'Gowun Batang', serif; font-size: clamp(11px, 1.1vw, 16px); font-weight: 700; gap: 12px; letter-spacing: .15em; }
 .entry-prep__brand svg { height: clamp(40px, 4vw, 59px); width: clamp(40px, 4vw, 59px); }
-/* Wordmark replaces the old letter-spaced text; height-driven so it scales with the seal.
-   Nudged left/down to sit optically centred: the wordmark's underline rule leaves its
-   ink sitting high inside its own box. Halo matches the journey header's treatment. */
+/* One-piece lock-up: emblem and wordmark keep the artwork's own spacing, so nothing
+   here has to nudge them into alignment. Sized by height; width follows the art. */
 .entry-prep__brand { position: relative; }
+/* Warm halo spread along the lock-up rather than a circle, so the wordmark end is lit
+   too and the mark settles onto the parchment instead of sitting on top of it. */
 .entry-prep__brand::before {
-  background: radial-gradient(circle, rgba(255,226,140,.26), rgba(255,206,96,.1) 45%, transparent 70%);
-  content: ''; filter: blur(7px); height: 128px; left: -20px; pointer-events: none;
-  position: absolute; top: 50%; transform: translateY(-50%); width: 128px; z-index: -1;
+  background: radial-gradient(ellipse at 32% 50%, rgba(255,222,132,.3), rgba(255,206,96,.11) 48%, transparent 72%);
+  content: ''; filter: blur(9px); inset: -26px -34px; pointer-events: none;
+  position: absolute; z-index: -1;
 }
-.classcade-wordmark { display: block; filter: drop-shadow(0 0 9px rgba(255,214,110,.34)); height: clamp(26px, 2.7vw, 42px); margin: 4px 0 0 -7px; object-fit: contain; position: relative; width: auto; }
+.entry-prep__brand .classcade-lockup-h {
+  display: block;
+  filter: drop-shadow(0 2px 5px rgba(90,62,18,.28));
+  height: clamp(64px, 7vw, 112px);
+  position: relative;
+  width: auto;
+}
 
 .entry-progress { align-items: center; display: flex; gap: 13px; }
 .entry-progress b { background: linear-gradient(180deg, #263827, #102317); border: 1px solid #d6ad54; border-radius: 999px; box-shadow: inset 0 1px rgba(255,255,255,.25); color: #fff3c7; font-size: 13px; letter-spacing: .08em; padding: 8px 16px; }
