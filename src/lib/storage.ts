@@ -15,6 +15,7 @@ export const JOURNEY_STORAGE_KEY = 'classcade.journey.v1'
 export const JOURNEY_STATE_STORAGE_KEY = 'classcade.journey-state.v1'
 export const ANONYMOUS_JOURNEY_ID_STORAGE_KEY = 'classcade.anonymous-journey-id.v1'
 export const PAIRING_ISSUED_CODE_STORAGE_KEY = 'classcade.pairing-issued-code.v1'
+export const PREP_DRAFT_STORAGE_KEY = 'classcade.prep-draft.v1'
 
 const NBTI_PROGRESS_STORAGE_KEY = 'classcade.nbti.v1'
 const GAME_PROGRESS_STORAGE_KEY = 'classcade.game.v1'
@@ -40,6 +41,19 @@ export type Journey = {
   updatedAt: string
 }
 
+export type PrepStepValue = 1 | 2 | 3 | 4 | 'nickname'
+
+export type PrepDraft = {
+  version: 1
+  step: PrepStepValue
+  schoolLevel: SchoolLevel | null
+  careerRange: CareerRange | null
+  region: Region | null
+  growthPriorities: GrowthPriority[]
+  growthPriorityOther: string
+  nickname: string
+}
+
 export type StorageBackend = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
 
 export type StorageOptions = {
@@ -52,7 +66,7 @@ export type StorageResult<T> =
   | { ok: false; value: T; reason: 'unavailable' | 'read_failed' | 'write_failed' }
 
 const journeyStatuses: JourneyStatus[] = ['new', 'nbti_in_progress', 'nbti_complete', 'game_in_progress', 'complete']
-const sessionKeys = [PROFILE_STORAGE_KEY, JOURNEY_STORAGE_KEY, JOURNEY_STATE_STORAGE_KEY, ANONYMOUS_JOURNEY_ID_STORAGE_KEY, NBTI_PROGRESS_STORAGE_KEY, GAME_PROGRESS_STORAGE_KEY, PAIRING_ISSUED_CODE_STORAGE_KEY]
+const sessionKeys = [PROFILE_STORAGE_KEY, JOURNEY_STORAGE_KEY, JOURNEY_STATE_STORAGE_KEY, ANONYMOUS_JOURNEY_ID_STORAGE_KEY, NBTI_PROGRESS_STORAGE_KEY, GAME_PROGRESS_STORAGE_KEY, PAIRING_ISSUED_CODE_STORAGE_KEY, PREP_DRAFT_STORAGE_KEY]
 const hasValue = <T extends string>(options: readonly { value: T }[], value: unknown): value is T =>
   typeof value === 'string' && options.some((option) => option.value === value)
 
@@ -203,6 +217,56 @@ export function saveProfile(profile: Profile, deviceMode: DeviceMode = resolveDe
 
 export function clearProfile(deviceMode: DeviceMode = resolveDeviceMode(), options?: StorageOptions): StorageResult<undefined> {
   return remove(getStorageBackend(deviceMode, options), PROFILE_STORAGE_KEY)
+}
+
+const prepSteps: PrepStepValue[] = [1, 2, 3, 4, 'nickname']
+
+/** Unlike Profile, every field here is allowed to be incomplete - this is a mid-flow draft, not a finished record. */
+export function validatePrepDraft(value: unknown): PrepDraft | null {
+  if (!isRecord(value) || value.version !== 1 || !prepSteps.includes(value.step as PrepStepValue)) return null
+  const schoolLevel = value.schoolLevel === null ? null : normalizeOption(SCHOOL_LEVEL_OPTIONS, legacySchoolLevel, value.schoolLevel)
+  const region = value.region === null ? null : normalizeOption(REGION_OPTIONS, legacyRegion, value.region)
+  const careerRange = value.careerRange === null ? null : (hasValue(CAREER_RANGE_OPTIONS, value.careerRange) ? value.careerRange : undefined)
+  if (schoolLevel === undefined || region === undefined || careerRange === undefined) return null
+  if (!Array.isArray(value.growthPriorities)) return null
+
+  const growthPriorities = value.growthPriorities.filter((priority): priority is GrowthPriority => hasValue(GROWTH_PRIORITY_OPTIONS, priority))
+  if (growthPriorities.length !== value.growthPriorities.length || new Set(growthPriorities).size !== growthPriorities.length || growthPriorities.length > 3) return null
+
+  return {
+    version: 1,
+    step: value.step as PrepStepValue,
+    schoolLevel,
+    careerRange,
+    region,
+    growthPriorities,
+    growthPriorityOther: typeof value.growthPriorityOther === 'string' ? value.growthPriorityOther.trim().slice(0, 30) : '',
+    nickname: typeof value.nickname === 'string' ? value.nickname.trim().slice(0, 16) : '',
+  }
+}
+
+export function loadPrepDraft(deviceMode: DeviceMode = resolveDeviceMode(), options?: StorageOptions): StorageResult<PrepDraft | null> {
+  const backend = getStorageBackend(deviceMode, options)
+  const stored = read(backend, PREP_DRAFT_STORAGE_KEY)
+  if (!stored.ok || !stored.value) return stored.ok ? { ok: true, value: null } : { ...stored, value: null }
+
+  try {
+    const draft = validatePrepDraft(JSON.parse(stored.value))
+    if (draft) return { ok: true, value: draft }
+  } catch {
+    // Invalid browser data is discarded by falling back to a fresh Prep 1.
+  }
+  remove(backend, PREP_DRAFT_STORAGE_KEY)
+  return { ok: true, value: null }
+}
+
+export function savePrepDraft(draft: PrepDraft, deviceMode: DeviceMode = resolveDeviceMode(), options?: StorageOptions): StorageResult<PrepDraft> {
+  const result = write(getStorageBackend(deviceMode, options), PREP_DRAFT_STORAGE_KEY, JSON.stringify(draft))
+  return result.ok ? { ok: true, value: draft } : { ...result, value: draft }
+}
+
+export function clearPrepDraft(deviceMode: DeviceMode = resolveDeviceMode(), options?: StorageOptions): StorageResult<undefined> {
+  return remove(getStorageBackend(deviceMode, options), PREP_DRAFT_STORAGE_KEY)
 }
 
 export function loadJourney(deviceMode: DeviceMode = resolveDeviceMode(), options?: StorageOptions): StorageResult<Journey> {

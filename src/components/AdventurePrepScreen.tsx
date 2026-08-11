@@ -9,7 +9,7 @@ import {
 } from '../data/adventure'
 import { beginMainThemeReveal, noteAudioUserGesture } from '../lib/audioManager'
 import type { AudioSettings } from '../lib/audioController'
-import type { Profile } from '../lib/storage'
+import { loadPrepDraft, savePrepDraft, clearPrepDraft, type Profile, type PrepDraft } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
 import { CompassSeal, Icon } from './VisualPrimitives'
 import '../entry.css'
@@ -52,15 +52,18 @@ type AdventurePrepScreenProps = {
 }
 
 export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline, onComplete, onScreenChange }: AdventurePrepScreenProps) {
-  const [step, setStep] = useState<PrepStep>(1)
-  const [schoolLevel, setSchoolLevel] = useState<SchoolLevel | null>(initialProfile?.schoolLevel ?? null)
+  // A finished profile always wins; a draft only matters for a first-time run that got
+  // interrupted (refresh, dropped connection) before there was a profile to restore from.
+  const [draft] = useState<PrepDraft | null>(() => (initialProfile ? null : loadPrepDraft().value))
+  const [step, setStep] = useState<PrepStep>(draft?.step ?? 1)
+  const [schoolLevel, setSchoolLevel] = useState<SchoolLevel | null>(initialProfile?.schoolLevel ?? draft?.schoolLevel ?? null)
   const [schoolPreview, setSchoolPreview] = useState<SchoolLevel | null>(null)
-  const [careerRange, setCareerRange] = useState<CareerRange | null>(initialProfile?.careerRange ?? null)
+  const [careerRange, setCareerRange] = useState<CareerRange | null>(initialProfile?.careerRange ?? draft?.careerRange ?? null)
   const [careerPreview, setCareerPreview] = useState<CareerRange | null>(null)
-  const [region, setRegion] = useState<Region | null>(initialProfile?.region ?? null)
-  const [growthPriorities, setGrowthPriorities] = useState<GrowthPriority[]>(initialProfile?.growthPriorities ?? [])
-  const [otherText, setOtherText] = useState(initialProfile?.growthPriorityOther ?? '')
-  const [nickname, setNickname] = useState(initialProfile?.nickname ?? '')
+  const [region, setRegion] = useState<Region | null>(initialProfile?.region ?? draft?.region ?? null)
+  const [growthPriorities, setGrowthPriorities] = useState<GrowthPriority[]>(initialProfile?.growthPriorities ?? draft?.growthPriorities ?? [])
+  const [otherText, setOtherText] = useState(initialProfile?.growthPriorityOther ?? draft?.growthPriorityOther ?? '')
+  const [nickname, setNickname] = useState(initialProfile?.nickname ?? draft?.nickname ?? '')
   const [selectionMessage, setSelectionMessage] = useState('')
   const [loadingProgress, setLoadingProgress] = useState(4)
   const [loadingError, setLoadingError] = useState('')
@@ -74,6 +77,11 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   useEffect(() => {
     onScreenChange(step === 'nickname' || step === 'loading' ? step : `prep-${step}` as TunerScreen)
   }, [onScreenChange, step])
+
+  useEffect(() => {
+    if (step === 'loading') return
+    savePrepDraft({ version: 1, step, schoolLevel, careerRange, region, growthPriorities, growthPriorityOther: otherText, nickname })
+  }, [step, schoolLevel, careerRange, region, growthPriorities, otherText, nickname])
 
   useEffect(() => {
     if (step !== 'loading') return
@@ -148,6 +156,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
     setLoadingError('')
     setLoadingProgress(4)
     setStep('loading')
+    clearPrepDraft()
   }
 
   if (step === 'loading') {
