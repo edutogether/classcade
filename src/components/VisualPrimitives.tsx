@@ -34,23 +34,38 @@ export function Icon({ name, size = 22 }: { name: IconName; size?: number }) {
 }
 
 /**
- * Brand emblem. Kept as an <svg> wrapper rather than a plain <img> on purpose: about
- * twenty CSS rules across the app size this mark with `... svg { height/width }`
- * selectors, and swapping the element type would silently drop every one of them.
- * preserveAspectRatio keeps the wide emblem from being squashed into square slots.
+ * Small in-context ornament used in ~14 places (buttons, sidebars, thumbnails,
+ * progress rows). Stays a drawn SVG: at those sizes the detailed brand emblem reads as
+ * visual noise, and it inherits colour from its surroundings the way an icon should.
+ * The real emblem is ClasscadeEmblem, reserved for actual brand placements.
  */
 export function CompassSeal({ className = '' }: { className?: string }) {
-  // viewBox crops to the artwork's measured opaque bounds (x 320-1214, y 4-780). The
-  // source file carries 42% transparent padding across its width; without this crop the
-  // mark renders at roughly half size inside the app's square logo slots.
   return (
-    <svg className={className} viewBox="320 4 894 776" aria-hidden="true">
+    <svg className={className} viewBox="0 0 72 72" aria-hidden="true">
+      <circle cx="36" cy="36" r="31" fill="rgba(11,42,36,.86)" stroke="#d8b865" strokeWidth="2" />
+      <circle cx="36" cy="36" r="24" fill="none" stroke="#e7cf82" strokeOpacity=".7" />
+      <path d="m36 12 5.3 18.7L60 36l-18.7 5.3L36 60l-5.3-18.7L12 36l18.7-5.3L36 12Z" fill="#d8efcc" stroke="#e7cf82" strokeWidth="1.4" />
+      <path d="m36 20 2.8 13.2L52 36l-13.2 2.8L36 52l-2.8-13.2L20 36l13.2-2.8L36 20Z" fill="#3c8272" />
+      <circle cx="36" cy="36" r="4" fill="#f7e6a0" />
+    </svg>
+  )
+}
+
+/**
+ * The real brand emblem, for brand placements only (header lock-up).
+ * viewBox crops to the artwork's measured opaque bounds (x 320-1214, y 4-780): the
+ * source PNG carries 42% transparent padding across its width, so without the crop the
+ * mark renders at roughly half size in a square slot.
+ */
+export function ClasscadeEmblem({ className = '' }: { className?: string }) {
+  return (
+    <svg className={`classcade-emblem ${className}`} viewBox="320 4 894 776" aria-hidden="true">
       <image href={classcadeEmblem} x="0" y="0" width="1536" height="781" />
     </svg>
   )
 }
 
-/** Gold CLASSCADE wordmark; replaces the plain text the header used to render. */
+/** Gold CLASSCADE wordmark. */
 export function ClasscadeWordmark({ className = '' }: { className?: string }) {
   return <img className={`classcade-wordmark ${className}`} src={classcadeWordmark} alt="CLASSCADE" />
 }

@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode, RefObject } from 'react'
 import { BgmControl } from '../../../components/BgmControl'
 import { AudioToggleButton } from '../../../components/AudioToggleButton'
-import { CompassSeal, Icon } from '../../../components/VisualPrimitives'
+import { ClasscadeEmblem, ClasscadeWordmark, CompassSeal, Icon } from '../../../components/VisualPrimitives'
 import { JOURNEY_SCENE_ASSETS, type JourneySceneAsset } from '../../../data/sceneAssets'
 import { toggleAudioChannel } from '../../../lib/audioController'
 import type { JourneyAction, JourneyState } from '../journeyState'
@@ -34,7 +34,7 @@ type SceneFrameProps = SceneContext & {
 function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef, scene, onRequestHome }: Omit<SceneContext, 'notice'> & { scene: SceneName }) {
   return (
     <header className="journey-header">
-      <div className="logo-slot" aria-label="브랜드 로고"><CompassSeal /></div>
+      <div className="journey-brand" aria-label="브랜드 로고"><ClasscadeEmblem /><ClasscadeWordmark /></div>
       <div className="journey-header__actions">
         {scene !== 'start' && <nav className="journey-utility" aria-label="여정 제어">
           <button type="button" onClick={() => onAction({ type: 'PREVIOUS_STAGE' })} aria-label="이전 단계로"><span aria-hidden="true">←</span> 이전</button>
