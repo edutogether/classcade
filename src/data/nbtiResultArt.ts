@@ -10,5 +10,7 @@ for (const [path, url] of Object.entries(modules)) {
 }
 
 export function nbtiResultArt(mbti: string): string | undefined {
-  return byType[mbti]
+  /* Until all sixteen drawings exist, ESTJ's art stands in for every type — each new
+     nbti-result-<MBTI>.png dropped into the folder takes over its own type automatically. */
+  return byType[mbti] ?? byType.ESTJ
 }
