@@ -287,7 +287,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       <footer className="entry-prep__footer">
         {flat ? <>
           <button type="button" className="entry-button entry-button--back entry-button--flat" onClick={previousStep} disabled={step === 1}>← 이전 질문</button>
-          <button type="button" className="entry-button entry-button--next entry-button--flat" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button">다음 질문으로 <Icon name="arrow" size={20} /></button>
+          <button type="button" className="entry-button entry-button--next entry-button--flat" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button">다음 질문 <Icon name="arrow" size={20} /></button>
         </> : <>
           <button type="button" className="entry-button entry-button--back entry-nav-img" onClick={previousStep} aria-label="이전 질문"><img src={prepNavBack} alt="" aria-hidden="true" /></button>
           <button type="button" className="entry-button entry-button--next entry-nav-img" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로"><img src={canContinue ? prepNavCtaEnabled : prepNavCtaDisabled} alt="" aria-hidden="true" /></button>
