@@ -280,7 +280,8 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
             return <button key={option.value} className={`entry-growth-card ${selected ? 'is-selected' : ''}`} type="button" style={flat ? undefined : ({ '--frame-neutral': `url(${choiceFrameNeutral})`, '--frame-selected': `url(${choiceFrameSelected})` } as CSSProperties)} aria-pressed={selected} data-tune-id={`prep-4-option-${index + 1}`} onClick={() => toggleGrowthPriority(option.value)}><Icon name={growthIcons[index]} size={24} /><span>{option.label}</span>{selected && <i aria-hidden="true"><Icon name="check" size={15} /></i>}</button>
           })}
           {otherSelected && <label className="entry-growth-other"><input value={otherText} maxLength={30} placeholder="직접 입력해 주세요." aria-label="기타 항목 직접 입력" onChange={(event) => setOtherText(event.target.value.slice(0, 30))} /></label>}
-          <p className="entry-growth-message" aria-live="polite">{selectionMessage}</p>
+          {/* Selecting 기타 without typing silently disables the next button, so say why. */}
+          <p className="entry-growth-message" aria-live="polite">{selectionMessage || (otherSelected && !otherText.trim() ? '기타를 선택했어요 · 옆 칸에 직접 입력하면 다음으로 넘어갈 수 있어요.' : '')}</p>
         </div>}
       </section>
       <footer className="entry-prep__footer">
