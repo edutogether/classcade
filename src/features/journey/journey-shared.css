@@ -299,21 +299,27 @@
 .journey-scene--result:has(.journey-result--art) .journey-art__wash,
 .journey-scene--result:has(.journey-result--art) .journey-art__motes,
 .journey-scene--result:has(.journey-result--art) .journey-art__leaves { display: none; }
-.journey-result--art .journey-result__copy { backdrop-filter: none; background: none; border: 0; box-shadow: none; max-width: min(44vw, 720px); padding: 0; }
+.journey-result--art .journey-result__copy { backdrop-filter: none; background: none; border: 0; box-shadow: none; max-width: min(52vw, 900px); padding: 0; }
+/* The whole column rides higher on the art. */
+.journey-scene--result:has(.journey-result--art) .journey-scene__stage { align-items: start; padding-top: calc(clamp(62px, 8.3vh, 88px) + clamp(10px, 1.8vh, 22px)); }
 .journey-result--art .journey-kicker { color: #8a6b22; font-size: clamp(12px, .95vw, 17px); margin-bottom: clamp(14px, 2vh, 24px); }
 .journey-result--art .journey-result__eyebrow { color: #3c4a36; font-size: clamp(17px, 1.35vw, 25px); font-weight: 800; }
 .journey-result--art .journey-result__copy h1 { color: #1d4a33; font-size: clamp(46px, 4.4vw, 78px); letter-spacing: -.06em; margin: clamp(6px, 1vh, 12px) 0 clamp(16px, 2.4vh, 28px); text-shadow: 0 2px 18px rgba(255,255,255,.65), 0 1px 2px rgba(255,255,255,.5); }
 .journey-result--art .journey-result__badges { align-items: center; margin: 0 0 clamp(16px, 2.4vh, 28px); }
 .journey-result--art .journey-result__code { background: #1d4a33; border-color: #1d4a33; box-shadow: 0 4px 12px rgba(29,74,51,.3); color: #fdf6dc; }
 .journey-result--art .journey-result__strengths span { background: rgba(255,255,255,.78); border: 1px solid rgba(90,110,70,.34); box-shadow: 0 2px 8px rgba(60,70,40,.12); color: #2f3b28; }
-.journey-result--art .journey-result__description { color: #333f2d; font-size: clamp(15px, 1.2vw, 21px); font-weight: 700; line-height: 1.85; margin: 0 0 clamp(20px, 3vh, 34px); text-shadow: 0 1px 8px rgba(255,255,255,.5); }
-.journey-result--art .journey-result__directions span { background: rgba(255,255,255,.74); border: 1px solid rgba(90,110,70,.3); box-shadow: 0 2px 8px rgba(60,70,40,.1); }
-.journey-result--art .journey-result__directions small { color: #6b7b58; }
-.journey-result--art .journey-result__directions b { color: #20301e; }
-.journey-result--art .journey-result__caution { color: #4a4030; margin-top: clamp(18px, 2.6vh, 30px); }
-.journey-result--art .journey-result__caution b { color: #8a6b22; }
-.journey-result--art .journey-result__next { color: #2c5a3c; font-weight: 800; margin-top: clamp(14px, 2vh, 24px); }
-.journey-result--art .journey-result__disclaimer { color: #707a63; margin-top: clamp(10px, 1.6vh, 18px); }
+.journey-result--art .journey-result__description { color: #333f2d; font-size: clamp(14px, 1.15vw, 20px); font-weight: 700; line-height: 1.8; margin: 0 0 clamp(20px, 3vh, 34px); text-shadow: 0 1px 8px rgba(255,255,255,.5); }
+/* One unbroken line on desktop — the sentence is the type's whole pitch. Phones wrap. */
+@media (min-width: 701px) { .journey-result--art .journey-result__description { white-space: nowrap; } }
+/* Direction cards at double scale, stacked 2x2. */
+.journey-result--art .journey-result__directions { display: grid; gap: clamp(10px, 1vw, 16px); grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 620px; }
+.journey-result--art .journey-result__directions span { background: rgba(255,255,255,.76); border: 1px solid rgba(90,110,70,.32); border-radius: 10px; box-shadow: 0 3px 12px rgba(60,70,40,.14); display: grid; gap: 5px; padding: clamp(13px, 1.3vw, 20px) clamp(15px, 1.5vw, 24px); }
+.journey-result--art .journey-result__directions small { color: #6b7b58; font-size: clamp(12px, .95vw, 16px); font-weight: 800; }
+.journey-result--art .journey-result__directions b { color: #20301e; font-size: clamp(24px, 2vw, 36px); letter-spacing: -.04em; }
+.journey-result--art .journey-result__caution { background: rgba(255,255,255,.55); border-left: 4px solid #8a6b22; border-radius: 0 10px 10px 0; color: #43402e; font-size: clamp(14px, 1.05vw, 18px); line-height: 1.7; margin-top: clamp(18px, 2.6vh, 30px); padding: clamp(10px, 1.2vh, 15px) clamp(14px, 1.3vw, 20px); }
+.journey-result--art .journey-result__caution b { color: #8a6b22; font-size: clamp(12px, .95vw, 15px); letter-spacing: .08em; }
+.journey-result--art .journey-result__next { color: #2c5a3c; font-size: clamp(16px, 1.3vw, 23px); font-weight: 800; letter-spacing: -.03em; margin-top: clamp(16px, 2.2vh, 26px); }
+.journey-result--art .journey-result__disclaimer { color: #6e785f; font-size: clamp(12px, .95vw, 16px); line-height: 1.65; margin-top: clamp(10px, 1.6vh, 18px); }
 .journey-result--art .journey-result__actions { margin-top: clamp(24px, 3.6vh, 44px); }
 /* On the per-type art the painting's own character carries the reveal; the CSS lockup
    overlay just collided with him. */
