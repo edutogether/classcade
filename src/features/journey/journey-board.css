@@ -51,7 +51,7 @@
 /* The stage's generous side padding is for centred boards; this screen pins hard to the
    edges and rides higher than the other scenes. */
 @media (min-width: 1101px) {
-  .journey-scene--question .journey-scene__stage { padding-left: 10px; padding-right: 10px; padding-top: calc(clamp(62px, 8.3vh, 88px) + 14px); }
+  .journey-scene--question .journey-scene__stage { padding-left: clamp(72px, 6vw, 120px); padding-right: clamp(48px, 4vw, 80px); padding-top: calc(clamp(62px, 8.3vh, 88px) + 14px); }
 }
 /* The base .journey-panel centres itself with margin:auto; inside the split, auto margins
    would re-centre both boards and eat the edge-hugging this layout exists for. */
@@ -80,16 +80,17 @@
 
 .journey-question__copy { grid-column: 1; grid-row: 1; }
 
-/* The sidebar is now its own board (aside), no longer a grid column of the question. */
-.journey-question-split .journey-question__sidebar { align-self: stretch; max-width: none; overflow: hidden auto; }
+/* The sidebar is its own board (aside): height from its own content only — stretching it
+   to the question board's height left a long empty tail below the item slots. */
+.journey-question-split .journey-question__sidebar { align-self: flex-start; height: auto; max-width: none; overflow: visible; }
 
 /* Labeled skill/item slots: icon box with its name underneath. */
 .journey-question__sidebar-slots--labeled { align-items: start; }
 .journey-question__sidebar-slots--labeled figure { display: grid; gap: 5px; justify-items: center; margin: 0; }
 .journey-question__sidebar-slots--labeled figcaption { color: #5c4118; font-size: 11px; font-weight: 800; letter-spacing: -.04em; line-height: 1.2; text-align: center; white-space: nowrap; }
 
-/* Constant board size: the panel's height comes from the viewport, not from how long
-   this particular question's text happens to be — no grow/shrink between questions. */
+/* Constant board size: the same fixed height on every question — no grow/shrink between
+   questions. Small screens still cap at the viewport and scroll the body internally. */
 .journey-question-split > .journey-question { height: min(820px, calc((100svh - 96px) / var(--board-zoom, 1))); }
 
 /* Fully opaque player board — translucency over the busy backdrop hurt readability. */
