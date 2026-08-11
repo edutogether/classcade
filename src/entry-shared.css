@@ -169,6 +169,8 @@
 .entry-prep__header { align-items: center; display: flex; justify-content: space-between; }
 .entry-prep__brand { align-items: center; color: #57401d; display: flex; font-family: 'Gowun Batang', serif; font-size: clamp(11px, 1.1vw, 16px); font-weight: 700; gap: 12px; letter-spacing: .15em; }
 .entry-prep__brand svg { height: clamp(40px, 4vw, 59px); width: clamp(40px, 4vw, 59px); }
+/* Wordmark replaces the old letter-spaced text; height-driven so it scales with the seal. */
+.classcade-wordmark { display: block; height: clamp(15px, 1.5vw, 23px); object-fit: contain; width: auto; }
 
 .entry-progress { align-items: center; display: flex; gap: 13px; }
 .entry-progress b { background: linear-gradient(180deg, #263827, #102317); border: 1px solid #d6ad54; border-radius: 999px; box-shadow: inset 0 1px rgba(255,255,255,.25); color: #fff3c7; font-size: 13px; letter-spacing: .08em; padding: 8px 16px; }

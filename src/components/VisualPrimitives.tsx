@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react'
+import classcadeEmblem from '../assets/brand/classcade-emblem.png'
+import classcadeWordmark from '../assets/brand/classcade-wordmark.png'
 
 export type IconName = 'clock' | 'spark' | 'gamepad' | 'arrow' | 'music' | 'speaker' | 'chevron' | 'close' | 'edit' | 'reset' | 'check' | 'school' | 'career' | 'region' | 'leaf' | 'notebook' | 'share' | 'sprout' | 'lantern' | 'compass' | 'tree' | 'lock'
 
@@ -31,16 +33,26 @@ export function Icon({ name, size = 22 }: { name: IconName; size?: number }) {
   return <svg {...common}>{paths[name]}</svg>
 }
 
+/**
+ * Brand emblem. Kept as an <svg> wrapper rather than a plain <img> on purpose: about
+ * twenty CSS rules across the app size this mark with `... svg { height/width }`
+ * selectors, and swapping the element type would silently drop every one of them.
+ * preserveAspectRatio keeps the wide emblem from being squashed into square slots.
+ */
 export function CompassSeal({ className = '' }: { className?: string }) {
+  // viewBox crops to the artwork's measured opaque bounds (x 320-1214, y 4-780). The
+  // source file carries 42% transparent padding across its width; without this crop the
+  // mark renders at roughly half size inside the app's square logo slots.
   return (
-    <svg className={className} viewBox="0 0 72 72" aria-hidden="true">
-      <circle cx="36" cy="36" r="31" fill="rgba(11,42,36,.86)" stroke="#d8b865" strokeWidth="2" />
-      <circle cx="36" cy="36" r="24" fill="none" stroke="#e7cf82" strokeOpacity=".7" />
-      <path d="m36 12 5.3 18.7L60 36l-18.7 5.3L36 60l-5.3-18.7L12 36l18.7-5.3L36 12Z" fill="#d8efcc" stroke="#e7cf82" strokeWidth="1.4" />
-      <path d="m36 20 2.8 13.2L52 36l-13.2 2.8L36 52l-2.8-13.2L20 36l13.2-2.8L36 20Z" fill="#3c8272" />
-      <circle cx="36" cy="36" r="4" fill="#f7e6a0" />
+    <svg className={className} viewBox="320 4 894 776" aria-hidden="true">
+      <image href={classcadeEmblem} x="0" y="0" width="1536" height="781" />
     </svg>
   )
+}
+
+/** Gold CLASSCADE wordmark; replaces the plain text the header used to render. */
+export function ClasscadeWordmark({ className = '' }: { className?: string }) {
+  return <img className={`classcade-wordmark ${className}`} src={classcadeWordmark} alt="CLASSCADE" />
 }
 
 export function LogoSlot() {
