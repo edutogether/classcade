@@ -29,10 +29,10 @@ export function BgmControl({ enabled, volume, onToggle, onVolumeChange }: BgmCon
         <Icon name="music" size={20} />
         {!enabled && <span className="audio-toggle__slash" aria-hidden="true" />}
       </button>
+      {/* Hover reveals only the volume slider — the label row and on/off button made the
+          popover collide with the pill; on/off lives on the music icon itself. */}
       <div className={`bgm-control__panel ${panelOpen ? 'is-open' : ''}`} aria-label="배경음악 볼륨 패널">
-        <div><span>배경음악</span><output>{Math.round(volume * 100)}%</output></div>
         <input type="range" min="0" max="1" step="0.01" value={volume} aria-label="배경음악 볼륨 조절" onChange={(event) => onVolumeChange(Number(event.target.value))} />
-        <button type="button" onClick={onToggle}>{enabled ? 'BGM 끄기' : 'BGM 켜기'}</button>
       </div>
     </div>
   )

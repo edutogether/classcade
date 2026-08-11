@@ -27,8 +27,9 @@ describe('completion recommendation and sharing contract', () => {
     const relationship = rankVideos(['협력', '전원 참여', '관계'], { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' })
     const calmIndividual = rankVideos(['개별 참여', '차분한 몰입', '자리 활동'], { schoolLevel: 'elementary', size: 'small', time: 'standard', space: 'seated', mood: 'calm' })
     const strategyYoung = rankVideos(['전략형', '도전과 전략'], { schoolLevel: 'elementary', size: 'small', time: 'standard', space: 'seated', mood: 'challenge' })
-    expect(relationship[0]?.video.id).toBe('emAwxLcKBes')
-    expect(calmIndividual[0]?.video.id).toBe('KjHDS59tGS4')
+    /* 2026-08-12: TVIEW 채널로 판명된 5건이 비공개되어 같이교육 3건만 랭킹 대상이다. */
+    expect(relationship[0]?.video.id).toBe('QcBhWQcgZ1M')
+    expect(calmIndividual[0]?.video.id).toBe('HLx2aITlp38')
     expect(strategyYoung[0]?.video.id).toBe('HLx2aITlp38')
     for (const entries of [relationship, calmIndividual, strategyYoung]) {
       expect(entries.length).toBeGreaterThan(0); expect(entries.length).toBeLessThanOrEqual(3)
