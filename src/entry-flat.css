@@ -193,7 +193,9 @@
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  padding: clamp(14px, 1.9vh, 24px) 0 clamp(14px, 1.9vh, 24px);
+  /* Bottom matches the question-head's own bottom margin so the gap above the cards and
+     the gap below them (down to the footer rule) read as the same size. */
+  padding: clamp(14px, 1.9vh, 24px) 0 clamp(10px, 1.4vh, 18px);
 }
 /* Centred in the leftover space, but never opening a gap larger than this - otherwise
    the sparse pages push the cards far from their question. */
