@@ -10,8 +10,10 @@
 /* Header cluster — one translucent glass pill holding bgm button, song title, equalizer,
    and the profile trigger, mirroring Be a Googler's desktop cluster shape. */
 .journey-cluster { align-items: center; backdrop-filter: blur(22px) saturate(1.08); background: linear-gradient(128deg, rgba(20,42,26,.62), rgba(8,26,15,.5)); border: 1px solid rgba(255,244,204,.34); border-radius: 34px; box-shadow: 0 10px 24px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,252,230,.22); display: flex; gap: 10px; min-height: 58px; padding: 0 8px 0 8px; }
-.journey-song { color: #fff3c6; display: block; flex: 0 1 auto; font-size: clamp(12px, .72vw, 14px); font-weight: 700; letter-spacing: -.02em; line-height: 1.4; mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent); max-width: clamp(150px, 14vw, 240px); min-width: 0; overflow: hidden; position: relative; white-space: nowrap; }
-.journey-song__track { animation: journey-song-marquee 16s linear infinite; display: flex; width: max-content; }
+/* Window is wider than the title, so the whole line reads at once and then drifts —
+   a narrower window kept parking mid-word ("...고의 오후"), which read as broken. */
+.journey-song { color: #fff3c6; display: block; flex: 0 1 auto; font-size: clamp(12px, .72vw, 14px); font-weight: 700; letter-spacing: -.02em; line-height: 1.4; mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); max-width: clamp(240px, 19vw, 340px); min-width: 0; overflow: hidden; position: relative; white-space: nowrap; }
+.journey-song__track { animation: journey-song-marquee 20s linear infinite; display: flex; width: max-content; }
 .journey-song__track > span { flex: 0 0 auto; padding-right: 8.5em; }
 @keyframes journey-song-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .journey-song__track { animation: none; } .journey-song__track > span:last-child { display: none; } }
@@ -291,6 +293,30 @@
 }
 
 /* Firebase pairing remains inside the existing result/start scenes, not a separate generic modal. */
+/* Desktop pairing: gate card left, personalised video panel right on its own modal
+   board — two videos stacked. Aligned button column inside the gate. */
+@media (min-width: 701px) {
+  .pairing-mobile-flow { align-items: center; display: flex; gap: clamp(24px, 4vw, 90px); justify-content: space-between; width: min(94vw, 1460px); }
+  .pairing-mobile-flow .pairing-gate { flex: 0 1 560px; margin: 0; }
+  .pairing-waiting { display: block; flex: 0 0 clamp(330px, 28vw, 440px); }
+  .pairing-waiting > section { background: linear-gradient(160deg, rgba(255,251,232,.95), rgba(228,203,140,.92)); border: 1px solid rgba(123,82,27,.42); border-radius: 6px; box-shadow: inset 0 1px rgba(255,255,255,.6), 0 20px 46px rgba(0,0,0,.42); color: #402e18; padding: clamp(20px, 1.9vw, 30px); }
+  .pairing-waiting .journey-kicker { color: #8c672a; margin-bottom: 6px; }
+  .pairing-waiting h2 { font-family: 'Gowun Batang', serif; font-size: clamp(21px, 1.7vw, 27px); letter-spacing: -.06em; line-height: 1.15; margin: 0 0 8px; }
+  .pairing-waiting > section > p { font-size: clamp(12px, .92vw, 14px); font-weight: 700; line-height: 1.6; margin: 0; }
+  .pairing-videos { display: grid; gap: 13px; grid-template-columns: 1fr; margin-top: 15px; }
+  .pairing-videos a { background: rgba(255,250,224,.75); border: 1px solid rgba(113,76,25,.34); border-radius: 9px; color: #3e2d18; display: grid; gap: 9px; padding: 9px; text-decoration: none; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
+  .pairing-videos a:hover { border-color: #a9782c; box-shadow: 0 8px 18px rgba(69,42,12,.24); transform: translateY(-2px); }
+  .pairing-videos img { aspect-ratio: 16 / 9; border-radius: 6px; height: auto; object-fit: cover; width: 100%; }
+  .pairing-videos__thumb-fallback { align-items: center; aspect-ratio: 16 / 9; background: rgba(113,76,25,.14); border-radius: 6px; color: #71531e; display: flex; justify-content: center; width: 100%; }
+  .pairing-videos span { display: grid; gap: 3px; }
+  .pairing-videos b { font-size: clamp(13px, 1vw, 15px); line-height: 1.3; }
+  .pairing-videos small { font-size: clamp(10px, .82vw, 12px); line-height: 1.4; }
+  .pairing-videos em { color: #28663d; font-size: clamp(10px, .82vw, 12px); font-style: normal; font-weight: 900; }
+  /* One aligned column: primary on top, both secondaries the same size beneath it. */
+  .pairing-gate .journey-button { margin: 12px auto 0; max-width: 430px; min-width: 0; width: 100%; }
+  .pairing-gate .journey-button--secondary { min-height: 52px; }
+}
+
 .pairing-gate,.pairing-entry{background:linear-gradient(145deg,rgba(12,39,27,.93),rgba(5,17,12,.94));border:1px solid rgba(238,204,108,.62);box-shadow:inset 0 1px rgba(255,255,255,.14),0 24px 60px rgba(0,0,0,.42);color:#fff5d0;max-width:540px;padding:clamp(28px,4vw,52px);position:relative;text-align:center;z-index:2}.pairing-gate{margin:7vh 0 0 8vw}.pairing-gate>svg{color:#edcf74;height:58px;margin:7px auto;width:58px}.pairing-gate h1,.pairing-entry h1{font-family:var(--font-display,serif);font-size:clamp(28px,3vw,43px);line-height:1.1;margin:10px 0}.pairing-gate>p,.pairing-entry>p{color:#e3dbbf;line-height:1.75}.pairing-gate__code{color:#ffe79b;display:block;font-family:ui-monospace,monospace;font-size:clamp(42px,6vw,68px);font-weight:900;letter-spacing:.18em;margin:20px 0 7px;padding-left:.18em;text-shadow:0 0 18px rgba(234,194,77,.34)}.pairing-gate__timer{font-size:14px}.pairing-gate__timer b{color:#f5d271}.pairing-gate__status,.pairing-entry__status{font-size:14px;min-height:24px}.is-expired,.is-invalid,.is-used,.is-network_error{color:#ffc6a1}.is-connected{color:#a8f2b0}.pairing-gate .journey-button,.pairing-entry .journey-button{margin:10px auto 0;max-width:430px}.pairing-entry{margin:12vh 0 0 9vw;text-align:left}.pairing-entry label{display:grid;gap:8px;margin:22px 0}.pairing-entry label span{color:#f7d978;font-size:13px;font-weight:800}.pairing-entry input{background:rgba(1,13,8,.72);border:1px solid rgba(238,204,108,.65);border-radius:9px;box-sizing:border-box;color:#fff4c5;font-family:ui-monospace,monospace;font-size:34px;font-weight:900;letter-spacing:.28em;min-height:58px;padding:0 18px;text-align:center;width:100%}.pairing-entry section{border-top:1px solid rgba(237,207,115,.3);margin-top:24px;padding-top:18px}.pairing-entry h2{font-size:17px}.pairing-entry__back{background:none;border:0;color:#ead48a;cursor:pointer;margin-top:22px;min-height:44px}.pairing-entry__back svg{transform:rotate(180deg);vertical-align:middle}@media (max-width:700px){.pairing-gate,.pairing-entry{box-sizing:border-box;margin:100px 16px 24px;max-width:calc(100vw - 32px);padding:26px 20px}.pairing-gate h1,.pairing-entry h1{font-size:29px}.pairing-entry input{font-size:29px}.pairing-gate__code{font-size:46px}}
 
 /* The mobile master plates remain artwork only; live text and controls retain the
