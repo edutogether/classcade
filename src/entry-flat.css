@@ -400,3 +400,16 @@
   .entry-prep--flat .entry-prep__question-head h2 { white-space: normal; }
   .entry-prep--flat .entry-prep__question-helper { display: block; margin: 6px 0 0; text-align: left; white-space: normal; }
 }
+
+/* --- Landscape phones (booth fallback): short viewport, desktop width -----------------
+   The fixed panel min-height was sized for tall screens; on a 390px-tall landscape phone
+   it left a huge empty band and pushed the cards below the fold. Content-fit instead. */
+@media (min-width: 701px) and (max-height: 520px) {
+  .entry-prep--flat { --prep-gap: 10px; }
+  .entry-prep--flat .entry-prep__panel { min-height: 0; }
+  .entry-prep--flat .entry-prep__intro h1 { font-size: 34px; }
+  .entry-prep--flat .entry-prep__intro { margin-top: 0; padding-bottom: 6px; }
+  .entry-prep--flat .entry-flat-card { min-height: 54px; }
+  .entry-prep--flat .entry-nav-img { width: 176px; }
+  .entry-prep--flat .entry-nav-img--final { width: 200px; }
+}

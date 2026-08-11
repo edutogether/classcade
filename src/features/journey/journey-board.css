@@ -175,3 +175,28 @@
   .journey-question-split { display: block; }
   .journey-question-split > .journey-question__sidebar { margin-top: 14px; }
 }
+
+/* Landscape phones: compress the question board so the choice cards peek without
+   scrolling the board body. */
+@media (min-width: 701px) and (max-height: 520px) {
+  .journey-scene--question .journey-scene__stage { padding-top: calc(clamp(52px, 7vh, 66px) + 4px); }
+  .journey-question-split > .journey-question { height: calc(100svh - 76px); }
+  .journey-scene .journey-panel { padding: 12px 18px; }
+  .journey-question__body { gap: 8px; padding: 8px 0 8px; }
+  .journey-question-split .journey-question__copy h1 { font-size: 19px; }
+  .journey-question-split .journey-question__copy > p:last-of-type { margin-top: 5px; }
+  .journey-question-split .journey-question__growth { margin-top: 8px; }
+  .journey-question-split .journey-question__choices .journey-choice { min-height: 0; padding: 8px 12px; }
+  .journey-question-split .journey-question__choices .journey-choice b { font-size: 14px; }
+  .journey-question-split .journey-question__choices .journey-choice small { font-size: 11px; margin-top: 3px; }
+  .journey-panel__footer { padding-top: 8px; }
+  .journey-nav-img { width: 150px; }
+  .journey-question-split > .journey-question__sidebar { display: none; }
+}
+@media (min-width: 701px) and (max-height: 520px) {
+  /* Give the choice cards the room: drop the disclaimer, tighten every band above them. */
+  .journey-panel__fineprint--above { display: none; }
+  .journey-question-split .journey-question__growth { margin-top: 5px; }
+  .journey-question > .journey-panel__topline { padding-bottom: 6px; }
+  .journey-question .journey-kicker { margin-bottom: 6px; }
+}
