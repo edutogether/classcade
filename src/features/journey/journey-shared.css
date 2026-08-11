@@ -293,6 +293,13 @@
 }
 
 /* Firebase pairing remains inside the existing result/start scenes, not a separate generic modal. */
+/* Per-type result backdrops are bright daylight paintings; the copy needs its own dark
+   glass slab to stay readable, and the shared dark wash would muddy the art. */
+.journey-result--art .journey-result__copy { backdrop-filter: blur(14px) saturate(1.05); background: linear-gradient(160deg, rgba(7,22,13,.78), rgba(4,14,8,.72)); border: 1px solid rgba(255,244,204,.22); border-radius: 14px; box-shadow: 0 22px 55px rgba(0,0,0,.4); padding: clamp(22px, 2.4vw, 40px); }
+.journey-scene--result:has(.journey-result--art) .journey-art__wash,
+.journey-scene--result:has(.journey-result--art) .journey-art__motes,
+.journey-scene--result:has(.journey-result--art) .journey-art__leaves { display: none; }
+
 /* Desktop pairing: gate card left, personalised video panel right on its own modal
    board — two videos stacked. Aligned button column inside the gate. */
 @media (min-width: 701px) {
@@ -312,9 +319,19 @@
   .pairing-videos b { font-size: clamp(13px, 1vw, 15px); line-height: 1.3; }
   .pairing-videos small { font-size: clamp(10px, .82vw, 12px); line-height: 1.4; }
   .pairing-videos em { color: #28663d; font-size: clamp(10px, .82vw, 12px); font-style: normal; font-weight: 900; }
-  /* One aligned column: primary on top, both secondaries the same size beneath it. */
+  /* Primary full width; the two low-stakes buttons share one slim row beneath it. */
   .pairing-gate .journey-button { margin: 12px auto 0; max-width: 430px; min-width: 0; width: 100%; }
-  .pairing-gate .journey-button--secondary { min-height: 52px; }
+  .pairing-gate__row { display: flex; gap: 10px; margin: 10px auto 0; max-width: 430px; }
+  .pairing-gate__row .journey-button--secondary { flex: 1 1 0; font-size: 12.5px; margin: 0; min-height: 44px; padding: 0 8px; }
+  /* The stacked brand lockup replaces the old compass orb at the top of the gate. */
+  .pairing-gate .classcade-lockup, .pairing-gate > svg { display: block; height: auto; margin: 8px auto 2px; }
+  .pairing-gate img, .pairing-gate > svg { max-height: 128px; }
+  .pairing-gate .classcade-lockup img { display: block; height: auto; margin: 0 auto; max-height: 128px; width: auto; }
+  /* Soft play-button overlay: the thumbnail should read as pressable. */
+  .pairing-videos__thumb { border-radius: 6px; display: block; overflow: hidden; position: relative; }
+  .pairing-videos__thumb::after { background: radial-gradient(circle, rgba(10,20,14,.55) 0 58%, transparent 62%); border-radius: 50%; content: ''; height: 52px; left: 50%; opacity: .82; position: absolute; top: 50%; transform: translate(-50%, -50%); transition: opacity .2s ease, scale .2s ease; width: 52px; }
+  .pairing-videos__thumb::before { border-bottom: 11px solid transparent; border-left: 18px solid rgba(255,250,230,.95); border-top: 11px solid transparent; content: ''; left: calc(50% - 6px); position: absolute; top: 50%; transform: translateY(-50%); z-index: 1; }
+  .pairing-videos a:hover .pairing-videos__thumb::after { opacity: 1; scale: 1.08; }
 }
 
 .pairing-gate,.pairing-entry{background:linear-gradient(145deg,rgba(12,39,27,.93),rgba(5,17,12,.94));border:1px solid rgba(238,204,108,.62);box-shadow:inset 0 1px rgba(255,255,255,.14),0 24px 60px rgba(0,0,0,.42);color:#fff5d0;max-width:540px;padding:clamp(28px,4vw,52px);position:relative;text-align:center;z-index:2}.pairing-gate{margin:7vh 0 0 8vw}.pairing-gate>svg{color:#edcf74;height:58px;margin:7px auto;width:58px}.pairing-gate h1,.pairing-entry h1{font-family:var(--font-display,serif);font-size:clamp(28px,3vw,43px);line-height:1.1;margin:10px 0}.pairing-gate>p,.pairing-entry>p{color:#e3dbbf;line-height:1.75}.pairing-gate__code{color:#ffe79b;display:block;font-family:ui-monospace,monospace;font-size:clamp(42px,6vw,68px);font-weight:900;letter-spacing:.18em;margin:20px 0 7px;padding-left:.18em;text-shadow:0 0 18px rgba(234,194,77,.34)}.pairing-gate__timer{font-size:14px}.pairing-gate__timer b{color:#f5d271}.pairing-gate__status,.pairing-entry__status{font-size:14px;min-height:24px}.is-expired,.is-invalid,.is-used,.is-network_error{color:#ffc6a1}.is-connected{color:#a8f2b0}.pairing-gate .journey-button,.pairing-entry .journey-button{margin:10px auto 0;max-width:430px}.pairing-entry{margin:12vh 0 0 9vw;text-align:left}.pairing-entry label{display:grid;gap:8px;margin:22px 0}.pairing-entry label span{color:#f7d978;font-size:13px;font-weight:800}.pairing-entry input{background:rgba(1,13,8,.72);border:1px solid rgba(238,204,108,.65);border-radius:9px;box-sizing:border-box;color:#fff4c5;font-family:ui-monospace,monospace;font-size:34px;font-weight:900;letter-spacing:.28em;min-height:58px;padding:0 18px;text-align:center;width:100%}.pairing-entry section{border-top:1px solid rgba(237,207,115,.3);margin-top:24px;padding-top:18px}.pairing-entry h2{font-size:17px}.pairing-entry__back{background:none;border:0;color:#ead48a;cursor:pointer;margin-top:22px;min-height:44px}.pairing-entry__back svg{transform:rotate(180deg);vertical-align:middle}@media (max-width:700px){.pairing-gate,.pairing-entry{box-sizing:border-box;margin:100px 16px 24px;max-width:calc(100vw - 32px);padding:26px 20px}.pairing-gate h1,.pairing-entry h1{font-size:29px}.pairing-entry input{font-size:29px}.pairing-gate__code{font-size:46px}}

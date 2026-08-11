@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Profile } from '../../lib/storage'
-import { CompassSeal, Icon } from '../../components/VisualPrimitives'
+import { ClasscadeLockup, CompassSeal, Icon } from '../../components/VisualPrimitives'
 import { PrimaryButton, SceneFrame, SecondaryButton, type JourneySceneProps } from '../journey/components/SceneFrame'
 import { FirestorePairingStore, watchPairing } from './firestorePairingStore'
 import { createPairingPayload, issuePairingCode, type PairingPayload, type PairingStatus } from './pairingContract'
@@ -14,7 +14,9 @@ function statusCopy(status: PairingStatus) { return ({ issuing: '연결 문을 �
 
 function PairingVideoThumb({ src }: { src?: string }) {
   const [failed, setFailed] = useState(!src)
-  return failed ? <span className="pairing-videos__thumb-fallback" aria-hidden="true"><CompassSeal /></span> : <img src={src} alt="" onError={() => setFailed(true)} />
+  if (failed) return <span className="pairing-videos__thumb-fallback" aria-hidden="true"><CompassSeal /></span>
+  /* The wrapper carries a soft play-button overlay so the thumbnail reads as pressable. */
+  return <span className="pairing-videos__thumb"><img src={src} alt="" onError={() => setFailed(true)} /></span>
 }
 
 function MobileWaitingContent({ directions }: { directions: readonly NbtiDirection[] }) {
@@ -27,7 +29,7 @@ function MobileWaitingContent({ directions }: { directions: readonly NbtiDirecti
     const fill = CLASSCADE_VIDEO_CATALOG.filter((video) => video.published && !seen.has(video.id))
     return [...ranked, ...fill].slice(0, 2)
   }, [directions])
-  return <aside className="pairing-waiting" aria-label="기다리는 동안 추천 영상"><section><p className="journey-kicker">WAITING BONUS</p><h2>기다리는 동안 둘러보세요 ✨</h2><p>나의 교실 플레이 성향에 맞춘 같이교육의 짧은 활동 영상이에요. 코드는 그대로 유지됩니다.</p><div className="pairing-videos">{videos.map((video) => <a key={video.id} href={video.youtubeUrl} target="_blank" rel="noreferrer"><PairingVideoThumb src={video.thumbnailUrl} /><span><b>{video.title}</b><small>{video.shortDescription}</small><em>같이교육 영상 열기 ↗</em></span></a>)}</div></section></aside>
+  return <aside className="pairing-waiting" aria-label="기다리는 동안 추천 영상"><section><p className="journey-kicker">WAITING BONUS</p><h2>기다리는 동안 둘러보세요 ✨</h2><p>나의 교실 플레이 성향에 맞춘 같이교육의 짧은 활동 영상이에요.<br />코드는 그대로 유지됩니다.</p><div className="pairing-videos">{videos.map((video) => <a key={video.id} href={video.youtubeUrl} target="_blank" rel="noreferrer"><PairingVideoThumb src={video.thumbnailUrl} /><span><b>{video.title}</b><small>{video.shortDescription}</small><em>같이교육 영상 열기 ↗</em></span></a>)}</div></section></aside>
 }
 
 export function PairingScene({ state, profile, journeyId, onBack, ...sceneProps }: JourneySceneProps & { profile: Profile; journeyId: string; onBack: () => void }) {
@@ -58,7 +60,7 @@ export function PairingScene({ state, profile, journeyId, onBack, ...sceneProps 
   }, [activeCode])
   const result = getProvisionalResult(state.resultCode)
   return <SceneFrame scene="result" state={state} {...sceneProps}>
-    <div className="pairing-mobile-flow journey-enter"><div className="pairing-gate" data-tune-id="pairing-mobile-gate"><p className="journey-kicker">✦ NOTEBOOK LINK ✦</p><CompassSeal /><h1>이제 노트북으로 이동해주세요</h1><p><b>{result.title}</b> 결과가 준비되었습니다. 이 코드를 CLASSCADE 노트북에 입력하면 우리 반 게임 만들기가 이어집니다.</p><output className="pairing-gate__code" aria-label={`연결 코드 ${record?.code?.split('').join(' ') ?? ''}`}>{record?.code ? `${record.code.slice(0, 3)} ${record.code.slice(3)}` : '··· ···'}</output><p className="pairing-gate__timer">남은 시간 <b>{Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}</b></p><p className={`pairing-gate__status is-${status}`} aria-live="polite">{statusCopy(status)}</p><PrimaryButton onClick={create} disabled={status === 'issuing'}>{status === 'expired' || status === 'network_error' ? '새 코드 만들기' : record ? '새 코드 발급' : '연결 문 여는 중'}</PrimaryButton><SecondaryButton onClick={onBack}>결과로 돌아가기</SecondaryButton><SecondaryButton onClick={() => sceneProps.onRequestHome?.()}>처음으로</SecondaryButton></div><MobileWaitingContent directions={result.directions} /></div>
+    <div className="pairing-mobile-flow journey-enter"><div className="pairing-gate" data-tune-id="pairing-mobile-gate"><p className="journey-kicker">✦ NOTEBOOK LINK ✦</p><ClasscadeLockup /><h1>이제 노트북으로 이동해주세요</h1><p><b>{result.title}</b> 결과가 준비되었습니다. 이 코드를 CLASSCADE 노트북에 입력하면 우리 반 게임 만들기가 이어집니다.</p><output className="pairing-gate__code" aria-label={`연결 코드 ${record?.code?.split('').join(' ') ?? ''}`}>{record?.code ? `${record.code.slice(0, 3)} ${record.code.slice(3)}` : '··· ···'}</output><p className="pairing-gate__timer">남은 시간 <b>{Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}</b></p><p className={`pairing-gate__status is-${status}`} aria-live="polite">{statusCopy(status)}</p><PrimaryButton onClick={create} disabled={status === 'issuing'}>{status === 'expired' || status === 'network_error' ? '새 코드 만들기' : record ? '새 코드 발급' : '연결 문 여는 중'}</PrimaryButton><div className="pairing-gate__row"><SecondaryButton onClick={onBack}>결과로 돌아가기</SecondaryButton><SecondaryButton onClick={() => { onBack(); sceneProps.onAction({ type: 'OPEN_GAME_INTRO' }) }}>이 기기에서 이어하기</SecondaryButton></div></div><MobileWaitingContent directions={result.directions} /></div>
   </SceneFrame>
 }
 
