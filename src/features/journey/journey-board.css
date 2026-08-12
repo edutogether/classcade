@@ -1,0 +1,202 @@
+/* One shared board.
+   Phase 1 (prep) and phase 2 (NBTI questions / game builder) previously used two
+   different panel widths, and the question screen split its board into three columns
+   (copy : choices : sidebar). That left the choice column about 154px wide, so a 29px
+   Korean sentence wrapped to three characters per line. The board width now comes from
+   a single --classcade-board token shared with the prep screens, and the choices take
+   the full content column instead of a third of it. */
+
+.journey-panel {
+  max-width: none;
+  width: var(--classcade-board, min(94vw, 1180px));
+  zoom: var(--board-zoom, 1);
+}
+
+/* Nothing may be cut off at any resolution: the board scrolls internally rather than
+   clipping when a viewport is too short for its content. svh is measured before zoom,
+   so the height budget is divided by the zoom factor. */
+.journey-scene .journey-panel {
+  max-height: calc((100svh - 96px) / var(--board-zoom, 1));
+  overflow: hidden auto;
+}
+
+/* The footer lives inside the board and never scrolls away: only the question body
+   scrolls when a viewport is too short. Chasing this with height breakpoints alone left
+   "다음 질문으로" below the fold on 1280x720 and 1600x900. */
+.journey-panel.journey-question {
+  display: flex;
+  flex-direction: column;
+  max-height: calc((100svh - 96px) / var(--board-zoom, 1));
+  overflow: hidden;
+}
+
+.journey-question > .journey-panel__topline,
+.journey-question > .journey-panel__footer,
+.journey-question > .journey-panel__fineprint { flex: 0 0 auto; }
+
+/* Two boards side by side with an open gap: the backdrop's centre subject stays
+   visible between the question board and the player board. The wrapper owns the
+   shared board width and zoom; the panels inside size by flex, not by the token. */
+.journey-question-split {
+  align-items: stretch;
+  display: flex;
+  gap: clamp(24px, 4vw, 90px);
+  justify-content: space-between;
+  /* Full stage width, hard against both edges: the question board hugs the left and the
+     player board hugs the right, leaving the backdrop's subject open between them.
+     No zoom here — at 1.32 the zoomed width would overflow the viewport. */
+  width: 100%;
+  zoom: 1;
+}
+/* The stage's generous side padding is for centred boards; this screen pins hard to the
+   edges and rides higher than the other scenes. */
+@media (min-width: 1101px) {
+  .journey-scene--question .journey-scene__stage { padding-left: clamp(72px, 6vw, 120px); padding-right: clamp(48px, 4vw, 80px); padding-top: calc(clamp(62px, 8.3vh, 88px) + 4px); }
+}
+/* The base .journey-panel centres itself with margin:auto; inside the split, auto margins
+   would re-centre both boards and eat the edge-hugging this layout exists for. */
+.journey-question-split > .journey-panel { margin: 0; width: auto; zoom: 1; }
+.journey-question-split > .journey-question { flex: 0 1 850px; min-width: 0; }
+/* Rides high on the right, level with the backdrop character's eyeline, instead of
+   stretching to the question board's full height. */
+.journey-question-split > .journey-question__sidebar { align-self: flex-start; flex: 0 0 clamp(240px, 17.5vw, 300px); margin-top: 0; }
+
+/* Compact type so the left board fits common laptop heights without its inner scrollbar. */
+.journey-question-split .journey-question__copy h1 { font-size: clamp(21px, 1.75vw, 29px); }
+.journey-question-split .journey-question__copy > p:last-of-type { font-size: clamp(11px, .85vw, 13px); }
+.journey-question-split .journey-question__choices .journey-choice b { font-size: clamp(15px, 1.15vw, 20px); }
+.journey-question-split .journey-question__choices .journey-choice small { font-size: clamp(11px, .85vw, 13px); }
+.journey-question-split .journey-question__choices .journey-choice { padding: clamp(12px, 1.1vw, 18px) clamp(14px, 1.3vw, 22px); }
+.journey-question-split .journey-question__body { padding: clamp(12px, 1.4vw, 22px) 0 12px; }
+
+.journey-question__body {
+  align-items: start;
+  flex: 1 1 auto;
+  grid-template-columns: 1fr;
+  min-height: 0;
+  overflow-y: auto;
+  padding: clamp(18px, 2.2vw, 34px) 0 20px;
+}
+
+.journey-question__copy { grid-column: 1; grid-row: 1; }
+
+/* The sidebar is its own board (aside): height from its own content only — stretching it
+   to the question board's height left a long empty tail below the item slots. */
+.journey-question-split .journey-question__sidebar { align-self: flex-start; height: auto; max-width: none; overflow: visible; }
+
+/* Labeled skill/item slots: icon box with its name underneath. */
+.journey-question__sidebar-slots--labeled { align-items: start; }
+.journey-question__sidebar-slots--labeled figure { display: grid; gap: 5px; justify-items: center; margin: 0; }
+.journey-question__sidebar-slots--labeled figcaption { color: #5c4118; font-size: 11px; font-weight: 800; letter-spacing: -.04em; line-height: 1.2; text-align: center; white-space: nowrap; }
+
+/* Constant board size: the same fixed height on every question — no grow/shrink between
+   questions, trimmed so no dead band is left under the nav row. Small screens still cap
+   at the viewport and scroll the body internally. */
+.journey-question-split > .journey-question { height: min(820px, calc(100svh - 108px)); }
+
+/* Disclaimer rides directly above the choice cards instead of below the footer.
+   The body grid pins choices to row 2, so the fineprint must claim row 2 itself and
+   push the choices to row 3 — auto-placement would drop it BELOW them. */
+.journey-panel__fineprint--above { grid-column: 1; grid-row: 2; margin: 0 0 2px; text-align: left; }
+.journey-question-split .journey-question__choices { grid-row: 3; }
+
+/* Growth meter runs the full content width, reads as a real bar, and carries the brand
+   emblem instead of the generic compass. */
+.journey-question-split .journey-question__growth { font-size: 12px; gap: 9px; max-width: none; }
+.journey-question-split .journey-question__growth-track { height: 12px; }
+.journey-question-split .journey-question__growth .classcade-emblem { flex: 0 0 auto; height: 30px; width: 30px; }
+
+/* The parchment frame's painted border needs clearance — without the extra padding the
+   slot labels and progress bar sit on top of the frame art. Also pulled well off the
+   right edge toward the centre. */
+.journey-question-split > .journey-question__sidebar { margin-right: clamp(80px, 11vw, 250px); margin-top: clamp(-52px, -4.5vh, -24px); padding: clamp(22px, 1.9vw, 34px) clamp(20px, 1.7vw, 30px); }
+
+/* Fully opaque player board — translucency over the busy backdrop hurt readability. */
+.journey-question-split > .journey-question__sidebar { background: linear-gradient(160deg, #fffbe8, #e9d3a0); }
+
+/* The drawn nav plaques, sized like the prep flow's. */
+.journey-nav-img { background: none; border: 0; cursor: pointer; flex: 0 0 auto; padding: 0; width: clamp(180px, 15vw, 236px); }
+.journey-nav-img img { display: block; height: auto; width: 100%; }
+.journey-nav-img:disabled { cursor: default; }
+.journey-nav-img:not(:disabled):hover img, .journey-nav-img:focus-visible img { filter: brightness(1.09); }
+
+/* Stacked full-width choices. Side-by-side halves of an already narrow column were
+   what forced the three-characters-per-line wrapping. */
+.journey-question__choices {
+  grid-column: 1;
+  grid-row: 2;
+  grid-template-columns: 1fr;
+}
+
+.journey-question__choices .journey-choice {
+  min-height: 0;
+  padding: clamp(16px, 1.5vw, 24px) clamp(18px, 1.7vw, 28px);
+}
+
+.journey-question__choices .journey-choice b {
+  font-size: clamp(18px, 1.42vw, 26px);
+  max-width: none;
+  padding-right: 46px;
+}
+
+.journey-question__choices .journey-choice small {
+  font-size: clamp(12px, .95vw, 15px);
+  margin-top: 8px;
+  max-width: none;
+  padding-right: 46px;
+}
+
+.journey-question__choices .journey-choice__number { margin-bottom: 8px; }
+.journey-question__choices .journey-choice i { bottom: auto; top: 50%; transform: translateY(-50%); }
+
+/* Laptop-height screens (1366x768 and friends): without this the footer buttons fall
+   below the fold and the board has to be scrolled to reach "다음 질문으로". */
+@media (min-width: 1101px) and (max-height: 1000px) {
+  .journey-scene .journey-panel { padding: clamp(14px, 1.7vw, 26px) clamp(18px, 2.2vw, 34px); }
+  .journey-question__body { gap: 16px; padding: 14px 0 10px; }
+  .journey-question .journey-question__copy h1 { font-size: clamp(24px, 2.3vw, 34px); }
+  .journey-question__copy > p:last-child { margin-top: 9px; }
+  .journey-question__growth { margin-top: 12px; }
+  .journey-question__choices .journey-choice { padding: 12px 18px; }
+  .journey-question__choices .journey-choice b { font-size: clamp(15px, 1.18vw, 20px); }
+  .journey-question__choices .journey-choice small { margin-top: 5px; }
+  .journey-question__choices .journey-choice__number { margin-bottom: 5px; }
+  .journey-question__sidebar { padding: 12px 13px; }
+  .journey-panel__footer { padding-top: 14px; }
+  .journey-panel__footer .journey-button--primary { min-height: 48px; }
+  .journey-panel__fineprint { font-size: 10px; margin-top: 9px; }
+}
+
+@media (max-width: 1100px) {
+  .journey-question__body { grid-template-columns: 1fr; }
+  .journey-question__copy,
+  .journey-question__choices { grid-column: 1; grid-row: auto; }
+  /* Narrow screens stack the two boards; the question board comes first. */
+  .journey-question-split { display: block; }
+  .journey-question-split > .journey-question__sidebar { margin-top: 14px; }
+}
+
+/* Landscape phones: compress the question board so the choice cards peek without
+   scrolling the board body. */
+@media (min-width: 701px) and (max-height: 520px) {
+  .journey-scene--question .journey-scene__stage { padding-top: calc(clamp(52px, 7vh, 66px) + 4px); }
+  .journey-question-split > .journey-question { height: calc(100svh - 76px); }
+  .journey-scene .journey-panel { padding: 12px 18px; }
+  .journey-question__body { gap: 8px; padding: 8px 0 8px; }
+  .journey-question-split .journey-question__copy h1 { font-size: 19px; }
+  .journey-question-split .journey-question__copy > p:last-of-type { margin-top: 5px; }
+  .journey-question-split .journey-question__growth { margin-top: 8px; }
+  .journey-question-split .journey-question__choices .journey-choice { min-height: 0; padding: 8px 12px; }
+  .journey-question-split .journey-question__choices .journey-choice b { font-size: 14px; }
+  .journey-question-split .journey-question__choices .journey-choice small { font-size: 11px; margin-top: 3px; }
+  .journey-panel__footer { padding-top: 8px; }
+  .journey-nav-img { width: 150px; }
+  .journey-question-split > .journey-question__sidebar { display: none; }
+}
+@media (min-width: 701px) and (max-height: 520px) {
+  /* Give the choice cards the room: drop the disclaimer, tighten every band above them. */
+  .journey-panel__fineprint--above { display: none; }
+  .journey-question-split .journey-question__growth { margin-top: 5px; }
+  .journey-question > .journey-panel__topline { padding-bottom: 6px; }
+  .journey-question .journey-kicker { margin-bottom: 6px; }
+}

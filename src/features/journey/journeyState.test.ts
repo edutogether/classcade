@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { NBTI_QUESTIONS } from '../../data/nbti.provisional'
+import { NBTI_AXES, NBTI_QUESTIONS } from '../../data/nbti.provisional'
 import { getGameVariantForResult } from '../../data/gameVariants.provisional'
-import { resultCodeFromAnswers } from '../../data/nbtiScoring.provisional'
+import { scoreNbtiAnswers, resultCodeFromAnswers } from '../../data/nbtiScoring.provisional'
+import { PROVISIONAL_NBTI_RESULTS } from '../../data/nbtiResults.provisional'
 import { createJourneyState, journeyReducer, journeyStatusForStage, validateJourneyState } from './journeyState'
 
 function completeNbti() {
@@ -14,6 +15,28 @@ function completeNbti() {
 }
 
 describe('golden-path journey reducer', () => {
+  it('defines sixteen single-axis scenes with a seven-point, non-tied decision on every axis', () => {
+    expect(NBTI_QUESTIONS).toHaveLength(16)
+    for (const axis of NBTI_AXES) {
+      const questions = NBTI_QUESTIONS.filter((question) => question.axis === axis.id)
+      expect(questions).toHaveLength(4)
+      expect(questions.reduce((total, question) => total + question.weight, 0)).toBe(7)
+    }
+  })
+
+  it('maps every one of the sixteen direction combinations to exactly one result and game variant', () => {
+    expect(PROVISIONAL_NBTI_RESULTS).toHaveLength(16)
+    for (let value = 0; value < 16; value += 1) {
+      const bits = value.toString(2).padStart(4, '0').split('').map(Number)
+      const answers = Object.fromEntries(NBTI_QUESTIONS.map((question) => [question.id, question.choices[bits[NBTI_AXES.findIndex((axis) => axis.id === question.axis)] as 0 | 1].id]))
+      const expected = `P${value.toString().padStart(2, '0')}`
+      expect(resultCodeFromAnswers(answers)).toBe(expected)
+      expect(PROVISIONAL_NBTI_RESULTS.filter((result) => result.code === expected)).toHaveLength(1)
+      expect(getGameVariantForResult(expected).resultCodes).toContain(expected)
+      for (const score of Object.values(scoreNbtiAnswers(answers))) expect(score.zero + score.one).toBe(7)
+    }
+  })
+
   it('guards NBTI forward navigation until the current choice is valid', () => {
     const started = journeyReducer(createJourneyState(), { type: 'START_NBTI' })
     expect(journeyReducer(started, { type: 'NEXT_NBTI' })).toBe(started)
@@ -36,12 +59,23 @@ describe('golden-path journey reducer', () => {
     let state = completeNbti()
     state = journeyReducer(state, { type: 'OPEN_GAME_INTRO' })
     state = journeyReducer(state, { type: 'START_GAME' })
-    const variant = getGameVariantForResult(state.resultCode)
-    for (const step of variant.choices) {
-      state = journeyReducer(state, { type: 'ANSWER_GAME', choiceId: step.options[0].id })
-      state = journeyReducer(state, { type: 'NEXT_GAME' })
-    }
-    expect(state.stage).toBe('game_shake')
+    expect(state.stage).toBe('game_conditions')
+    state = journeyReducer(state, { type: 'SET_GAME_CONDITIONS', conditions: { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' } })
+    state = journeyReducer(state, { type: 'SELECT_GAME_COMBO', combo: { scene: 'treasure-room', mechanism: 'teamwork', world: 'academy', twist: 'role-swap' } })
+    state = journeyReducer(state, { type: 'SELECT_GAME_CANDIDATE', candidateId: 'treasure-room.teamwork.academy.role-swap' })
+    state = journeyReducer(state, { type: 'SET_GAME_ADJUSTMENT', key: 'time', value: '낮게' })
+    state = journeyReducer(state, { type: 'COMPLETE_GAME_BUILDER' })
+    expect(state).toMatchObject({ stage: 'game_complete', selectedGameId: 'treasure-room.teamwork.academy.role-swap', gameAdjustments: { time: '낮게' } })
+    expect(validateJourneyState(state)).toMatchObject({ stage: 'game_complete', selectedGameId: 'treasure-room.teamwork.academy.role-swap' })
+  })
+
+  it('returns to the preceding NBTI question and preserves the selected answer', () => {
+    let state = journeyReducer(createJourneyState(), { type: 'START_NBTI' })
+    const first = NBTI_QUESTIONS[0]
+    state = journeyReducer(state, { type: 'ANSWER_NBTI', questionId: first.id, choiceId: first.choices[0].id })
+    state = journeyReducer(state, { type: 'NEXT_NBTI' })
+    state = journeyReducer(state, { type: 'PREVIOUS_STAGE' })
+    expect(state).toMatchObject({ stage: 'nbti_question', questionIndex: 0, answers: { [first.id]: first.choices[0].id } })
   })
 
   it('supports the accessible shake fallback and only completes at 100%', () => {
@@ -54,17 +88,38 @@ describe('golden-path journey reducer', () => {
     expect(state.completedAt).toEqual(expect.any(String))
   })
 
+  it('maps every game-builder stage to its explicit preceding stage', () => {
+    const base = completeNbti()
+    const expected = [['game_intro', 'nbti_result'], ['game_conditions', 'nbti_result'], ['game_concepts', 'game_conditions'], ['game_candidates', 'game_concepts'], ['game_adjust', 'game_candidates'], ['game_complete', 'game_adjust'], ['sharing', 'game_complete']] as const
+    for (const [stage, previous] of expected) expect(journeyReducer({ ...base, stage }, { type: 'PREVIOUS_STAGE' }).stage).toBe(previous)
+  })
+
+  it('returns home without deleting progress and resumes the exact stored stage', () => {
+    const result = completeNbti()
+    const home = journeyReducer(result, { type: 'GO_HOME' })
+    expect(home).toMatchObject({ stage: 'nbti_start', resumeStage: 'nbti_result', resultCode: 'P00' })
+    expect(journeyReducer(home, { type: 'RESUME_JOURNEY' })).toMatchObject({ stage: 'nbti_result', resumeStage: null, resultCode: 'P00' })
+  })
+
+  it('invalidates later game outputs when a prior condition or concept is changed', () => {
+    const state = { ...completeNbti(), stage: 'game_conditions' as const, gameCombo: { scene: 'treasure-room', mechanism: 'teamwork', world: 'academy', twist: 'role-swap' }, selectedGameId: 'treasure-room.teamwork.academy.role-swap', gameAdjustments: { time: '높게' }, completion: { recommendationTags: ['협력'], recommendedVideoIds: ['video-1'], shareCardFormat: 'square' as const, shareCardGenerated: true, lastCompletedStep: 'shared' } }
+    const afterConditions = journeyReducer(state, { type: 'SET_GAME_CONDITIONS', conditions: { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' } })
+    expect(afterConditions).toMatchObject({ stage: 'game_concepts', gameCombo: null, selectedGameId: null, gameAdjustments: {}, completion: { shareCardGenerated: false } })
+    const afterConcept = journeyReducer({ ...afterConditions, stage: 'game_concepts' }, { type: 'SELECT_GAME_COMBO', combo: { scene: 'treasure-room', mechanism: 'teamwork', world: 'academy', twist: 'role-swap' } })
+    expect(afterConcept).toMatchObject({ stage: 'game_candidates', selectedGameId: null, gameAdjustments: {}, completion: { shareCardGenerated: false } })
+  })
+
   it('only opens sharing after completion and preserves audio toggles across reset', () => {
     let state = journeyReducer(createJourneyState(), { type: 'OPEN_SHARING' })
     expect(state.stage).toBe('nbti_start')
-    state = journeyReducer(state, { type: 'SET_AUDIO', audio: { bgmEnabled: true, sfxEnabled: true } })
+    state = journeyReducer(state, { type: 'SET_AUDIO', audio: { bgmEnabled: true, bgmVolume: .42, sfxEnabled: true } })
     state = journeyReducer(state, { type: 'RESET_NBTI' })
-    expect(state).toMatchObject({ stage: 'nbti_start', audio: { bgmEnabled: true, sfxEnabled: true } })
+    expect(state).toMatchObject({ stage: 'nbti_start', audio: { bgmEnabled: true, bgmVolume: .42, sfxEnabled: true } })
   })
 
   it('rejects malformed restored journey records', () => {
     expect(validateJourneyState({ version: 1, stage: 'game_complete' })).toBeNull()
     expect(validateJourneyState({ ...createJourneyState(), questionIndex: 99 })).toBeNull()
-    expect(validateJourneyState(createJourneyState())).toMatchObject({ stage: 'nbti_start' })
+    expect(validateJourneyState(createJourneyState())).toMatchObject({ version: 2, stage: 'nbti_start' })
   })
 })

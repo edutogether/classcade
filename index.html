@@ -7,10 +7,17 @@
     <meta name="color-scheme" content="dark" />
     <meta name="description" content="나의 교사 유형을 발견하고, 선택으로 우리반 게임을 완성합니다." />
     <link rel="canonical" href="__SITE_URL__/" />
-    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
-    <link rel="icon" href="./favicon-32x32.png" sizes="32x32" type="image/png" />
+    <!-- Brand emblem favicon; the inline script below swaps it to the grayscale variant
+         while the tab is in the background, back to colour when it's active again. -->
+    <link rel="icon" id="favicon" href="./favicon-32x32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" sizes="180x180" />
     <link rel="manifest" href="./site.webmanifest" />
+    <script>
+      document.addEventListener('visibilitychange', function () {
+        var icon = document.getElementById('favicon')
+        if (icon) icon.href = document.hidden ? './favicon-32x32-gray.png' : './favicon-32x32.png'
+      })
+    </script>
 
     <meta property="og:locale" content="ko_KR" />
     <meta property="og:type" content="website" />

@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import {
   CAREER_RANGE_OPTIONS,
   GROWTH_PRIORITY_OPTIONS,
@@ -6,68 +6,209 @@ import {
   SCHOOL_LEVEL_OPTIONS,
   type CareerRange,
   type GrowthPriority,
-  type Option,
   type Region,
   type SchoolLevel,
 } from '../data/adventure'
-import type { Profile } from '../lib/storage'
+import { beginMainThemeReveal, noteAudioUserGesture } from '../lib/audioManager'
+import type { AudioSettings } from '../lib/audioController'
+import { loadPrepDraft, savePrepDraft, clearPrepDraft, type Profile, type PrepDraft } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
-import portalAcademy from '../assets/portal-academy-background.png'
-import { CompassSeal, Icon } from './VisualPrimitives'
+import { ClasscadeEmblem, ClasscadeLockup, ClasscadeWordmark, Icon } from './VisualPrimitives'
+import { degradeToFlat, isFlat, type VisualScreen } from '../config/visualMode'
+import '../entry.css'
+import type { TunerScreen } from '../features/entry/visualTuning'
+import { PrepOneChoiceCards } from './prep/PrepOneChoiceCards'
+import { PrepTwoChoiceCards } from './prep/PrepTwoChoiceCards'
+import { ChoiceCards } from './prep/ChoiceCards'
+import { PrepFlatCards } from './prep/PrepFlatCards'
+import { PrepProgress } from './prep/PrepProgress'
+import {
+  STEP_IMAGES,
+  growthIcons,
+  choiceFrameNeutral,
+  choiceFrameSelected,
+  prepFourReference,
+  loadingMaster,
+  portalAcademy,
+  prepOneWorldBackdrop,
+  prepOneCleanPlate,
+  prepTwoCleanPlate,
+  ctaDisabled,
+  ctaEnabled,
+  ctaHover,
+  ctaActive,
+  prepTwoBack,
+  prepTwoCtaEnabled,
+  prepTwoCtaDisabled,
+  prepNavBack,
+  prepNavCtaEnabled,
+  prepNavCtaDisabled,
+  prepFinalCtaEnabled,
+  prepFinalCtaDisabled,
+  prepFinalCtaHover,
+  prepFinalCtaActive,
+  prepThreeMapMaster,
+  PREP3_PLAQUES,
+  PREP3_GLOWS,
+  type PrepStep,
+} from './prep/prepAssets'
 
-type AdventurePrepScreenProps = {
-  initialProfile: Profile | null
-  exiting: boolean
-  isOffline: boolean
-  onComplete: (profile: Profile) => Promise<{ ok: boolean }>
-}
+/** Art vs flat is resolved per screen - see src/config/visualMode.ts. */
+const prepScreen = (step: PrepStep): VisualScreen | null =>
+  step === 'nickname' ? 'nickname' : step === 'loading' ? null : (`prep${step}` as VisualScreen)
 
-type ChoiceChipGroupProps<T extends string> = {
-  options: readonly Option<T>[]
-  value: T | null
-  onChange: (value: T) => void
-  label: string
-  className?: string
-}
-
-export function ChoiceChipGroup<T extends string>({ options, value, onChange, label, className = '' }: ChoiceChipGroupProps<T>) {
+/**
+ * Nav button drawn from finished artwork, falling back to the CSS button if the image
+ * fails. The fallback matters: the art variant sets `color: transparent`, so a missing
+ * image would leave a working but completely invisible button.
+ */
+function NavArtButton({ art, label, onClick, disabled, variant, tuneId }: {
+  art: string; label: string; onClick: () => void; disabled?: boolean; variant: 'back' | 'next'; tuneId?: string
+}) {
+  const [failed, setFailed] = useState(false)
   return (
-    <div className={`choice-chip-group ${className}`} role="radiogroup" aria-label={label}>
-      {options.map((option) => {
-        const selected = option.value === value
-        return (
-          <button key={option.value} className={`choice-chip ${selected ? 'is-selected' : ''}`} type="button" role="radio" aria-checked={selected} onClick={() => onChange(option.value)}>
-            <span className="choice-chip__check" aria-hidden="true"><Icon name="check" size={13} /></span>
-            <span>{option.label}</span>
-          </button>
-        )
-      })}
-    </div>
+    <button
+      type="button"
+      className={`entry-button entry-button--${variant} ${failed ? 'entry-button--flat' : 'entry-nav-img'}`}
+      onClick={onClick}
+      disabled={disabled}
+      data-tune-id={tuneId}
+      aria-label={label}
+    >
+      {failed ? label : <img src={art} alt="" aria-hidden="true" onError={() => setFailed(true)} />}
+    </button>
   )
 }
 
-export function AdventurePrepScreen({ initialProfile, exiting, isOffline, onComplete }: AdventurePrepScreenProps) {
-  const [schoolLevel, setSchoolLevel] = useState<SchoolLevel | null>(initialProfile?.schoolLevel ?? null)
-  const [careerRange, setCareerRange] = useState<CareerRange | null>(initialProfile?.careerRange ?? null)
-  const [region, setRegion] = useState<Region | null>(initialProfile?.region ?? null)
-  const [growthPriorities, setGrowthPriorities] = useState<GrowthPriority[]>(initialProfile?.growthPriorities ?? [])
-  const [otherText, setOtherText] = useState(initialProfile?.growthPriorityOther ?? '')
+/** The final "모험 준비 완료" plaque, with hover/active swaps done in JS rather than CSS
+ *  background tricks so a load failure of ANY state can fall back to the flat button. */
+function FinalCtaButton({ disabled, onClick }: { disabled: boolean; onClick: () => void }) {
+  const [failed, setFailed] = useState(false)
+  const [hovered, setHovered] = useState(false)
+  const [pressed, setPressed] = useState(false)
+  const art = disabled ? prepFinalCtaDisabled : pressed ? prepFinalCtaActive : hovered ? prepFinalCtaHover : prepFinalCtaEnabled
+  if (failed) {
+    return <button type="button" className="entry-button entry-button--next entry-button--flat" disabled={disabled} onClick={onClick} data-tune-id="prep-next-button">모험 준비 완료 <Icon name="arrow" size={20} /></button>
+  }
+  return (
+    <button
+      type="button"
+      className="entry-button entry-button--next entry-nav-img entry-nav-img--final"
+      disabled={disabled}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => { setHovered(false); setPressed(false) }}
+      onMouseDown={() => setPressed(true)}
+      onMouseUp={() => setPressed(false)}
+      data-tune-id="prep-next-button"
+      aria-label="모험 준비 완료"
+    >
+      <img src={art} alt="" aria-hidden="true" onError={() => setFailed(true)} />
+    </button>
+  )
+}
+
+const SCHOOL_ICONS = ['sprout', 'leaf', 'notebook', 'school', 'spark'] as const
+const CAREER_ICONS = ['sprout', 'leaf', 'tree', 'lantern', 'compass'] as const
+
+type AdventurePrepScreenProps = {
+  initialProfile: Profile | null
+  audio: AudioSettings
+  exiting: boolean
+  isOffline: boolean
+  onComplete: (profile: Profile) => Promise<{ ok: boolean }>
+  onScreenChange: (screen: TunerScreen) => void
+}
+
+export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline, onComplete, onScreenChange }: AdventurePrepScreenProps) {
+  // A finished profile always wins; a draft only matters for a first-time run that got
+  // interrupted (refresh, dropped connection) before there was a profile to restore from.
+  const [draft] = useState<PrepDraft | null>(() => (initialProfile ? null : loadPrepDraft().value))
+  const [step, setStep] = useState<PrepStep>(draft?.step ?? 1)
+  const [schoolLevel, setSchoolLevel] = useState<SchoolLevel | null>(initialProfile?.schoolLevel ?? draft?.schoolLevel ?? null)
+  const [schoolPreview, setSchoolPreview] = useState<SchoolLevel | null>(null)
+  const [careerRange, setCareerRange] = useState<CareerRange | null>(initialProfile?.careerRange ?? draft?.careerRange ?? null)
+  const [careerPreview, setCareerPreview] = useState<CareerRange | null>(null)
+  const [region, setRegion] = useState<Region | null>(initialProfile?.region ?? draft?.region ?? null)
+  const [growthPriorities, setGrowthPriorities] = useState<GrowthPriority[]>(initialProfile?.growthPriorities ?? draft?.growthPriorities ?? [])
+  const [otherText, setOtherText] = useState(initialProfile?.growthPriorityOther ?? draft?.growthPriorityOther ?? '')
+  const [nickname, setNickname] = useState(initialProfile?.nickname ?? draft?.nickname ?? '')
   const [selectionMessage, setSelectionMessage] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [saveError, setSaveError] = useState('')
+  const [loadingProgress, setLoadingProgress] = useState(4)
+  const [loadingError, setLoadingError] = useState('')
 
   const otherSelected = growthPriorities.includes('other')
-  const isReady = Boolean(schoolLevel && careerRange && region && growthPriorities.length >= 1 && (!otherSelected || otherText.trim()))
-  const ctaHint = useMemo(() => {
-    if (saving) return '선택 정보를 저장하고 있어요.'
-    if (isReady) return '선택을 저장하고 모험을 시작합니다.'
-    if (otherSelected && !otherText.trim()) return '기타 내용을 입력해 주세요.'
-    return '필수 선택을 완료하면 모험을 시작할 수 있어요.'
-  }, [isReady, otherSelected, otherText, saving])
+  const growthReady = growthPriorities.length > 0 && (!otherSelected || Boolean(otherText.trim()))
+  const nicknameReady = nickname.trim().length > 0
+  const stageImage = step === 'nickname' ? prepFourReference : STEP_IMAGES[step as Exclude<PrepStep, 'nickname' | 'loading'>]
+  const stepNumber = typeof step === 'number' ? step : 4
+
+  useEffect(() => {
+    onScreenChange(step === 'nickname' || step === 'loading' ? step : `prep-${step}` as TunerScreen)
+  }, [onScreenChange, step])
+
+  useEffect(() => {
+    if (step === 'loading') return
+    savePrepDraft({ version: 1, step, schoolLevel, careerRange, region, growthPriorities, growthPriorityOther: otherText, nickname })
+  }, [step, schoolLevel, careerRange, region, growthPriorities, otherText, nickname])
+
+  useEffect(() => {
+    if (step !== 'loading') return
+    const progressTimers = [
+      window.setTimeout(() => setLoadingProgress(18), 120),
+      window.setTimeout(() => setLoadingProgress(46), 540),
+      window.setTimeout(() => setLoadingProgress(74), 980),
+      window.setTimeout(() => setLoadingProgress(92), 1420),
+      window.setTimeout(() => setLoadingProgress(100), 1850),
+    ]
+    const audioTimer = window.setTimeout(() => beginMainThemeReveal(audio.bgmEnabled, audio.bgmVolume), 1240)
+    const finishTimer = window.setTimeout(async () => {
+      const now = new Date().toISOString()
+      const result = await onComplete({
+        version: 1,
+        schoolLevel: schoolLevel!,
+        careerRange: careerRange!,
+        region: region!,
+        growthPriorities,
+        growthPriorityOther: otherSelected ? otherText.trim() : '',
+        nickname: nickname.trim(),
+        createdAt: initialProfile?.createdAt ?? now,
+        updatedAt: now,
+      })
+      if (!result.ok) setLoadingError('모험 기록을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.')
+    }, 2110)
+    return () => {
+      progressTimers.forEach(window.clearTimeout)
+      window.clearTimeout(audioTimer)
+      window.clearTimeout(finishTimer)
+    }
+  }, [audio.bgmEnabled, audio.bgmVolume, careerRange, growthPriorities, initialProfile?.createdAt, nickname, onComplete, otherSelected, otherText, region, schoolLevel, step])
+
+  const title = useMemo(() => {
+    if (step === 1) return { number: '01', question: '어느 교실에서 함께하고 있나요?', helper: '함께하고 있는 학생들의 학교급을 선택해 주세요.' }
+    if (step === 2) return { number: '02', question: '선생님의 교실 여정은 어느 정도인가요?', helper: '선생님의 경험에 가장 가까운 단계를 선택해 주세요.' }
+    if (step === 3) return { number: '03', question: '어느 지역에서 오셨나요?', helper: '현재 거주하시는 권역을 선택해 주세요.' }
+    return { number: '04', question: '지금 교실에서 더 키우고 싶은 것은 무엇인가요?', helper: '최대 3개까지 선택할 수 있어요.' }
+  }, [step])
+
+  function nextStep() {
+    noteAudioUserGesture()
+    if (step === 1 && schoolLevel) setStep(2)
+    else if (step === 2 && careerRange) setStep(3)
+    else if (step === 3 && region) setStep(4)
+    else if (step === 4 && growthReady) setStep('nickname')
+  }
+
+  function previousStep() {
+    setSelectionMessage('')
+    if (step === 2) setStep(1)
+    else if (step === 3) setStep(2)
+    else if (step === 4) setStep(3)
+    else if (step === 'nickname') setStep(4)
+  }
 
   function toggleGrowthPriority(value: GrowthPriority) {
-    if (saving) return
-    setSaveError('')
+    noteAudioUserGesture()
     setSelectionMessage('')
     const next = getNextGrowthPriorities(growthPriorities, value)
     if (next.reachedLimit) {
@@ -78,96 +219,166 @@ export function AdventurePrepScreen({ initialProfile, exiting, isOffline, onComp
     setGrowthPriorities(next.values)
   }
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const trimmedOther = otherText.trim()
-    if (saving || !schoolLevel || !careerRange || !region || !growthPriorities.length || (otherSelected && !trimmedOther)) return
-    setSaveError('')
-    setSaving(true)
-    const now = new Date().toISOString()
-    const completed = await onComplete({
-      version: 1,
-      schoolLevel,
-      careerRange,
-      region,
-      growthPriorities,
-      growthPriorityOther: otherSelected ? trimmedOther : '',
-      createdAt: initialProfile?.createdAt ?? now,
-      updatedAt: now,
-    })
-    if (!completed.ok) {
-      setSaveError('선택 정보를 저장하지 못했어요.\n잠시 후 다시 시도해 주세요.')
-      setSaving(false)
-    }
+  function beginLoading() {
+    if (!nicknameReady) return
+    noteAudioUserGesture()
+    setLoadingError('')
+    setLoadingProgress(4)
+    setStep('loading')
+    clearPrepDraft()
   }
 
-  return (
-    <main className={`adventure-prep ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-title">
-      <div className="prep-world" aria-hidden="true"><img src={portalAcademy} alt="" /></div>
-      <div className="prep-vignette" aria-hidden="true" />
-      <div className="prep-motes" aria-hidden="true"><i /><i /><i /><i /><i /><i /></div>
-      <section className="parchment-panel">
-        <header className="parchment-panel__heading">
-          <p className="parchment-kicker"><span>✦</span> CLASSCADE ADVENTURE <span>✦</span></p>
-          <h1 id="prep-title">모험 준비</h1>
-          <p>교실 모험을 시작하기 전,<br />간단한 정보를 선택해 주세요.</p>
-          <CompassSeal className="parchment-compass" />
-        </header>
+  if (step === 'loading') {
+    // The master art already carries the heading, sub-line, dots, bar frame and wait
+    // line. Only the bar's fill is live, so nothing here re-draws what the picture shows.
+    return <main className={`entry-loading entry-loading--art ${exiting ? 'is-exiting' : ''}`} aria-live="polite">
+      <div className="entry-loading__stage">
+        <img className="entry-loading__art" src={loadingMaster} alt="" aria-hidden="true" />
+        <i className="entry-loading__fill" style={{ '--progress': `${loadingProgress}%` } as CSSProperties} aria-hidden="true" />
+      </div>
+      <p className="sr-only" role="status">교실 모험을 준비하는 중 {loadingProgress}%</p>
+      {loadingError && <p className="entry-loading__error">{loadingError}</p>}
+    </main>
+  }
 
-        <form className="adventure-prep__form" onSubmit={submit}>
-          <fieldset className="prep-fieldset" disabled={saving}>
-            <legend><span>01</span> 어느 교실에서 함께하고 있나요?</legend>
-            <ChoiceChipGroup options={SCHOOL_LEVEL_OPTIONS} value={schoolLevel} onChange={setSchoolLevel} label="학교급" className="choice-chip-group--five" />
-          </fieldset>
-
-          <fieldset className="prep-fieldset" disabled={saving}>
-            <legend><span>02</span> 선생님의 교실 여정은 어느 정도인가요?</legend>
-            <ChoiceChipGroup options={CAREER_RANGE_OPTIONS} value={careerRange} onChange={setCareerRange} label="교직 경력" className="choice-chip-group--five" />
-          </fieldset>
-
-          <fieldset className="prep-fieldset prep-fieldset--region" disabled={saving}>
-            <legend><span>03</span> 어느 지역에서 오셨나요?</legend>
-            <ChoiceChipGroup options={REGION_OPTIONS} value={region} onChange={setRegion} label="지역" className="choice-chip-group--region" />
-          </fieldset>
-
-          <fieldset className="prep-fieldset prep-fieldset--growth" disabled={saving}>
-            <legend><span>04</span> 지금 교실에서 더 키우고 싶은 것은 무엇인가요?</legend>
-            <p className="field-helper">최대 3개까지 선택할 수 있어요. <strong aria-live="polite">{growthPriorities.length} / 3</strong></p>
-            <div className="growth-chip-grid" aria-label="교실 성장 우선순위">
-              {GROWTH_PRIORITY_OPTIONS.map((option) => {
-                const selected = growthPriorities.includes(option.value)
-                return (
-                  <button key={option.value} className={`growth-chip ${selected ? 'is-selected' : ''}`} type="button" aria-pressed={selected} onClick={() => toggleGrowthPriority(option.value)}>
-                    <span className="growth-chip__check" aria-hidden="true"><Icon name="check" size={13} /></span>
-                    {option.label}
-                  </button>
-                )
-              })}
-            </div>
-            <p className="choice-message" aria-live="polite">{selectionMessage}</p>
-            {otherSelected && (
-              <label className="other-input">
-                <span>기타 직접 입력</span>
-                <input value={otherText} onChange={(event) => { setSaveError(''); setOtherText(event.target.value.slice(0, 30)) }} maxLength={30} placeholder="직접 입력해 주세요." autoComplete="off" disabled={saving} />
-              </label>
-            )}
-          </fieldset>
-
-          <footer className="prep-footer">
-            <p>이름과 학교명은 받지 않으며,<br />선택 정보는 체험 운영과 익명 통계에 활용됩니다.</p>
-            <div>
-              <button className={`prep-submit ${saving ? 'is-saving' : ''}`} type="submit" disabled={!isReady || saving} aria-describedby="prep-cta-hint prep-save-error">
-                <CompassSeal className="prep-submit__seal" />
-                <span>{saving ? '모험을 준비하고 있어요…' : '모험 시작하기'}</span>
-                <Icon name="arrow" size={23} />
-              </button>
-              <p id="prep-cta-hint" className={`prep-cta-hint ${isReady ? 'is-ready' : ''}`}>{ctaHint}</p>
-              <p id="prep-save-error" className="prep-save-error" aria-live="assertive">{saveError}</p>
-            </div>
-            {isOffline && <p className="offline-storage-notice" role="status">오프라인 상태예요.{`\n`}현재 선택은 이 기기에 저장되며, 기기 연결 기능은 온라인에서 사용할 수 있어요.</p>}
-          </footer>
-        </form>
+  if (step === 'nickname') {
+    return <main className={`entry-prep entry-prep--nickname ${isFlat('nickname') ? 'entry-prep--flat' : ''} ${exiting ? 'is-exiting' : ''}`} aria-labelledby="nickname-title">
+      <img className="entry-prep__world" src={portalAcademy} alt="" aria-hidden="true" />
+      {!isFlat('nickname') && <img className="entry-prep__reference" src={stageImage} alt="" aria-hidden="true" onError={() => degradeToFlat('nickname')} />}
+      <div className="entry-prep__vignette" aria-hidden="true" />
+      <div className="entry-motes" aria-hidden="true">{Array.from({ length: 20 }, (_, index) => <i key={index} />)}</div>
+      <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
+        <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><PrepProgress step={5} /></header>
+        <div className="entry-nickname">
+          <span className="entry-nickname__orb entry-nickname__orb--lockup"><ClasscadeLockup /></span>
+          <p className="entry-kicker">✦ 여정의 마지막 준비 ✦</p>
+          <h1 id="nickname-title"><span>용사님의 닉네임을</span> <span>알려주세요</span></h1>
+          <p>이 여정에서 불릴 이름이에요.</p>
+          <label><input value={nickname} maxLength={16} autoComplete="off" aria-label="용사 닉네임" placeholder="예: 우리 같이 놀아요" onChange={(event) => setNickname(event.target.value.slice(0, 16))} /></label>
+          <small>실제 이름이나 학교명 대신, 이 모험에서 사용할 별명을 적어주셔도 좋아요.</small>
+        </div>
+        <footer className="entry-prep__footer">
+          <NavArtButton art={prepNavBack} label="← 이전 질문" onClick={previousStep} variant="back" />
+          <FinalCtaButton disabled={!nicknameReady} onClick={beginLoading} />
+        </footer>
       </section>
     </main>
-  )
+  }
+
+  const canContinue = step === 1 ? Boolean(schoolLevel) : step === 2 ? Boolean(careerRange) : step === 3 ? Boolean(region) : growthReady
+  if (!isFlat('prep1') && step === 1) {
+    return <main className={`entry-prep entry-prep--1 entry-prep01-stage ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-1-title">
+      <img className="entry-prep01-stage__background" src={prepOneWorldBackdrop} alt="" aria-hidden="true" />
+      <div className="entry-motes entry-motes--prep01" aria-hidden="true">{Array.from({ length: 20 }, (_, index) => <i key={index} />)}</div>
+      <section className="entry-prep01-plate" aria-labelledby="prep-1-title">
+        <img className="entry-prep01-plate__image" src={prepOneCleanPlate} alt="" aria-hidden="true" />
+        <h1 id="prep-1-title" className="sr-only">모험 준비 — 어느 교실에서 함께하고 있나요?</h1>
+        <PrepOneChoiceCards value={schoolLevel} previewValue={schoolPreview} onChange={setSchoolLevel} onPreviewChange={setSchoolPreview} />
+        <button type="button" className="entry-prep01-plate__cta" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로">
+          <img className="entry-prep01-plate__cta-disabled" src={ctaDisabled} alt="" aria-hidden="true" />
+          <img className="entry-prep01-plate__cta-enabled" src={ctaEnabled} alt="" aria-hidden="true" />
+          <img className="entry-prep01-plate__cta-hover" src={ctaHover} alt="" aria-hidden="true" />
+          <img className="entry-prep01-plate__cta-active" src={ctaActive} alt="" aria-hidden="true" />
+        </button>
+        <p className="entry-prep01-plate__note"><Icon name="notebook" size={13} />입력한 정보는 언제든지 변경할 수 있어요.</p>
+        {isOffline && <p className="entry-prep__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
+      </section>
+    </main>
+  }
+
+  if (!isFlat('prep2') && step === 2) {
+    return <main className={`entry-prep entry-prep--2 entry-prep02-stage ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-2-title">
+      <img className="entry-prep02-stage__plate" src={prepTwoCleanPlate} alt="" aria-hidden="true" />
+      <div className="entry-motes entry-motes--prep02" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
+      <section className="entry-prep02-plate" aria-labelledby="prep-2-title">
+        <h1 id="prep-2-title" className="sr-only">모험 준비 — 선생님의 교실 여정은 어느 정도인가요?</h1>
+        <svg className="entry-prep02-plate__path" viewBox="0 0 1484 1060" preserveAspectRatio="none" aria-hidden="true"><path d="M196 690 Q 340 706 454 672 T 634 690 T 813 672 T 993 690 Q 1080 702 1128 692" /></svg>
+        <PrepTwoChoiceCards value={careerRange} previewValue={careerPreview} onChange={setCareerRange} onPreviewChange={setCareerPreview} />
+        <button type="button" className="entry-prep02-plate__back entry-nav-img" onClick={previousStep} aria-label="이전 질문"><img src={prepTwoBack} alt="" aria-hidden="true" /></button>
+        <button type="button" className="entry-prep02-plate__cta entry-nav-img" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로"><img src={canContinue ? prepTwoCtaEnabled : prepTwoCtaDisabled} alt="" aria-hidden="true" /></button>
+        {isOffline && <p className="entry-prep02-plate__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
+      </section>
+    </main>
+  }
+
+  if (!isFlat('prep3') && step === 3) {
+    /* Full-board map master: everything (title, plaque labels, map, nav plaques) is painted
+       into the image; the DOM contributes invisible hit targets over the painted plaques,
+       a selected-state overlay that repaints the label, and the per-region map glow. */
+    return <main className={`entry-prep entry-prep--3 entry-prep03-map ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-3-title">
+      <h1 id="prep-3-title" className="sr-only">모험 준비 — 어느 지역에서 오셨나요?</h1>
+      <div className="prep3-map">
+        <img className="prep3-map__bg" src={prepThreeMapMaster} alt="" aria-hidden="true" onError={() => degradeToFlat('prep3')} />
+        {REGION_OPTIONS.map((option, index) => {
+          const pos = PREP3_PLAQUES[index]
+          return (
+            <button key={option.value} type="button"
+              className={`prep3-map__plaque ${region === option.value ? 'is-selected' : ''}`}
+              style={{ left: `${pos.l}%`, top: `${pos.t}%` }}
+              data-label={option.label} aria-pressed={region === option.value}
+              onClick={() => setRegion(option.value)}>
+              <span className="sr-only">{option.label}</span>
+            </button>
+          )
+        })}
+        {region && PREP3_GLOWS[region] && <i className="prep3-map__glow" style={{ left: `${PREP3_GLOWS[region].l}%`, top: `${PREP3_GLOWS[region].t}%` }} aria-hidden="true" />}
+        <button type="button" className="prep3-map__nav prep3-map__nav--back" onClick={previousStep} aria-label="이전 질문" />
+        <button type="button" className="prep3-map__nav prep3-map__nav--next" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로" />
+      </div>
+      {isOffline && <p className="entry-prep__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
+    </main>
+  }
+
+  const screen = prepScreen(step)
+  const flat = screen ? isFlat(screen) : true
+  return <main className={`entry-prep entry-prep--${step} ${flat ? 'entry-prep--flat' : ''} ${exiting ? 'is-exiting' : ''}`} aria-labelledby={`prep-${step}-title`}>
+    <img className="entry-prep__world" src={portalAcademy} alt="" aria-hidden="true" />
+    {!flat && <img className="entry-prep__reference" src={stageImage} alt="" aria-hidden="true" data-tune-id={`prep-${step}-hero`} onError={() => screen && degradeToFlat(screen)} />}
+    {!flat && step === 3 && region && <i className={`entry-prep__region-marker entry-prep__region-marker--${REGION_OPTIONS.findIndex((option) => option.value === region) + 1}`} aria-hidden="true" />}
+    {!flat && step === 4 && growthPriorities.length > 0 && <div className={`entry-prep__growth-nodes entry-prep__growth-nodes--${growthPriorities.length}`} aria-hidden="true">{growthPriorities.map((priority, index) => <i key={priority} style={{ '--node': index } as CSSProperties} />)}</div>}
+    <div className="entry-prep__vignette" aria-hidden="true" />
+    <div className="entry-motes" aria-hidden="true">{Array.from({ length: 24 }, (_, index) => <i key={index} />)}</div>
+    <section className="entry-prep__panel">
+      <header className="entry-prep__header">
+        <div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div>
+        <PrepProgress step={stepNumber} />
+      </header>
+      <div className="entry-prep__intro">
+        <h1>모험 준비</h1>
+        <p>교실 모험을 시작하기 전, 간단한 정보를 선택해 주세요.</p>
+      </div>
+      <section className={`entry-prep__question entry-prep__question--${step}`} aria-labelledby={`prep-${step}-title`}>
+        <div className="entry-prep__question-head">
+          <p className="entry-prep__question-number">{title.number}</p>
+          <h2 id={`prep-${step}-title`} data-tune-id={`prep-${step}-title`}>{title.question}</h2>
+          <p className="entry-prep__question-helper">{title.helper} {step === 4 && <strong aria-live="polite">{growthPriorities.length} / 3</strong>}</p>
+        </div>
+        {flat && step === 1 && <PrepFlatCards options={SCHOOL_LEVEL_OPTIONS} value={schoolLevel} onChange={setSchoolLevel} tunePrefix="prep-1" ariaLabel="함께하는 학생들의 학교급" icons={SCHOOL_ICONS} columns={5} />}
+        {flat && step === 2 && <PrepFlatCards options={CAREER_RANGE_OPTIONS} value={careerRange} onChange={setCareerRange} tunePrefix="prep-2" ariaLabel="선생님의 교실 여정" icons={CAREER_ICONS} columns={5} />}
+        {step === 3 && region && <p className="entry-prep__next-cue" role="status">지역을 선택했어요 · 아래의 다음 질문 버튼으로 이어가요 ↓</p>}
+        {step === 3 && (flat
+          ? <PrepFlatCards options={REGION_OPTIONS} value={region} onChange={setRegion} tunePrefix="prep-3" ariaLabel="지역" columns={9} compact />
+          : <ChoiceCards options={REGION_OPTIONS} value={region} onChange={setRegion} icons={['region']} tunePrefix="prep-3" compact />)}
+        {step === 4 && <div className="entry-growth-grid" role="group" aria-label="교실 성장 우선순위">
+          {GROWTH_PRIORITY_OPTIONS.map((option, index) => {
+            const selected = growthPriorities.includes(option.value)
+            return <button key={option.value} className={`entry-growth-card ${selected ? 'is-selected' : ''}`} type="button" style={flat ? undefined : ({ '--frame-neutral': `url(${choiceFrameNeutral})`, '--frame-selected': `url(${choiceFrameSelected})` } as CSSProperties)} aria-pressed={selected} data-tune-id={`prep-4-option-${index + 1}`} onClick={() => toggleGrowthPriority(option.value)}><Icon name={growthIcons[index]} size={24} /><span>{option.label}</span>{selected && <i aria-hidden="true"><Icon name="check" size={15} /></i>}</button>
+          })}
+          {otherSelected && <label className="entry-growth-other"><input value={otherText} maxLength={30} placeholder="직접 입력해 주세요." aria-label="기타 항목 직접 입력" onChange={(event) => setOtherText(event.target.value.slice(0, 30))} /></label>}
+          {/* Selecting 기타 without typing silently disables the next button, so say why. */}
+          <p className="entry-growth-message" aria-live="polite">{selectionMessage || (otherSelected && !otherText.trim() ? '기타를 선택했어요 · 옆 칸에 직접 입력하면 다음으로 넘어갈 수 있어요.' : '')}</p>
+        </div>}
+      </section>
+      <footer className="entry-prep__footer">
+        {flat ? <>
+          <NavArtButton art={prepNavBack} label="← 이전 질문" onClick={previousStep} disabled={step === 1} variant="back" />
+          <NavArtButton art={canContinue ? prepNavCtaEnabled : prepNavCtaDisabled} label="다음 질문" onClick={nextStep} disabled={!canContinue} variant="next" tuneId="prep-next-button" />
+        </> : <>
+          <button type="button" className="entry-button entry-button--back entry-nav-img" onClick={previousStep} aria-label="이전 질문"><img src={prepNavBack} alt="" aria-hidden="true" /></button>
+          <button type="button" className="entry-button entry-button--next entry-nav-img" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로"><img src={canContinue ? prepNavCtaEnabled : prepNavCtaDisabled} alt="" aria-hidden="true" /></button>
+        </>}
+      </footer>
+      {isOffline && <p className="entry-prep__offline" role="status">오프라인 상태예요. 선택 내용은 이 기기에 안전하게 보관됩니다.</p>}
+    </section>
+  </main>
 }

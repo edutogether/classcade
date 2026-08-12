@@ -1,33 +1,25 @@
-export type ProvisionalNbtiResult = {
-  code: string
-  title: string
-  subtitle: string
-  description: string
-  strengths: readonly string[]
-  palette: 'moss' | 'gold' | 'violet' | 'sky'
-}
+import type { NbtiDirection } from './nbti.provisional'
 
-const profiles = [
-  ['P00', '차분한 길잡이', '기록으로 길을 밝히는 사람', '교실의 흐름을 살피며 모두가 편안하게 출발할 수 있는 길을 만들어요.', ['차분한 설계', '세심한 관찰'], 'moss'],
-  ['P01', '별빛 기록가', '작은 불꽃을 모으는 사람', '새로운 가능성을 차분하게 기록해 다음 모험의 씨앗으로 남겨요.', ['성찰', '꾸준한 실험'], 'gold'],
-  ['P02', '유연한 설계자', '갈림길을 연결하는 사람', '계획의 중심을 지키면서도 변화가 필요한 순간에는 새로운 길을 열어요.', ['적응', '구조화'], 'violet'],
-  ['P03', '여명의 촉진자', '시작의 불씨를 건네는 사람', '가벼운 제안 하나로 교실의 다음 움직임을 시작하게 해요.', ['실행력', '변화 촉진'], 'sky'],
-  ['P04', '따뜻한 관찰자', '목소리를 귀하게 듣는 사람', '한 사람의 생각에서 교실 전체를 움직일 실마리를 발견해요.', ['경청', '관계 감각'], 'moss'],
-  ['P05', '공감의 탐험가', '마음을 따라 길을 찾는 사람', '학생들의 반응을 따라 새로운 배움의 장면을 함께 발견해요.', ['공감', '호기심'], 'gold'],
-  ['P06', '연결의 조율자', '함께 만드는 리듬의 사람', '각자의 장점을 한 장면에 모아 모두가 참여하는 흐름을 만들어요.', ['협업', '조율'], 'violet'],
-  ['P07', '불꽃의 동행자', '용기를 전하는 사람', '모두가 한 걸음 움직일 수 있도록 먼저 작은 불을 밝혀요.', ['격려', '활력'], 'sky'],
-  ['P08', '치밀한 개척자', '새 길을 단단히 여는 사람', '낯선 길에서도 필요한 단서를 모아 안정적인 출발을 만들어요.', ['탐색', '준비'], 'moss'],
-  ['P09', '호기심 연금술사', '발견을 가능성으로 바꾸는 사람', '새로운 도구와 아이디어를 다음 수업의 반짝임으로 바꿔요.', ['발견', '창의적 기록'], 'gold'],
-  ['P10', '변화의 항해사', '유연하게 방향을 잡는 사람', '예상 밖의 흐름도 수업의 자원으로 바꾸며 앞으로 나아가요.', ['전환', '문제 해결'], 'violet'],
-  ['P11', '대담한 선봉장', '첫 시도를 이끄는 사람', '새로운 장면을 먼저 열고 함께할 용기를 교실에 전해요.', ['도전', '추진력'], 'sky'],
-  ['P12', '배려의 지도제작자', '관계의 길을 그리는 사람', '모두의 목소리를 지도로 엮어 서로를 이해할 수 있게 해요.', ['배려', '맥락 읽기'], 'moss'],
-  ['P13', '상상 숲지기', '아이디어를 돌보는 사람', '작은 질문과 발견을 보살펴 교실만의 상상 숲을 키워요.', ['상상력', '돌봄'], 'gold'],
-  ['P14', '협력의 개척대장', '함께 새 길을 여는 사람', '각자의 움직임이 연결되는 순간을 만들며 공동의 미션을 완성해요.', ['공동 설계', '연대'], 'violet'],
-  ['P15', '빛나는 모험가', '교실의 시작을 밝히는 사람', '새로운 시도를 기쁨으로 바꾸며 다음 장면을 힘차게 열어요.', ['에너지', '영감'], 'sky'],
-] as const
+export type ProvisionalNbtiResult = { code: string; title: string; subtitle: string; description: string; directions: readonly NbtiDirection[]; strengths: readonly [string, string, string]; caution: string; palette: 'moss' | 'gold' | 'violet' | 'sky' }
+const r = (code: string, title: string, description: string, directions: readonly NbtiDirection[], strengths: readonly [string, string, string], caution: string, palette: ProvisionalNbtiResult['palette']): ProvisionalNbtiResult => ({ code, title, subtitle: '교실의 선택이 만든 나만의 항로', description, directions, strengths, caution, palette })
 
-export const PROVISIONAL_NBTI_RESULTS = profiles.map(([code, title, subtitle, description, strengths, palette]) => ({ code, title, subtitle, description, strengths, palette })) satisfies readonly ProvisionalNbtiResult[]
+export const PROVISIONAL_NBTI_RESULTS = [
+  r('P00', '든든한 항해사', '분명한 목표와 안정적인 흐름으로 학급 전체가 함께 도착할 길을 만드는 선생님', ['design', 'whole', 'criteria', 'completion'], ['안정적인 수업 설계', '공동 목표 정렬', '분명한 마무리'], '계획 밖의 작은 신호도 다음 항로의 단서가 될 수 있어요.', 'moss'),
+  r('P01', '별길을 여는 설계자', '탄탄한 기준 위에서 학급 전체가 새로운 가능성을 발견하도록 이끄는 선생님', ['design', 'whole', 'criteria', 'expansion'], ['구조 속의 호기심', '전체 흐름 관찰', '가능성 연결'], '새로운 길을 열 때에도 학생별 속도를 한 번 더 살펴봐요.', 'gold'),
+  r('P02', '온기를 품은 지휘자', '모두의 마음을 살피면서 안정적인 리듬과 성취를 만들어 내는 선생님', ['design', 'whole', 'empathy', 'completion'], ['따뜻한 공동 운영', '관계 감각', '성취의 정리'], '모두를 챙기느라 나의 수업 에너지를 비우지 않도록 해요.', 'moss'),
+  r('P03', '이야기를 엮는 안내자', '학급의 관계와 분위기를 하나의 흐름으로 엮어 새로운 배움으로 넓히는 선생님', ['design', 'whole', 'empathy', 'expansion'], ['관계 중심 설계', '공동 대화', '배움의 확장'], '흥미로운 이야기도 오늘의 핵심과 연결해 주면 더 오래 남아요.', 'gold'),
+  r('P04', '정밀한 성장 설계자', '학생마다 필요한 기준과 다음 단계를 세심하게 설계하는 선생님', ['design', 'individual', 'criteria', 'completion'], ['개별 성장 설계', '명확한 피드백', '꾸준한 완성'], '세심한 설계가 모든 학생에게 같은 속도를 요구하지 않도록 해요.', 'moss'),
+  r('P05', '가능성을 그리는 지도 제작자', '개별 학생의 현재 위치를 읽고 더 넓은 성장 경로를 그려 주는 선생님', ['design', 'individual', 'criteria', 'expansion'], ['성장 경로 발견', '개별 기준 설정', '다음 질문 만들기'], '가능성을 넓힐 때에는 지금 해낸 성취도 함께 기록해요.', 'gold'),
+  r('P06', '마음을 밝히는 등불지기', '한 사람의 마음과 속도를 살피며 끝까지 성취의 순간으로 동행하는 선생님', ['design', 'individual', 'empathy', 'completion'], ['세심한 동행', '안전한 관계', '작은 성취 발견'], '도움이 필요한 순간에도 학생이 스스로 선택할 여백을 남겨요.', 'moss'),
+  r('P07', '숨은 별을 찾는 관찰자', '조용한 가능성과 작은 변화를 발견해 새로운 배움의 문을 열어 주는 선생님', ['design', 'individual', 'empathy', 'expansion'], ['잠재력 관찰', '마음 읽기', '새 길 제안'], '관찰한 가능성이 실제 시도로 이어지도록 작은 기준도 함께 세워요.', 'gold'),
+  r('P08', '판을 바로잡는 조율자', '변화하는 교실 흐름 속에서도 모두가 도착할 기준과 리듬을 빠르게 되찾는 선생님', ['response', 'whole', 'criteria', 'completion'], ['상황 판단', '공동 리듬 회복', '현장 해결'], '빠른 조율 뒤에는 왜 그렇게 바꾸었는지 함께 돌아봐요.', 'violet'),
+  r('P09', '길을 개척하는 선봉장', '교실의 에너지를 읽고 과감한 선택으로 새로운 학급의 길을 여는 선생님', ['response', 'whole', 'criteria', 'expansion'], ['변화 이끌기', '공동 추진력', '도전 설계'], '새로운 시도에 조용한 학생도 참여할 자리를 마련해요.', 'sky'),
+  r('P10', '함께 뛰는 응원대장', '교실 전체의 감정과 에너지를 모아 모두가 완주의 기쁨을 느끼게 하는 선생님', ['response', 'whole', 'empathy', 'completion'], ['에너지 모으기', '분위기 회복', '함께 완주'], '분위기를 살리는 것과 어려운 문제를 다루는 일을 구분해 보세요.', 'violet'),
+  r('P11', '바람을 타는 모험가', '아이들의 반응을 따라 살아 움직이는 흐름과 새로운 이야기를 만드는 선생님', ['response', 'whole', 'empathy', 'expansion'], ['교실 에너지 감지', '관계적 전환', '새로운 이야기'], '좋은 즉흥도 다음 시간에 이어 갈 기록으로 남기면 힘이 됩니다.', 'sky'),
+  r('P12', '순간을 읽는 해결사', '학생마다 다른 상황을 빠르게 파악하고 가장 필요한 해결책으로 이끄는 선생님', ['response', 'individual', 'criteria', 'completion'], ['즉각적 지원', '핵심 문제 파악', '실행력'], '빠른 해결 뒤에는 학생의 관점에서 이유를 들을 시간도 남겨요.', 'violet'),
+  r('P13', '가능성을 깨우는 탐험가', '예상 밖의 생각을 발견하면 새로운 도전과 성장의 기회로 바꾸는 선생님', ['response', 'individual', 'criteria', 'expansion'], ['발상 포착', '도전 연결', '개별 확장'], '새로운 가능성이 너무 많아질 때에는 하나의 다음 걸음을 골라요.', 'sky'),
+  r('P14', '곁을 지키는 회복술사', '학생의 감정과 속도에 맞춰 다시 참여하고 끝까지 해낼 힘을 되찾게 하는 선생님', ['response', 'individual', 'empathy', 'completion'], ['정서적 회복', '개별 속도 존중', '참여 회복'], '곁을 지키는 동안에도 공동의 약속을 함께 확인해 주세요.', 'violet'),
+  r('P15', '빛을 잇는 길잡이', '작은 신호와 마음을 따라 학생마다 다른 가능성을 새로운 배움으로 이어 주는 선생님', ['response', 'individual', 'empathy', 'expansion'], ['신호 발견', '관계 기반 확장', '가능성 연결'], '공감한 이야기를 실제 배움의 다음 장면으로 구체화해 보세요.', 'sky'),
+] as const satisfies readonly ProvisionalNbtiResult[]
 
-export function getProvisionalResult(code: string | null) {
-  return PROVISIONAL_NBTI_RESULTS.find((result) => result.code === code) ?? PROVISIONAL_NBTI_RESULTS[0]
-}
+export function getProvisionalResult(code: string | null) { return PROVISIONAL_NBTI_RESULTS.find((result) => result.code === code) ?? PROVISIONAL_NBTI_RESULTS[0] }

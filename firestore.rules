@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /pairingSessions/{code} {
+      function anonymous() {
+        return request.auth != null && request.auth.token.firebase.sign_in_provider == 'anonymous';
+      }
+      function sessionKeys(data) {
+        return data.keys().hasAll(['version', 'code', 'payload', 'createdAt', 'expiresAt', 'usedAt', 'creatorUid', 'consumerUid', 'status'])
+          && data.keys().hasOnly(['version', 'code', 'payload', 'createdAt', 'expiresAt', 'usedAt', 'creatorUid', 'consumerUid', 'status']);
+      }
+      function payloadKeys(payload) {
+        return payload.keys().hasAll(['version', 'journeyId', 'answers', 'directions', 'resultCode', 'profile'])
+          && payload.keys().hasOnly(['version', 'journeyId', 'answers', 'directions', 'resultCode', 'profile'])
+          && payload.profile.keys().hasAll(['schoolLevel', 'careerRange', 'region', 'growthPriorities', 'growthPriorityOther'])
+          && payload.profile.keys().hasOnly(['schoolLevel', 'careerRange', 'region', 'growthPriorities', 'growthPriorityOther']);
+      }
+      function validCreation() {
+        return sessionKeys(request.resource.data) && payloadKeys(request.resource.data.payload)
+          && request.resource.data.version == 1 && request.resource.data.code == code && code.matches('^[0-9]{6}$')
+          && request.resource.data.payload.version == 1 && request.resource.data.payload.journeyId is string
+          && request.resource.data.payload.answers is map && request.resource.data.payload.directions is map
+          && request.resource.data.payload.resultCode is string && request.resource.data.payload.profile.schoolLevel is string
+          && request.resource.data.payload.profile.careerRange is string && request.resource.data.payload.profile.region is string
+          && request.resource.data.payload.profile.growthPriorities is list && request.resource.data.payload.profile.growthPriorityOther is string
+          && request.resource.data.creatorUid == request.auth.uid && request.resource.data.consumerUid == null
+          && request.resource.data.status == 'waiting' && request.resource.data.usedAt == null
+          && request.resource.data.createdAt == request.time && request.resource.data.expiresAt is timestamp
+          && request.resource.data.expiresAt > request.time && request.resource.data.expiresAt <= request.time + duration.value(5, 'm');
+      }
+      function validConsumption() {
+        return resource.data.expiresAt > request.time && resource.data.status == 'waiting' && resource.data.usedAt == null
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'usedAt', 'consumerUid'])
+          && request.resource.data.status == 'connected' && request.resource.data.usedAt == request.time
+          && request.resource.data.consumerUid == request.auth.uid;
+      }
+      allow create: if anonymous() && validCreation();
+      // A create transaction must probe one exact prospective code for collision; no collection listing is permitted.
+      allow get: if anonymous() && code.matches('^[0-9]{6}$') && (!exists(/databases/$(database)/documents/pairingSessions/$(code))
+        || (resource.data.expiresAt > request.time && (resource.data.status == 'waiting' || resource.data.creatorUid == request.auth.uid || resource.data.consumerUid == request.auth.uid)));
+      allow list: if false;
+      allow update: if anonymous() && validConsumption();
+      // Deletion is limited to the creator's still-waiting code, solely for reissue before expiry.
+      allow delete: if anonymous() && resource.data.creatorUid == request.auth.uid && resource.data.status == 'waiting' && resource.data.expiresAt > request.time;
+    }
+  }
+}

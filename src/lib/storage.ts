@@ -14,11 +14,14 @@ export const PROFILE_STORAGE_KEY = 'classcade.profile.v1'
 export const JOURNEY_STORAGE_KEY = 'classcade.journey.v1'
 export const JOURNEY_STATE_STORAGE_KEY = 'classcade.journey-state.v1'
 export const ANONYMOUS_JOURNEY_ID_STORAGE_KEY = 'classcade.anonymous-journey-id.v1'
+export const PAIRING_ISSUED_CODE_STORAGE_KEY = 'classcade.pairing-issued-code.v1'
+export const PREP_DRAFT_STORAGE_KEY = 'classcade.prep-draft.v1'
 
 const NBTI_PROGRESS_STORAGE_KEY = 'classcade.nbti.v1'
 const GAME_PROGRESS_STORAGE_KEY = 'classcade.game.v1'
 
 export type DeviceMode = 'personal' | 'shared'
+export type DeviceRole = 'mobile-participant' | 'laptop-station'
 
 export type Profile = {
   version: 1
@@ -27,6 +30,7 @@ export type Profile = {
   region: Region
   growthPriorities: GrowthPriority[]
   growthPriorityOther: string
+  nickname: string
   createdAt: string
   updatedAt: string
 }
@@ -35,6 +39,19 @@ export type Journey = {
   version: 1
   status: JourneyStatus
   updatedAt: string
+}
+
+export type PrepStepValue = 1 | 2 | 3 | 4 | 'nickname'
+
+export type PrepDraft = {
+  version: 1
+  step: PrepStepValue
+  schoolLevel: SchoolLevel | null
+  careerRange: CareerRange | null
+  region: Region | null
+  growthPriorities: GrowthPriority[]
+  growthPriorityOther: string
+  nickname: string
 }
 
 export type StorageBackend = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
@@ -49,12 +66,27 @@ export type StorageResult<T> =
   | { ok: false; value: T; reason: 'unavailable' | 'read_failed' | 'write_failed' }
 
 const journeyStatuses: JourneyStatus[] = ['new', 'nbti_in_progress', 'nbti_complete', 'game_in_progress', 'complete']
-const sessionKeys = [PROFILE_STORAGE_KEY, JOURNEY_STORAGE_KEY, JOURNEY_STATE_STORAGE_KEY, ANONYMOUS_JOURNEY_ID_STORAGE_KEY, NBTI_PROGRESS_STORAGE_KEY, GAME_PROGRESS_STORAGE_KEY]
+const sessionKeys = [PROFILE_STORAGE_KEY, JOURNEY_STORAGE_KEY, JOURNEY_STATE_STORAGE_KEY, ANONYMOUS_JOURNEY_ID_STORAGE_KEY, NBTI_PROGRESS_STORAGE_KEY, GAME_PROGRESS_STORAGE_KEY, PAIRING_ISSUED_CODE_STORAGE_KEY, PREP_DRAFT_STORAGE_KEY]
 const hasValue = <T extends string>(options: readonly { value: T }[], value: unknown): value is T =>
   typeof value === 'string' && options.some((option) => option.value === value)
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
+}
+
+const legacySchoolLevel: Record<string, SchoolLevel> = { 'special-other': 'special' }
+// Forward-compat for profiles saved during the briefly-merged 10-region period.
+const legacyRegion: Record<string, Region> = {
+  'busan-ulsan-gyeongnam': 'busan',
+  'daegu-gyeongbuk': 'daegu',
+  'daejeon-sejong': 'daejeon',
+  chungcheong: 'chungbuk',
+  'gwangju-jeonnam': 'gwangju',
+}
+
+function normalizeOption<T extends string>(options: readonly { value: T }[], legacy: Record<string, T>, value: unknown): T | null {
+  if (hasValue(options, value)) return value
+  return typeof value === 'string' ? legacy[value] ?? null : null
 }
 
 function nowJourney(): Journey {
@@ -72,10 +104,16 @@ function currentSearch() {
 /** Resolve the browser-selected device context. Personal is deliberately the safe default. */
 export function resolveDeviceMode(search = currentSearch()): DeviceMode {
   try {
-    return new URLSearchParams(search).get('device') === 'shared' ? 'shared' : 'personal'
+    const params = new URLSearchParams(search)
+    return params.get('role') === 'laptop-station' || params.get('device') === 'shared' ? 'shared' : 'personal'
   } catch {
     return 'personal'
   }
+}
+
+/** Role is explicit when supplied; legacy device mode only provides a safe compatibility default. */
+export function resolveDeviceRole(search = currentSearch()): DeviceRole {
+  try { return new URLSearchParams(search).get('role') === 'laptop-station' || new URLSearchParams(search).get('device') === 'shared' ? 'laptop-station' : 'mobile-participant' } catch { return 'mobile-participant' }
 }
 
 /**
@@ -124,7 +162,9 @@ function remove(backend: StorageBackend | null, key: string): StorageResult<unde
 
 export function validateProfile(value: unknown): Profile | null {
   if (!isRecord(value) || value.version !== 1) return null
-  if (!hasValue(SCHOOL_LEVEL_OPTIONS, value.schoolLevel) || !hasValue(CAREER_RANGE_OPTIONS, value.careerRange) || !hasValue(REGION_OPTIONS, value.region)) return null
+  const schoolLevel = normalizeOption(SCHOOL_LEVEL_OPTIONS, legacySchoolLevel, value.schoolLevel)
+  const region = normalizeOption(REGION_OPTIONS, legacyRegion, value.region)
+  if (!schoolLevel || !hasValue(CAREER_RANGE_OPTIONS, value.careerRange) || !region) return null
   if (!Array.isArray(value.growthPriorities) || value.growthPriorities.length < 1 || value.growthPriorities.length > 3) return null
 
   const growthPriorities = value.growthPriorities.filter((priority): priority is GrowthPriority => hasValue(GROWTH_PRIORITY_OPTIONS, priority))
@@ -135,11 +175,12 @@ export function validateProfile(value: unknown): Profile | null {
 
   return {
     version: 1,
-    schoolLevel: value.schoolLevel,
+    schoolLevel,
     careerRange: value.careerRange,
-    region: value.region,
+    region,
     growthPriorities,
     growthPriorityOther: growthPriorities.includes('other') ? growthPriorityOther : '',
+    nickname: typeof value.nickname === 'string' ? value.nickname.trim().slice(0, 16) : '',
     createdAt: typeof value.createdAt === 'string' ? value.createdAt : new Date().toISOString(),
     updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : new Date().toISOString(),
   }
@@ -176,6 +217,56 @@ export function saveProfile(profile: Profile, deviceMode: DeviceMode = resolveDe
 
 export function clearProfile(deviceMode: DeviceMode = resolveDeviceMode(), options?: StorageOptions): StorageResult<undefined> {
   return remove(getStorageBackend(deviceMode, options), PROFILE_STORAGE_KEY)
+}
+
+const prepSteps: PrepStepValue[] = [1, 2, 3, 4, 'nickname']
+
+/** Unlike Profile, every field here is allowed to be incomplete - this is a mid-flow draft, not a finished record. */
+export function validatePrepDraft(value: unknown): PrepDraft | null {
+  if (!isRecord(value) || value.version !== 1 || !prepSteps.includes(value.step as PrepStepValue)) return null
+  const schoolLevel = value.schoolLevel === null ? null : normalizeOption(SCHOOL_LEVEL_OPTIONS, legacySchoolLevel, value.schoolLevel)
+  const region = value.region === null ? null : normalizeOption(REGION_OPTIONS, legacyRegion, value.region)
+  const careerRange = value.careerRange === null ? null : (hasValue(CAREER_RANGE_OPTIONS, value.careerRange) ? value.careerRange : undefined)
+  if (schoolLevel === undefined || region === undefined || careerRange === undefined) return null
+  if (!Array.isArray(value.growthPriorities)) return null
+
+  const growthPriorities = value.growthPriorities.filter((priority): priority is GrowthPriority => hasValue(GROWTH_PRIORITY_OPTIONS, priority))
+  if (growthPriorities.length !== value.growthPriorities.length || new Set(growthPriorities).size !== growthPriorities.length || growthPriorities.length > 3) return null
+
+  return {
+    version: 1,
+    step: value.step as PrepStepValue,
+    schoolLevel,
+    careerRange,
+    region,
+    growthPriorities,
+    growthPriorityOther: typeof value.growthPriorityOther === 'string' ? value.growthPriorityOther.trim().slice(0, 30) : '',
+    nickname: typeof value.nickname === 'string' ? value.nickname.trim().slice(0, 16) : '',
+  }
+}
+
+export function loadPrepDraft(deviceMode: DeviceMode = resolveDeviceMode(), options?: StorageOptions): StorageResult<PrepDraft | null> {
+  const backend = getStorageBackend(deviceMode, options)
+  const stored = read(backend, PREP_DRAFT_STORAGE_KEY)
+  if (!stored.ok || !stored.value) return stored.ok ? { ok: true, value: null } : { ...stored, value: null }
+
+  try {
+    const draft = validatePrepDraft(JSON.parse(stored.value))
+    if (draft) return { ok: true, value: draft }
+  } catch {
+    // Invalid browser data is discarded by falling back to a fresh Prep 1.
+  }
+  remove(backend, PREP_DRAFT_STORAGE_KEY)
+  return { ok: true, value: null }
+}
+
+export function savePrepDraft(draft: PrepDraft, deviceMode: DeviceMode = resolveDeviceMode(), options?: StorageOptions): StorageResult<PrepDraft> {
+  const result = write(getStorageBackend(deviceMode, options), PREP_DRAFT_STORAGE_KEY, JSON.stringify(draft))
+  return result.ok ? { ok: true, value: draft } : { ...result, value: draft }
+}
+
+export function clearPrepDraft(deviceMode: DeviceMode = resolveDeviceMode(), options?: StorageOptions): StorageResult<undefined> {
+  return remove(getStorageBackend(deviceMode, options), PREP_DRAFT_STORAGE_KEY)
 }
 
 export function loadJourney(deviceMode: DeviceMode = resolveDeviceMode(), options?: StorageOptions): StorageResult<Journey> {
@@ -231,13 +322,11 @@ export function ensureAnonymousJourneyId(deviceMode: DeviceMode = resolveDeviceM
 
 /** Detects only the active backend; it never probes the other device mode. */
 export function hasActiveSession(deviceMode: DeviceMode = resolveDeviceMode(), options?: StorageOptions): StorageResult<boolean> {
-  const backend = getStorageBackend(deviceMode, options)
-  for (const key of [PROFILE_STORAGE_KEY, JOURNEY_STORAGE_KEY, ANONYMOUS_JOURNEY_ID_STORAGE_KEY]) {
-    const stored = read(backend, key)
-    if (!stored.ok) return { ...stored, value: false }
-    if (stored.value) return { ok: true, value: true }
-  }
-  return { ok: true, value: false }
+  const profile = loadProfile(deviceMode, options)
+  if (!profile.ok) return { ...profile, value: false }
+  const journey = loadJourney(deviceMode, options)
+  if (!journey.ok) return { ...journey, value: false }
+  return { ok: true, value: profile.value !== null && journey.value.status !== 'new' }
 }
 
 /** Clears future NBTI result/answer data and game progress while retaining basic profile data. */

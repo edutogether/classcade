@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   ANONYMOUS_JOURNEY_ID_STORAGE_KEY,
   JOURNEY_STORAGE_KEY,
+  PAIRING_ISSUED_CODE_STORAGE_KEY,
   PROFILE_STORAGE_KEY,
   clearActiveSession,
   clearNbtiAndProgress,
@@ -11,6 +12,7 @@ import {
   loadJourney,
   loadProfile,
   resolveDeviceMode,
+  resolveDeviceRole,
   saveJourney,
   saveProfile,
   type Journey,
@@ -41,6 +43,7 @@ const profile: Profile = {
   region: 'seoul',
   growthPriorities: ['engagement', 'class-community'],
   growthPriorityOther: '',
+  nickname: '플레이메이커쌤',
   createdAt: '2026-08-02T00:00:00.000Z',
   updatedAt: '2026-08-02T00:00:00.000Z',
 }
@@ -59,6 +62,12 @@ describe('device-mode storage adapter', () => {
     expect(resolveDeviceMode('?device=personal')).toBe('personal')
     expect(resolveDeviceMode('?device=shared')).toBe('shared')
     expect(resolveDeviceMode('?device=unknown')).toBe('personal')
+  })
+
+  it('uses explicit roles without relying on viewport width and keeps laptop storage session-scoped', () => {
+    expect(resolveDeviceRole('?role=mobile-participant')).toBe('mobile-participant')
+    expect(resolveDeviceRole('?role=laptop-station')).toBe('laptop-station')
+    expect(resolveDeviceMode('?role=laptop-station')).toBe('shared')
   })
 
   it('selects localStorage for personal and sessionStorage for shared', () => {
@@ -91,6 +100,16 @@ describe('device-mode storage adapter', () => {
     expect(local.records.get(JOURNEY_STORAGE_KEY)).toBe(JSON.stringify(journey))
   })
 
+  it('clears only the current mobile participant namespace including its unconsumed code reference', () => {
+    const { local, session, options } = stores()
+    local.records.set(PROFILE_STORAGE_KEY, JSON.stringify(profile))
+    local.records.set(PAIRING_ISSUED_CODE_STORAGE_KEY, JSON.stringify({ code: '123456', expiresAt: Date.now() + 1000 }))
+    session.records.set(PROFILE_STORAGE_KEY, JSON.stringify({ ...profile, nickname: '노트북 자리' }))
+    expect(clearActiveSession('personal', options).ok).toBe(true)
+    expect(local.records.size).toBe(0)
+    expect(session.records.get(PROFILE_STORAGE_KEY)).toContain('노트북 자리')
+  })
+
   it('keeps the anonymous journey identifier separate from profile selections', () => {
     const { session, options } = stores()
     const first = ensureAnonymousJourneyId('shared', options)
@@ -98,6 +117,13 @@ describe('device-mode storage adapter', () => {
     expect(first.ok && second.ok && first.value).toBe(second.ok ? second.value : '')
     expect(session.records.get(ANONYMOUS_JOURNEY_ID_STORAGE_KEY)).not.toContain(profile.schoolLevel)
     expect(session.records.get(ANONYMOUS_JOURNEY_ID_STORAGE_KEY)).not.toContain(profile.region)
+  })
+
+  it('does not treat a standalone shared-device anonymous id as an active participant session', () => {
+    const { session, options } = stores()
+    expect(ensureAnonymousJourneyId('shared', options).ok).toBe(true)
+    expect(hasActiveSession('shared', options)).toMatchObject({ ok: true, value: false })
+    expect(session.records.has(ANONYMOUS_JOURNEY_ID_STORAGE_KEY)).toBe(true)
   })
 
   it('falls back safely from malformed values and preserves a usable new journey', () => {
