@@ -12,7 +12,7 @@ import { getHasAudioUserGesture } from './audioGesture'
 export type SceneTheme = 'prep' | 'main' | 'question' | 'result'
 
 export const SCENE_THEMES: Readonly<Record<SceneTheme, { src: string; title: string; gain: number }>> = {
-  prep: { src: prepThemeM4a, title: 'CLASSCADE - 마법사의 서곡', gain: 0.34 },
+  prep: { src: prepThemeM4a, title: 'CLASSCADE - 마법사의 서곡', gain: 0.5 },
   main: { src: mainThemeMp3, title: 'CLASSCADE - 담쟁이 서고의 오후', gain: 1 },
   question: { src: questionThemeM4a, title: 'CLASSCADE - 별빛 교실 탐색', gain: 1 },
   /* Trimmed to 3:40 with its own fade-in/out baked in by ffmpeg, so looping it is
@@ -38,6 +38,9 @@ function entryFor(theme: SceneTheme): Entry | null {
     audio.loop = true
     audio.preload = 'auto'
     audio.volume = 0
+    /* Attached (invisibly) so devtools and tests can observe playback state. */
+    audio.dataset.sceneTheme = theme
+    document.body.append(audio)
     const entry: Entry = { audio, frame: null, state: 'idle' }
     players.set(theme, entry)
     return entry

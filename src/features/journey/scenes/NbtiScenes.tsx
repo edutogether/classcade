@@ -7,6 +7,7 @@ import { getProvisionalResult } from '../../../data/nbtiResults.provisional'
 import { nbtiResultArt } from '../../../data/nbtiResultArt'
 import { ResultRecommendations } from '../components/ResultRecommendations'
 import { PrimaryButton, Progress, SceneFrame, SecondaryButton, type JourneySceneProps } from '../components/SceneFrame'
+import { playSceneTheme } from '../../../lib/audioManager'
 
 const journeyItems = [{ icon: 'clock' as const, title: '약 1분', detail: '간단한 여정' }, { icon: 'spark' as const, title: '캐릭터 성장', detail: '선택이 힘이 돼요' }, { icon: 'gamepad' as const, title: '우리 반 게임', detail: '까지 연결돼요' }]
 const directionLabels: Record<NbtiDirection, string> = { design: '설계', response: '반응', whole: '전체', individual: '개별', criteria: '기준', empathy: '공감', completion: '완성', expansion: '확장' }
@@ -140,6 +141,7 @@ export function StartScene(props: JourneySceneProps) {
   const startAction = props.onAction
   useEffect(() => {
     if (!starting) return
+    playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
     const startedAt = Date.now()
     const timer = window.setInterval(() => {
       const percent = Math.min(100, Math.round((Date.now() - startedAt) / 22))
@@ -147,6 +149,7 @@ export function StartScene(props: JourneySceneProps) {
       if (percent >= 100) { window.clearInterval(timer); startAction({ type: 'START_NBTI' }) }
     }, 80)
     return () => window.clearInterval(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- BGM fade fires once at interlude start
   }, [starting, startAction])
   if (starting) {
     return (
@@ -194,6 +197,7 @@ export function QuestionScene(props: JourneySceneProps) {
   const onActionRef = props.onAction
   useEffect(() => {
     if (!revealing) return
+    playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
     const startedAt = Date.now()
     const timer = window.setInterval(() => {
       const percent = Math.min(100, Math.round((Date.now() - startedAt) / 26))
@@ -201,6 +205,7 @@ export function QuestionScene(props: JourneySceneProps) {
       if (percent >= 100) { window.clearInterval(timer); onActionRef({ type: 'NEXT_NBTI' }) }
     }, 80)
     return () => window.clearInterval(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- BGM fade fires once at interlude start
   }, [revealing, onActionRef])
   if (revealing) {
     return (

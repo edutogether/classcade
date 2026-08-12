@@ -39,6 +39,9 @@ export function JourneyApp({ state, notice, onAction, onTeacherOpen, teacherTrig
     const theme = state.stage === 'nbti_start' ? 'main' : state.stage === 'nbti_question' ? 'question' : state.stage === 'nbti_result' ? 'result' : null
     playSceneTheme(theme, state.audio.bgmEnabled, state.audio.bgmVolume)
   }, [state.audio.bgmEnabled, state.audio.bgmVolume, state.stage])
+  /* Unmount = leaving the journey (처음으로 -> prep): without this the last track kept
+     playing straight through the prep screens. */
+  useEffect(() => () => playSceneTheme(null, false, 0), [])
   useEffect(() => { if (state.stage !== 'nbti_result') { savePairingGateOpen(false); setPairingOpen(false) } }, [state.stage])
 
   const dispatch = (action: JourneyAction) => {
