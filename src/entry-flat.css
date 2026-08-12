@@ -414,8 +414,8 @@
   .entry-prep--flat .entry-nav-img--final { width: 200px; }
 }
 
-/* Step 3's "지역을 선택했어요" cue appears only after a pick, and appearing mid-layout
-   pushed the cards and nav down a notch. The row is reserved from the start and only
-   its text fades in, so nothing moves. */
-.entry-prep--flat .entry-prep__next-cue { margin: 0 0 8px; min-height: 1.35em; visibility: visible; }
-.entry-prep--flat .entry-prep__question-head { min-height: calc(44px + 1.35em + 8px); }
+/* Step 3's "지역을 선택했어요" cue lives OUTSIDE the layout flow (absolute, hanging under
+   the question head), so its appearance cannot move the cards or the nav — reserving a
+   row didn't work because the cue renders after the head, not inside it. */
+.entry-prep--flat .entry-prep__question-head { position: relative; }
+.entry-prep--flat .entry-prep__next-cue { left: 0; margin: 0; position: absolute; top: calc(100% + 4px); }
