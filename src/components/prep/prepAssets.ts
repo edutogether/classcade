@@ -155,3 +155,11 @@ export const PREP_TWO_CARD_ART: Record<CareerRange, { neutral?: string; selected
   '11-20': { neutral: prepTwoElevenToTwentyNeutral, selected: prepTwoElevenToTwentySelected, rect: { '--art-x': '46.23%', '--art-y': '53.96%', '--art-w': '10.24%', '--art-h': '18.49%' } as CSSProperties },
   '21-plus': { neutral: prepTwoTwentyOnePlusNeutral, selected: prepTwoTwentyOnePlusSelected, rect: { '--art-x': '57.21%', '--art-y': '53.30%', '--art-w': '9.84%', '--art-h': '18.87%' } as CSSProperties },
 }
+
+/* "나의 플레이 결과 보기" — the NBTI flow's final CTA, drawn 2026-08-13.
+   All four states share one 2058x764 canvas with a transparent background. */
+import resultCtaEnabled from '../../assets/classcade/prep-nav/result-cta-enabled.png'
+import resultCtaDisabled from '../../assets/classcade/prep-nav/result-cta-disabled.png'
+import resultCtaHover from '../../assets/classcade/prep-nav/result-cta-hover.png'
+import resultCtaActive from '../../assets/classcade/prep-nav/result-cta-active.png'
+export { resultCtaEnabled, resultCtaDisabled, resultCtaHover, resultCtaActive }

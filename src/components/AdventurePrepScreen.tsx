@@ -9,7 +9,10 @@ import {
   type Region,
   type SchoolLevel,
 } from '../data/adventure'
-import { beginMainThemeReveal, noteAudioUserGesture } from '../lib/audioManager'
+import { beginMainThemeReveal, noteAudioUserGesture, syncMainTheme } from '../lib/audioManager'
+
+/** Prep plays the theme softly under the questions; the journey plays it at full volume. */
+const PREP_BGM_SCALE = 0.32
 import type { AudioSettings } from '../lib/audioController'
 import { loadPrepDraft, savePrepDraft, clearPrepDraft, type Profile, type PrepDraft } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
@@ -161,7 +164,8 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       window.setTimeout(() => setLoadingProgress(92), 1420),
       window.setTimeout(() => setLoadingProgress(100), 1850),
     ]
-    const audioTimer = window.setTimeout(() => beginMainThemeReveal(audio.bgmEnabled, audio.bgmVolume), 1240)
+    /* Already playing softly from prep; this raises it to the chosen volume for the journey. */
+    const audioTimer = window.setTimeout(() => { beginMainThemeReveal(audio.bgmEnabled, audio.bgmVolume); syncMainTheme(audio.bgmEnabled, 'nbti_start', audio.bgmVolume) }, 1240)
     const finishTimer = window.setTimeout(async () => {
       const now = new Date().toISOString()
       const result = await onComplete({
@@ -191,8 +195,11 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
     return { number: '04', question: '지금 교실에서 더 키우고 싶은 것은 무엇인가요?', helper: '최대 3개까지 선택할 수 있어요.' }
   }, [step])
 
+  /* BGM starts here, on the first prep interaction (autoplay needs a user gesture), at a
+     fraction of the chosen volume; the loading screen then swells it to full. */
   function nextStep() {
     noteAudioUserGesture()
+    beginMainThemeReveal(audio.bgmEnabled, audio.bgmVolume * PREP_BGM_SCALE)
     if (step === 1 && schoolLevel) setStep(2)
     else if (step === 2 && careerRange) setStep(3)
     else if (step === 3 && region) setStep(4)
