@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode, RefObject } from 'react'
 import { BgmControl } from '../../../components/BgmControl'
+import { SCENE_THEMES } from '../../../lib/audioSceneThemes'
 import { ClasscadeEmblem, ClasscadeWordmark, CompassSeal, Icon } from '../../../components/VisualPrimitives'
 import profileAvatar from '../../../assets/brand/profile-avatar-front.png'
 import { JOURNEY_SCENE_ASSETS, type JourneySceneAsset } from '../../../data/sceneAssets'
@@ -31,9 +32,16 @@ type SceneFrameProps = SceneContext & {
   canonicalGame?: boolean
 }
 
-export const BGM_TITLE = 'CLASSCADE - 담쟁이 서고의 오후'
+/* Header shows whichever track this scene is actually playing. */
+const SCENE_BGM_TITLE: Record<SceneName, string> = {
+  start: SCENE_THEMES.main.title,
+  question: SCENE_THEMES.question.title,
+  result: SCENE_THEMES.result.title,
+  game: SCENE_THEMES.question.title,
+  complete: SCENE_THEMES.main.title,
+}
 
-function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef, profile }: Omit<SceneContext, 'notice'>) {
+function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef, profile, scene }: Omit<SceneContext, 'notice'> & { scene: SceneName }) {
   return (
     <header className="journey-header">
       <div className="journey-brand" aria-label="브랜드 로고"><ClasscadeEmblem /><ClasscadeWordmark /></div>
@@ -42,8 +50,8 @@ function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef, prof
         <div className="journey-cluster">
           <BgmControl enabled={state.audio.bgmEnabled} volume={state.audio.bgmVolume} onToggle={() => onAction({ type: 'SET_AUDIO', audio: toggleAudioChannel(state.audio, 'bgm') })} onVolumeChange={(bgmVolume) => onAction({ type: 'SET_AUDIO', audio: { ...state.audio, bgmVolume } })} />
           {/* Leftward tape marquee; the text is doubled so the loop has no visible seam. */}
-          <span className="journey-song" aria-label={BGM_TITLE}>
-            <span className="journey-song__track" aria-hidden="true"><span>{BGM_TITLE}</span><span>{BGM_TITLE}</span></span>
+          <span className="journey-song" aria-label={SCENE_BGM_TITLE[scene]}>
+            <span className="journey-song__track" aria-hidden="true"><span>{SCENE_BGM_TITLE[scene]}</span><span>{SCENE_BGM_TITLE[scene]}</span></span>
           </span>
           <span className={`journey-equalizer ${state.audio.bgmEnabled ? 'is-playing' : ''}`} aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</span>
           <span className="journey-cluster__divider" aria-hidden="true" />
@@ -74,7 +82,7 @@ export function SceneFrame({ scene, children, state, onAction, onTeacherOpen, te
   return (
     <main className={`journey-scene journey-scene--${scene}${canonicalGame ? ' journey-scene--canonical-game' : ''}${compact ? ' is-compact' : ''}`}>
       <SceneArt asset={JOURNEY_SCENE_ASSETS[scene]} artSrc={artSrc} />
-      <JourneyHeader state={state} onAction={onAction} onTeacherOpen={onTeacherOpen} teacherTriggerRef={teacherTriggerRef} profile={profile} />
+      <JourneyHeader state={state} onAction={onAction} onTeacherOpen={onTeacherOpen} teacherTriggerRef={teacherTriggerRef} profile={profile} scene={scene} />
       <section className="journey-scene__stage">{children}</section>
       {notice && scene !== 'question' && <p className="journey-notice" aria-live="polite">{notice}</p>}
     </main>

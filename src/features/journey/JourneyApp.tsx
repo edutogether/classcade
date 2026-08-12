@@ -1,5 +1,5 @@
 import { useEffect, useState, type RefObject } from 'react'
-import { noteAudioUserGesture, playAudioCue, syncMainTheme } from '../../lib/audioManager'
+import { noteAudioUserGesture, playAudioCue, playSceneTheme } from '../../lib/audioManager'
 import type { JourneyAction, JourneyState } from './journeyState'
 import { CompleteScene, GameAdjustScene, GameCandidatesScene, GameChoiceScene, GameConceptsScene, GameConditionsScene, GameIntroScene, ShakeScene, ShareScene } from './scenes/GameScenes'
 import { QuestionScene, ResultScene, StartScene } from './scenes/NbtiScenes'
@@ -34,7 +34,10 @@ export function JourneyApp({ state, notice, onAction, onTeacherOpen, teacherTrig
   const [exitDialogOpen, setExitDialogOpen] = useState(false)
   const [exitDialogMode, setExitDialogMode] = useState<'home' | 'next'>('home')
   useEffect(() => {
-    syncMainTheme(state.audio.bgmEnabled, state.stage, state.audio.bgmVolume)
+    /* One track per phase: the main theme announces the start screen, a lighter track
+       carries the questions, and everything fades out at the result. */
+    const theme = state.stage === 'nbti_start' ? 'main' : state.stage === 'nbti_question' ? 'question' : state.stage === 'nbti_result' ? 'result' : null
+    playSceneTheme(theme, state.audio.bgmEnabled, state.audio.bgmVolume)
   }, [state.audio.bgmEnabled, state.audio.bgmVolume, state.stage])
   useEffect(() => { if (state.stage !== 'nbti_result') { savePairingGateOpen(false); setPairingOpen(false) } }, [state.stage])
 
