@@ -9,10 +9,7 @@ import {
   type Region,
   type SchoolLevel,
 } from '../data/adventure'
-import { beginMainThemeReveal, noteAudioUserGesture, syncMainTheme } from '../lib/audioManager'
-
-/** Prep plays the theme softly under the questions; the journey plays it at full volume. */
-const PREP_BGM_SCALE = 0.32
+import { noteAudioUserGesture, playSceneTheme } from '../lib/audioManager'
 import type { AudioSettings } from '../lib/audioController'
 import { loadPrepDraft, savePrepDraft, clearPrepDraft, type Profile, type PrepDraft } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
@@ -165,7 +162,9 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       window.setTimeout(() => setLoadingProgress(100), 1850),
     ]
     /* Already playing softly from prep; this raises it to the chosen volume for the journey. */
-    const audioTimer = window.setTimeout(() => { beginMainThemeReveal(audio.bgmEnabled, audio.bgmVolume); syncMainTheme(audio.bgmEnabled, 'nbti_start', audio.bgmVolume) }, 1240)
+    /* Hand over to the start screen's theme: fade the prep track out here so the main
+       theme can fade in as the start screen appears. */
+    const audioTimer = window.setTimeout(() => playSceneTheme(null, audio.bgmEnabled, audio.bgmVolume), 1240)
     const finishTimer = window.setTimeout(async () => {
       const now = new Date().toISOString()
       const result = await onComplete({
@@ -199,7 +198,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
      fraction of the chosen volume; the loading screen then swells it to full. */
   function nextStep() {
     noteAudioUserGesture()
-    beginMainThemeReveal(audio.bgmEnabled, audio.bgmVolume * PREP_BGM_SCALE)
+    playSceneTheme('prep', audio.bgmEnabled, audio.bgmVolume)
     if (step === 1 && schoolLevel) setStep(2)
     else if (step === 2 && careerRange) setStep(3)
     else if (step === 3 && region) setStep(4)
