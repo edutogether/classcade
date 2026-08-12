@@ -424,3 +424,22 @@
   .journey-result--art .journey-result__directions { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-left: 0; }
   .journey-result--art .journey-result__caution, .journey-result--art .journey-result__actions { margin-left: 0; }
 }
+
+/* Result actions: 추천받기 halved so 다시 탐색하기 sits beside it on the same row. */
+.journey-result--art .journey-result__actions { display: grid; gap: clamp(10px, 1vw, 16px); grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.journey-result--art .journey-result__actions .journey-button { min-width: 0; width: 100%; }
+.journey-result--art .journey-result__actions .journey-button--secondary { min-height: clamp(56px, 6.6vh, 74px); }
+@media (max-width: 700px) { .journey-result--art .journey-result__actions { grid-template-columns: 1fr; } }
+
+/* Video cards: full-width 16:9 still with a play button, caption beneath — not a
+   thumbnail-beside-text row. The panel stretches to finish level with the buttons. */
+.result-rec__list article { display: block; }
+.result-rec__list article > a { display: block; }
+.result-rec__thumb { width: 100%; }
+.result-rec__thumb::after { height: 54px; width: 54px; }
+.result-rec__thumb::before { border-bottom: 11px solid transparent; border-left: 18px solid rgba(255,250,230,.96); border-top: 11px solid transparent; content: ''; left: calc(50% - 5px); position: absolute; top: 50%; transform: translateY(-50%); z-index: 1; }
+.result-rec__list article > div { padding: 9px 3px 2px; }
+@media (min-width: 1101px) {
+  .journey-result.has-recommendations .result-rec { align-self: stretch; display: flex; flex-direction: column; }
+  .result-rec__list { flex: 1 1 auto; }
+}

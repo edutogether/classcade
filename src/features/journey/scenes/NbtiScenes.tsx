@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
-import { prepNavBack, prepNavCtaEnabled, prepNavCtaDisabled, loadingMaster } from '../../../components/prep/prepAssets'
+import { prepNavBack, prepNavCtaEnabled, prepNavCtaDisabled, loadingMaster, resultCtaEnabled, resultCtaDisabled } from '../../../components/prep/prepAssets'
 import profileAvatar from '../../../assets/brand/profile-avatar-front.png'
 import { ClasscadeEmblem, ClasscadeLockup, Icon, type IconName } from '../../../components/VisualPrimitives'
 import { NBTI_AXES, NBTI_QUESTIONS, NBTI_TOTAL_QUESTIONS, type NbtiAxis, type NbtiDirection } from '../../../data/nbti.provisional'
@@ -211,7 +211,7 @@ export function QuestionScene(props: JourneySceneProps) {
             {/* The drawn plaque says "다음 질문으로"; the final question needs different
                 copy, so it keeps the CSS button. */}
             {last
-              ? <PrimaryButton onClick={() => setRevealing(true)} disabled={!selected}>나의 플레이 결과 보기</PrimaryButton>
+              ? <JourneyNavArt art={selected ? resultCtaEnabled : resultCtaDisabled} label='나의 플레이 결과 보기' onClick={() => setRevealing(true)} disabled={!selected} variant='result' />
               : <JourneyNavArt art={selected ? prepNavCtaEnabled : prepNavCtaDisabled} label="다음 질문으로" onClick={() => props.onAction({ type: 'NEXT_NBTI' })} disabled={!selected} variant="next" />}
           </div>
         </div>
@@ -223,7 +223,7 @@ export function QuestionScene(props: JourneySceneProps) {
 
 /** Same drawn nav plaques as the prep flow, with the same guarantee: if the image fails
  *  to load, the flat CSS button comes back instead of an invisible click target. */
-function JourneyNavArt({ art, label, onClick, disabled, variant }: { art: string; label: string; onClick: () => void; disabled?: boolean; variant: 'back' | 'next' }) {
+function JourneyNavArt({ art, label, onClick, disabled, variant }: { art: string; label: string; onClick: () => void; disabled?: boolean; variant: 'back' | 'next' | 'result' }) {
   const [failed, setFailed] = useState(false)
   if (failed) {
     return variant === 'back'
@@ -231,7 +231,7 @@ function JourneyNavArt({ art, label, onClick, disabled, variant }: { art: string
       : <PrimaryButton onClick={onClick} disabled={disabled}>{label}</PrimaryButton>
   }
   return (
-    <button type="button" className="journey-nav-img" onClick={onClick} disabled={disabled} aria-label={label}>
+    <button type="button" className={`journey-nav-img journey-nav-img--${variant}`} onClick={onClick} disabled={disabled} aria-label={label}>
       <img src={art} alt="" aria-hidden="true" onError={() => setFailed(true)} />
     </button>
   )
