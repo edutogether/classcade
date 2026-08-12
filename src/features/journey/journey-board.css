@@ -109,7 +109,8 @@
 /* The parchment frame's painted border needs clearance — without the extra padding the
    slot labels and progress bar sit on top of the frame art. Also pulled well off the
    right edge toward the centre. */
-.journey-question-split > .journey-question__sidebar { margin-right: clamp(80px, 11vw, 250px); margin-top: clamp(-52px, -4.5vh, -24px); padding: clamp(22px, 1.9vw, 34px) clamp(20px, 1.7vw, 30px); }
+/* Top-aligned with the question board — the negative pull left them a step apart. */
+.journey-question-split > .journey-question__sidebar { margin-right: clamp(80px, 11vw, 250px); margin-top: 0; padding: clamp(22px, 1.9vw, 34px) clamp(20px, 1.7vw, 30px); }
 
 /* Fully opaque player board — translucency over the busy backdrop hurt readability. */
 .journey-question-split > .journey-question__sidebar { background: linear-gradient(160deg, #fffbe8, #e9d3a0); }

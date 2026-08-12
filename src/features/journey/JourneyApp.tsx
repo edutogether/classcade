@@ -48,20 +48,28 @@ export function JourneyApp({ state, notice, onAction, onTeacherOpen, teacherTrig
   const sceneProps: JourneySceneProps = { state, notice, onAction: dispatch, onTeacherOpen, teacherTriggerRef, profile: profile ?? undefined, onRequestHome: () => { setExitDialogMode('home'); setExitDialogOpen(true) }, onNextParticipant: onNextParticipant ? () => { setExitDialogMode('next'); setExitDialogOpen(true) } : undefined }
 
   let content: React.ReactNode
+  /* 2026-08-13: the journey now ends at the result screen. The pairing and game-builder
+     scenes below are kept in the codebase but are no longer reachable — any stage that
+     still points at them (a restored session, a stale saved stage) falls back to the
+     result screen rather than dead-ending on a disconnected page. */
   if (pairingEntry) content = <PairingEntryScene {...sceneProps} onPaired={(payload) => onPaired?.(payload)} onStart={() => onStartHere?.()} onBack={() => onExitPairingEntry?.()} />
   else if (state.stage === 'nbti_start') content = <StartScene {...sceneProps} />
   else if (state.stage === 'nbti_question') content = <QuestionScene {...sceneProps} />
-  else if (state.stage === 'nbti_result' && pairingOpen && profile) content = <PairingScene {...sceneProps} profile={profile} journeyId={journeyId} onBack={() => { savePairingGateOpen(false); setPairingOpen(false) }} />
-  else if (state.stage === 'nbti_result') content = <ResultScene {...sceneProps} onPair={() => { savePairingGateOpen(true); setPairingOpen(true) }} />
-  else if (state.stage === 'game_intro') content = <GameIntroScene {...sceneProps} />
-  else if (state.stage === 'game_conditions') content = <GameConditionsScene {...sceneProps} />
-  else if (state.stage === 'game_concepts') content = <GameConceptsScene {...sceneProps} />
-  else if (state.stage === 'game_candidates') content = <GameCandidatesScene {...sceneProps} />
-  else if (state.stage === 'game_adjust') content = <GameAdjustScene {...sceneProps} />
-  else if (state.stage === 'game_choice') content = <GameChoiceScene {...sceneProps} />
-  else if (state.stage === 'game_shake') content = <ShakeScene {...sceneProps} />
-  else if (state.stage === 'game_complete') content = <CompleteScene {...sceneProps} />
-  else content = <ShareScene {...sceneProps} />
+  else content = <ResultScene {...sceneProps} onPair={() => { savePairingGateOpen(true); setPairingOpen(true) }} />
+
+  const disconnectedScenes = (): React.ReactNode => {
+    if (state.stage === 'nbti_result' && pairingOpen && profile) return <PairingScene {...sceneProps} profile={profile} journeyId={journeyId} onBack={() => { savePairingGateOpen(false); setPairingOpen(false) }} />
+    if (state.stage === 'game_intro') return <GameIntroScene {...sceneProps} />
+    if (state.stage === 'game_conditions') return <GameConditionsScene {...sceneProps} />
+    if (state.stage === 'game_concepts') return <GameConceptsScene {...sceneProps} />
+    if (state.stage === 'game_candidates') return <GameCandidatesScene {...sceneProps} />
+    if (state.stage === 'game_adjust') return <GameAdjustScene {...sceneProps} />
+    if (state.stage === 'game_choice') return <GameChoiceScene {...sceneProps} />
+    if (state.stage === 'game_shake') return <ShakeScene {...sceneProps} />
+    if (state.stage === 'game_complete') return <CompleteScene {...sceneProps} />
+    return <ShareScene {...sceneProps} />
+  }
+  void disconnectedScenes
 
   return <>{content}<JourneyExitDialog open={exitDialogOpen} mode={exitDialogMode} onContinue={() => setExitDialogOpen(false)} onHome={() => { setExitDialogOpen(false); dispatch({ type: 'GO_HOME' }) }} onNewSession={() => { setExitDialogOpen(false); if (exitDialogMode === 'next') onNextParticipant?.(); else dispatch({ type: 'RESET_NBTI' }) }} /></>
 }

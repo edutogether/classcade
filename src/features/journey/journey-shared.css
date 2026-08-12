@@ -315,16 +315,16 @@
    Everything from here down shares the same 640px right edge so the column reads as one. */
 /* Shifted left by exactly the bar + padding, so the words 반응/공감 sit on the same
    vertical line as the copy text above them. */
-.journey-result--art .journey-result__directions { display: grid; gap: clamp(10px, 1vw, 16px); grid-template-columns: repeat(2, minmax(0, 1fr)); margin-left: calc(-4px - clamp(17px, 1.7vw, 28px)); max-width: 640px; }
+.journey-result--art .journey-result__directions { display: grid; gap: clamp(10px, 1vw, 16px); grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 640px; }
 .journey-result--art .journey-result__directions span { background: rgba(255,255,255,.6); border: 0; border-left: 4px solid #8a6b22; border-radius: 0 10px 10px 0; box-shadow: 0 3px 12px rgba(60,70,40,.14); display: grid; gap: 6px; padding: clamp(15px, 1.5vw, 24px) clamp(17px, 1.7vw, 28px); }
 .journey-result--art .journey-result__directions small { color: #6b7b58; font-size: clamp(13px, 1.05vw, 18px); font-weight: 800; }
 .journey-result--art .journey-result__directions b { color: #20301e; font-size: clamp(25px, 2.1vw, 38px); letter-spacing: -.04em; }
 /* Same left shift as the direction cards, so every box shares one left edge. */
-.journey-result--art .journey-result__caution { background: rgba(255,255,255,.55); border-left: 4px solid #8a6b22; border-radius: 0 10px 10px 0; box-sizing: border-box; color: #43402e; font-size: clamp(14px, 1.05vw, 18px); line-height: 1.7; margin-left: calc(-4px - clamp(17px, 1.7vw, 28px)); margin-top: clamp(18px, 2.6vh, 30px); max-width: 640px; padding: clamp(10px, 1.2vh, 15px) clamp(17px, 1.7vw, 28px); }
+.journey-result--art .journey-result__caution { background: rgba(255,255,255,.55); border-left: 4px solid #8a6b22; border-radius: 0 10px 10px 0; box-sizing: border-box; color: #43402e; font-size: clamp(14px, 1.05vw, 18px); line-height: 1.7; margin-top: clamp(18px, 2.6vh, 30px); max-width: 640px; padding: clamp(10px, 1.2vh, 15px) clamp(17px, 1.7vw, 28px); }
 .journey-result--art .journey-result__caution b { color: #8a6b22; font-size: clamp(12px, .95vw, 15px); letter-spacing: .08em; }
 .journey-result--art .journey-result__next { color: #2c5a3c; font-size: clamp(16px, 1.3vw, 23px); font-weight: 800; letter-spacing: -.03em; margin-top: clamp(16px, 2.2vh, 26px); }
 .journey-result--art .journey-result__disclaimer { color: #6e785f; font-size: clamp(12px, .95vw, 16px); line-height: 1.65; margin-top: clamp(10px, 1.6vh, 18px); }
-.journey-result--art .journey-result__actions { margin-left: calc(-4px - clamp(17px, 1.7vw, 28px)); margin-top: clamp(14px, 2.2vh, 28px); max-width: 640px; }
+.journey-result--art .journey-result__actions { margin-top: clamp(14px, 2.2vh, 28px); max-width: 640px; }
 /* On the per-type art the painting's own character carries the reveal; the CSS lockup
    overlay just collided with him. */
 .journey-result--art .journey-result__reveal { display: none; }
@@ -377,4 +377,34 @@
   .pairing-mobile-flow{display:grid;gap:14px;margin:50svh 0 0;width:100%}.pairing-mobile-flow .pairing-gate{margin:0;max-width:none;padding:24px 18px}.pairing-gate__code{font-size:clamp(42px,11vw,56px);letter-spacing:.1em;padding-left:.1em}.pairing-waiting{display:grid;gap:13px}.pairing-waiting>section{background:linear-gradient(145deg,rgba(246,233,189,.97),rgba(216,183,111,.96));border:1px solid rgba(125,85,28,.62);box-shadow:inset 0 1px rgba(255,255,255,.7),0 10px 22px rgba(0,0,0,.26);color:#402e18;padding:18px}.pairing-waiting h2{font-family:'Gowun Batang',serif;font-size:25px;letter-spacing:-.08em;line-height:1.12;margin:2px 0 8px}.pairing-waiting>section>p{font-size:12px;font-weight:700;line-height:1.55;margin:0}.pairing-videos{display:grid;gap:9px;margin-top:14px}.pairing-videos a{background:rgba(255,250,224,.68);border:1px solid rgba(113,76,25,.32);color:#3e2d18;display:grid;gap:9px;grid-template-columns:94px 1fr;min-height:92px;padding:7px;text-decoration:none}.pairing-videos img{height:100%;object-fit:cover;width:94px}.pairing-videos__thumb-fallback{align-items:center;background:rgba(113,76,25,.14);color:#71531e;display:flex;height:100%;justify-content:center;width:94px}.pairing-videos span{display:grid;gap:3px}.pairing-videos b{font-size:13px;line-height:1.3}.pairing-videos small{font-size:10px;line-height:1.35}.pairing-videos em{color:#28663d;font-size:10px;font-style:normal;font-weight:900}.pairing-story{background:linear-gradient(145deg,rgba(8,45,28,.96),rgba(3,20,12,.98))!important;color:#fff4c9!important}.pairing-story h2{color:#fff2bf}.pairing-story>p{color:rgba(255,245,210,.84)!important}.pairing-story>div{display:grid;gap:8px;grid-template-columns:1fr;margin-top:14px}.pairing-story button{background:rgba(244,212,118,.14);border:1px solid rgba(244,212,118,.7);color:#fff3c2;cursor:pointer;font:inherit;font-size:13px;font-weight:900;min-height:48px}.pairing-story button:focus-visible,.pairing-story button:hover{background:rgba(244,212,118,.25);outline:2px solid #f4d474;outline-offset:2px}.pairing-story img{border:1px solid rgba(244,212,118,.72);display:block;margin:15px auto 0;max-width:100%}.pairing-story__message{color:#f8dc8c!important;margin-top:12px!important}
 }
 
-.completion-videos a{align-items:center;display:inline-flex!important;min-height:44px}
+.completion-videos a{align-items:center;display:inline-flex!important;min-height:44px}
+/* --- Result recommendations panel (2026-08-13) ----------------------------------------
+   Opens beside the result copy when 추천받기 is pressed; the game builder and the
+   notebook-pairing flow are no longer reachable from this screen. */
+.result-rec { align-self: start; background: linear-gradient(160deg, rgba(255,251,232,.96), rgba(228,203,140,.94)); border: 1px solid rgba(123,82,27,.42); border-radius: 10px; box-shadow: 0 20px 46px rgba(0,0,0,.4); color: #402e18; padding: clamp(18px, 1.7vw, 28px); }
+.result-rec .journey-kicker { color: #8c672a; margin: 0 0 6px; }
+.result-rec h2 { font-family: 'Gowun Batang', serif; font-size: clamp(20px, 1.6vw, 27px); letter-spacing: -.05em; line-height: 1.15; margin: 0 0 8px; }
+.result-rec__lead { font-size: clamp(12px, .92vw, 15px); font-weight: 700; line-height: 1.6; margin: 0 0 14px; }
+.result-rec__list { display: grid; gap: 12px; }
+.result-rec__list article { background: rgba(255,250,224,.78); border: 1px solid rgba(113,76,25,.3); border-radius: 9px; display: grid; gap: 10px; grid-template-columns: 108px minmax(0, 1fr); padding: 9px; }
+.result-rec__thumb { border-radius: 6px; display: block; overflow: hidden; position: relative; }
+.result-rec__thumb img { aspect-ratio: 16 / 9; display: block; height: auto; object-fit: cover; width: 100%; }
+.result-rec__thumb--fallback { align-items: center; aspect-ratio: 16 / 9; background: rgba(113,76,25,.14); color: #71531e; display: flex; justify-content: center; }
+/* Play affordance over the thumbnail, matching the pairing panel's. */
+.result-rec__thumb::after { background: radial-gradient(circle, rgba(10,20,14,.55) 0 58%, transparent 62%); border-radius: 50%; content: ''; height: 34px; left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%); width: 34px; }
+.result-rec__thumb--fallback::after { content: none; }
+.result-rec__list h3 { font-size: clamp(13px, 1vw, 16px); line-height: 1.3; margin: 0 0 3px; }
+.result-rec__list small { color: #6b5326; font-size: clamp(10px, .82vw, 12px); }
+.result-rec__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 7px; }
+.result-rec__actions a, .result-rec__actions button { align-items: center; background: none; border: 0; color: #28663d; cursor: pointer; display: inline-flex; font: inherit; font-size: clamp(11px, .85vw, 13px); font-weight: 900; gap: 5px; padding: 0; text-decoration: none; }
+.result-rec__actions button:hover, .result-rec__actions a:hover { text-decoration: underline; }
+.result-rec__message { color: #5c4118; font-size: clamp(11px, .85vw, 13px); font-weight: 700; margin: 12px 0 0; min-height: 18px; }
+
+@media (min-width: 1101px) {
+  /* Result copy left, recommendations right — the painting's subject stays clear between. */
+  .journey-result.has-recommendations { align-items: start; column-gap: clamp(24px, 3vw, 64px); display: grid; grid-template-columns: minmax(0, 1fr) clamp(330px, 27vw, 440px); width: 100%; }
+  .journey-result.has-recommendations .journey-result__copy { grid-column: 1; }
+  .journey-result.has-recommendations .result-rec { grid-column: 2; }
+  .journey-result.has-recommendations .journey-result__reveal { display: none; }
+}
+@media (max-width: 1100px) { .result-rec { margin-top: 18px; } }

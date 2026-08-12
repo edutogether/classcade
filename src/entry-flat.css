@@ -264,10 +264,12 @@
      close. */
   padding: var(--prep-gap) 0 var(--prep-gap);
 }
-/* Centred in the leftover space, but never opening a gap larger than this - otherwise
-   the sparse pages push the cards far from their question. */
+/* Fixed distance below the question, NOT centred in the leftover space: centring made
+   the card block's top edge depend on how many rows that step happens to have, so
+   stepping 2 -> 3 (one row -> two rows) visibly jolted the whole block down a notch.
+   A constant top offset keeps every step's cards on the same line. */
 .entry-prep--flat .entry-flat-cards,
-.entry-prep--flat .entry-growth-grid { margin-block: auto; }
+.entry-prep--flat .entry-growth-grid { margin-block: 0 auto; }
 .entry-prep--flat .entry-prep__question-head { margin-bottom: var(--prep-gap); }
 /* Equal space above and below the nav row: the padding above the buttons matches the
    panel's own bottom padding below them. */
