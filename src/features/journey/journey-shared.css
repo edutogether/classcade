@@ -408,3 +408,19 @@
   .journey-result.has-recommendations .journey-result__reveal { display: none; }
 }
 @media (max-width: 1100px) { .result-rec { margin-top: 18px; } }
+.result-rec__qr { align-items: center; border-top: 1px solid rgba(123,82,27,.3); display: flex; gap: 13px; margin-top: 14px; padding-top: 14px; }
+.result-rec__qr img { border: 1px solid rgba(123,82,27,.28); border-radius: 8px; flex: 0 0 auto; height: 108px; width: 108px; }
+.result-rec__qr b { color: #2f2718; display: block; font-size: clamp(13px, 1vw, 16px); }
+.result-rec__qr p { color: #5c4118; font-size: clamp(11px, .85vw, 13px); line-height: 1.55; margin: 4px 0 0; }
+.result-rec__qr p b { display: inline; }
+
+/* Phones (incl. QR visitors): the poster h1 is sized for a wide column and was clipping
+   to "든든한 …" on a 390px screen. Let it wrap and shrink. */
+@media (max-width: 700px) {
+  .journey-result--art .journey-result__copy { max-width: none; }
+  .journey-result--art .journey-result__copy h1,
+  .journey-result--art .journey-result__copy h1[data-tune-id='main-title'] { font-size: clamp(32px, 9vw, 44px); overflow: visible; text-overflow: clip; white-space: normal; word-break: keep-all; }
+  .journey-result--art .journey-result__description { white-space: normal; }
+  .journey-result--art .journey-result__directions { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-left: 0; }
+  .journey-result--art .journey-result__caution, .journey-result--art .journey-result__actions { margin-left: 0; }
+}
