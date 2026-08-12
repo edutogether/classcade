@@ -443,3 +443,6 @@
   .journey-result.has-recommendations .result-rec { align-self: stretch; display: flex; flex-direction: column; }
   .result-rec__list { flex: 1 1 auto; }
 }
+
+/* 새로 시작하기 sits beside the primary CTA and was reading much smaller than it. */
+@media (min-width: 701px) { .journey-scene--start .journey-start__actions .journey-button--secondary { font-size: clamp(15px, 1.15vw, 21px); } }

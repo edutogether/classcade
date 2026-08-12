@@ -133,6 +133,32 @@ function GrowingPlayerPanel({ growth, answers, nickname }: { growth: number; ans
 }
 
 export function StartScene(props: JourneySceneProps) {
+  /* Same loading interlude the prep flow uses, so entering the questions reads as a
+     scene change rather than an instant swap. */
+  const [starting, setStarting] = useState(false)
+  const [startProgress, setStartProgress] = useState(0)
+  const startAction = props.onAction
+  useEffect(() => {
+    if (!starting) return
+    const startedAt = Date.now()
+    const timer = window.setInterval(() => {
+      const percent = Math.min(100, Math.round((Date.now() - startedAt) / 22))
+      setStartProgress(percent)
+      if (percent >= 100) { window.clearInterval(timer); startAction({ type: 'START_NBTI' }) }
+    }, 80)
+    return () => window.clearInterval(timer)
+  }, [starting, startAction])
+  if (starting) {
+    return (
+      <main className="entry-loading entry-loading--art" aria-live="polite">
+        <div className="entry-loading__stage">
+          <img className="entry-loading__art" src={loadingMaster} alt="" aria-hidden="true" />
+          <i className="entry-loading__fill" style={{ '--progress': `${startProgress}%` } as CSSProperties} aria-hidden="true" />
+        </div>
+        <p className="sr-only" role="status">교실 장면을 여는 중 {startProgress}%</p>
+      </main>
+    )
+  }
   return (
     <SceneFrame scene="start" {...props}>
       {/* v4 art carries no UI text on the left, so the copy is live DOM again, matching the
@@ -146,7 +172,7 @@ export function StartScene(props: JourneySceneProps) {
           {journeyItems.map((item) => <li key={item.title}><Icon name={item.icon} size={25} /><span><b>{item.title}</b><small>{item.detail}</small></span></li>)}
         </ul>
         <div className="journey-start__actions">
-          <PrimaryButton onClick={() => props.onAction({ type: 'START_NBTI' })} tuneId="main-primary-cta">교실 NBTI 시작하기</PrimaryButton>
+          <PrimaryButton onClick={() => setStarting(true)} tuneId="main-primary-cta">교실 NBTI 시작하기</PrimaryButton>
           {props.state.resumeStage ? <SecondaryButton onClick={() => props.onAction({ type: 'RESUME_JOURNEY' })} tuneId="main-resume-cta"><Icon name="reset" size={20} />이전 여정 이어가기</SecondaryButton> : <SecondaryButton onClick={() => props.onAction({ type: 'RESET_NBTI' })} tuneId="main-resume-cta"><Icon name="reset" size={20} />새로 시작하기</SecondaryButton>}
         </div>
         <p className="journey-start__audio-note" data-tune-id="main-headphone-note"><Icon name="speaker" size={17} />헤드폰을 착용하면 BGM과 효과음이 더욱 몰입감을 높여줘요.</p>
