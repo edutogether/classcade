@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import QRCode from 'qrcode'
 import { CompassSeal, Icon } from '../../../components/VisualPrimitives'
 import { CLASSCADE_VIDEO_CATALOG, rankVideos, recommendationTags } from '../../../data/completionExperience'
 import { getProvisionalResult } from '../../../data/nbtiResults.provisional'
@@ -12,8 +13,23 @@ function Thumb({ src }: { src?: string }) {
 
 /** Recommendations opened straight from the result screen — the game builder and the
  *  notebook-pairing flow are no longer part of this path. */
-export function ResultRecommendations({ state }: { state: JourneyState }) {
+export function ResultRecommendations({ state, mbti }: { state: JourneyState; mbti: string }) {
   const result = getProvisionalResult(state.resultCode)
+  /* The booth laptop is shared and signed in to nobody, so "copy the link" has nowhere
+     to go. The QR hands the result to the participant's own phone instead, and they
+     share to their own KakaoTalk from there. */
+  const [qr, setQr] = useState<string | null>(null)
+  const shareUrl = useMemo(() => {
+    const origin = typeof window === 'undefined' ? 'https://edutogether.kr' : window.location.origin
+    return `${origin}/?type=${mbti}`
+  }, [mbti])
+  useEffect(() => {
+    let alive = true
+    void QRCode.toDataURL(shareUrl, { margin: 1, width: 320, color: { dark: '#2b3a24', light: '#fffaf0' } })
+      .then((value) => { if (alive) setQr(value) })
+      .catch(() => { if (alive) setQr(null) })
+    return () => { alive = false }
+  }, [shareUrl])
   /* No game data on this path, so conditions/candidate are null: the ranking runs on the
      NBTI direction tags alone. Backfilled so the panel always has three to show. */
   const videos = useMemo(() => {
@@ -69,6 +85,13 @@ export function ResultRecommendations({ state }: { state: JourneyState }) {
         ))}
       </div>
       <p className="result-rec__message" aria-live="polite">{message}</p>
+      <div className="result-rec__qr">
+        {qr && <img src={qr} alt={`${result.title} 결과와 추천 영상을 여는 QR 코드`} />}
+        <div>
+          <b>폰으로 가져가기</b>
+          <p>휴대폰 카메라로 QR을 비추면 내 폰에서 결과와 추천 영상이 열려요. 거기서 카카오톡 <b>나와의 채팅</b>으로 보내면 저장됩니다.</p>
+        </div>
+      </div>
     </aside>
   )
 }

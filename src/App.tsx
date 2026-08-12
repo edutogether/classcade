@@ -9,6 +9,7 @@ import { ChunkErrorBoundary } from './components/ChunkErrorBoundary'
 const JourneyApp = lazy(() => import('./features/journey/JourneyApp').then((module) => ({ default: module.JourneyApp })))
 import { loadJourneyState, saveJourneyState } from './features/journey/journeyPersistence'
 import { createJourneyState, journeyReducer, journeyStatusForStage, type JourneyAction, type JourneyState } from './features/journey/journeyState'
+import { resultCodeForMbti } from './data/nbtiResults.provisional'
 import { resolveEntryState } from './lib/entryState'
 import { preloadMainTheme } from './lib/audioManager'
 import { EntryVisualTuner } from './features/entry/EntryVisualTuner'
@@ -59,9 +60,18 @@ export default function App() {
   const [deviceRole] = useState(() => resolveDeviceRole())
   const [profile, setProfile] = useState<Profile | null>(boot.profileResult.value)
   const [journey, setJourney] = useState<Journey>(boot.journeyResult.value)
-  const [journeyState, setJourneyState] = useState<JourneyState>(() => boot.detailedJourneyResult.value ?? createJourneyState())
+  /* `?type=ESTJ` is the QR deep link the booth laptop shows: it opens straight on that
+     result on the participant's own phone, so they can share to their own KakaoTalk
+     without the shared laptop ever being signed in to anything. */
+  const [journeyState, setJourneyState] = useState<JourneyState>(() => {
+    const requestedType = typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('type')
+    const sharedCode = requestedType ? resultCodeForMbti(requestedType) : null
+    if (sharedCode) return { ...createJourneyState('nbti_result'), resultCode: sharedCode }
+    return boot.detailedJourneyResult.value ?? createJourneyState()
+  })
+  const sharedResultRequested = typeof window !== 'undefined' && !!resultCodeForMbti(new URLSearchParams(window.location.search).get('type') ?? '')
   const pairingEntryRequested = typeof window !== 'undefined' && (new URLSearchParams(window.location.search).get('pairing') === '1' || deviceRole === 'laptop-station')
-  const [screen, setScreen] = useState<Screen>(pairingEntryRequested || initialEntryState.screen === 'start' ? 'journey' : 'prep')
+  const [screen, setScreen] = useState<Screen>(sharedResultRequested || pairingEntryRequested || initialEntryState.screen === 'start' ? 'journey' : 'prep')
   const [sharedSessionGateOpen, setSharedSessionGateOpen] = useState(initialEntryState.sharedSessionGateOpen)
   const [prepExiting, setPrepExiting] = useState(false)
   const [teacherOpen, setTeacherOpen] = useState(false)
@@ -234,7 +244,9 @@ export default function App() {
 
   const showJourney = (screen === 'journey' || prepExiting) && !sharedSessionGateOpen
   return <>
-    {showJourney && (profile || pairingEntryRequested) && <ChunkErrorBoundary><Suspense fallback={<div style={{ background: '#050c07', minHeight: '100svh' }} />}><JourneyApp state={journeyState} notice={notice} onAction={handleJourneyAction} onTeacherOpen={(button) => { teacherTriggerRef.current = button; setTeacherOpen(true) }} teacherTriggerRef={teacherTriggerRef} profile={profile} journeyId={journeyId} pairingEntry={pairingEntryRequested && !profile} onPaired={restorePairedJourney} onStartHere={() => { setScreen('prep'); clearPairingEntryQuery() }} onExitPairingEntry={() => { setScreen('prep'); clearPairingEntryQuery() }} onNextParticipant={() => resetActiveJourney('laptop-next-participant')} /></Suspense></ChunkErrorBoundary>}
+    {/* A QR visitor has no profile on their own phone — without them in this guard the
+        shared-result link renders a blank page. */}
+    {showJourney && (profile || pairingEntryRequested || sharedResultRequested) && <ChunkErrorBoundary><Suspense fallback={<div style={{ background: '#050c07', minHeight: '100svh' }} />}><JourneyApp state={journeyState} notice={notice} onAction={handleJourneyAction} onTeacherOpen={(button) => { teacherTriggerRef.current = button; setTeacherOpen(true) }} teacherTriggerRef={teacherTriggerRef} profile={profile} journeyId={journeyId} pairingEntry={pairingEntryRequested && !profile} onPaired={restorePairedJourney} onStartHere={() => { setScreen('prep'); clearPairingEntryQuery() }} onExitPairingEntry={() => { setScreen('prep'); clearPairingEntryQuery() }} onNextParticipant={() => resetActiveJourney('laptop-next-participant')} /></Suspense></ChunkErrorBoundary>}
     {screen === 'prep' && <AdventurePrepScreen initialProfile={profile} audio={journeyState.audio} exiting={prepExiting} isOffline={!online} onComplete={handleProfileComplete} onScreenChange={setTunerScreen} />}
     {profile && <TeacherPanel open={teacherOpen} profile={profile} journey={journey} deviceMode={deviceMode} returnFocusRef={teacherTriggerRef} onClose={() => setTeacherOpen(false)} onEdit={() => { setTeacherOpen(false); setScreen('prep') }} onRestartNbti={restartNbti} onResetAll={resetActiveJourney} onStartNewShared={resetActiveJourney} onPlaceholderAction={handleTeacherAction} />}
     {showJourney && profile && <EntryVisualTuner screen="main" />}

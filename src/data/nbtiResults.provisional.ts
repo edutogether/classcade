@@ -23,3 +23,17 @@ export const PROVISIONAL_NBTI_RESULTS = [
 ] as const satisfies readonly ProvisionalNbtiResult[]
 
 export function getProvisionalResult(code: string | null) { return PROVISIONAL_NBTI_RESULTS.find((result) => result.code === code) ?? PROVISIONAL_NBTI_RESULTS[0] }
+
+/** MBTI letters -> internal result code, for the QR "폰으로 받기" deep link
+ *  (`?type=ESTJ`). Built from `directions` so it can never drift from the results
+ *  table: axis order is flow, participation, judgment, learning; MBTI reads
+ *  participation(E/I), flow(S/N), judgment(T/F), learning(J/P). */
+const MBTI_LETTER: Record<NbtiDirection, string> = { whole: 'E', individual: 'I', design: 'S', response: 'N', criteria: 'T', empathy: 'F', completion: 'J', expansion: 'P' }
+const CODE_BY_MBTI: Record<string, string> = Object.fromEntries(PROVISIONAL_NBTI_RESULTS.map((result) => {
+  const [flow, participation, judgment, learning] = result.directions
+  return [[participation, flow, judgment, learning].map((direction) => MBTI_LETTER[direction]).join(''), result.code]
+}))
+
+export function resultCodeForMbti(mbti: string): string | null {
+  return CODE_BY_MBTI[mbti.toUpperCase()] ?? null
+}
