@@ -16,6 +16,11 @@
   --board-zoom: 1;
 }
 
+/* Booth FHD (1920x1080): a middle zoom tier. 1.15 x 1180 = 1357px wide and the tallest
+   prep panel still clears 1080 with margins; the full 1.32 only fits 1200px+ heights. */
+@media (min-width: 1800px) and (min-height: 1000px) {
+  :root { --board-zoom: 1.15; }
+}
 @media (min-width: 1800px) and (min-height: 1200px) {
   :root { --board-zoom: 1.32; }
 }
