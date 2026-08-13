@@ -10,9 +10,9 @@ const TEXT_X = 866
    leading eats into its box, so it needs a bigger art-px offset than the dots' tight
    circle box to read as an equally-sized visible gap on both sides of the bar. */
 const TEXT = {
-  title: { x: TEXT_X, y: 455 },
-  dots: { x: TEXT_X, y: 512 },
-  subtitle: { x: TEXT_X, y: 574 },
+  title: { x: TEXT_X, y: 485 },
+  dots: { x: TEXT_X, y: 522 },
+  subtitle: { x: TEXT_X, y: 589 },
 }
 
 type SlotRect = { left: number; top: number; width: number; height: number }
