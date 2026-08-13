@@ -62,7 +62,9 @@
   .journey-scene--start .journey-start__cards b { font-size: clamp(14px, 1.05vw, 19px); }
   .journey-scene--start .journey-start__cards small { font-size: clamp(11px, .85vw, 15px); }
   .journey-scene--start .journey-start__cards svg { height: clamp(30px, 2.4vw, 44px); width: clamp(30px, 2.4vw, 44px); }
-  .journey-scene--start .journey-start__actions { gap: clamp(12px, 1.4vh, 18px); max-width: 660px; }
+  /* Same right edge as the fact-chip row above (760px), so 새로 시작하기 ends flush
+     under the 우리 반 게임 chip. */
+  .journey-scene--start .journey-start__actions { gap: clamp(12px, 1.4vh, 18px); max-width: 760px; }
   .journey-scene--start .journey-start__actions .journey-button--primary { font-size: clamp(17px, 1.35vw, 25px); min-height: clamp(64px, 7.6vh, 84px); }
   .journey-scene--start .journey-start__actions .journey-button--secondary { font-size: clamp(13px, 1vw, 18px); min-height: clamp(50px, 5.8vh, 64px); min-width: 300px; }
   /* Headphone note sits in its own rounded bar, like the reference lockup. */
@@ -138,12 +140,14 @@
 .journey-question__sidebar-block:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
 .journey-question__sidebar-block > p { color: #5c4622; font-size: 11px; font-weight: 800; margin: 0 0 8px; }
 .journey-question__sidebar-block > p small { color: #8c7749; font-weight: 700; }
-.journey-question__sidebar-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.journey-question__sidebar-chips span { background: rgba(255,255,255,.55); border: 1px solid rgba(123,82,27,.3); border-radius: 999px; color: #8c7749; font-size: 11px; font-weight: 800; padding: 5px 10px; }
+/* Full-width 2x2-proof row: four equal cells like the slot rows below, no cut-off. */
+.journey-question__sidebar-chips { display: grid; gap: 7px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.journey-question__sidebar-chips span { background: rgba(255,255,255,.55); border: 1px solid rgba(123,82,27,.3); border-radius: 999px; color: #8c7749; font-size: 12px; font-weight: 800; padding: 6px 0; text-align: center; }
 .journey-question__sidebar-chips span.is-revealed { background: rgba(58,123,64,.14); border-color: #3a7b40; color: #2d7d49; }
 .journey-question__sidebar-slots { display: grid; gap: 8px; grid-template-columns: repeat(4, 1fr); }
 .journey-question__sidebar-slots span { align-items: center; aspect-ratio: 1; background: rgba(255,255,255,.5); border: 1px solid rgba(123,82,27,.28); border-radius: 8px; color: #a4915f; display: grid; font-size: 17px; font-weight: 800; justify-content: center; }
 .journey-question__sidebar-slots span > svg { height: 24px; width: 24px; }
+.journey-question__sidebar-slots--labeled figure > span { font-size: 24px; }
 .journey-question__sidebar-slots span.is-unlocked { background: rgba(58,123,64,.14); border-color: #3a7b40; color: #2d7d49; }
 .journey-game-choice { max-width: 920px; }.journey-game-choice__body { padding: clamp(28px,4vw,58px) 0 26px; position: relative; text-align: center; z-index: 1; }.journey-game-choice__body > p:last-of-type { margin-left: auto; margin-right: auto; max-width: 560px; }.journey-game-choice__options { margin: 29px auto 0; max-width: 720px; }.journey-choice--game { min-height: 166px; }.journey-choice--game b, .journey-choice--game small { max-width: 82%; }
 
@@ -411,7 +415,7 @@
   /* journey-enter leaves a retained transform on the result container, which would
      hijack fixed positioning - released once the panel opens (entry anim is long done). */
   .journey-result.has-recommendations { animation: none; }
-  .journey-result--art .result-rec { max-height: calc(100svh - 190px); overflow-y: auto; position: fixed; right: clamp(16px, 2.2vw, 48px); top: calc(clamp(62px, 8.3vh, 88px) + clamp(28px, 4vh, 56px)); width: clamp(320px, 24vw, 400px); z-index: 6; }
+  .journey-result--art .result-rec { max-height: calc(100svh - 190px); overflow-y: auto; position: fixed; right: clamp(96px, 6.8vw, 132px); top: calc(clamp(62px, 8.3vh, 88px) + clamp(64px, 7.8vh, 100px)); width: clamp(320px, 24vw, 400px); z-index: 6; }
   .journey-result.has-recommendations .journey-result__reveal { display: none; }
 }
 @media (max-width: 1100px) { .result-rec { margin-top: 18px; } }
