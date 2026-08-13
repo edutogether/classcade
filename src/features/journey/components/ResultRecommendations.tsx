@@ -32,27 +32,11 @@ const RESULT_VIDEO_PICKS: Record<string, readonly [string, string]> = {
   INFP: ['KzyngYUEm30', 'WsLyuXeJYpE'],
 }
 
-/** Recommendations opened straight from the result screen — the game builder and the
- *  notebook-pairing flow are no longer part of this path. Cards are thumbnail + title
- *  only; clicking opens YouTube, and the QR carries everything to the visitor's phone. */
+/** Recommendations opened straight from the result screen. Each card carries a QR that
+ *  encodes THE VIDEO'S OWN YouTube URL — scanning opens YouTube directly on the phone,
+ *  with no dependency on this app existing at any particular address. */
 export function ResultRecommendations({ state, mbti }: { state: JourneyState; mbti: string }) {
   const result = getProvisionalResult(state.resultCode)
-  /* The booth laptop is shared and signed in to nobody, so links have nowhere to go.
-     The QR hands the result to the participant's own phone instead. */
-  const [qr, setQr] = useState<string | null>(null)
-  const shareUrl = useMemo(() => {
-    /* BASE_URL makes the QR follow the deployment path — on GitHub Pages the app lives
-       under /classcade/, and origin + '/' would point at the portal instead. */
-    const origin = typeof window === 'undefined' ? 'https://edutogether.github.io' : window.location.origin
-    return `${origin}${import.meta.env.BASE_URL}?type=${mbti}`
-  }, [mbti])
-  useEffect(() => {
-    let alive = true
-    void QRCode.toDataURL(shareUrl, { margin: 1, width: 320, color: { dark: '#2b3a24', light: '#fffaf0' } })
-      .then((value) => { if (alive) setQr(value) })
-      .catch(() => { if (alive) setQr(null) })
-    return () => { alive = false }
-  }, [shareUrl])
   /* Fixed two picks per type; the tag ranking only backfills if a pick is unpublished. */
   const videos = useMemo(() => {
     const picks = RESULT_VIDEO_PICKS[mbti] ?? []
@@ -63,6 +47,17 @@ export function ResultRecommendations({ state, mbti }: { state: JourneyState; mb
     return [...picked, ...ranked].slice(0, 2)
   }, [mbti, result.directions])
 
+  const [qrs, setQrs] = useState<Record<string, string>>({})
+  useEffect(() => {
+    let alive = true
+    void Promise.all(videos.map((video) =>
+      QRCode.toDataURL(video.youtubeUrl, { margin: 1, width: 240, color: { dark: '#2b3a24', light: '#fffaf0' } })
+        .then((data) => [video.id, data] as const)
+        .catch(() => null),
+    )).then((entries) => { if (alive) setQrs(Object.fromEntries(entries.filter((entry) => entry !== null))) })
+    return () => { alive = false }
+  }, [videos])
+
   return (
     <aside className="result-rec" aria-label="같이교육 추천 영상">
       <p className="journey-kicker">같이교육 PICK</p>
@@ -72,18 +67,12 @@ export function ResultRecommendations({ state, mbti }: { state: JourneyState; mb
         {videos.map((video) => (
           <article key={video.id}>
             <a href={video.youtubeUrl} target="_blank" rel="noreferrer" aria-label={`${video.title} - 같이교육 영상 보기`}><Thumb src={video.thumbnailUrl} /></a>
-            <div>
+            <div className="result-rec__card-foot">
               <h3>{video.title}</h3>
+              {qrs[video.id] && <span className="result-rec__card-qr"><img src={qrs[video.id]} alt={`${video.title} 유튜브로 바로 가는 QR`} /><small>폰으로 바로 보기</small></span>}
             </div>
           </article>
         ))}
-      </div>
-      <div className="result-rec__qr">
-        {qr && <img src={qr} alt={`${result.title} 결과와 추천 영상을 여는 QR 코드`} />}
-        <div>
-          <b>폰으로 가져가기</b>
-          <p>휴대폰 카메라로 QR을 비추면 내 폰에서 결과와 추천 영상이 열려요. 거기서 카카오톡 <b>나와의 채팅</b>으로 보내면 저장됩니다.</p>
-        </div>
       </div>
     </aside>
   )
