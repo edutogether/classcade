@@ -120,6 +120,9 @@
 .journey-nav-img img { display: block; height: auto; width: 100%; }
 .journey-nav-img:disabled { cursor: default; }
 .journey-nav-img:not(:disabled):hover img, .journey-nav-img:focus-visible img { filter: brightness(1.09); }
+/* The art plaque IS the button; the global gold focus ring reads as a stray yellow
+   selection box around the transparent canvas, so brightness alone marks focus here. */
+.journey-nav-img:focus-visible { outline: none; }
 
 /* Stacked full-width choices. Side-by-side halves of an already narrow column were
    what forced the three-characters-per-line wrapping. */
@@ -192,6 +195,7 @@
   .journey-question-split .journey-question__choices .journey-choice small { font-size: 11px; margin-top: 3px; }
   .journey-panel__footer { padding-top: 8px; }
   .journey-nav-img { width: 150px; }
+  .journey-nav-img--next, .journey-nav-img--result { width: 156px; }
   .journey-question-split > .journey-question__sidebar { display: none; }
 }
 @media (min-width: 701px) and (max-height: 520px) {
@@ -202,12 +206,18 @@
   .journey-question .journey-kicker { margin-bottom: 6px; }
 }
 
-/* The drawn final CTA is wider than the nav plaques — it carries a full sentence. */
-.journey-nav-img--result { width: clamp(180px, 15vw, 236px); }
+/* 다음 질문 (2103x502, plaque 425 tall) and 나의 플레이 성향 (1536x418, plaque 310 tall)
+   pack their plaques less tall per canvas-width than 이전 질문 (1505x392, plaque 317),
+   so both get ~4.2% more width to render the SAME visible plaque height as the back
+   button (0.2106 x back-width). */
+.journey-nav-img--next, .journey-nav-img--result { width: clamp(188px, 15.6vw, 246px); }
 
 /* Per-question colour emoji on the choice cards (replaces the repeating line icons). */
 .journey-choice .journey-choice__emoji { font-size: 30px; font-style: normal; line-height: 1; }
 
-/* Emoji slots breathe: bigger cells, even inner margins. */
+/* Emoji slots breathe: bigger cells, even inner margins. The cell grows DOWNWARD
+   (aspect-ratio > 1 tall) because the emoji glyph rides low in its line box, which
+   left the gap under the emoji visibly thinner than the gap above it. line-height 1
+   trims the line box so grid centring lands on the glyph itself. */
 .journey-question__sidebar-slots--labeled { gap: 9px; }
-.journey-question__sidebar-slots--labeled figure > span { font-size: 27px; }
+.journey-question__sidebar-slots--labeled figure > span { aspect-ratio: 1 / 1.12; font-size: 27px; line-height: 1; }

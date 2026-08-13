@@ -318,6 +318,10 @@
   width: clamp(209px, 20.9vw, 294px);
 }
 .entry-prep--flat .entry-nav-img img { display: block; height: auto; object-fit: contain; width: 100%; }
+/* Art plaques mark focus by brightening, not with the global gold ring (it reads as a
+   stray yellow selection box around the transparent canvas). */
+.entry-prep--flat .entry-nav-img:focus-visible { outline: none; }
+.entry-prep--flat .entry-nav-img:focus-visible img { filter: brightness(1.09); }
 /* The final plaque's canvas proportions differ from the nav set (1536x423 vs 1505x392,
    and its plaque fills 333/423 of the canvas vs the nav's 317/392), so the width is
    scaled (x0.9715 of the nav width) to make the VISIBLE plaque height match 이전 질문. */
@@ -332,9 +336,10 @@
 .entry-loading--art { align-items: center; background: #05100a; display: flex; justify-content: center; }
 .entry-loading__stage { aspect-ratio: 1672 / 941; max-height: 100svh; max-width: 100vw; position: relative; width: min(100vw, calc(100svh * 1672 / 941)); }
 .entry-loading__art { display: block; height: 100%; object-fit: contain; width: 100%; }
-/* Frame measured from the artwork by scanning for its gold border: x 644-1028,
-   y 617-633 of 1672x941. Inset slightly so the fill sits inside the frame. */
-.entry-loading__fill { background: linear-gradient(90deg, #b77c24, #ffe286 75%, #fff8c4); box-shadow: 0 0 10px rgba(255,211,101,.6); height: 1.6%; left: 39.35%; position: absolute; top: 66.1%; transition: width .4s ease; width: calc(21.6% * (var(--progress, 0%) / 100%)); }
+/* v4 frame measured by scanning for its gold border: inner slot x 663-1008,
+   y 618-630 of 1672x941. The fill is a touch thinner than the slot (8px of the
+   12px opening) so the drawn frame always shows around it. */
+.entry-loading__fill { background: linear-gradient(90deg, #b77c24, #ffe286 75%, #fff8c4); box-shadow: 0 0 10px rgba(255,211,101,.6); height: .85%; left: 39.65%; position: absolute; top: 65.9%; transition: width .4s ease; width: calc(20.63% * (var(--progress, 0%) / 100%)); }
 
 /* Flat nav buttons replace the four-state CTA image stack. */
 .entry-button--flat {
