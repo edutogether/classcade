@@ -203,7 +203,9 @@ export function StartScene(props: JourneySceneProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot interlude: BGM fade + stopwatch must not restart on re-render
   }, [starting])
   if (starting) {
-    return <ArtLoadingScreen progress={startProgress} label="교실 장면을 여는 중" />
+    return starting === 'reset'
+      ? <ArtLoadingScreen progress={startProgress} title="새 모험을 준비하는 중..." subtitle="모든 기록을 새로 시작할게요..." />
+      : <ArtLoadingScreen progress={startProgress} title="교실 장면을 여는 중..." subtitle="선생님만의 교실 이야기를 시작할게요..." />
   }
   return (
     <SceneFrame scene="start" {...props}>
@@ -301,10 +303,10 @@ export function QuestionScene(props: JourneySceneProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot interlude: BGM fade + stopwatch must not restart on re-render
   }, [returningHome])
   if (revealing) {
-    return <ArtLoadingScreen progress={revealProgress} label="나의 플레이 결과를 여는 중" />
+    return <ArtLoadingScreen progress={revealProgress} title="나의 플레이 결과를 여는 중..." subtitle="선생님의 선택들을 모으고 있어요..." />
   }
   if (returningHome) {
-    return <ArtLoadingScreen progress={returnProgress} label="메인 화면으로 돌아가는 중" />
+    return <ArtLoadingScreen progress={returnProgress} title="메인 화면으로 돌아가는 중..." subtitle="잠시 후 처음 화면에서 다시 만나요..." />
   }
   return (
     <SceneFrame scene="question" {...props} compact>
@@ -403,7 +405,7 @@ export function ResultScene(props: JourneySceneProps & { onPair: () => void }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- BGM fade fires once at interlude start
   }, [restarting])
   if (restarting) {
-    return <ArtLoadingScreen progress={restartProgress} label="새 모험을 준비하는 중" />
+    return <ArtLoadingScreen progress={restartProgress} title="새 모험을 준비하는 중..." subtitle="모든 기록을 새로 시작할게요..." />
   }
   return (
     <SceneFrame scene="result" {...props} artSrc={typeArt}>

@@ -295,7 +295,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   if (step === 'loading') {
     // The master art carries the heading, sub-line, dots, bar frame and wait line;
     // ArtLoadingScreen cover-fills it and positions the live fill on the drawn frame.
-    return <ArtLoadingScreen progress={loadingProgress} label="교실 모험을 준비하는 중" className={exiting ? 'is-exiting' : ''}>
+    return <ArtLoadingScreen progress={loadingProgress} title="교실 모험을 준비하는 중..." subtitle="선생님의 플레이 여정을 준비하고 있어요..." className={exiting ? 'is-exiting' : ''}>
       {loadingError && <p className="entry-loading__error">{loadingError}</p>}
       {/* Glyph preheat for the MAIN screen: its serif strings load their Korean font
           subsets during these loading seconds, so the start title doesn't visibly grow
