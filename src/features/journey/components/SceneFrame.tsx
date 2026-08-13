@@ -72,7 +72,18 @@ function SceneArt({ asset, artSrc }: { asset: JourneySceneAsset; artSrc?: string
     <div className={`journey-art journey-art--${asset.tone}`} aria-hidden="true">
       <picture><source media="(max-width: 700px)" srcSet={artSrc ?? asset.mobileSrc ?? asset.src} /><img src={artSrc ?? asset.src} alt="" style={{ '--scene-position': asset.position } as CSSProperties} /></picture>
       <div className="journey-art__wash" />
-      <div className="journey-art__motes"><i /><i /><i /><i /><i /><i /></div>
+      {/* Firefly field — position/phase/size per mote via CSS vars, same recipe as the
+          prep screens' EntryMotes. */}
+      <div className="journey-art__motes">
+        {Array.from({ length: 14 }, (_, index) => (
+          <i key={index} style={{
+            '--x': `${((index * 41 + 9) % 94) + 2}%`,
+            '--y': `${((index * 59 + 13) % 82) + 6}%`,
+            '--p': index % 9,
+            '--s': 3 + ((index * 5) % 4),
+          } as CSSProperties} />
+        ))}
+      </div>
       <div className="journey-art__leaves"><i /><i /><i /></div>
     </div>
   )

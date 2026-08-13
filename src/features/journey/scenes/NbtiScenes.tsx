@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { prepNavBack, prepNavCtaEnabled, prepNavCtaDisabled, resultCtaEnabled, resultCtaDisabled } from '../../../components/prep/prepAssets'
 import { ArtLoadingScreen } from '../../../components/prep/ArtLoadingScreen'
 import profileAvatar from '../../../assets/brand/profile-avatar-front.png'
@@ -163,7 +163,12 @@ export function StartScene(props: JourneySceneProps) {
      prep step 1 — both behind the same loading interlude. */
   const [starting, setStarting] = useState<false | 'questions' | 'reset'>(false)
   const [startProgress, setStartProgress] = useState(0)
-  const startAction = props.onAction
+  /* onAction is a fresh function on every JourneyApp render; going through a ref keeps
+     it OUT of the effect deps. With it as a dep, any unrelated re-render (a notice
+     fading, audio state syncing) restarted the interlude stopwatch and the bar visibly
+     ran BACKWARD before creeping forward again. */
+  const startActionRef = useRef(props.onAction)
+  startActionRef.current = props.onAction
   useEffect(() => {
     if (!starting) return
     playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
@@ -175,12 +180,12 @@ export function StartScene(props: JourneySceneProps) {
       if (percent >= 100) {
         window.clearInterval(timer)
         if (mode === 'reset') restartFromScratch()
-        else startAction({ type: 'START_NBTI' })
+        else startActionRef.current({ type: 'START_NBTI' })
       }
     }, 80)
     return () => window.clearInterval(timer)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- BGM fade fires once at interlude start
-  }, [starting, startAction])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot interlude: BGM fade + stopwatch must not restart on re-render
+  }, [starting])
   if (starting) {
     return <ArtLoadingScreen progress={startProgress} label="교실 장면을 여는 중" />
   }
@@ -216,7 +221,9 @@ export function QuestionScene(props: JourneySceneProps) {
      result — the reveal itself is instant, so the bar is pure theatre (~2.6s). */
   const [revealing, setRevealing] = useState(false)
   const [revealProgress, setRevealProgress] = useState(0)
-  const onActionRef = props.onAction
+  /* Ref, not dep: a re-render mid-interlude must not restart the stopwatch (see StartScene). */
+  const revealActionRef = useRef(props.onAction)
+  revealActionRef.current = props.onAction
   useEffect(() => {
     if (!revealing) return
     playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
@@ -224,11 +231,11 @@ export function QuestionScene(props: JourneySceneProps) {
     const timer = window.setInterval(() => {
       const percent = Math.min(100, Math.round((Date.now() - startedAt) / 26))
       setRevealProgress(percent)
-      if (percent >= 100) { window.clearInterval(timer); onActionRef({ type: 'NEXT_NBTI' }) }
+      if (percent >= 100) { window.clearInterval(timer); revealActionRef.current({ type: 'NEXT_NBTI' }) }
     }, 80)
     return () => window.clearInterval(timer)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- BGM fade fires once at interlude start
-  }, [revealing, onActionRef])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot interlude: BGM fade + stopwatch must not restart on re-render
+  }, [revealing])
   if (revealing) {
     return <ArtLoadingScreen progress={revealProgress} label="나의 플레이 결과를 여는 중" />
   }

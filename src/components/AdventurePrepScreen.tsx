@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { ArtLoadingScreen } from './prep/ArtLoadingScreen'
 import {
   CAREER_RANGE_OPTIONS,
@@ -112,6 +112,24 @@ function FinalCtaButton({ disabled, onClick }: { disabled: boolean; onClick: () 
 const SCHOOL_ICONS = ['sprout', 'leaf', 'notebook', 'school', 'spark'] as const
 const CAREER_ICONS = ['sprout', 'leaf', 'tree', 'lantern', 'compass'] as const
 
+/** Firefly field. Each mote gets a deterministic pseudo-random position, phase and size
+ *  through CSS vars — before this the CSS expected `--i` that was never set, so most of
+ *  the 20 motes piled invisibly on one spot and only a handful ever showed. */
+export function EntryMotes({ count, className = '' }: { count: number; className?: string }) {
+  return (
+    <div className={`entry-motes ${className}`} aria-hidden="true">
+      {Array.from({ length: count }, (_, index) => (
+        <i key={index} style={{
+          '--x': `${((index * 37 + 11) % 93) + 2}%`,
+          '--y': `${((index * 53 + 17) % 86) + 4}%`,
+          '--p': index % 9,
+          '--s': 2 + ((index * 7) % 5),
+        } as CSSProperties} />
+      ))}
+    </div>
+  )
+}
+
 type AdventurePrepScreenProps = {
   initialProfile: Profile | null
   audio: AudioSettings
@@ -160,6 +178,11 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
     savePrepDraft({ version: 1, step, schoolLevel, careerRange, region, growthPriorities, growthPriorityOther: otherText, nickname })
   }, [step, schoolLevel, careerRange, region, growthPriorities, otherText, nickname])
 
+  /* onComplete is a new function on every App render; a ref keeps it out of the loading
+     effect's deps so an unrelated re-render can't restart the bar timeline (which made
+     the bar visibly run backward on the journey interludes before the same fix). */
+  const onCompleteRef = useRef(onComplete)
+  onCompleteRef.current = onComplete
   useEffect(() => {
     if (step !== 'loading') return
     /* Decode the start screen's big backdrop while the bar fills — without this the art
@@ -190,7 +213,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
     const finishTimer = window.setTimeout(async () => {
       await mainScreenReady
       const now = new Date().toISOString()
-      const result = await onComplete({
+      const result = await onCompleteRef.current({
         version: 1,
         schoolLevel: schoolLevel!,
         careerRange: careerRange!,
@@ -208,7 +231,13 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       window.clearTimeout(audioTimer)
       window.clearTimeout(finishTimer)
     }
-  }, [audio.bgmEnabled, audio.bgmVolume, careerRange, growthPriorities, initialProfile?.createdAt, nickname, onComplete, otherSelected, otherText, region, schoolLevel, step])
+    /* Deps are [step] ON PURPOSE: the loading screen has no inputs, so every closed-over
+       value is frozen for its whole lifetime — but onComplete SAVES the profile, which
+       re-renders this component with a changed initialProfile. With the values in the
+       deps the effect restarted at that moment and the finished bar visibly ran
+       BACKWARD (393px → 95px) before the scene switch. */
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot loading timeline; see comment above
+  }, [step])
 
   const title = useMemo(() => {
     if (step === 1) return { number: '01', question: '어느 교실에서 함께하고 있나요?', helper: '함께하고 있는 학생들의 학교급을 선택해 주세요.' }
@@ -274,7 +303,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       <img className="entry-prep__world" src={portalAcademy} alt="" aria-hidden="true" />
       {!isFlat('nickname') && <img className="entry-prep__reference" src={stageImage} alt="" aria-hidden="true" onError={() => degradeToFlat('nickname')} />}
       <div className="entry-prep__vignette" aria-hidden="true" />
-      <div className="entry-motes" aria-hidden="true">{Array.from({ length: 20 }, (_, index) => <i key={index} />)}</div>
+      <EntryMotes count={30} />
       <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
         <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><PrepProgress step={5} /></header>
         <div className="entry-nickname">
@@ -296,7 +325,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   if (!isFlat('prep1') && step === 1) {
     return <main className={`entry-prep entry-prep--1 entry-prep01-stage ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-1-title">
       <img className="entry-prep01-stage__background" src={prepOneWorldBackdrop} alt="" aria-hidden="true" />
-      <div className="entry-motes entry-motes--prep01" aria-hidden="true">{Array.from({ length: 20 }, (_, index) => <i key={index} />)}</div>
+      <EntryMotes count={30} className="entry-motes--prep01" />
       <section className="entry-prep01-plate" aria-labelledby="prep-1-title">
         <img className="entry-prep01-plate__image" src={prepOneCleanPlate} alt="" aria-hidden="true" />
         <h1 id="prep-1-title" className="sr-only">모험 준비 — 어느 교실에서 함께하고 있나요?</h1>
@@ -316,7 +345,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   if (!isFlat('prep2') && step === 2) {
     return <main className={`entry-prep entry-prep--2 entry-prep02-stage ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-2-title">
       <img className="entry-prep02-stage__plate" src={prepTwoCleanPlate} alt="" aria-hidden="true" />
-      <div className="entry-motes entry-motes--prep02" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
+      <EntryMotes count={26} className="entry-motes--prep02" />
       <section className="entry-prep02-plate" aria-labelledby="prep-2-title">
         <h1 id="prep-2-title" className="sr-only">모험 준비 — 선생님의 교실 여정은 어느 정도인가요?</h1>
         <svg className="entry-prep02-plate__path" viewBox="0 0 1484 1060" preserveAspectRatio="none" aria-hidden="true"><path d="M196 690 Q 340 706 454 672 T 634 690 T 813 672 T 993 690 Q 1080 702 1128 692" /></svg>
@@ -364,7 +393,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
     {!flat && step === 3 && region && <i className={`entry-prep__region-marker entry-prep__region-marker--${REGION_OPTIONS.findIndex((option) => option.value === region) + 1}`} aria-hidden="true" />}
     {!flat && step === 4 && growthPriorities.length > 0 && <div className={`entry-prep__growth-nodes entry-prep__growth-nodes--${growthPriorities.length}`} aria-hidden="true">{growthPriorities.map((priority, index) => <i key={priority} style={{ '--node': index } as CSSProperties} />)}</div>}
     <div className="entry-prep__vignette" aria-hidden="true" />
-    <div className="entry-motes" aria-hidden="true">{Array.from({ length: 24 }, (_, index) => <i key={index} />)}</div>
+    <EntryMotes count={32} />
     <section className="entry-prep__panel">
       <header className="entry-prep__header">
         <div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div>
