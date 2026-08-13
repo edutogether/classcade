@@ -1,5 +1,6 @@
-import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
-import { prepNavBack, prepNavCtaEnabled, prepNavCtaDisabled, loadingMaster, resultCtaEnabled, resultCtaDisabled } from '../../../components/prep/prepAssets'
+import { useEffect, useState, type ReactNode } from 'react'
+import { prepNavBack, prepNavCtaEnabled, prepNavCtaDisabled, resultCtaEnabled, resultCtaDisabled } from '../../../components/prep/prepAssets'
+import { ArtLoadingScreen } from '../../../components/prep/ArtLoadingScreen'
 import profileAvatar from '../../../assets/brand/profile-avatar-front.png'
 import { ClasscadeEmblem, ClasscadeLockup, Icon } from '../../../components/VisualPrimitives'
 import { NBTI_AXES, NBTI_QUESTIONS, NBTI_TOTAL_QUESTIONS, type NbtiAxis, type NbtiDirection } from '../../../data/nbti.provisional'
@@ -181,15 +182,7 @@ export function StartScene(props: JourneySceneProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- BGM fade fires once at interlude start
   }, [starting, startAction])
   if (starting) {
-    return (
-      <main className="entry-loading entry-loading--art" aria-live="polite">
-        <div className="entry-loading__stage">
-          <img className="entry-loading__art" src={loadingMaster} alt="" aria-hidden="true" />
-          <i className="entry-loading__fill" style={{ '--progress': `${startProgress}%` } as CSSProperties} aria-hidden="true" />
-        </div>
-        <p className="sr-only" role="status">교실 장면을 여는 중 {startProgress}%</p>
-      </main>
-    )
+    return <ArtLoadingScreen progress={startProgress} label="교실 장면을 여는 중" />
   }
   return (
     <SceneFrame scene="start" {...props}>
@@ -237,15 +230,7 @@ export function QuestionScene(props: JourneySceneProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- BGM fade fires once at interlude start
   }, [revealing, onActionRef])
   if (revealing) {
-    return (
-      <main className="entry-loading entry-loading--art" aria-live="polite">
-        <div className="entry-loading__stage">
-          <img className="entry-loading__art" src={loadingMaster} alt="" aria-hidden="true" />
-          <i className="entry-loading__fill" style={{ '--progress': `${revealProgress}%` } as CSSProperties} aria-hidden="true" />
-        </div>
-        <p className="sr-only" role="status">나의 플레이 결과를 여는 중 {revealProgress}%</p>
-      </main>
-    )
+    return <ArtLoadingScreen progress={revealProgress} label="나의 플레이 결과를 여는 중" />
   }
   return (
     <SceneFrame scene="question" {...props} compact>
@@ -329,15 +314,7 @@ export function ResultScene(props: JourneySceneProps & { onPair: () => void }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- BGM fade fires once at interlude start
   }, [restarting])
   if (restarting) {
-    return (
-      <main className="entry-loading entry-loading--art" aria-live="polite">
-        <div className="entry-loading__stage">
-          <img className="entry-loading__art" src={loadingMaster} alt="" aria-hidden="true" />
-          <i className="entry-loading__fill" style={{ '--progress': `${restartProgress}%` } as CSSProperties} aria-hidden="true" />
-        </div>
-        <p className="sr-only" role="status">새 모험을 준비하는 중 {restartProgress}%</p>
-      </main>
-    )
+    return <ArtLoadingScreen progress={restartProgress} label="새 모험을 준비하는 중" />
   }
   return (
     <SceneFrame scene="result" {...props} artSrc={typeArt}>
