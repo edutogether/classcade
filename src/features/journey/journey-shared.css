@@ -398,7 +398,11 @@
 .result-rec h2 { font-family: 'Gowun Batang', serif; font-size: clamp(18px, 1.4vw, 23px); letter-spacing: -.05em; line-height: 1.15; margin: 0 0 8px; }
 .result-rec__lead { font-size: clamp(12px, .92vw, 15px); font-weight: 700; line-height: 1.6; margin: 0 0 14px; }
 .result-rec__list { display: grid; gap: 10px; }
-.result-rec__list article { background: rgba(255,250,224,.78); border: 1px solid rgba(113,76,25,.3); border-radius: 9px; padding: 7px; }
+/* Whole card lifts on hover so it reads as clickable — but only the thumbnail link
+   actually opens YouTube (in a new tab); the text below stays selectable copy. */
+.result-rec__list article { background: rgba(255,250,224,.78); border: 1px solid rgba(113,76,25,.3); border-radius: 9px; padding: 7px; transition: background .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+.result-rec__list article:hover { background: rgba(255,252,233,.94); border-color: rgba(198,146,56,.7); box-shadow: 0 7px 16px rgba(60,35,8,.24), 0 0 0 1px rgba(214,168,80,.4); transform: translateY(-2px); }
+.result-rec__card-foot h3, .result-rec__desc { cursor: text; user-select: text; }
 .result-rec__thumb { border-radius: 6px; display: block; overflow: hidden; position: relative; }
 .result-rec__thumb img { aspect-ratio: 16 / 9; display: block; height: auto; object-fit: cover; width: 100%; }
 .result-rec__thumb--fallback { align-items: center; aspect-ratio: 16 / 9; background: rgba(113,76,25,.14); color: #71531e; display: flex; justify-content: center; }
@@ -419,7 +423,9 @@
   /* journey-enter leaves a retained transform on the result container, which would
      hijack fixed positioning - released once the panel opens (entry anim is long done). */
   .journey-result.has-recommendations { animation: none; }
-  .journey-result--art .result-rec { max-height: calc(100svh - 190px); overflow-y: auto; position: fixed; right: clamp(96px, 6.8vw, 132px); top: calc(clamp(62px, 8.3vh, 88px) + clamp(64px, 7.8vh, 100px)); width: clamp(320px, 24vw, 400px); z-index: 6; }
+  /* Nudged toward the character's pointing hand — close, but with finger-and-map
+     breathing room so the panel never overlaps the figure. */
+  .journey-result--art .result-rec { max-height: calc(100svh - 190px); overflow-y: auto; position: fixed; right: clamp(150px, 10.6vw, 204px); top: calc(clamp(62px, 8.3vh, 88px) + clamp(64px, 7.8vh, 100px)); width: clamp(320px, 24vw, 400px); z-index: 6; }
   .journey-result.has-recommendations .journey-result__reveal { display: none; }
 }
 @media (max-width: 1100px) { .result-rec { margin-top: 18px; } }

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { ArtLoadingScreen } from './prep/ArtLoadingScreen'
 import {
   CAREER_RANGE_OPTIONS,
   GROWTH_PRIORITY_OPTIONS,
@@ -29,7 +30,6 @@ import {
   choiceFrameNeutral,
   choiceFrameSelected,
   prepFourReference,
-  loadingMaster,
   portalAcademy,
   prepOneWorldBackdrop,
   prepOneCleanPlate,
@@ -248,20 +248,15 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   }
 
   if (step === 'loading') {
-    // The master art already carries the heading, sub-line, dots, bar frame and wait
-    // line. Only the bar's fill is live, so nothing here re-draws what the picture shows.
-    return <main className={`entry-loading entry-loading--art ${exiting ? 'is-exiting' : ''}`} aria-live="polite">
-      <div className="entry-loading__stage">
-        <img className="entry-loading__art" src={loadingMaster} alt="" aria-hidden="true" />
-        <i className="entry-loading__fill" style={{ '--progress': `${loadingProgress}%` } as CSSProperties} aria-hidden="true" />
-      </div>
-      <p className="sr-only" role="status">교실 모험을 준비하는 중 {loadingProgress}%</p>
+    // The master art carries the heading, sub-line, dots, bar frame and wait line;
+    // ArtLoadingScreen cover-fills it and positions the live fill on the drawn frame.
+    return <ArtLoadingScreen progress={loadingProgress} label="교실 모험을 준비하는 중" className={exiting ? 'is-exiting' : ''}>
       {loadingError && <p className="entry-loading__error">{loadingError}</p>}
       {/* Glyph preheat for the MAIN screen: its serif strings load their Korean font
           subsets during these loading seconds, so the start title doesn't visibly grow
           and re-centre the moment the scene appears. */}
       <span aria-hidden="true" style={{ fontFamily: "'Gowun Batang', serif", position: 'absolute', visibility: 'hidden' }}>당신의 교실 플레이 모험이 시작됩니다 여러분의 선택으로 나의 유형을 발견하고, 선생님 캐릭터를 성장시켜 보세요 NBTI 새로 더욱 더 몰입감을 높이고 싶다면 켜고 해보세요 !</span>
-    </main>
+    </ArtLoadingScreen>
   }
 
   if (step === 'nickname') {
