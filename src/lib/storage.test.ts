@@ -57,11 +57,11 @@ function stores(): { local: MemoryStorage; session: MemoryStorage; options: Stor
 }
 
 describe('device-mode storage adapter', () => {
-  it('defaults to personal and recognizes the shared and personal query forms', () => {
-    expect(resolveDeviceMode('')).toBe('personal')
+  it('defaults to shared (per-tab) and recognizes the personal opt-out', () => {
+    expect(resolveDeviceMode('')).toBe('shared')
     expect(resolveDeviceMode('?device=personal')).toBe('personal')
     expect(resolveDeviceMode('?device=shared')).toBe('shared')
-    expect(resolveDeviceMode('?device=unknown')).toBe('personal')
+    expect(resolveDeviceMode('?device=unknown')).toBe('shared')
   })
 
   it('uses explicit roles without relying on viewport width and keeps laptop storage session-scoped', () => {

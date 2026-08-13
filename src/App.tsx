@@ -55,7 +55,10 @@ export default function App() {
     const sessionResult = hasActiveSession(deviceMode)
     return { deviceMode, profileResult, journeyResult, detailedJourneyResult, sessionResult }
   })
-  const initialEntryState = resolveEntryState(boot.deviceMode, boot.profileResult.value, boot.sessionResult.value)
+  /* Shared (per-tab) storage is now the default, but the resume/new-participant gate
+     should only interrupt explicitly configured shared stations — a plain refresh at
+     the booth resumes silently, exactly like the old personal mode did. */
+  const initialEntryState = resolveEntryState(boot.deviceMode, boot.profileResult.value, boot.sessionResult.value && resolveDeviceRole() === 'laptop-station')
   const [deviceMode] = useState<DeviceMode>(boot.deviceMode)
   const [deviceRole] = useState(() => resolveDeviceRole())
   const [profile, setProfile] = useState<Profile | null>(boot.profileResult.value)

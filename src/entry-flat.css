@@ -318,9 +318,10 @@
   width: clamp(209px, 20.9vw, 294px);
 }
 .entry-prep--flat .entry-nav-img img { display: block; height: auto; object-fit: contain; width: 100%; }
-/* The final plaque's canvas carries transparent margin around the frame (glow room), so it
-   renders wider than the nav buttons for the same visible plaque size. */
-.entry-prep--flat .entry-nav-img--final { width: clamp(240px, 24vw, 342px); }
+/* The final plaque's canvas proportions differ from the nav set (1536x423 vs 1505x392,
+   and its plaque fills 333/423 of the canvas vs the nav's 317/392), so the width is
+   scaled (x0.9715 of the nav width) to make the VISIBLE plaque height match 이전 질문. */
+.entry-prep--flat .entry-nav-img--final { width: clamp(203px, 20.3vw, 286px); }
 
 /* --- Loading screen -------------------------------------------------------
    The art holds every element of this screen, so the only live piece is the bar fill.
@@ -381,6 +382,7 @@
   /* Height-driven here too, so the shared mobile rule (flex:1 + min-width:0) cannot
      collapse an image-only button to zero width. */
   .entry-prep--flat .entry-nav-img { flex: 0 0 auto; height: auto; width: 190px; }
+  .entry-prep--flat .entry-nav-img--final { width: 185px; }
   .entry-prep--flat .entry-nav-img img { height: auto; width: 100%; }
   /* The desktop fix put the question and its helper on one row (helper pinned right)
      because the wide board had room. On a phone width there's no room for both, so the
@@ -401,7 +403,7 @@
   .entry-prep--flat .entry-prep__intro { margin-top: 0; padding-bottom: 6px; }
   .entry-prep--flat .entry-flat-card { min-height: 54px; }
   .entry-prep--flat .entry-nav-img { width: 176px; }
-  .entry-prep--flat .entry-nav-img--final { width: 200px; }
+  .entry-prep--flat .entry-nav-img--final { width: 171px; }
 }
 
 /* Step 3's "지역을 선택했어요" cue floats absolutely just above the 서울 card, outside the
