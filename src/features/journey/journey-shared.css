@@ -304,7 +304,9 @@
 .journey-scene--result:has(.journey-result--art) .journey-scene__stage { align-items: start; padding-top: calc(clamp(62px, 8.3vh, 88px) + clamp(30px, 4.6vh, 56px)); }
 .journey-result--art .journey-kicker { color: #8a6b22; font-size: clamp(12px, .95vw, 17px); margin-bottom: clamp(14px, 2vh, 24px); }
 .journey-result--art .journey-result__eyebrow { color: #3c4a36; font-size: clamp(17px, 1.35vw, 25px); font-weight: 800; }
-.journey-result--art .journey-result__copy h1 { color: #1d4a33; font-size: clamp(46px, 4.4vw, 78px); letter-spacing: -.06em; margin: clamp(6px, 1vh, 12px) 0 clamp(16px, 2.4vh, 28px); text-shadow: 0 2px 18px rgba(255,255,255,.65), 0 1px 2px rgba(255,255,255,.5); }
+/* Long type names (가능성을 그리는 지도 제작자) run past the copy column instead of
+   clipping — the title owns the full width of the art. Phones re-enable wrapping below. */
+.journey-result--art .journey-result__copy h1 { color: #1d4a33; font-size: clamp(46px, 4.4vw, 78px); letter-spacing: -.06em; margin: clamp(6px, 1vh, 12px) 0 clamp(16px, 2.4vh, 28px); max-width: none; overflow: visible; text-shadow: 0 2px 18px rgba(255,255,255,.65), 0 1px 2px rgba(255,255,255,.5); white-space: nowrap; width: max-content; }
 .journey-result--art .journey-result__badges { align-items: center; margin: 0 0 clamp(16px, 2.4vh, 28px); }
 .journey-result--art .journey-result__code { background: #1d4a33; border-color: #1d4a33; box-shadow: 0 4px 12px rgba(29,74,51,.3); color: #fdf6dc; font-size: clamp(15px, 1.2vw, 21px); padding: clamp(8px, 1vh, 12px) clamp(16px, 1.4vw, 24px); }
 .journey-result--art .journey-result__strengths span { background: rgba(255,255,255,.78); border: 1px solid rgba(90,110,70,.34); box-shadow: 0 2px 8px rgba(60,70,40,.12); color: #2f3b28; font-size: clamp(13px, 1.05vw, 18px); padding: clamp(7px, .9vh, 11px) clamp(13px, 1.2vw, 20px); }
@@ -318,7 +320,7 @@
 .journey-result--art .journey-result__directions { display: grid; gap: clamp(10px, 1vw, 16px); grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 640px; }
 .journey-result--art .journey-result__directions span { background: rgba(255,255,255,.6); border: 0; border-left: 4px solid #8a6b22; border-radius: 0 10px 10px 0; box-shadow: 0 3px 12px rgba(60,70,40,.14); display: grid; gap: 6px; padding: clamp(15px, 1.5vw, 24px) clamp(17px, 1.7vw, 28px); }
 .journey-result--art .journey-result__directions small { color: #6b7b58; font-size: clamp(13px, 1.05vw, 18px); font-weight: 800; }
-.journey-result--art .journey-result__directions b { color: #20301e; font-size: clamp(25px, 2.1vw, 38px); letter-spacing: -.04em; }
+.journey-result--art .journey-result__directions b { color: #20301e; font-size: clamp(23px, 1.9vw, 34px); letter-spacing: -.04em; }
 /* Same left shift as the direction cards, so every box shares one left edge. */
 .journey-result--art .journey-result__caution { background: rgba(255,255,255,.55); border-left: 4px solid #8a6b22; border-radius: 0 10px 10px 0; box-sizing: border-box; color: #43402e; font-size: clamp(14px, 1.05vw, 18px); line-height: 1.7; margin-top: clamp(18px, 2.6vh, 30px); max-width: 640px; padding: clamp(10px, 1.2vh, 15px) clamp(17px, 1.7vw, 28px); }
 .journey-result--art .journey-result__caution b { color: #8a6b22; font-size: clamp(12px, .95vw, 15px); letter-spacing: .08em; }
@@ -381,12 +383,14 @@
 /* --- Result recommendations panel (2026-08-13) ----------------------------------------
    Opens beside the result copy when 추천받기 is pressed; the game builder and the
    notebook-pairing flow are no longer reachable from this screen. */
-.result-rec { align-self: start; background: linear-gradient(160deg, rgba(255,251,232,.96), rgba(228,203,140,.94)); border: 1px solid rgba(123,82,27,.42); border-radius: 10px; box-shadow: 0 20px 46px rgba(0,0,0,.4); color: #402e18; padding: clamp(18px, 1.7vw, 28px); }
+/* Own fade-in: journey-enter's transform would turn the panel into the containing
+   block for its fixed positioning and pin it to the wrong spot. */
+.result-rec { animation: result-rec-in .25s both; align-self: start; background: linear-gradient(160deg, rgba(255,251,232,.96), rgba(228,203,140,.94)); border: 1px solid rgba(123,82,27,.42); border-radius: 10px; box-shadow: 0 20px 46px rgba(0,0,0,.4); color: #402e18; padding: clamp(14px, 1.3vw, 20px); }
 .result-rec .journey-kicker { color: #8c672a; margin: 0 0 6px; }
-.result-rec h2 { font-family: 'Gowun Batang', serif; font-size: clamp(20px, 1.6vw, 27px); letter-spacing: -.05em; line-height: 1.15; margin: 0 0 8px; }
+.result-rec h2 { font-family: 'Gowun Batang', serif; font-size: clamp(18px, 1.4vw, 23px); letter-spacing: -.05em; line-height: 1.15; margin: 0 0 8px; }
 .result-rec__lead { font-size: clamp(12px, .92vw, 15px); font-weight: 700; line-height: 1.6; margin: 0 0 14px; }
-.result-rec__list { display: grid; gap: 12px; }
-.result-rec__list article { background: rgba(255,250,224,.78); border: 1px solid rgba(113,76,25,.3); border-radius: 9px; display: grid; gap: 10px; grid-template-columns: 108px minmax(0, 1fr); padding: 9px; }
+.result-rec__list { display: grid; gap: 10px; }
+.result-rec__list article { background: rgba(255,250,224,.78); border: 1px solid rgba(113,76,25,.3); border-radius: 9px; padding: 7px; }
 .result-rec__thumb { border-radius: 6px; display: block; overflow: hidden; position: relative; }
 .result-rec__thumb img { aspect-ratio: 16 / 9; display: block; height: auto; object-fit: cover; width: 100%; }
 .result-rec__thumb--fallback { align-items: center; aspect-ratio: 16 / 9; background: rgba(113,76,25,.14); color: #71531e; display: flex; justify-content: center; }
@@ -402,9 +406,12 @@
 
 @media (min-width: 1101px) {
   /* Result copy left, recommendations right — the painting's subject stays clear between. */
-  .journey-result.has-recommendations { align-items: start; column-gap: clamp(24px, 3vw, 64px); display: grid; grid-template-columns: minmax(0, 1fr) clamp(330px, 27vw, 440px); width: 100%; }
-  .journey-result.has-recommendations .journey-result__copy { grid-column: 1; }
-  .journey-result.has-recommendations .result-rec { grid-column: 2; }
+  /* Floats at the right edge of the art, level with the character's pointing hand —
+     absolute against the stage, so opening it never reflows the copy column. */
+  /* journey-enter leaves a retained transform on the result container, which would
+     hijack fixed positioning - released once the panel opens (entry anim is long done). */
+  .journey-result.has-recommendations { animation: none; }
+  .journey-result--art .result-rec { max-height: calc(100svh - 190px); overflow-y: auto; position: fixed; right: clamp(16px, 2.2vw, 48px); top: calc(clamp(62px, 8.3vh, 88px) + clamp(28px, 4vh, 56px)); width: clamp(320px, 24vw, 400px); z-index: 6; }
   .journey-result.has-recommendations .journey-result__reveal { display: none; }
 }
 @media (max-width: 1100px) { .result-rec { margin-top: 18px; } }
@@ -438,9 +445,8 @@
 .result-rec__thumb { width: 100%; }
 .result-rec__thumb::after { height: 54px; width: 54px; }
 .result-rec__thumb::before { border-bottom: 11px solid transparent; border-left: 18px solid rgba(255,250,230,.96); border-top: 11px solid transparent; content: ''; left: calc(50% - 5px); position: absolute; top: 50%; transform: translateY(-50%); z-index: 1; }
-.result-rec__list article > div { padding: 9px 3px 2px; }
+.result-rec__list article > div { padding: 7px 3px 1px; }
 @media (min-width: 1101px) {
-  .journey-result.has-recommendations .result-rec { align-self: stretch; display: flex; flex-direction: column; }
   .result-rec__list { flex: 1 1 auto; }
 }
 
@@ -451,3 +457,6 @@
    from the old 3-button layout). With two buttons on one row, 추천받기 takes a single
    half-width cell like its neighbour. */
 .journey-result--art .journey-result__actions .journey-button--primary { grid-column: auto; }
+.journey-result--art .journey-result__actions .journey-button--secondary { font-size: clamp(15px, 1.15vw, 20px); }
+
+@keyframes result-rec-in { from { opacity: 0; } to { opacity: 1; } }
