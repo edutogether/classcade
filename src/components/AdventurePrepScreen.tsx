@@ -15,6 +15,7 @@ import { loadPrepDraft, savePrepDraft, clearPrepDraft, type Profile, type PrepDr
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
 import { ClasscadeEmblem, ClasscadeLockup, ClasscadeWordmark, Icon } from './VisualPrimitives'
 import { degradeToFlat, isFlat, type VisualScreen } from '../config/visualMode'
+import { JOURNEY_SCENE_ASSETS } from '../data/sceneAssets'
 import '../entry.css'
 import type { TunerScreen } from '../features/entry/visualTuning'
 import { PrepOneChoiceCards } from './prep/PrepOneChoiceCards'
@@ -161,6 +162,11 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
 
   useEffect(() => {
     if (step !== 'loading') return
+    /* Decode the start screen's big backdrop while the bar fills — without this the art
+       arrives a beat after the scene and the whole background visibly settles ("덜컹"). */
+    const startArt = new Image()
+    startArt.src = JOURNEY_SCENE_ASSETS.start.src
+    void startArt.decode?.().catch(() => undefined)
     const progressTimers = [
       window.setTimeout(() => setLoadingProgress(18), 120),
       window.setTimeout(() => setLoadingProgress(46), 540),
