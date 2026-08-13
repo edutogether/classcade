@@ -404,13 +404,43 @@ export function ResultScene(props: JourneySceneProps & { onPair: () => void }) {
     return () => window.clearInterval(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- BGM fade fires once at interlude start
   }, [restarting])
+  /* "NBTI 다시 탐색하기" kept answers and jumped back to Q1 with no transition — every
+     other scene change in the app goes through this same loading interlude. */
+  const [reviewing, setReviewing] = useState(false)
+  const [reviewProgress, setReviewProgress] = useState(0)
+  const reviewActionRef = useRef(props.onAction)
+  reviewActionRef.current = props.onAction
+  useEffect(() => {
+    if (!reviewing) return
+    playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
+    const questionArt = new Image()
+    questionArt.src = JOURNEY_SCENE_ASSETS.question.src
+    const questionReady = Promise.race([
+      questionArt.decode?.().catch(() => undefined) ?? Promise.resolve(),
+      new Promise((resolve) => window.setTimeout(resolve, 4600)),
+    ])
+    const startedAt = Date.now()
+    const timer = window.setInterval(() => {
+      const percent = Math.min(100, Math.round((Date.now() - startedAt) / 22))
+      setReviewProgress(percent)
+      if (percent >= 100) {
+        window.clearInterval(timer)
+        void questionReady.then(() => reviewActionRef.current({ type: 'REVIEW_NBTI' }))
+      }
+    }, 80)
+    return () => window.clearInterval(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot interlude: BGM fade + stopwatch must not restart on re-render
+  }, [reviewing])
   if (restarting) {
     return <ArtLoadingScreen progress={restartProgress} title="새 모험을 준비하는 중..." subtitle="모든 기록을 새로 시작할게요..." />
+  }
+  if (reviewing) {
+    return <ArtLoadingScreen progress={reviewProgress} title="첫 질문으로 돌아가는 중..." subtitle="선생님의 답변은 그대로 남아있어요..." />
   }
   return (
     <SceneFrame scene="result" {...props} artSrc={typeArt}>
       <div className={`journey-result journey-result--${result.palette} ${typeArt ? 'journey-result--art' : ''} ${showRecommendations ? 'has-recommendations' : ''} journey-enter`}>
-        <div className="journey-result__copy"><p className="journey-kicker">✦ 나의 교실 플레이 결과 ✦</p><p className="journey-result__eyebrow">나의 교실 플레이 유형은</p><h1>{result.title}</h1><div className="journey-result__badges"><span className="journey-result__code">{nbtiTypeCode(result.directions)}</span><div className="journey-result__strengths">{result.strengths.map((strength) => <span key={strength}>{strengthEmoji(strength)} {strength}</span>)}</div></div><p className="journey-result__description">{result.description}</p><div className="journey-result__directions" aria-label="나의 네 성향">{NBTI_AXES.map((axis, index) => <span key={axis.id}><small>{axis.label}</small><b>{directionEmoji[result.directions[index]]} {directionLabels[result.directions[index]]}</b></span>)}</div><p className="journey-result__caution"><b>다음 장면</b>{result.caution}</p><p className="journey-result__next">교실 속 나를 발견하다. 놀이로 확장하다.</p><p className="journey-result__disclaimer">이 결과는 선생님의 모든 모습을 규정하지 않아요. 오늘의 교실 장면에서 가장 자주 드러난 선택을 보여 줍니다.</p><div className="journey-result__actions"><SecondaryButton onClick={() => props.onAction({ type: 'REVIEW_NBTI' })}><Icon name="reset" size={19} />NBTI 다시 탐색하기</SecondaryButton>{showRecommendations ? <PrimaryButton onClick={() => setRestarting(true)}>처음부터 시작하기</PrimaryButton> : <PrimaryButton onClick={() => setShowRecommendations(true)}>우리 교실 놀이 추천받기</PrimaryButton>}</div></div>
+        <div className="journey-result__copy"><p className="journey-kicker">✦ 나의 교실 플레이 결과 ✦</p><p className="journey-result__eyebrow">나의 교실 플레이 유형은</p><h1>{result.title}</h1><div className="journey-result__badges"><span className="journey-result__code">{nbtiTypeCode(result.directions)}</span><div className="journey-result__strengths">{result.strengths.map((strength) => <span key={strength}>{strengthEmoji(strength)} {strength}</span>)}</div></div><p className="journey-result__description">{result.description}</p><div className="journey-result__directions" aria-label="나의 네 성향">{NBTI_AXES.map((axis, index) => <span key={axis.id}><small>{axis.label}</small><b>{directionEmoji[result.directions[index]]} {directionLabels[result.directions[index]]}</b></span>)}</div><p className="journey-result__caution"><b>다음 장면</b>{result.caution}</p><p className="journey-result__next">교실 속 나를 발견하다. 놀이로 확장하다.</p><p className="journey-result__disclaimer">이 결과는 선생님의 모든 모습을 규정하지 않아요. 오늘의 교실 장면에서 가장 자주 드러난 선택을 보여 줍니다.</p><div className="journey-result__actions"><SecondaryButton onClick={() => setReviewing(true)}><Icon name="reset" size={19} />NBTI 다시 탐색하기</SecondaryButton>{showRecommendations ? <PrimaryButton onClick={() => setRestarting(true)}>처음부터 시작하기</PrimaryButton> : <PrimaryButton onClick={() => setShowRecommendations(true)}>우리 교실 놀이 추천받기</PrimaryButton>}</div></div>
         <aside className="journey-result__reveal" aria-label="결과 해금 연출"><ClasscadeLockup /><p>{result.subtitle}</p><span>빛나는 문양이 기록되었습니다</span><i /><i /><i /></aside>
         {showRecommendations && <ResultRecommendations state={props.state} mbti={nbtiTypeCode(result.directions)} />}
       </div>
