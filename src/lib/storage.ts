@@ -101,13 +101,17 @@ function currentSearch() {
   }
 }
 
-/** Resolve the browser-selected device context. Personal is deliberately the safe default. */
+/**
+ * Resolve the browser-selected device context. Shared (sessionStorage, per-tab) is the
+ * default: booth machines are shared devices, so a new window must always start fresh
+ * while a refresh in the same tab keeps the visitor's progress. `?device=personal`
+ * opts back into persistent localStorage.
+ */
 export function resolveDeviceMode(search = currentSearch()): DeviceMode {
   try {
-    const params = new URLSearchParams(search)
-    return params.get('role') === 'laptop-station' || params.get('device') === 'shared' ? 'shared' : 'personal'
+    return new URLSearchParams(search).get('device') === 'personal' ? 'personal' : 'shared'
   } catch {
-    return 'personal'
+    return 'shared'
   }
 }
 

@@ -273,7 +273,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
           <h1 id="nickname-title"><span>용사님의 닉네임을</span> <span>알려주세요</span></h1>
           <p>이 여정에서 불릴 이름이에요.</p>
           <label><input value={nickname} maxLength={16} autoComplete="off" aria-label="용사 닉네임" placeholder="예: 우리 같이 놀아요" onChange={(event) => setNickname(event.target.value.slice(0, 16))} /></label>
-          <small>실제 이름이나 학교명 대신, 이 모험에서 사용할 별명을 적어주셔도 좋아요.</small>
+          <small>실제 이름이나 학교명 대신 이 모험에서 사용할 별명을 적어주셔도 좋아요.</small>
         </div>
         <footer className="entry-prep__footer">
           <NavArtButton art={prepNavBack} label="← 이전 질문" onClick={previousStep} variant="back" />
