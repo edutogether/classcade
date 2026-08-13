@@ -40,6 +40,13 @@
     <title>CLASSCADE | 당신의 교실 플레이 모험이 시작됩니다</title>
   </head>
   <body>
+    <!-- Boot splash: painted before any JS runs, so a fresh tab shows this instead of the
+         app stuttering into place; App.tsx fades it out once the first frame is ready. -->
+    <div id="boot-splash" style="align-items:center;background:#050c07;display:flex;flex-direction:column;gap:14px;inset:0;justify-content:center;position:fixed;transition:opacity .4s ease;z-index:9999">
+      <div style="color:#e9cf7c;font-family:Georgia,serif;font-size:22px;letter-spacing:.42em;padding-left:.42em">CLASSCADE</div>
+      <div style="background:rgba(233,207,124,.25);border-radius:99px;height:3px;overflow:hidden;width:150px"><div style="animation:boot-bar 1.1s ease-in-out infinite;background:#e9cf7c;border-radius:99px;height:100%;width:40%"></div></div>
+      <style>@keyframes boot-bar{0%{margin-left:-40%}100%{margin-left:100%}}</style>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

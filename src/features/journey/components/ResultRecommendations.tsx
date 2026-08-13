@@ -69,7 +69,8 @@ export function ResultRecommendations({ state, mbti }: { state: JourneyState; mb
             <a href={video.youtubeUrl} target="_blank" rel="noreferrer" aria-label={`${video.title} - 같이교육 영상 보기`}><Thumb src={video.thumbnailUrl} /></a>
             <div className="result-rec__card-foot">
               <h3>{video.title}</h3>
-              {qrs[video.id] && <span className="result-rec__card-qr"><img src={qrs[video.id]} alt={`${video.title} 유튜브로 바로 가는 QR`} /><small>폰으로 바로 보기</small></span>}
+              <small className="result-rec__desc">{video.shortDescription}</small>
+              {qrs[video.id] && <span className="result-rec__card-qr"><img src={qrs[video.id]} alt={`${video.title} 유튜브로 바로 가는 QR`} /></span>}
             </div>
           </article>
         ))}

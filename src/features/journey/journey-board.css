@@ -59,7 +59,7 @@
 .journey-question-split > .journey-question { flex: 0 1 850px; min-width: 0; }
 /* Rides high on the right, level with the backdrop character's eyeline, instead of
    stretching to the question board's full height. */
-.journey-question-split > .journey-question__sidebar { align-self: flex-start; flex: 0 0 clamp(240px, 17.5vw, 300px); margin-top: 0; }
+.journey-question-split > .journey-question__sidebar { align-self: flex-start; flex: 0 0 clamp(262px, 19vw, 330px); margin-top: 0; }
 
 /* Compact type so the left board fits common laptop heights without its inner scrollbar. */
 .journey-question-split .journey-question__copy h1 { font-size: clamp(21px, 1.75vw, 29px); }
@@ -203,7 +203,11 @@
 }
 
 /* The drawn final CTA is wider than the nav plaques — it carries a full sentence. */
-.journey-nav-img--result { width: clamp(240px, 21vw, 330px); }
+.journey-nav-img--result { width: clamp(180px, 15vw, 236px); }
 
 /* Per-question colour emoji on the choice cards (replaces the repeating line icons). */
 .journey-choice .journey-choice__emoji { font-size: 30px; font-style: normal; line-height: 1; }
+
+/* Emoji slots breathe: bigger cells, even inner margins. */
+.journey-question__sidebar-slots--labeled { gap: 9px; }
+.journey-question__sidebar-slots--labeled figure > span { font-size: 27px; }
