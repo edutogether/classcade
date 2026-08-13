@@ -13,7 +13,7 @@ import { noteAudioUserGesture, playSceneTheme } from '../lib/audioManager'
 import type { AudioSettings } from '../lib/audioController'
 import { loadPrepDraft, savePrepDraft, clearPrepDraft, type Profile, type PrepDraft } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
-import { ClasscadeEmblem, ClasscadeLockup, ClasscadeWordmark, Icon } from './VisualPrimitives'
+import { ClasscadeEmblem, ClasscadeWordmark, Icon } from './VisualPrimitives'
 import { degradeToFlat, isFlat, type VisualScreen } from '../config/visualMode'
 import { JOURNEY_SCENE_ASSETS } from '../data/sceneAssets'
 import '../entry.css'
@@ -269,7 +269,6 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
         <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><PrepProgress step={5} /></header>
         <div className="entry-nickname">
-          <span className="entry-nickname__orb entry-nickname__orb--lockup"><ClasscadeLockup /></span>
           <p className="entry-kicker">✦ 여정의 마지막 준비 ✦</p>
           <h1 id="nickname-title"><span>용사님의 닉네임을</span> <span>알려주세요</span></h1>
           <p>이 여정에서 불릴 이름이에요.</p>
@@ -366,6 +365,10 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         <h1>모험 준비</h1>
         <p>교실 모험을 시작하기 전, 간단한 정보를 선택해 주세요.</p>
       </div>
+      {/* Invisible glyph preheat: the nickname screen's serif strings load their Korean
+          font subsets HERE, steps earlier — without this the step-5 heading visibly
+          reassembles ("찌그러졌다 펴짐") as each subset arrives. */}
+      <span aria-hidden="true" style={{ fontFamily: "'Gowun Batang', serif", position: 'absolute', visibility: 'hidden' }}>용사님의 닉네임을 알려주세요 여정의 마지막 준비 이 여정에서 불릴 이름</span>
       <section className={`entry-prep__question entry-prep__question--${step}`} aria-labelledby={`prep-${step}-title`}>
         <div className="entry-prep__question-head">
           <p className="entry-prep__question-number">{title.number}</p>
