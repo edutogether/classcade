@@ -1,7 +1,7 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
 import { prepNavBack, prepNavCtaEnabled, prepNavCtaDisabled, loadingMaster, resultCtaEnabled, resultCtaDisabled } from '../../../components/prep/prepAssets'
 import profileAvatar from '../../../assets/brand/profile-avatar-front.png'
-import { ClasscadeEmblem, ClasscadeLockup, Icon, type IconName } from '../../../components/VisualPrimitives'
+import { ClasscadeEmblem, ClasscadeLockup, Icon } from '../../../components/VisualPrimitives'
 import { NBTI_AXES, NBTI_QUESTIONS, NBTI_TOTAL_QUESTIONS, type NbtiAxis, type NbtiDirection } from '../../../data/nbti.provisional'
 import { getProvisionalResult } from '../../../data/nbtiResults.provisional'
 import { nbtiResultArt } from '../../../data/nbtiResultArt'
@@ -94,17 +94,18 @@ function axisLeaning(axis: NbtiAxis, answers: Record<string, string>): NbtiDirec
   return scoreA > scoreB ? axisDef.directions[0] : axisDef.directions[1]
 }
 
-const SKILLS: readonly { icon: IconName; name: string }[] = [
-  { icon: 'sprout', name: '새싹 감각' },
-  { icon: 'lantern', name: '마음 등불' },
-  { icon: 'compass', name: '방향 감각' },
-  { icon: 'tree', name: '든든한 뿌리' },
+/* Colour emoji instead of the thin line icons — same OS-native set the choice cards use. */
+const SKILLS: readonly { emoji: string; name: string }[] = [
+  { emoji: '🌱', name: '새싹 감각' },
+  { emoji: '🏮', name: '마음 등불' },
+  { emoji: '🗺️', name: '방향 감각' },
+  { emoji: '🌳', name: '든든한 뿌리' },
 ]
-const ITEMS: readonly { icon: IconName | null; name: string }[] = [
-  { icon: 'notebook', name: '모험 노트' },
-  { icon: 'compass', name: '나침반' },
-  { icon: null, name: '빈 슬롯' },
-  { icon: null, name: '빈 슬롯' },
+const ITEMS: readonly { emoji: string | null; name: string }[] = [
+  { emoji: '📔', name: '모험 노트' },
+  { emoji: '🧭', name: '나침반' },
+  { emoji: null, name: '빈 슬롯' },
+  { emoji: null, name: '빈 슬롯' },
 ]
 
 function GrowingPlayerPanel({ growth, answers, nickname }: { growth: number; answers: Record<string, string>; nickname?: string }) {
@@ -133,7 +134,7 @@ function GrowingPlayerPanel({ growth, answers, nickname }: { growth: number; ans
         <div className="journey-question__sidebar-slots journey-question__sidebar-slots--labeled">
           {SKILLS.map((skill, index) => (
             <figure key={skill.name}>
-              <span className={index < unlockedSkills ? 'is-unlocked' : ''}><Icon name={index < unlockedSkills ? skill.icon : 'lock'} size={18} /></span>
+              <span className={index < unlockedSkills ? 'is-unlocked' : ''}>{index < unlockedSkills ? skill.emoji : '🔒'}</span>
               <figcaption>{skill.name}</figcaption>
             </figure>
           ))}
@@ -144,7 +145,7 @@ function GrowingPlayerPanel({ growth, answers, nickname }: { growth: number; ans
         <div className="journey-question__sidebar-slots journey-question__sidebar-slots--labeled">
           {ITEMS.map((item, index) => (
             <figure key={`${item.name}-${index}`}>
-              {item.icon ? <span className="is-unlocked"><Icon name={item.icon} size={18} /></span> : <span aria-hidden="true">+</span>}
+              {item.emoji ? <span className="is-unlocked">{item.emoji}</span> : <span aria-hidden="true">➕</span>}
               <figcaption>{item.name}</figcaption>
             </figure>
           ))}
@@ -157,17 +158,24 @@ function GrowingPlayerPanel({ growth, answers, nickname }: { growth: number; ans
 export function StartScene(props: JourneySceneProps) {
   /* Same loading interlude the prep flow uses, so entering the questions reads as a
      scene change rather than an instant swap. */
-  const [starting, setStarting] = useState(false)
+  /* 'questions' opens the NBTI; 'reset' wipes everything (닉네임 포함) and lands back on
+     prep step 1 — both behind the same loading interlude. */
+  const [starting, setStarting] = useState<false | 'questions' | 'reset'>(false)
   const [startProgress, setStartProgress] = useState(0)
   const startAction = props.onAction
   useEffect(() => {
     if (!starting) return
     playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
+    const mode = starting
     const startedAt = Date.now()
     const timer = window.setInterval(() => {
       const percent = Math.min(100, Math.round((Date.now() - startedAt) / 22))
       setStartProgress(percent)
-      if (percent >= 100) { window.clearInterval(timer); startAction({ type: 'START_NBTI' }) }
+      if (percent >= 100) {
+        window.clearInterval(timer)
+        if (mode === 'reset') restartFromScratch()
+        else startAction({ type: 'START_NBTI' })
+      }
     }, 80)
     return () => window.clearInterval(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- BGM fade fires once at interlude start
@@ -196,10 +204,10 @@ export function StartScene(props: JourneySceneProps) {
           {journeyItems.map((item) => <li key={item.title}><Icon name={item.icon} size={25} /><span><b>{item.title}</b><small>{item.detail}</small></span></li>)}
         </ul>
         <div className="journey-start__actions">
-          <PrimaryButton onClick={() => setStarting(true)} tuneId="main-primary-cta">교실 NBTI 시작하기</PrimaryButton>
-          {props.state.resumeStage ? <SecondaryButton onClick={() => props.onAction({ type: 'RESUME_JOURNEY' })} tuneId="main-resume-cta"><Icon name="reset" size={20} />이전 여정 이어가기</SecondaryButton> : <SecondaryButton onClick={() => props.onAction({ type: 'RESET_NBTI' })} tuneId="main-resume-cta"><Icon name="reset" size={20} />새로 시작하기</SecondaryButton>}
+          <PrimaryButton onClick={() => setStarting('questions')} tuneId="main-primary-cta">교실 NBTI 시작하기</PrimaryButton>
+          {props.state.resumeStage ? <SecondaryButton onClick={() => props.onAction({ type: 'RESUME_JOURNEY' })} tuneId="main-resume-cta"><Icon name="reset" size={20} />이전 여정 이어가기</SecondaryButton> : <SecondaryButton onClick={() => setStarting('reset')} tuneId="main-resume-cta"><Icon name="reset" size={20} />새로 시작하기</SecondaryButton>}
         </div>
-        <p className="journey-start__audio-note" data-tune-id="main-headphone-note"><Icon name="speaker" size={17} />헤드폰을 착용하면 BGM과 효과음이 더욱 몰입감을 높여줘요.</p>
+        <p className="journey-start__audio-note" data-tune-id="main-headphone-note"><Icon name="speaker" size={17} />더욱 더 몰입감을 높이고 싶다면 BGM을 켜고 플레이해보세요 !</p>
       </div>
     </SceneFrame>
   )
@@ -305,10 +313,36 @@ export function ResultScene(props: JourneySceneProps & { onPair: () => void }) {
   /* A QR visitor arrived *for* the recommendations, so open the panel immediately rather
      than making them find the button on a phone. */
   const [showRecommendations, setShowRecommendations] = useState(() => typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('type'))
+  /* Same loading interlude as everywhere else, then the full wipe + reload. */
+  const [restarting, setRestarting] = useState(false)
+  const [restartProgress, setRestartProgress] = useState(0)
+  useEffect(() => {
+    if (!restarting) return
+    playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
+    const startedAt = Date.now()
+    const timer = window.setInterval(() => {
+      const percent = Math.min(100, Math.round((Date.now() - startedAt) / 22))
+      setRestartProgress(percent)
+      if (percent >= 100) { window.clearInterval(timer); restartFromScratch() }
+    }, 80)
+    return () => window.clearInterval(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- BGM fade fires once at interlude start
+  }, [restarting])
+  if (restarting) {
+    return (
+      <main className="entry-loading entry-loading--art" aria-live="polite">
+        <div className="entry-loading__stage">
+          <img className="entry-loading__art" src={loadingMaster} alt="" aria-hidden="true" />
+          <i className="entry-loading__fill" style={{ '--progress': `${restartProgress}%` } as CSSProperties} aria-hidden="true" />
+        </div>
+        <p className="sr-only" role="status">새 모험을 준비하는 중 {restartProgress}%</p>
+      </main>
+    )
+  }
   return (
     <SceneFrame scene="result" {...props} artSrc={typeArt}>
       <div className={`journey-result journey-result--${result.palette} ${typeArt ? 'journey-result--art' : ''} ${showRecommendations ? 'has-recommendations' : ''} journey-enter`}>
-        <div className="journey-result__copy"><p className="journey-kicker">✦ 나의 교실 플레이 결과 ✦</p><p className="journey-result__eyebrow">나의 교실 플레이 유형은</p><h1>{result.title}</h1><div className="journey-result__badges"><span className="journey-result__code">{nbtiTypeCode(result.directions)}</span><div className="journey-result__strengths">{result.strengths.map((strength) => <span key={strength}>{strengthEmoji(strength)} {strength}</span>)}</div></div><p className="journey-result__description">{result.description}</p><div className="journey-result__directions" aria-label="나의 네 성향">{NBTI_AXES.map((axis, index) => <span key={axis.id}><small>{axis.label}</small><b>{directionEmoji[result.directions[index]]} {directionLabels[result.directions[index]]}</b></span>)}</div><p className="journey-result__caution"><b>다음 장면</b>{result.caution}</p><p className="journey-result__next">교실 속 나를 발견하다. 놀이로 확장하다.</p><p className="journey-result__disclaimer">이 결과는 선생님의 모든 모습을 규정하지 않아요. 오늘의 교실 장면에서 가장 자주 드러난 선택을 보여 줍니다.</p><div className="journey-result__actions"><SecondaryButton onClick={() => props.onAction({ type: 'RESET_NBTI' })}><Icon name="reset" size={19} />NBTI 다시 탐색하기</SecondaryButton>{showRecommendations ? <PrimaryButton onClick={restartFromScratch}>처음부터 시작하기</PrimaryButton> : <PrimaryButton onClick={() => setShowRecommendations(true)}>추천받기</PrimaryButton>}</div></div>
+        <div className="journey-result__copy"><p className="journey-kicker">✦ 나의 교실 플레이 결과 ✦</p><p className="journey-result__eyebrow">나의 교실 플레이 유형은</p><h1>{result.title}</h1><div className="journey-result__badges"><span className="journey-result__code">{nbtiTypeCode(result.directions)}</span><div className="journey-result__strengths">{result.strengths.map((strength) => <span key={strength}>{strengthEmoji(strength)} {strength}</span>)}</div></div><p className="journey-result__description">{result.description}</p><div className="journey-result__directions" aria-label="나의 네 성향">{NBTI_AXES.map((axis, index) => <span key={axis.id}><small>{axis.label}</small><b>{directionEmoji[result.directions[index]]} {directionLabels[result.directions[index]]}</b></span>)}</div><p className="journey-result__caution"><b>다음 장면</b>{result.caution}</p><p className="journey-result__next">교실 속 나를 발견하다. 놀이로 확장하다.</p><p className="journey-result__disclaimer">이 결과는 선생님의 모든 모습을 규정하지 않아요. 오늘의 교실 장면에서 가장 자주 드러난 선택을 보여 줍니다.</p><div className="journey-result__actions"><SecondaryButton onClick={() => props.onAction({ type: 'RESET_NBTI' })}><Icon name="reset" size={19} />NBTI 다시 탐색하기</SecondaryButton>{showRecommendations ? <PrimaryButton onClick={() => setRestarting(true)}>처음부터 시작하기</PrimaryButton> : <PrimaryButton onClick={() => setShowRecommendations(true)}>추천받기</PrimaryButton>}</div></div>
         <aside className="journey-result__reveal" aria-label="결과 해금 연출"><ClasscadeLockup /><p>{result.subtitle}</p><span>빛나는 문양이 기록되었습니다</span><i /><i /><i /></aside>
         {showRecommendations && <ResultRecommendations state={props.state} mbti={nbtiTypeCode(result.directions)} />}
       </div>
