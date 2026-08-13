@@ -52,6 +52,27 @@ const directionIconPaths: Record<NbtiDirection, ReactNode> = {
   completion: <><circle cx="12" cy="9.7" r="6.5" /><path d="m9.2 9.7 1.9 1.9 3.7-3.7" /><path d="M9.3 15.6 7.3 21l4.7-2 4.7 2-2-5.4" /></>,
   expansion: <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />,
 }
+/** 문항·선택지 내용에 맞춘 32개 개별 이모지(질문 id 기준) - 방향별 8개 선화 아이콘이
+ *  계속 반복되어 밋밋하다는 1일차 피드백의 교체분. Windows/모바일 컬러 이모지로 렌더. */
+const QUESTION_EMOJI: Record<string, readonly [string, string]> = {
+  'unit-opening': ['🗺️', '💬'],
+  'quiet-student': ['🧭', '🤲'],
+  'opinion-conflict': ['⚖️', '🫂'],
+  'early-finish': ['✅', '🚀'],
+  'material-failure': ['🧰', '💡'],
+  'few-speakers': ['🙋', '✍️'],
+  'repeated-rule': ['📜', '🔍'],
+  'interesting-solution': ['🏁', '🌌'],
+  'unexpected-question': ['📌', '🌊'],
+  'group-pace': ['⛳', '🪜'],
+  'awkward-room': ['🚧', '🕊️'],
+  'curious-ending': ['📘', '🔭'],
+  'student-proposal': ['🗂️', '🎢'],
+  'class-ahead': ['🚌', '🌱'],
+  'effort-feedback': ['🎯', '🌟'],
+  'closing-memory': ['🏆', '🌈'],
+}
+
 function DirectionIcon({ direction, size = 26 }: { direction: NbtiDirection; size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{directionIconPaths[direction]}</svg>
 }
@@ -232,7 +253,7 @@ export function QuestionScene(props: JourneySceneProps) {
             <div className="journey-question__choices" role="group" aria-label={question.prompt}>
               {question.choices.map((choice, index) => (
                 <button className={`journey-choice ${selected === choice.id ? 'is-selected' : ''}`} type="button" key={choice.id} onClick={() => props.onAction({ type: 'ANSWER_NBTI', questionId: question.id, choiceId: choice.id })} aria-pressed={selected === choice.id}>
-                  <span className="journey-choice__number">0{index + 1}</span><b>{choice.label}</b><small>{choice.detail}</small><i aria-hidden="true"><DirectionIcon direction={axisDirections[choice.direction]} size={29} /></i>
+                  <span className="journey-choice__number">0{index + 1}</span><b>{choice.label}</b><small>{choice.detail}</small><i aria-hidden="true" className="journey-choice__emoji">{QUESTION_EMOJI[question.id]?.[index] ?? <DirectionIcon direction={axisDirections[choice.direction]} size={29} />}</i>
                 </button>
               ))}
             </div>
@@ -268,6 +289,16 @@ function JourneyNavArt({ art, label, onClick, disabled, variant }: { art: string
   )
 }
 
+/** 부스 다음 참가자용 완전 초기화: 닉네임을 포함한 이 앱의 모든 저장값을 지우고
+ *  모험 준비 1단계부터 깨끗하게 다시 시작한다. 리로드가 어떤 상태 초기화보다 확실하다. */
+function restartFromScratch() {
+  try {
+    for (const key of Object.keys(localStorage)) if (key.startsWith('classcade.')) localStorage.removeItem(key)
+    sessionStorage.clear()
+  } catch { /* storage unavailable - reload alone still resets the in-memory run */ }
+  window.location.href = window.location.pathname
+}
+
 export function ResultScene(props: JourneySceneProps & { onPair: () => void }) {
   const result = getProvisionalResult(props.state.resultCode)
   const typeArt = nbtiResultArt(nbtiTypeCode(result.directions))
@@ -277,7 +308,7 @@ export function ResultScene(props: JourneySceneProps & { onPair: () => void }) {
   return (
     <SceneFrame scene="result" {...props} artSrc={typeArt}>
       <div className={`journey-result journey-result--${result.palette} ${typeArt ? 'journey-result--art' : ''} ${showRecommendations ? 'has-recommendations' : ''} journey-enter`}>
-        <div className="journey-result__copy"><p className="journey-kicker">✦ 나의 교실 플레이 결과 ✦</p><p className="journey-result__eyebrow">나의 교실 플레이 유형은</p><h1>{result.title}</h1><div className="journey-result__badges"><span className="journey-result__code">{nbtiTypeCode(result.directions)}</span><div className="journey-result__strengths">{result.strengths.map((strength) => <span key={strength}>{strengthEmoji(strength)} {strength}</span>)}</div></div><p className="journey-result__description">{result.description}</p><div className="journey-result__directions" aria-label="나의 네 성향">{NBTI_AXES.map((axis, index) => <span key={axis.id}><small>{axis.label}</small><b>{directionEmoji[result.directions[index]]} {directionLabels[result.directions[index]]}</b></span>)}</div><p className="journey-result__caution"><b>다음 장면</b>{result.caution}</p><p className="journey-result__next">교실 속 나를 발견하다. 놀이로 확장하다.</p><p className="journey-result__disclaimer">이 결과는 선생님의 모든 모습을 규정하지 않아요. 오늘의 교실 장면에서 가장 자주 드러난 선택을 보여 줍니다.</p><div className="journey-result__actions"><SecondaryButton onClick={() => props.onAction({ type: 'RESET_NBTI' })}><Icon name="reset" size={19} />다시 탐색하기</SecondaryButton><PrimaryButton onClick={() => setShowRecommendations(true)}>추천받기</PrimaryButton></div></div>
+        <div className="journey-result__copy"><p className="journey-kicker">✦ 나의 교실 플레이 결과 ✦</p><p className="journey-result__eyebrow">나의 교실 플레이 유형은</p><h1>{result.title}</h1><div className="journey-result__badges"><span className="journey-result__code">{nbtiTypeCode(result.directions)}</span><div className="journey-result__strengths">{result.strengths.map((strength) => <span key={strength}>{strengthEmoji(strength)} {strength}</span>)}</div></div><p className="journey-result__description">{result.description}</p><div className="journey-result__directions" aria-label="나의 네 성향">{NBTI_AXES.map((axis, index) => <span key={axis.id}><small>{axis.label}</small><b>{directionEmoji[result.directions[index]]} {directionLabels[result.directions[index]]}</b></span>)}</div><p className="journey-result__caution"><b>다음 장면</b>{result.caution}</p><p className="journey-result__next">교실 속 나를 발견하다. 놀이로 확장하다.</p><p className="journey-result__disclaimer">이 결과는 선생님의 모든 모습을 규정하지 않아요. 오늘의 교실 장면에서 가장 자주 드러난 선택을 보여 줍니다.</p><div className="journey-result__actions"><SecondaryButton onClick={() => props.onAction({ type: 'RESET_NBTI' })}><Icon name="reset" size={19} />NBTI 다시 탐색하기</SecondaryButton>{showRecommendations ? <PrimaryButton onClick={restartFromScratch}>처음부터 시작하기</PrimaryButton> : <PrimaryButton onClick={() => setShowRecommendations(true)}>추천받기</PrimaryButton>}</div></div>
         <aside className="journey-result__reveal" aria-label="결과 해금 연출"><ClasscadeLockup /><p>{result.subtitle}</p><span>빛나는 문양이 기록되었습니다</span><i /><i /><i /></aside>
         {showRecommendations && <ResultRecommendations state={props.state} mbti={nbtiTypeCode(result.directions)} />}
       </div>
