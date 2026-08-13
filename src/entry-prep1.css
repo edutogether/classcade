@@ -102,7 +102,7 @@
 .entry-prep01-stage .entry-choice-card::after { background: radial-gradient(circle, rgba(255,246,190,.8) 0 2px, transparent 3px); background-size: 20px 20px; content: ''; inset: 0; mix-blend-mode: soft-light; opacity: .25; pointer-events: none; position: absolute; }
 .entry-prep01-stage .entry-choice-card__icon { align-items: center; background: rgba(238,221,174,.48); border: 1px solid rgba(130,91,28,.34); border-radius: 50%; color: #996b22; display: inline-flex; height: clamp(35px, 3.4vw, 66px); justify-content: center; transform: none; width: clamp(35px, 3.4vw, 66px); }
 .entry-prep01-stage .entry-choice-card__icon svg { height: clamp(21px, 2vw, 40px); width: clamp(21px, 2vw, 40px); }
-.entry-prep01-stage .entry-choice-card__check { align-items: center; background: linear-gradient(160deg, #3fae6d, #1a7a44); border: 2px solid #ffe38f; border-radius: 50%; box-shadow: 0 0 0 2px rgba(20, 60, 35, .3), 0 2px 8px rgba(6, 45, 24, .5), 0 0 12px rgba(255, 220, 120, .55); color: white; display: flex; height: 28px; justify-content: center; right: 8px; top: 8px; width: 28px; z-index: 2; }
+.entry-prep01-stage .entry-choice-card__check { align-items: center; background: linear-gradient(160deg, #3fae6d, #1a7a44); border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 0 2px rgba(20, 60, 35, .3), 0 2px 8px rgba(6, 45, 24, .5); color: white; display: flex; height: 28px; justify-content: center; right: 8px; top: 8px; width: 28px; z-index: 2; }
 .entry-prep01-stage .entry-choice-card.is-previewed,
 .entry-prep01-stage .entry-choice-card.is-selected {
   background: linear-gradient(155deg, #32563d 0%, #142c20 58%, #0b1a13 100%);

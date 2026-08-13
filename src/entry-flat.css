@@ -114,9 +114,9 @@
 .entry-flat-card i {
   align-items: center;
   background: linear-gradient(160deg, #3fae6d, #1a7a44);
-  border: 2px solid #ffe38f;
+  border: 2px solid #fff;
   border-radius: 50%;
-  box-shadow: 0 0 0 2px rgba(20, 60, 35, .3), 0 2px 8px rgba(9, 40, 22, .45), 0 0 12px rgba(255, 220, 120, .55);
+  box-shadow: 0 0 0 2px rgba(20, 60, 35, .3), 0 2px 8px rgba(9, 40, 22, .45);
   color: #fff;
   display: grid;
   height: 26px;
