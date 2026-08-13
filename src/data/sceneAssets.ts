@@ -1,9 +1,9 @@
 /** 16:9 start art, v4: no painted UI text on the left — the headline, chips and buttons
  *  are live DOM again. Only the quest board on the right is painted into the art. */
-import classcadeStartMaster from '../assets/classcade/master-screens/start-master-v4.png'
-import portalAcademyBackground from '../assets/portal-academy-background.png'
-import academyGatewayPlate from '../assets/classcade/master-screens/mobile-scene-parts/academy-gateway-plate.png'
-import nbtiQuestionBackdrop from '../assets/classcade/journey-interactive/nbti-question-backdrop.png'
+import classcadeStartMaster from '../assets/classcade/master-screens/start-master-v4.webp'
+import portalAcademyBackground from '../assets/portal-academy-background.webp'
+import academyGatewayPlate from '../assets/classcade/master-screens/mobile-scene-parts/academy-gateway-plate.webp'
+import nbtiQuestionBackdrop from '../assets/classcade/journey-interactive/nbti-question-backdrop.webp'
 
 export type JourneySceneAsset = {
   src: string

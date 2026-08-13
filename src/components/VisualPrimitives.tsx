@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
-import classcadeEmblem from '../assets/brand/classcade-emblem.png'
-import classcadeWordmark from '../assets/brand/classcade-wordmark.png'
-import classcadeLockup from '../assets/brand/classcade-lockup.png'
-import classcadeLockupH from '../assets/brand/classcade-lockup-h.png'
+import classcadeEmblem from '../assets/brand/classcade-emblem.webp'
+import classcadeWordmark from '../assets/brand/classcade-wordmark.webp'
+import classcadeLockup from '../assets/brand/classcade-lockup.webp'
+import classcadeLockupH from '../assets/brand/classcade-lockup-h.webp'
 
 export type IconName = 'clock' | 'spark' | 'gamepad' | 'arrow' | 'music' | 'speaker' | 'chevron' | 'close' | 'edit' | 'reset' | 'check' | 'school' | 'career' | 'region' | 'leaf' | 'notebook' | 'share' | 'sprout' | 'lantern' | 'compass' | 'tree' | 'lock' | 'bell'
 

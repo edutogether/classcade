@@ -2,8 +2,8 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { prepNavBack, prepNavCtaEnabled, prepNavCtaDisabled, resultCtaEnabled, resultCtaDisabled } from '../../../components/prep/prepAssets'
 import { ArtLoadingScreen } from '../../../components/prep/ArtLoadingScreen'
 import { JOURNEY_SCENE_ASSETS } from '../../../data/sceneAssets'
-import profileAvatar from '../../../assets/brand/profile-avatar-front.png'
-import { ClasscadeEmblem, ClasscadeLockup, Icon } from '../../../components/VisualPrimitives'
+import profileAvatar from '../../../assets/brand/profile-avatar-front.webp'
+import { ClasscadeLockup, Icon } from '../../../components/VisualPrimitives'
 import { NBTI_AXES, NBTI_QUESTIONS, NBTI_TOTAL_QUESTIONS, type NbtiAxis, type NbtiDirection } from '../../../data/nbti.provisional'
 import { getProvisionalResult } from '../../../data/nbtiResults.provisional'
 import { nbtiResultArt } from '../../../data/nbtiResultArt'
@@ -270,12 +270,16 @@ export function QuestionScene(props: JourneySceneProps) {
         <div className="journey-panel journey-question">
           <div className="journey-panel__topline"><p>{`장면 ${question.scene}`}</p><Progress current={props.state.questionIndex + 1} total={NBTI_TOTAL_QUESTIONS} label="진행률" /></div>
           <div className="journey-question__body">
-            <div className="journey-question__copy"><p className="journey-kicker">{question.chapter}</p><h1>{question.prompt}</h1><p>{question.helper}</p><div className="journey-question__growth" aria-label={`캐릭터 성장 ${growth}%`}><ClasscadeEmblem /><span>성장</span><div className="journey-question__growth-track" aria-hidden="true"><i style={{ width: `${growth}%` }} /></div><b>{growth}%</b></div></div>
+            <div className="journey-question__copy"><p className="journey-kicker">{question.chapter}</p><h1>{question.prompt}</h1><p>{question.helper}</p><div className="journey-question__growth" aria-label={`캐릭터 성장 ${growth}%`}><i className="journey-question__growth-stage" aria-hidden="true">{['🌱', '🍀', '🌻', '🌳'][Math.min(3, Math.floor(props.state.questionIndex / 4))]}</i><span>성장</span><div className="journey-question__growth-track" aria-hidden="true"><i style={{ width: `${growth}%` }} /></div><b>{growth}%</b></div></div>
             <p className="journey-panel__fineprint journey-panel__fineprint--above">이 탐색은 체험용 교실 플레이 안내이며, 과학적 성격 진단이 아닙니다.</p>
+            {/* Display order flips on a per-question hash: with the data's fixed order,
+                always picking the TOP answer walked straight to one type (and the bottom
+                to its opposite). Scoring still reads choice ids, so only the on-screen
+                position shuffles — the emoji follows its choice via `direction`. */}
             <div className="journey-question__choices" role="group" aria-label={question.prompt}>
-              {question.choices.map((choice, index) => (
+              {([...question.id].reduce((sum, ch) => sum + ch.charCodeAt(0), 0) % 2 === 1 ? [...question.choices].reverse() : question.choices).map((choice, index) => (
                 <button className={`journey-choice ${selected === choice.id ? 'is-selected' : ''}`} type="button" key={choice.id} onClick={() => props.onAction({ type: 'ANSWER_NBTI', questionId: question.id, choiceId: choice.id })} aria-pressed={selected === choice.id}>
-                  <span className="journey-choice__number">0{index + 1}</span><b>{choice.label}</b><small>{choice.detail}</small><i aria-hidden="true" className="journey-choice__emoji">{QUESTION_EMOJI[question.id]?.[index] ?? <DirectionIcon direction={axisDirections[choice.direction]} size={29} />}</i>
+                  <span className="journey-choice__number">0{index + 1}</span><b>{choice.label}</b><small>{choice.detail}</small><i aria-hidden="true" className="journey-choice__emoji">{QUESTION_EMOJI[question.id]?.[choice.direction] ?? <DirectionIcon direction={axisDirections[choice.direction]} size={29} />}</i>
                 </button>
               ))}
             </div>
