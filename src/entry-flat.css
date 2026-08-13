@@ -106,20 +106,25 @@
   color: #24502f;
 }
 .entry-flat-card.is-selected svg { color: #2c7a4a; }
+/* The card-icon recolor above must not reach the badge's check glyph. */
+.entry-flat-card.is-selected i svg { color: #fff; }
 
+/* Selection badge, unified look: vivid green coin, bright gold rim, WHITE check and a
+   soft glow — the old near-black disc read as a smudge on the parchment cards. */
 .entry-flat-card i {
   align-items: center;
-  background: #27583a;
-  border: 1px solid #ffe187;
+  background: linear-gradient(160deg, #3fae6d, #1a7a44);
+  border: 2px solid #ffe38f;
   border-radius: 50%;
-  color: #fff4c6;
+  box-shadow: 0 0 0 2px rgba(20, 60, 35, .3), 0 2px 8px rgba(9, 40, 22, .45), 0 0 12px rgba(255, 220, 120, .55);
+  color: #fff;
   display: grid;
-  height: 22px;
+  height: 26px;
   justify-items: center;
   position: absolute;
-  right: -7px;
-  top: -8px;
-  width: 22px;
+  right: -8px;
+  top: -9px;
+  width: 26px;
 }
 
 /* Cards drawn from finished artwork: the art carries its own frame and selected state,
@@ -243,7 +248,7 @@
 
 /* The badge sat outside the card corner and overlapped the neighbouring card. */
 .entry-prep--flat .entry-growth-card i,
-.entry-prep--flat .entry-flat-card i { height: 23px; right: 7px; top: 7px; width: 23px; }
+.entry-prep--flat .entry-flat-card i { height: 27px; right: 7px; top: 7px; width: 27px; }
 .entry-prep--flat .entry-growth-card i svg,
 .entry-prep--flat .entry-flat-card i svg { stroke-width: 3.4; }
 

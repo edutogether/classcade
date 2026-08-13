@@ -75,12 +75,12 @@ function SceneArt({ asset, artSrc }: { asset: JourneySceneAsset; artSrc?: string
       {/* Firefly field — position/phase/size per mote via CSS vars, same recipe as the
           prep screens' EntryMotes. */}
       <div className="journey-art__motes">
-        {Array.from({ length: 14 }, (_, index) => (
+        {Array.from({ length: 28 }, (_, index) => (
           <i key={index} style={{
             '--x': `${((index * 41 + 9) % 94) + 2}%`,
             '--y': `${((index * 59 + 13) % 82) + 6}%`,
             '--p': index % 9,
-            '--s': 3 + ((index * 5) % 4),
+            '--s': 3 + ((index * 5) % 8),
           } as CSSProperties} />
         ))}
       </div>
