@@ -116,7 +116,10 @@
 .journey-question-split > .journey-question__sidebar { background: linear-gradient(160deg, #fffbe8, #e9d3a0); }
 
 /* The drawn nav plaques, sized like the prep flow's. */
-.journey-nav-img { background: none; border: 0; cursor: pointer; flex: 0 0 auto; padding: 0; width: clamp(180px, 15vw, 236px); }
+/* Every nav plaque occupies the SAME box height (the tallest canvas: result at
+   418/1536 of the next/result width), so swapping 다음 질문 ↔ 나의 플레이 성향 on the
+   last question cannot change the footer's height and nudge the board copy upward. */
+.journey-nav-img { align-items: center; background: none; border: 0; cursor: pointer; display: inline-flex; flex: 0 0 auto; height: calc(clamp(188px, 15.6vw, 246px) * .2721); justify-content: center; padding: 0; width: clamp(180px, 15vw, 236px); }
 .journey-nav-img img { display: block; height: auto; width: 100%; }
 .journey-nav-img:disabled { cursor: default; }
 .journey-nav-img:not(:disabled):hover img, .journey-nav-img:focus-visible img { filter: brightness(1.09); }
@@ -194,7 +197,7 @@
   .journey-question-split .journey-question__choices .journey-choice b { font-size: 14px; }
   .journey-question-split .journey-question__choices .journey-choice small { font-size: 11px; margin-top: 3px; }
   .journey-panel__footer { padding-top: 8px; }
-  .journey-nav-img { width: 150px; }
+  .journey-nav-img { height: calc(156px * .2721); width: 150px; }
   .journey-nav-img--next, .journey-nav-img--result { width: 156px; }
   .journey-question-split > .journey-question__sidebar { display: none; }
 }
