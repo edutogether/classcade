@@ -8,7 +8,7 @@ import prepThreeCleanPlate from '../../assets/classcade/prep-03-interactive/prep
 import prepFourCleanPlate from '../../assets/classcade/prep-04-interactive/prep-04-clean-plate.png'
 import choiceFrameNeutral from '../../assets/classcade/prep-nav/choice-frame-neutral.png'
 import choiceFrameSelected from '../../assets/classcade/prep-nav/choice-frame-selected.png'
-import loadingMaster from '../../assets/classcade/master-screens/loading-master-v2.png'
+import loadingMaster from '../../assets/classcade/master-screens/loading-master-v3.png'
 /** Shared backdrop for prep 1-4. Authored at 16:9 so it fills wide screens without the
  *  side gaps the previous 4:3-ish plate left. */
 import portalAcademy from '../../assets/classcade/prep-01-interactive/prep-world-backdrop-16x9-v2.png'

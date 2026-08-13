@@ -333,17 +333,7 @@
 .entry-loading__art { display: block; height: 100%; object-fit: contain; width: 100%; }
 /* Frame measured from the artwork by scanning for its gold border: x 644-1028,
    y 617-633 of 1672x941. Inset slightly so the fill sits inside the frame. */
-.entry-loading__fill {
-  background: linear-gradient(180deg, #ffeaa4, #f0ca6a 55%, #d79f34);
-  border-radius: 2px;
-  box-shadow: 0 0 12px rgba(255, 214, 110, .55);
-  height: 1.15%;
-  left: 38.9%;
-  position: absolute;
-  top: 65.85%;
-  transition: width .35s ease;
-  width: calc(22.2% * (var(--progress, 0%) / 100%));
-}
+.entry-loading__fill { background: linear-gradient(90deg, #b77c24, #ffe286 75%, #fff8c4); box-shadow: 0 0 10px rgba(255,211,101,.6); height: 1.6%; left: 39.35%; position: absolute; top: 66.1%; transition: width .4s ease; width: calc(21.6% * (var(--progress, 0%) / 100%)); }
 
 /* Flat nav buttons replace the four-state CTA image stack. */
 .entry-button--flat {
