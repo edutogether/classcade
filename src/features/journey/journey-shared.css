@@ -107,10 +107,10 @@
    top/left mostly bare). A flat fill only softens near ITS OWN edges under blur, so the
    whole disc reads as one even wash that visibly wraps every side of the emblem. */
 .journey-header .journey-brand::before {
-  background: rgba(255,224,138,.3);
+  background: rgba(255,224,138,.15);
   border-radius: 50%;
   content: '';
-  filter: blur(14px);
+  filter: blur(24px);
   height: 100px;
   left: -19px;
   pointer-events: none;
@@ -129,16 +129,17 @@
    the whole span between those edges reads as one even wash, measured to the wordmark's
    actual rendered box (left 65-280px, vertical centre 38px, relative to .journey-brand). */
 .journey-header .journey-brand::after {
-  background: rgba(255,222,140,.26);
+  background: rgba(255,222,140,.14);
+  border-radius: 50%;
   content: '';
-  filter: blur(13px);
-  height: 46px;
-  left: 58px;
+  filter: blur(22px);
+  height: 56px;
+  left: 68px;
   pointer-events: none;
   position: absolute;
   top: 38px;
   transform: translateY(-50%);
-  width: 232px;
+  width: 210px;
   z-index: -1;
 }
 .journey-header .classcade-wordmark {
