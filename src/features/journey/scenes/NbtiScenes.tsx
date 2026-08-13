@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { prepNavBack, prepNavCtaEnabled, prepNavCtaDisabled, resultCtaEnabled, resultCtaDisabled } from '../../../components/prep/prepAssets'
 import { ArtLoadingScreen } from '../../../components/prep/ArtLoadingScreen'
+import { JOURNEY_SCENE_ASSETS } from '../../../data/sceneAssets'
 import profileAvatar from '../../../assets/brand/profile-avatar-front.png'
 import { ClasscadeEmblem, ClasscadeLockup, Icon } from '../../../components/VisualPrimitives'
 import { NBTI_AXES, NBTI_QUESTIONS, NBTI_TOTAL_QUESTIONS, type NbtiAxis, type NbtiDirection } from '../../../data/nbti.provisional'
@@ -173,14 +174,22 @@ export function StartScene(props: JourneySceneProps) {
     if (!starting) return
     playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
     const mode = starting
+    /* Decode the QUESTION backdrop during the interlude and hold the handoff for it
+       (capped) — switching before it was ready made the scene visibly pop in ("탁"). */
+    const nextArt = new Image()
+    nextArt.src = JOURNEY_SCENE_ASSETS.question.src
+    const nextSceneReady = Promise.race([
+      nextArt.decode?.().catch(() => undefined) ?? Promise.resolve(),
+      new Promise((resolve) => window.setTimeout(resolve, 4600)),
+    ])
     const startedAt = Date.now()
     const timer = window.setInterval(() => {
       const percent = Math.min(100, Math.round((Date.now() - startedAt) / 22))
       setStartProgress(percent)
       if (percent >= 100) {
         window.clearInterval(timer)
-        if (mode === 'reset') restartFromScratch()
-        else startActionRef.current({ type: 'START_NBTI' })
+        if (mode === 'reset') { restartFromScratch(); return }
+        void nextSceneReady.then(() => startActionRef.current({ type: 'START_NBTI' }))
       }
     }, 80)
     return () => window.clearInterval(timer)
@@ -227,11 +236,24 @@ export function QuestionScene(props: JourneySceneProps) {
   useEffect(() => {
     if (!revealing) return
     playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
+    /* All 16 answers exist by reveal time, so the RESULT backdrop for the actual type
+       can be decoded during the interlude; the handoff waits for it (capped) so the
+       result scene never pops its background in late ("탁"). */
+    const directions = NBTI_AXES.map((axis) => axisLeaning(axis.id, props.state.answers) ?? axis.directions[0])
+    const resultArt = new Image()
+    resultArt.src = nbtiResultArt(nbtiTypeCode(directions)) ?? JOURNEY_SCENE_ASSETS.result.src
+    const resultReady = Promise.race([
+      resultArt.decode?.().catch(() => undefined) ?? Promise.resolve(),
+      new Promise((resolve) => window.setTimeout(resolve, 4600)),
+    ])
     const startedAt = Date.now()
     const timer = window.setInterval(() => {
       const percent = Math.min(100, Math.round((Date.now() - startedAt) / 26))
       setRevealProgress(percent)
-      if (percent >= 100) { window.clearInterval(timer); revealActionRef.current({ type: 'NEXT_NBTI' }) }
+      if (percent >= 100) {
+        window.clearInterval(timer)
+        void resultReady.then(() => revealActionRef.current({ type: 'NEXT_NBTI' }))
+      }
     }, 80)
     return () => window.clearInterval(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot interlude: BGM fade + stopwatch must not restart on re-render

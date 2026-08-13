@@ -304,7 +304,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       <img className="entry-prep__world" src={portalAcademy} alt="" aria-hidden="true" />
       {!isFlat('nickname') && <img className="entry-prep__reference" src={stageImage} alt="" aria-hidden="true" onError={() => degradeToFlat('nickname')} />}
       <div className="entry-prep__vignette" aria-hidden="true" />
-      <EntryMotes count={90} />
+      <EntryMotes count={96} />
       <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
         <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><PrepProgress step={5} /></header>
         <div className="entry-nickname">
@@ -326,7 +326,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   if (!isFlat('prep1') && step === 1) {
     return <main className={`entry-prep entry-prep--1 entry-prep01-stage ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-1-title">
       <img className="entry-prep01-stage__background" src={prepOneWorldBackdrop} alt="" aria-hidden="true" />
-      <EntryMotes count={90} className="entry-motes--prep01" />
+      <EntryMotes count={96} className="entry-motes--prep01" />
       <section className="entry-prep01-plate" aria-labelledby="prep-1-title">
         <img className="entry-prep01-plate__image" src={prepOneCleanPlate} alt="" aria-hidden="true" />
         <h1 id="prep-1-title" className="sr-only">모험 준비 — 어느 교실에서 함께하고 있나요?</h1>
@@ -346,7 +346,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   if (!isFlat('prep2') && step === 2) {
     return <main className={`entry-prep entry-prep--2 entry-prep02-stage ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-2-title">
       <img className="entry-prep02-stage__plate" src={prepTwoCleanPlate} alt="" aria-hidden="true" />
-      <EntryMotes count={78} className="entry-motes--prep02" />
+      <EntryMotes count={96} className="entry-motes--prep02" />
       <section className="entry-prep02-plate" aria-labelledby="prep-2-title">
         <h1 id="prep-2-title" className="sr-only">모험 준비 — 선생님의 교실 여정은 어느 정도인가요?</h1>
         <svg className="entry-prep02-plate__path" viewBox="0 0 1484 1060" preserveAspectRatio="none" aria-hidden="true"><path d="M196 690 Q 340 706 454 672 T 634 690 T 813 672 T 993 690 Q 1080 702 1128 692" /></svg>
