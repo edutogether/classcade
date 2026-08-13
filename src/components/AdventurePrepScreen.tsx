@@ -121,10 +121,15 @@ export function EntryMotes({ count, className = '' }: { count: number; className
     <div className={`entry-motes ${className}`} aria-hidden="true">
       {Array.from({ length: count }, (_, index) => (
         <i key={index} style={{
-          '--x': `${(moteHash(index * 3 + 1) * 94 + 2).toFixed(1)}%`,
-          '--y': `${(moteHash(index * 3 + 2) * 86 + 4).toFixed(1)}%`,
-          '--p': index % 9,
-          '--s': 3 + Math.floor(moteHash(index * 3 + 3) * 8),
+          '--x': `${(moteHash(index * 7 + 1) * 94 + 2).toFixed(1)}%`,
+          '--y': `${(moteHash(index * 7 + 2) * 86 + 4).toFixed(1)}%`,
+          '--s': 3 + Math.floor(moteHash(index * 7 + 3) * 8),
+          /* Fully independent cycle per mote — a negative delay starts each one
+             mid-flight, so the field never breathes in unison. */
+          '--dur': `${(5.5 + moteHash(index * 7 + 4) * 6).toFixed(2)}s`,
+          '--delay': `-${(moteHash(index * 7 + 5) * 12).toFixed(2)}s`,
+          '--dx': (moteHash(index * 7 + 6) * 12 - 6).toFixed(1),
+          '--amp': (8 + moteHash(index * 7 + 0) * 22).toFixed(1),
         } as CSSProperties} />
       ))}
     </div>

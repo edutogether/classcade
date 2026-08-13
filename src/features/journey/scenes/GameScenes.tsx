@@ -8,9 +8,9 @@ import { PrimaryButton, Progress, SceneFrame, SecondaryButton, type JourneyScene
 import { CompletionExperience } from '../components/CompletionExperience'
 import { CanonicalGameScene, CanonicalHotspot, CanonicalMobileHero, ScreenReaderText } from '../components/CanonicalGameScene'
 import { isFlat } from '../../../config/visualMode'
-import conditionsArt from '../../../assets/classcade/game-builder/classroom-conditions-master.png'
-import candidatesArt from '../../../assets/classcade/game-builder/game-candidates-master.png'
-import resultArt from '../../../assets/classcade/game-builder/game-result-master.png'
+import conditionsArt from '../../../assets/classcade/game-builder/classroom-conditions-master.webp'
+import candidatesArt from '../../../assets/classcade/game-builder/game-candidates-master.webp'
+import resultArt from '../../../assets/classcade/game-builder/game-result-master.webp'
 
 const fallbackConditions: GameConditions = { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' }
 const conditionLabels: Record<keyof GameConditions, string> = { schoolLevel: '학교급', size: '참여 인원', time: '수업 시간', space: '공간', mood: '원하는 분위기' }

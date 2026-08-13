@@ -3,7 +3,7 @@ import { BgmControl } from '../../../components/BgmControl'
 import { SCENE_THEMES } from '../../../lib/audioSceneThemes'
 import { ClasscadeEmblem, ClasscadeWordmark, CompassSeal, Icon } from '../../../components/VisualPrimitives'
 import { moteHash } from '../../../lib/moteHash'
-import profileAvatar from '../../../assets/brand/profile-avatar-front.png'
+import profileAvatar from '../../../assets/brand/profile-avatar-front.webp'
 import { JOURNEY_SCENE_ASSETS, type JourneySceneAsset } from '../../../data/sceneAssets'
 import { toggleAudioChannel } from '../../../lib/audioController'
 import type { JourneyAction, JourneyState } from '../journeyState'
@@ -78,10 +78,13 @@ function SceneArt({ asset, artSrc }: { asset: JourneySceneAsset; artSrc?: string
       <div className="journey-art__motes">
         {Array.from({ length: 96 }, (_, index) => (
           <i key={index} style={{
-            '--x': `${(moteHash(index * 3 + 101) * 94 + 2).toFixed(1)}%`,
-            '--y': `${(moteHash(index * 3 + 102) * 84 + 5).toFixed(1)}%`,
-            '--p': index % 9,
-            '--s': 3 + Math.floor(moteHash(index * 3 + 103) * 8),
+            '--x': `${(moteHash(index * 7 + 101) * 94 + 2).toFixed(1)}%`,
+            '--y': `${(moteHash(index * 7 + 102) * 92 + 1).toFixed(1)}%`,
+            '--s': 3 + Math.floor(moteHash(index * 7 + 103) * 8),
+            /* Independent cycle per mote (negative delay = random mid-flight start). */
+            '--dur': `${(6 + moteHash(index * 7 + 104) * 7).toFixed(2)}s`,
+            '--delay': `-${(moteHash(index * 7 + 105) * 13).toFixed(2)}s`,
+            '--amp': (8 + moteHash(index * 7 + 106) * 20).toFixed(1),
           } as CSSProperties} />
         ))}
       </div>

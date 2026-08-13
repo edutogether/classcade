@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import portalAcademy from '../assets/portal-academy-background.png'
+import portalAcademy from '../assets/portal-academy-background.webp'
 import { CompassSeal, Icon } from './VisualPrimitives'
 
 type SharedSessionGateProps = {

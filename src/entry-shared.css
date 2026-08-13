@@ -124,8 +124,8 @@
    background motes, the normal mid tier, and a few brighter "fireflies" with a wide
    glow. All drift slowly via entry-mote (translate + opacity pulse). */
 .entry-motes i {
-  animation: entry-mote calc(5.8s + var(--p, 0) * .85s) ease-in-out infinite;
-  animation-delay: calc(var(--p, 0) * -1.15s);
+  animation: entry-mote var(--dur, 7s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
   background: #fff3bb;
   border-radius: 50%;
   box-shadow: 0 0 4px #ffdc77, 0 0 15px rgba(246, 189, 66, .84);
@@ -247,6 +247,8 @@
 .entry-growth-card:hover { filter: brightness(1.04); transform: translateY(-1px); }
 .entry-growth-card.is-selected { background-color: rgba(41,74,49,.15); background-image: var(--frame-selected); box-shadow: 0 0 15px rgba(239,179,50,.32); color: #fff0b5; }
 .entry-growth-card svg { color: #9a7134; flex: 0 0 auto; }.entry-growth-card.is-selected > svg { color: #ffe184; }
+/* The card-icon recolor must not reach the badge's check glyph (kept white everywhere). */
+.entry-growth-card i svg { color: #fff; }
 .entry-growth-card i { align-items: center; background: linear-gradient(160deg, #3fae6d, #1a7a44); border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 0 2px rgba(20, 60, 35, .3), 0 2px 8px rgba(9, 40, 22, .45); color: #fff; display: grid; height: 26px; justify-items: center; position: absolute; right: -8px; top: -9px; width: 26px; }
 .entry-growth-other { align-items: center; background: rgba(255,248,222,.64); border: 1px solid rgba(142,99,39,.67); display: flex; gap: 8px; grid-column: 1 / -1; min-height: 53px; padding: 6px 10px; }.entry-growth-other span { color: #5a3f20; font-size: 13px; font-weight: 800; white-space: nowrap; }.entry-growth-other input { background: transparent; border: 0; color: #3a2710; min-height: 39px; outline: 0; padding: 0 6px; width: 100%; }.entry-growth-message { color: #a03922; font-size: 12px; font-weight: 800; grid-column: 1 / -1; margin: -5px 0 0; min-height: 16px; }
 
@@ -282,7 +284,13 @@
 .entry-prep.is-exiting,
 .entry-loading.is-exiting { animation: entry-fade-to-black .72s ease both; }
 
-@keyframes entry-mote { 0%, 100% { opacity: .12; transform: translate3d(-4px, 12px, 0) scale(.72); } 44% { opacity: .86; transform: translate3d(5px, -17px, 0) scale(1.08); } 72% { opacity: .35; transform: translate3d(-2px, -30px, 0) scale(.88); } }
+/* Per-mote drift: direction (--dx) and amplitude (--amp) come from the hash, so no two
+   fireflies trace the same path or breathe on the same beat. */
+@keyframes entry-mote {
+  0%, 100% { opacity: .12; transform: translate3d(calc(var(--dx, -4) * -1px), calc(var(--amp, 16) * .75px), 0) scale(.72); }
+  44% { opacity: .86; transform: translate3d(calc(var(--dx, -4) * 1px), calc(var(--amp, 16) * -1px), 0) scale(1.08); }
+  72% { opacity: .35; transform: translate3d(calc(var(--dx, -4) * .4px), calc(var(--amp, 16) * -1.8px), 0) scale(.88); }
+}
 @keyframes entry-pulse { 0%, 100% { opacity: .3; transform: scale(.72); } 50% { opacity: 1; transform: scale(1.15); } }
 @keyframes entry-fade-to-black { to { filter: brightness(0); opacity: 0; } }
 
