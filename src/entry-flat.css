@@ -414,8 +414,9 @@
   .entry-prep--flat .entry-nav-img--final { width: 200px; }
 }
 
-/* Step 3's "지역을 선택했어요" cue lives OUTSIDE the layout flow (absolute, hanging under
-   the question head), so its appearance cannot move the cards or the nav — reserving a
-   row didn't work because the cue renders after the head, not inside it. */
-.entry-prep--flat .entry-prep__question-head { position: relative; }
-.entry-prep--flat .entry-prep__next-cue { left: 0; margin: 0; position: absolute; top: calc(100% + 4px); }
+/* Step 3's "지역을 선택했어요" cue floats absolutely just above the 서울 card, outside the
+   layout flow, so its appearance cannot move the cards or the nav. The wrapper takes
+   over the grid's own centring margin so the cards sit exactly where they always did. */
+.entry-prep--flat .entry-prep__region-wrap { margin-block: auto; position: relative; }
+.entry-prep--flat .entry-prep__region-wrap .entry-flat-cards { margin-block: 0; }
+.entry-prep--flat .entry-prep__next-cue { bottom: calc(100% + 8px); left: 0; margin: 0; position: absolute; }

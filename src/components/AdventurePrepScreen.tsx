@@ -365,14 +365,16 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
           <p className="entry-prep__question-number">{title.number}</p>
           <h2 id={`prep-${step}-title`} data-tune-id={`prep-${step}-title`}>{title.question}</h2>
           <p className="entry-prep__question-helper">{title.helper} {step === 4 && <strong aria-live="polite">{growthPriorities.length} / 3</strong>}</p>
-          {/* Inside the head on purpose: the flat stylesheet hangs it below with
-              position:absolute, so appearing can never push the cards or nav down. */}
-          {step === 3 && region && <p className="entry-prep__next-cue" role="status">지역을 선택했어요 · 아래의 다음 질문 버튼으로 이어가요 ↓</p>}
         </div>
         {flat && step === 1 && <PrepFlatCards options={SCHOOL_LEVEL_OPTIONS} value={schoolLevel} onChange={setSchoolLevel} tunePrefix="prep-1" ariaLabel="함께하는 학생들의 학교급" icons={SCHOOL_ICONS} columns={5} />}
         {flat && step === 2 && <PrepFlatCards options={CAREER_RANGE_OPTIONS} value={careerRange} onChange={setCareerRange} tunePrefix="prep-2" ariaLabel="선생님의 교실 여정" icons={CAREER_ICONS} columns={5} />}
         {step === 3 && (flat
-          ? <PrepFlatCards options={REGION_OPTIONS} value={region} onChange={setRegion} tunePrefix="prep-3" ariaLabel="지역" columns={9} compact />
+          /* The cue hangs absolutely above the 서울 card via the relative wrapper — being
+             out of flow, its appearance can never push the cards or nav. */
+          ? <div className="entry-prep__region-wrap">
+            {region && <p className="entry-prep__next-cue" role="status">지역을 선택했어요 · 아래의 다음 질문 버튼으로 이어가요 ↓</p>}
+            <PrepFlatCards options={REGION_OPTIONS} value={region} onChange={setRegion} tunePrefix="prep-3" ariaLabel="지역" columns={9} compact />
+          </div>
           : <ChoiceCards options={REGION_OPTIONS} value={region} onChange={setRegion} icons={['region']} tunePrefix="prep-3" compact />)}
         {step === 4 && <div className="entry-growth-grid" role="group" aria-label="교실 성장 우선순위">
           {GROWTH_PRIORITY_OPTIONS.map((option, index) => {
