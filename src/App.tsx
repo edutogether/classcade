@@ -83,6 +83,8 @@ export default function App() {
   const [online, setOnline] = useState(isBrowserOnline)
   const teacherTriggerRef = useRef<HTMLButtonElement>(null)
   const transitionTimerRef = useRef<number | null>(null)
+  const audioSaveTimerRef = useRef<number | null>(null)
+  const pendingAudioStateRef = useRef<JourneyState | null>(null)
   const journeyIdResult = ensureAnonymousJourneyId(deviceMode)
   const journeyId = journeyIdResult.ok ? journeyIdResult.value : ''
 
@@ -133,6 +135,25 @@ export default function App() {
   }, [tunerScreen])
 
   useEffect(() => () => { if (transitionTimerRef.current) window.clearTimeout(transitionTimerRef.current) }, [])
+
+  /* Flush a debounced volume save immediately if the tab is closed/hidden mid-drag —
+     otherwise the last few ticks of a fast adjustment could be lost. */
+  useEffect(() => {
+    const flush = () => {
+      if (audioSaveTimerRef.current === null || !pendingAudioStateRef.current) return
+      window.clearTimeout(audioSaveTimerRef.current)
+      audioSaveTimerRef.current = null
+      persistJourneyState(pendingAudioStateRef.current)
+    }
+    document.addEventListener('visibilitychange', flush)
+    window.addEventListener('pagehide', flush)
+    return () => {
+      document.removeEventListener('visibilitychange', flush)
+      window.removeEventListener('pagehide', flush)
+      flush()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- persistJourneyState closes over journeyState only to read the pending ref's own snapshot, not the enclosing render's state
+  }, [])
 
   function beginJourneyTransition() {
     setPrepExiting(true)
@@ -186,6 +207,23 @@ export default function App() {
     const nextState = journeyReducer(journeyState, action)
     if (nextState === journeyState) {
       if (action.type === 'NEXT_NBTI' || action.type === 'NEXT_GAME') setNotice('먼저 하나의 선택을 골라 주세요.')
+      return
+    }
+    if (action.type === 'SET_AUDIO') {
+      /* Volume drags and the mute/unmute tween both dispatch SET_AUDIO many times a
+         second; persistJourneyState does two synchronous JSON.stringify + Storage
+         writes of the WHOLE journey state (all 16 answers, result, etc.) on every
+         call, which blocked the main thread often enough to make the slider itself
+         feel laggy/stuttery — the "bottleneck" was disk I/O, not the animation. The
+         UI updates instantly here; the actual save is debounced to once the value
+         settles for 400ms. */
+      setJourneyState(nextState)
+      pendingAudioStateRef.current = nextState
+      if (audioSaveTimerRef.current !== null) window.clearTimeout(audioSaveTimerRef.current)
+      audioSaveTimerRef.current = window.setTimeout(() => {
+        audioSaveTimerRef.current = null
+        if (pendingAudioStateRef.current) persistJourneyState(pendingAudioStateRef.current)
+      }, 400)
       return
     }
     if (!persistJourneyState(nextState)) {
