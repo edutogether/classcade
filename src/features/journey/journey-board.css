@@ -204,3 +204,6 @@
 
 /* The drawn final CTA is wider than the nav plaques — it carries a full sentence. */
 .journey-nav-img--result { width: clamp(240px, 21vw, 330px); }
+
+/* Per-question colour emoji on the choice cards (replaces the repeating line icons). */
+.journey-choice .journey-choice__emoji { font-size: 30px; font-style: normal; line-height: 1; }
