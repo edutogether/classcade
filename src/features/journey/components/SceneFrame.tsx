@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode, RefObject } from 'react'
 import { BgmControl } from '../../../components/BgmControl'
 import { SCENE_THEMES } from '../../../lib/audioSceneThemes'
 import { ClasscadeEmblem, ClasscadeWordmark, CompassSeal, Icon } from '../../../components/VisualPrimitives'
+import { moteHash } from '../../../lib/moteHash'
 import profileAvatar from '../../../assets/brand/profile-avatar-front.png'
 import { JOURNEY_SCENE_ASSETS, type JourneySceneAsset } from '../../../data/sceneAssets'
 import { toggleAudioChannel } from '../../../lib/audioController'
@@ -72,15 +73,15 @@ function SceneArt({ asset, artSrc }: { asset: JourneySceneAsset; artSrc?: string
     <div className={`journey-art journey-art--${asset.tone}`} aria-hidden="true">
       <picture><source media="(max-width: 700px)" srcSet={artSrc ?? asset.mobileSrc ?? asset.src} /><img src={artSrc ?? asset.src} alt="" style={{ '--scene-position': asset.position } as CSSProperties} /></picture>
       <div className="journey-art__wash" />
-      {/* Firefly field — position/phase/size per mote via CSS vars, same recipe as the
-          prep screens' EntryMotes. */}
+      {/* Firefly field — position/phase/size per mote via CSS vars, same hash-scatter
+          recipe as the prep screens' EntryMotes (a linear walk drew a visible diagonal). */}
       <div className="journey-art__motes">
-        {Array.from({ length: 28 }, (_, index) => (
+        {Array.from({ length: 42 }, (_, index) => (
           <i key={index} style={{
-            '--x': `${((index * 41 + 9) % 94) + 2}%`,
-            '--y': `${((index * 59 + 13) % 82) + 6}%`,
+            '--x': `${(moteHash(index * 3 + 101) * 94 + 2).toFixed(1)}%`,
+            '--y': `${(moteHash(index * 3 + 102) * 84 + 5).toFixed(1)}%`,
             '--p': index % 9,
-            '--s': 3 + ((index * 5) % 8),
+            '--s': 3 + Math.floor(moteHash(index * 3 + 103) * 8),
           } as CSSProperties} />
         ))}
       </div>
