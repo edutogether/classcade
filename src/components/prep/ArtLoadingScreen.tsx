@@ -1,9 +1,9 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { loadingMaster } from './prepAssets'
 
-/* The gold bar frame's inner slot, pixel-scanned from loading-master-v4.png.
+/* The gold bar frame's inner slot, pixel-scanned from loading-master-v5.png.
    If the loading art is ever replaced, re-scan and update ONLY these numbers. */
-const ART = { width: 1672, height: 941, slotX: 654, slotY: 621, slotW: 362, slotH: 10 }
+const ART = { width: 1672, height: 941, slotX: 687, slotY: 610, slotW: 342, slotH: 11 }
 
 type SlotRect = { left: number; top: number; width: number; height: number }
 
