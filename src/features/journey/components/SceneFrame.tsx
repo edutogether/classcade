@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode, RefObject } from 'react'
+import { useEffect, useState, type CSSProperties, type ReactNode, type RefObject } from 'react'
 import { BgmControl } from '../../../components/BgmControl'
 import { SCENE_THEMES } from '../../../lib/audioSceneThemes'
 import { ClasscadeEmblem, ClasscadeWordmark, CompassSeal, Icon } from '../../../components/VisualPrimitives'
@@ -93,13 +93,30 @@ function SceneArt({ asset, artSrc }: { asset: JourneySceneAsset; artSrc?: string
   )
 }
 
+/** The notice pill fades in AND out: the element stays mounted 450ms after the text
+ *  clears so the out-animation can run — an instant unmount was the last visible
+ *  "jolt" on scene entry (found by pixel-diffing burst captures). */
+function ScenePill({ notice }: { notice: string }) {
+  const [shown, setShown] = useState(notice)
+  const [leaving, setLeaving] = useState(false)
+  useEffect(() => {
+    if (notice) { setShown(notice); setLeaving(false); return }
+    if (!shown) return
+    setLeaving(true)
+    const timer = window.setTimeout(() => { setShown(''); setLeaving(false) }, 450)
+    return () => window.clearTimeout(timer)
+  }, [notice, shown])
+  if (!shown) return null
+  return <p className={`journey-notice ${leaving ? 'is-leaving' : ''}`} aria-live="polite">{shown}</p>
+}
+
 export function SceneFrame({ scene, children, state, onAction, onTeacherOpen, teacherTriggerRef, notice, profile, compact = false, artSrc, canonicalGame = false }: SceneFrameProps) {
   return (
     <main className={`journey-scene journey-scene--${scene}${canonicalGame ? ' journey-scene--canonical-game' : ''}${compact ? ' is-compact' : ''}`}>
       <SceneArt asset={JOURNEY_SCENE_ASSETS[scene]} artSrc={artSrc} />
       <JourneyHeader state={state} onAction={onAction} onTeacherOpen={onTeacherOpen} teacherTriggerRef={teacherTriggerRef} profile={profile} scene={scene} />
       <section className="journey-scene__stage">{children}</section>
-      {notice && scene !== 'question' && <p className="journey-notice" aria-live="polite">{notice}</p>}
+      {scene !== 'question' && <ScenePill notice={notice} />}
     </main>
   )
 }
