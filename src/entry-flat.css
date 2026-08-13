@@ -333,13 +333,18 @@
    which is what lets the fill be positioned in percentages of the artwork and stay put:
    with `cover` the picture shifts under the overlay as the viewport ratio changes, and
    the fill would drift off its frame - the same failure that broke the prep screens. */
-.entry-loading--art { align-items: center; background: #05100a; display: flex; justify-content: center; }
+.entry-loading--art { align-items: center; background: #05100a; display: flex; justify-content: center; overflow: hidden; position: relative; }
+/* Any viewport wider or taller than the art's 16:9 would show hard empty bars beside
+   the contain-fitted stage; the same picture, cover-fitted + blurred + dimmed, extends
+   the scene to every edge instead. */
+.entry-loading--art::before { background: url('./assets/classcade/master-screens/loading-master-v4.png') center / cover no-repeat; content: ''; filter: blur(16px) brightness(.5) saturate(.9); inset: -32px; position: absolute; }
+.entry-loading--art .entry-loading__stage { z-index: 1; }
 .entry-loading__stage { aspect-ratio: 1672 / 941; max-height: 100svh; max-width: 100vw; position: relative; width: min(100vw, calc(100svh * 1672 / 941)); }
 .entry-loading__art { display: block; height: 100%; object-fit: contain; width: 100%; }
-/* v4 frame measured by scanning for its gold border: inner slot x 663-1008,
-   y 618-630 of 1672x941. The fill is a touch thinner than the slot (8px of the
-   12px opening) so the drawn frame always shows around it. */
-.entry-loading__fill { background: linear-gradient(90deg, #b77c24, #ffe286 75%, #fff8c4); box-shadow: 0 0 10px rgba(255,211,101,.6); height: .85%; left: 39.65%; position: absolute; top: 65.9%; transition: width .4s ease; width: calc(20.63% * (var(--progress, 0%) / 100%)); }
+/* v4 frame, pixel-scanned: gold frame rows y616-620 and y631-636, interior columns
+   x654-1016 of 1672x941. The fill spans the FULL inner slot — flush with the frame on
+   the left, top and bottom, reaching the right frame exactly at 100%. */
+.entry-loading__fill { background: linear-gradient(90deg, #b77c24, #ffe286 75%, #fff8c4); box-shadow: 0 0 10px rgba(255,211,101,.6); height: 1.06%; left: 39.11%; position: absolute; top: 66%; transition: width .4s ease; width: calc(21.65% * (var(--progress, 0%) / 100%)); }
 
 /* Flat nav buttons replace the four-state CTA image stack. */
 .entry-button--flat {
