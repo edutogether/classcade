@@ -76,7 +76,7 @@ function SceneArt({ asset, artSrc }: { asset: JourneySceneAsset; artSrc?: string
       {/* Firefly field — position/phase/size per mote via CSS vars, same hash-scatter
           recipe as the prep screens' EntryMotes (a linear walk drew a visible diagonal). */}
       <div className="journey-art__motes">
-        {Array.from({ length: 42 }, (_, index) => (
+        {Array.from({ length: 96 }, (_, index) => (
           <i key={index} style={{
             '--x': `${(moteHash(index * 3 + 101) * 94 + 2).toFixed(1)}%`,
             '--y': `${(moteHash(index * 3 + 102) * 84 + 5).toFixed(1)}%`,
