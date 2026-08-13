@@ -41,8 +41,10 @@ export function ResultRecommendations({ state, mbti }: { state: JourneyState; mb
      The QR hands the result to the participant's own phone instead. */
   const [qr, setQr] = useState<string | null>(null)
   const shareUrl = useMemo(() => {
-    const origin = typeof window === 'undefined' ? 'https://edutogether.kr' : window.location.origin
-    return `${origin}/?type=${mbti}`
+    /* BASE_URL makes the QR follow the deployment path — on GitHub Pages the app lives
+       under /classcade/, and origin + '/' would point at the portal instead. */
+    const origin = typeof window === 'undefined' ? 'https://edutogether.github.io' : window.location.origin
+    return `${origin}${import.meta.env.BASE_URL}?type=${mbti}`
   }, [mbti])
   useEffect(() => {
     let alive = true
