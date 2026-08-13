@@ -272,8 +272,39 @@ export function QuestionScene(props: JourneySceneProps) {
     return () => window.clearInterval(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot interlude: BGM fade + stopwatch must not restart on re-render
   }, [revealing])
+  /* Q1's back slot ("메인 화면으로") used to dispatch GO_HOME instantly — an abrupt cut
+     while every OTHER scene change in the app goes through this same loading interlude
+     first. */
+  const [returningHome, setReturningHome] = useState(false)
+  const [returnProgress, setReturnProgress] = useState(0)
+  const returnActionRef = useRef(props.onAction)
+  returnActionRef.current = props.onAction
+  useEffect(() => {
+    if (!returningHome) return
+    playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
+    const startArt = new Image()
+    startArt.src = JOURNEY_SCENE_ASSETS.start.src
+    const startReady = Promise.race([
+      startArt.decode?.().catch(() => undefined) ?? Promise.resolve(),
+      new Promise((resolve) => window.setTimeout(resolve, 4600)),
+    ])
+    const startedAt = Date.now()
+    const timer = window.setInterval(() => {
+      const percent = Math.min(100, Math.round((Date.now() - startedAt) / 22))
+      setReturnProgress(percent)
+      if (percent >= 100) {
+        window.clearInterval(timer)
+        void startReady.then(() => returnActionRef.current({ type: 'GO_HOME' }))
+      }
+    }, 80)
+    return () => window.clearInterval(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot interlude: BGM fade + stopwatch must not restart on re-render
+  }, [returningHome])
   if (revealing) {
     return <ArtLoadingScreen progress={revealProgress} label="나의 플레이 결과를 여는 중" />
+  }
+  if (returningHome) {
+    return <ArtLoadingScreen progress={returnProgress} label="메인 화면으로 돌아가는 중" />
   }
   return (
     <SceneFrame scene="question" {...props} compact>
@@ -309,7 +340,7 @@ export function QuestionScene(props: JourneySceneProps) {
                 (GO_HOME keeps state.resumeStage so 새로 시작하기 becomes 이전 여정
                 이어가기 there) instead of dispatching PREVIOUS_NBTI into nothing. */}
             {props.state.questionIndex === 0
-              ? <JourneyNavArt art={prepNavMainBack} label="← 메인 화면으로" onClick={() => props.onAction({ type: 'GO_HOME' })} variant="back" />
+              ? <JourneyNavArt art={prepNavMainBack} label="← 메인 화면으로" onClick={() => setReturningHome(true)} variant="back" />
               : <JourneyNavArt art={prepNavBack} label="← 이전 질문" onClick={() => props.onAction({ type: 'PREVIOUS_NBTI' })} variant="back" />}
             {/* The drawn plaque says "다음 질문으로"; the final question needs different
                 copy, so it keeps the CSS button. */}
