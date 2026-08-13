@@ -35,6 +35,10 @@ export function journeyReducer(state: JourneyState, action: JourneyAction): Jour
     }
     case 'GO_HOME': return state.stage === 'nbti_start' ? state : stamp(state, { resumeStage: state.stage, stage: 'nbti_start' })
     case 'RESUME_JOURNEY': return state.stage === 'nbti_start' && state.resumeStage ? stamp(state, { stage: state.resumeStage, resumeStage: null }) : state
+    case 'REVIEW_NBTI':
+      /* Back to question 1 with every answer preserved, so re-exploring means flipping
+         through pre-checked cards rather than answering 16 questions again. */
+      return state.stage === 'nbti_result' ? stamp(state, { stage: 'nbti_question', questionIndex: 0 }) : state
     case 'OPEN_GAME_INTRO':
       /* The intro interstitial was cut (2026-08-12): continuing from the result goes
          straight into the builder, carrying START_GAME's initialisation with it. */

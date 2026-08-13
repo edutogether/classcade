@@ -103,6 +103,18 @@ export default function App() {
     preloadMainTheme()
   }, [])
 
+  /* Fade the index.html boot splash out once the app has painted its first frames —
+     it exists so a fresh tab never shows the UI stuttering into place. */
+  useEffect(() => {
+    const splash = document.getElementById('boot-splash')
+    if (!splash) return
+    const timer = window.setTimeout(() => {
+      splash.style.opacity = '0'
+      window.setTimeout(() => splash.remove(), 450)
+    }, 350)
+    return () => window.clearTimeout(timer)
+  }, [])
+
   useEffect(() => {
     applyTuning(createTuning(), tunerScreen)
   }, [tunerScreen])

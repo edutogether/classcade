@@ -35,6 +35,7 @@ export type JourneyAction =
   | { type: 'GO_HOME' }
   | { type: 'RESUME_JOURNEY' }
   | { type: 'OPEN_GAME_INTRO' }
+  | { type: 'REVIEW_NBTI' }
   | { type: 'SET_GAME_CONDITIONS'; conditions: GameConditions }
   | { type: 'SELECT_GAME_COMBO'; combo: GameComboSelection }
   | { type: 'SELECT_GAME_CANDIDATE'; candidateId: string }

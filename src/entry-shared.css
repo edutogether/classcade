@@ -351,8 +351,8 @@
 .prep3-map__nav:disabled { backdrop-filter: grayscale(.85) brightness(.75); border-radius: 12px; cursor: default; }
 .entry-prep03-map .entry-prep__offline { bottom: 10px; position: fixed; }
 
-/* Nickname (5/5) without the centre lockup: the whole block rides higher instead of
-   centring in the leftover space. */
-.entry-prep--flat .entry-nickname { align-content: start; padding-top: clamp(10px, 2vh, 24px); }
-.entry-prep--flat .entry-nickname h1 { margin-top: 4px; }
-.entry-prep--flat .entry-nickname > p { margin: 10px 0 22px; }
+/* Nickname (5/5): centred block with generous, even breathing room between the rows. */
+.entry-prep--flat .entry-nickname { align-content: center; padding: 12px 0 36px; }
+.entry-prep--flat .entry-nickname h1 { margin-top: 8px; }
+.entry-prep--flat .entry-nickname > p { margin: 14px 0 34px; }
+.entry-prep--flat .entry-nickname .entry-kicker { margin-bottom: 14px; }
