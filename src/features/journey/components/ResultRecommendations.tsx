@@ -62,7 +62,7 @@ export function ResultRecommendations({ state, mbti }: { state: JourneyState; mb
   }, [mbti, result.directions])
 
   return (
-    <aside className="result-rec journey-enter" aria-label="같이교육 추천 영상">
+    <aside className="result-rec" aria-label="같이교육 추천 영상">
       <p className="journey-kicker">같이교육 PICK</p>
       <h2>나의 성향 놀이 추천 ✨</h2>
       <p className="result-rec__lead">선생님의 성향에 맞춘 같이교육의 추천 영상이에요.</p>
