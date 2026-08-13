@@ -204,8 +204,8 @@ export function StartScene(props: JourneySceneProps) {
           {journeyItems.map((item) => <li key={item.title}><Icon name={item.icon} size={25} /><span><b>{item.title}</b><small>{item.detail}</small></span></li>)}
         </ul>
         <div className="journey-start__actions">
-          <PrimaryButton onClick={() => setStarting('questions')} tuneId="main-primary-cta">교실 NBTI 시작하기</PrimaryButton>
           {props.state.resumeStage ? <SecondaryButton onClick={() => props.onAction({ type: 'RESUME_JOURNEY' })} tuneId="main-resume-cta"><Icon name="reset" size={20} />이전 여정 이어가기</SecondaryButton> : <SecondaryButton onClick={() => setStarting('reset')} tuneId="main-resume-cta"><Icon name="reset" size={20} />새로 시작하기</SecondaryButton>}
+          <PrimaryButton onClick={() => setStarting('questions')} tuneId="main-primary-cta">교실 NBTI 시작하기</PrimaryButton>
         </div>
         <p className="journey-start__audio-note" data-tune-id="main-headphone-note"><Icon name="speaker" size={17} />더욱 더 몰입감을 높이고 싶다면 BGM을 켜고 플레이해보세요 !</p>
       </div>

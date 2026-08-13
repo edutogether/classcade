@@ -257,6 +257,10 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       </div>
       <p className="sr-only" role="status">교실 모험을 준비하는 중 {loadingProgress}%</p>
       {loadingError && <p className="entry-loading__error">{loadingError}</p>}
+      {/* Glyph preheat for the MAIN screen: its serif strings load their Korean font
+          subsets during these loading seconds, so the start title doesn't visibly grow
+          and re-centre the moment the scene appears. */}
+      <span aria-hidden="true" style={{ fontFamily: "'Gowun Batang', serif", position: 'absolute', visibility: 'hidden' }}>당신의 교실 플레이 모험이 시작됩니다 여러분의 선택으로 나의 유형을 발견하고, 선생님 캐릭터를 성장시켜 보세요 NBTI 새로 더욱 더 몰입감을 높이고 싶다면 켜고 해보세요 !</span>
     </main>
   }
 
