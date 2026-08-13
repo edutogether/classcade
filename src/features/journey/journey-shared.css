@@ -440,7 +440,10 @@
    piece of the same board set. */
 /* Outer ring softened one tone: the dark umber pass at .78 opacity read as a heavy
    near-black band next to the gold pass — lightened and dropped to .58. */
-.result-rec { animation: result-rec-in .25s both; align-self: start; background: linear-gradient(160deg, rgba(255,251,232,.96), rgba(228,203,140,.94)); border: 1px solid rgba(123,82,27,.42); border-radius: 10px; box-shadow: inset 0 1px rgba(255,255,255,.6), 0 0 0 5px rgba(84,60,30,.58), 0 0 0 7px rgba(211,169,78,.55), 0 20px 46px rgba(0,0,0,.4); color: #402e18; padding: clamp(14px, 1.3vw, 20px); }
+/* Extra top padding grows the box upward: the right/bottom edges stay pinned (right
+   to the header, bottom to the primary button via JS), so 15px more height here pushes
+   the TOP edge 15px further up instead of moving the anchored side. */
+.result-rec { animation: result-rec-in .25s both; align-self: start; background: linear-gradient(160deg, rgba(255,251,232,.96), rgba(228,203,140,.94)); border: 1px solid rgba(123,82,27,.42); border-radius: 10px; box-shadow: inset 0 1px rgba(255,255,255,.6), 0 0 0 5px rgba(84,60,30,.58), 0 0 0 7px rgba(211,169,78,.55), 0 20px 46px rgba(0,0,0,.4); color: #402e18; padding: calc(clamp(14px, 1.3vw, 20px) + 15px) clamp(14px, 1.3vw, 20px) clamp(14px, 1.3vw, 20px); }
 .result-rec .journey-kicker { color: #8c672a; margin: 0 0 6px; }
 .result-rec h2 { font-family: 'Gowun Batang', serif; font-size: clamp(18px, 1.4vw, 23px); letter-spacing: -.05em; line-height: 1.15; margin: 0 0 8px; }
 .result-rec__lead { font-size: clamp(12px, .92vw, 15px); font-weight: 700; line-height: 1.6; margin: 0 0 14px; }
@@ -478,7 +481,8 @@
      margin as the rest of the chrome, not floating at its own offset. Top is set by JS
      (ResultRecommendations) so the panel's BOTTOM lands exactly on the primary button's
      bottom regardless of content length or viewport height. */
-  .journey-result--art .result-rec { max-height: calc(100svh - 190px); overflow-y: auto; position: fixed; right: clamp(22px, 4.1vw, 78px); top: calc(clamp(62px, 8.3vh, 88px) + clamp(64px, 7.8vh, 100px)); width: clamp(350px, 26vw, 440px); z-index: 6; }
+  /* +15px width grows the LEFT edge outward (right stays pinned to the header). */
+  .journey-result--art .result-rec { max-height: calc(100svh - 190px); overflow-y: auto; position: fixed; right: clamp(22px, 4.1vw, 78px); top: calc(clamp(62px, 8.3vh, 88px) + clamp(64px, 7.8vh, 100px)); width: clamp(365px, 26vw, 455px); z-index: 6; }
   .journey-result.has-recommendations .journey-result__reveal { display: none; }
 }
 @media (max-width: 1100px) { .result-rec { margin-top: 18px; } }
