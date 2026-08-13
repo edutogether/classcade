@@ -11,8 +11,8 @@ function Thumb({ src }: { src?: string }) {
   return <span className="result-rec__thumb"><img src={src} alt="" onError={() => setFailed(true)} /></span>
 }
 
-/** 16개 유형별 고정 추천 2편 (2026-08-13 큐레이션). 카탈로그가 27편이라 일부 영상은
- *  두 유형에 겹쳐 배정됨 — 채널에 새 영상이 확보되면 이 표만 바꾸면 된다. */
+/** 16개 유형별 고정 추천 2편 (2026-08-13 큐레이션, 같은 날 2차 개정).
+ *  32칸 전원 서로 다른 영상 — 겹침 0. 카탈로그 32편 중 32편 사용. */
 const RESULT_VIDEO_PICKS: Record<string, readonly [string, string]> = {
   ESTJ: ['Xg1H8VxHHQw', '7HwVXE0nn_A'],
   ESTP: ['vavIDO8aylM', 'cXscAK2BNYY'],
@@ -22,14 +22,14 @@ const RESULT_VIDEO_PICKS: Record<string, readonly [string, string]> = {
   ISTP: ['HLx2aITlp38', 'e2v9haWE8l8'],
   ISFJ: ['JfPPgWwpwIE', 'MDrhMgRtZ5o'],
   ISFP: ['WsLyuXeJYpE', '9rBMbog0Ni0'],
-  ENTJ: ['3Do4tKizwGo', 'Xg1H8VxHHQw'],
+  ENTJ: ['3Do4tKizwGo', 'a3CWqrC-4is'],
   ENTP: ['wlworcNm5x0', 'Avcj1XyY1q4'],
-  ENFJ: ['ThrM-DF8LIk', 'O-SvbyszcMI'],
+  ENFJ: ['poF_K05cWKc', 'O-SvbyszcMI'],
   ENFP: ['_YdS72-_6k8', 'n-TorcNfaHE'],
   INTJ: ['rShRhcF-hzU', '2aFmilWMJp4'],
-  INTP: ['In7CdmAs1qY', 'e2v9haWE8l8'],
-  INFJ: ['zBZhr45zjh8', 'MDrhMgRtZ5o'],
-  INFP: ['KzyngYUEm30', 'WsLyuXeJYpE'],
+  INTP: ['In7CdmAs1qY', 'RhkgPKafY0E'],
+  INFJ: ['zBZhr45zjh8', 'RvfJM9IejXA'],
+  INFP: ['KzyngYUEm30', 'EJ4SKGMw2lo'],
 }
 
 /** Recommendations opened straight from the result screen. Each card carries a QR that
