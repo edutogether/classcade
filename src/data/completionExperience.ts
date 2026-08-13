@@ -58,6 +58,13 @@ export const CLASSCADE_VIDEO_CATALOG: readonly RecommendationVideo[] = [
   v('Avcj1XyY1q4', '용암 건너기 | 변형놀이', '바닥을 용암 삼아 건너는 협력 변형 놀이입니다.', ['elementary'], ['standard'], ['room', 'wide'], '20분 안팎', '매트/종이', ['신체 활동', '협력', '전원 참여', '도전과 전략', '즉흥 변주'], 7),
   v('wlworcNm5x0', 'OOO꽃이 피었습니다! | 변형놀이', '무궁화 꽃이 피었습니다의 규칙을 비틀어 즐기는 변형 놀이입니다.', ['elementary', 'middle'], ['short', 'standard'], ['room', 'wide'], '10~20분', '없음', ['신체 활동', '전원 참여', '즉흥 변주', '규칙 기반'], 7),
   v('MDrhMgRtZ5o', '기억의 조각 | 학기말 놀이', '한 학기의 기억을 함께 돌아보는 학기말 회고 놀이입니다.', ['elementary', 'middle', 'high'], ['short', 'standard'], ['seated'], '10~20분', '종이, 필기구', ['마무리', '회고', '차분한 몰입', '관계', '개별 참여', '자리 활동'], 6),
+  /* 2026-08-13 추가 5편: 유형별 고정 추천 32칸을 전부 고유 영상으로 채우기 위한 보강
+     (채널 재스크레이핑으로 확보, oEmbed로 공개 상태 확인). */
+  v('a3CWqrC-4is', '보드게임 | 스플렌더', '보석을 모아 엔진을 설계하는 전략 보드게임입니다.', ['elementary', 'middle', 'high'], ['standard'], ['seated'], '20분 안팎', '보드게임 자료', ['보드게임', '전략형', '도전과 전략', '규칙 기반', '자리 활동', '소규모'], 7),
+  v('poF_K05cWKc', '존중놀이 | 추앙전단지', '친구의 좋은 점을 전단지로 만들어 서로를 추앙하는 존중 놀이입니다.', ['elementary', 'middle'], ['short', 'standard'], ['seated'], '10~20분', '종이, 필기구', ['관계', '협력', '학급 분위기', '이야기형', '개별 참여'], 7),
+  v('RhkgPKafY0E', '과학영재놀이 | 지문을 찾아라', '지문 단서를 관찰하고 추리하는 과학 탐구 놀이입니다.', ['elementary', 'middle'], ['standard'], ['seated'], '20분 안팎', '실험 재료', ['규칙 기반', '차분한 몰입', '도전과 전략', '자리 활동', '개별 참여'], 6),
+  v('RvfJM9IejXA', '존중놀이 | 나의 장점은', '서로의 장점을 발견하고 나눠 주는 존중 놀이입니다.', ['elementary', 'middle'], ['short', 'standard'], ['seated'], '10~20분', '종이, 필기구', ['관계', '차분한 몰입', '개별 참여', '이야기형', '자리 활동'], 7),
+  v('EJ4SKGMw2lo', '소통놀이 | 포인트 비밀 경매', '내가 아끼는 가치를 비밀 경매로 나누는 소통 놀이입니다.', ['elementary', 'middle', 'high'], ['short', 'standard'], ['seated'], '10~20분', '종이, 필기구', ['이야기형', '관계', '자리 활동', '개별 참여', '규칙 기반'], 6),
 ]
 
 const directionTags: Record<NbtiDirection, readonly string[]> = {

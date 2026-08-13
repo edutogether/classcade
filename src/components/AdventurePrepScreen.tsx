@@ -163,10 +163,19 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   useEffect(() => {
     if (step !== 'loading') return
     /* Decode the start screen's big backdrop while the bar fills — without this the art
-       arrives a beat after the scene and the whole background visibly settles ("덜컹"). */
+       arrives a beat after the scene and the whole background visibly settles ("덜컹").
+       The handoff below AWAITS this (capped): on the deployed site the multi-MB art can
+       outlive the ~2s bar, and switching before it's ready made the main screen visibly
+       fill itself in ("화면이 늘어나며 맞추는 느낌"). */
     const startArt = new Image()
     startArt.src = JOURNEY_SCENE_ASSETS.start.src
-    void startArt.decode?.().catch(() => undefined)
+    const mainScreenReady = Promise.race([
+      Promise.all([
+        startArt.decode?.().catch(() => undefined) ?? Promise.resolve(),
+        typeof document !== 'undefined' && document.fonts ? document.fonts.ready.catch(() => undefined) : Promise.resolve(),
+      ]),
+      new Promise((resolve) => window.setTimeout(resolve, 4600)),
+    ])
     const progressTimers = [
       window.setTimeout(() => setLoadingProgress(18), 120),
       window.setTimeout(() => setLoadingProgress(46), 540),
@@ -179,6 +188,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
        theme can fade in as the start screen appears. */
     const audioTimer = window.setTimeout(() => playSceneTheme(null, audio.bgmEnabled, audio.bgmVolume), 1240)
     const finishTimer = window.setTimeout(async () => {
+      await mainScreenReady
       const now = new Date().toISOString()
       const result = await onComplete({
         version: 1,

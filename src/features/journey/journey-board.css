@@ -110,7 +110,9 @@
    slot labels and progress bar sit on top of the frame art. Also pulled well off the
    right edge toward the centre. */
 /* Top-aligned with the question board — the negative pull left them a step apart. */
-.journey-question-split > .journey-question__sidebar { margin-right: clamp(80px, 11vw, 250px); margin-top: 0; padding: clamp(22px, 1.9vw, 34px) clamp(20px, 1.7vw, 30px); }
+/* Bottom padding runs deeper than the top so the 소지 아이템 row doesn't hug the frame,
+   and the board sits a touch further right, off the background banner. */
+.journey-question-split > .journey-question__sidebar { margin-right: clamp(64px, 10vw, 232px); margin-top: 0; padding: clamp(22px, 1.9vw, 34px) clamp(20px, 1.7vw, 30px) clamp(34px, 3vw, 52px); }
 
 /* Fully opaque player board — translucency over the busy backdrop hurt readability. */
 .journey-question-split > .journey-question__sidebar { background: linear-gradient(160deg, #fffbe8, #e9d3a0); }

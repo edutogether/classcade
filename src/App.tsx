@@ -106,16 +106,26 @@ export default function App() {
     preloadMainTheme()
   }, [])
 
-  /* Fade the index.html boot splash out once the app has painted its first frames —
-     it exists so a fresh tab never shows the UI stuttering into place. */
+  /* Fade the index.html boot splash out only after the first screen is actually ready:
+     fonts applied and every image already in the DOM decoded (capped at 2.6s so a slow
+     network can never hold the app hostage). Lifting on a bare timer let the deployed
+     site reveal a screen that was still filling itself in. */
   useEffect(() => {
     const splash = document.getElementById('boot-splash')
     if (!splash) return
-    const timer = window.setTimeout(() => {
+    let lifted = false
+    const lift = () => {
+      if (lifted) return
+      lifted = true
       splash.style.opacity = '0'
       window.setTimeout(() => splash.remove(), 450)
-    }, 350)
-    return () => window.clearTimeout(timer)
+    }
+    const minDwell = new Promise((resolve) => window.setTimeout(resolve, 350))
+    const fontsReady = document.fonts ? document.fonts.ready.catch(() => undefined) : Promise.resolve()
+    const imagesReady = Promise.allSettled(Array.from(document.images).slice(0, 12).map((img) => img.decode?.().catch(() => undefined) ?? Promise.resolve()))
+    void Promise.all([minDwell, fontsReady, imagesReady]).then(lift)
+    const capTimer = window.setTimeout(lift, 2600)
+    return () => window.clearTimeout(capTimer)
   }, [])
 
   useEffect(() => {

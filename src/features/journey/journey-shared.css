@@ -393,7 +393,9 @@
    notebook-pairing flow are no longer reachable from this screen. */
 /* Own fade-in: journey-enter's transform would turn the panel into the containing
    block for its fixed positioning and pin it to the wrong spot. */
-.result-rec { animation: result-rec-in .25s both; align-self: start; background: linear-gradient(160deg, rgba(255,251,232,.96), rgba(228,203,140,.94)); border: 1px solid rgba(123,82,27,.42); border-radius: 10px; box-shadow: 0 20px 46px rgba(0,0,0,.4); color: #402e18; padding: clamp(14px, 1.3vw, 20px); }
+/* Same double gold ring the player board wears, so the PICK panel reads as one framed
+   piece of the same board set. */
+.result-rec { animation: result-rec-in .25s both; align-self: start; background: linear-gradient(160deg, rgba(255,251,232,.96), rgba(228,203,140,.94)); border: 1px solid rgba(123,82,27,.42); border-radius: 10px; box-shadow: inset 0 1px rgba(255,255,255,.6), 0 0 0 5px rgba(62,43,18,.78), 0 0 0 7px rgba(211,169,78,.55), 0 20px 46px rgba(0,0,0,.4); color: #402e18; padding: clamp(14px, 1.3vw, 20px); }
 .result-rec .journey-kicker { color: #8c672a; margin: 0 0 6px; }
 .result-rec h2 { font-family: 'Gowun Batang', serif; font-size: clamp(18px, 1.4vw, 23px); letter-spacing: -.05em; line-height: 1.15; margin: 0 0 8px; }
 .result-rec__lead { font-size: clamp(12px, .92vw, 15px); font-weight: 700; line-height: 1.6; margin: 0 0 14px; }

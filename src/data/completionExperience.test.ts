@@ -15,8 +15,8 @@ describe('completion recommendation and sharing contract', () => {
     }
   })
   it('keeps only confirmed 같이교육 videos and supplied URL formats', () => {
-    expect(CLASSCADE_VIDEO_CATALOG).toHaveLength(27)
-    expect(new Set(CLASSCADE_VIDEO_CATALOG.map((video) => video.id)).size).toBe(27)
+    expect(CLASSCADE_VIDEO_CATALOG).toHaveLength(32)
+    expect(new Set(CLASSCADE_VIDEO_CATALOG.map((video) => video.id)).size).toBe(32)
     expect(EDUTOGETHER_YOUTUBE_CHANNEL).toEqual({ id: 'UCxwEDzU4bGOyvIrpTkqN5jg', name: '같이교육' })
     for (const video of CLASSCADE_VIDEO_CATALOG) {
       expect(video.youtubeUrl).toBe(`https://www.youtube.com/watch?v=${video.id}`)
@@ -27,10 +27,12 @@ describe('completion recommendation and sharing contract', () => {
     const relationship = rankVideos(['협력', '전원 참여', '관계'], { schoolLevel: 'elementary', size: 'large', time: 'standard', space: 'room', mood: 'cooperative' })
     const calmIndividual = rankVideos(['개별 참여', '차분한 몰입', '자리 활동'], { schoolLevel: 'elementary', size: 'small', time: 'standard', space: 'seated', mood: 'calm' })
     const strategyYoung = rankVideos(['전략형', '도전과 전략'], { schoolLevel: 'elementary', size: 'small', time: 'standard', space: 'seated', mood: 'challenge' })
-    /* 2026-08-12: 카탈로그를 같이교육 채널 27건으로 재구축한 뒤의 랭킹 상위값. */
+    /* 2026-08-13: 카탈로그 32건(유형별 고정 추천 32칸 전량 고유화 보강) 기준 랭킹 상위값.
+       calmIndividual 상위는 신규 '존중놀이 | 나의 장점은'가 감정 탐정을 제쳤다 — 태그
+       일치 수가 더 많아 의도된 결과다. */
     expect(relationship[0]?.video.id).toBe('QcBhWQcgZ1M')
-    expect(calmIndividual[0]?.video.id).toBe('WsLyuXeJYpE')
-    expect(strategyYoung[0]?.video.id).toBe('vavIDO8aylM')
+    expect(calmIndividual[0]?.video.id).toBe('RvfJM9IejXA')
+    expect(strategyYoung[0]?.video.id).toBe('a3CWqrC-4is')
     for (const entries of [relationship, calmIndividual, strategyYoung]) {
       expect(entries.length).toBeGreaterThan(0); expect(entries.length).toBeLessThanOrEqual(3)
       expect(new Set(entries.map(({ video }) => video.id)).size).toBe(entries.length)
