@@ -3,7 +3,7 @@ import questionThemeM4a from '../assets/audio/classcade-question-theme.m4a'
 import resultThemeM4a from '../assets/audio/classcade-result-theme.m4a'
 import mainThemeMp3 from '../assets/audio/classcade-main-theme-loop.mp3'
 import { clampBgmVolume } from './audioController'
-import { getHasAudioUserGesture } from './audioGesture'
+import { getHasAudioUserGesture, noteAudioUserGesture } from './audioGesture'
 
 /** Each phase of the journey has its own track, and only one plays at a time: asking a
  *  new one to play cross-fades the previous one out. Volumes are relative to the user's
@@ -27,6 +27,21 @@ type Entry = { audio: HTMLAudioElement; frame: number | null; state: 'idle' | 's
 const players = new Map<SceneTheme, Entry>()
 let current: SceneTheme | null = null
 let requestedVolume = 1
+/* Browsers refuse audio until the user interacts with the page. The scene that wanted
+   music before that point parks its request here, and the first pointer/key anywhere
+   replays it — so the music starts on the very first click, not only on 다음 질문. */
+let pendingRequest: { theme: SceneTheme; volume: number } | null = null
+if (typeof window !== 'undefined') {
+  const kick = () => {
+    noteAudioUserGesture()
+    if (!pendingRequest) return
+    const request = pendingRequest
+    pendingRequest = null
+    playSceneTheme(request.theme, true, request.volume)
+  }
+  window.addEventListener('pointerdown', kick, { capture: true })
+  window.addEventListener('keydown', kick, { capture: true })
+}
 
 function entryFor(theme: SceneTheme): Entry | null {
   if (typeof document === 'undefined') return null
@@ -89,7 +104,7 @@ export function playSceneTheme(theme: SceneTheme | null, enabled: boolean, volum
     return
   }
   for (const key of players.keys()) if (key !== theme) stopEntry(key)
-  if (!getHasAudioUserGesture()) return
+  if (!getHasAudioUserGesture()) { pendingRequest = { theme, volume: requestedVolume }; return }
   const entry = entryFor(theme)
   if (!entry) return
   const target = requestedVolume * SCENE_THEMES[theme].gain

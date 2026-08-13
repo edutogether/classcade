@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import QRCode from 'qrcode'
-import { CompassSeal, Icon } from '../../../components/VisualPrimitives'
+import { CompassSeal } from '../../../components/VisualPrimitives'
 import { CLASSCADE_VIDEO_CATALOG, rankVideos, recommendationTags } from '../../../data/completionExperience'
 import { getProvisionalResult } from '../../../data/nbtiResults.provisional'
 import type { JourneyState } from '../journeyState'
@@ -11,13 +11,34 @@ function Thumb({ src }: { src?: string }) {
   return <span className="result-rec__thumb"><img src={src} alt="" onError={() => setFailed(true)} /></span>
 }
 
+/** 16개 유형별 고정 추천 2편 (2026-08-13 큐레이션). 카탈로그가 27편이라 일부 영상은
+ *  두 유형에 겹쳐 배정됨 — 채널에 새 영상이 확보되면 이 표만 바꾸면 된다. */
+const RESULT_VIDEO_PICKS: Record<string, readonly [string, string]> = {
+  ESTJ: ['Xg1H8VxHHQw', '7HwVXE0nn_A'],
+  ESTP: ['vavIDO8aylM', 'cXscAK2BNYY'],
+  ESFJ: ['QcBhWQcgZ1M', 'ThrM-DF8LIk'],
+  ESFP: ['lCXQViQsx68', 'UcjGov-rTaE'],
+  ISTJ: ['V9-S5PSF18o', 'RLgcV1G-rsw'],
+  ISTP: ['HLx2aITlp38', 'e2v9haWE8l8'],
+  ISFJ: ['JfPPgWwpwIE', 'MDrhMgRtZ5o'],
+  ISFP: ['WsLyuXeJYpE', '9rBMbog0Ni0'],
+  ENTJ: ['3Do4tKizwGo', 'Xg1H8VxHHQw'],
+  ENTP: ['wlworcNm5x0', 'Avcj1XyY1q4'],
+  ENFJ: ['ThrM-DF8LIk', 'O-SvbyszcMI'],
+  ENFP: ['_YdS72-_6k8', 'n-TorcNfaHE'],
+  INTJ: ['rShRhcF-hzU', '2aFmilWMJp4'],
+  INTP: ['In7CdmAs1qY', 'e2v9haWE8l8'],
+  INFJ: ['zBZhr45zjh8', 'MDrhMgRtZ5o'],
+  INFP: ['KzyngYUEm30', 'WsLyuXeJYpE'],
+}
+
 /** Recommendations opened straight from the result screen — the game builder and the
- *  notebook-pairing flow are no longer part of this path. */
+ *  notebook-pairing flow are no longer part of this path. Cards are thumbnail + title
+ *  only; clicking opens YouTube, and the QR carries everything to the visitor's phone. */
 export function ResultRecommendations({ state, mbti }: { state: JourneyState; mbti: string }) {
   const result = getProvisionalResult(state.resultCode)
-  /* The booth laptop is shared and signed in to nobody, so "copy the link" has nowhere
-     to go. The QR hands the result to the participant's own phone instead, and they
-     share to their own KakaoTalk from there. */
+  /* The booth laptop is shared and signed in to nobody, so links have nowhere to go.
+     The QR hands the result to the participant's own phone instead. */
   const [qr, setQr] = useState<string | null>(null)
   const shareUrl = useMemo(() => {
     const origin = typeof window === 'undefined' ? 'https://edutogether.kr' : window.location.origin
@@ -30,61 +51,31 @@ export function ResultRecommendations({ state, mbti }: { state: JourneyState; mb
       .catch(() => { if (alive) setQr(null) })
     return () => { alive = false }
   }, [shareUrl])
-  /* No game data on this path, so conditions/candidate are null: the ranking runs on the
-     NBTI direction tags alone. Backfilled so the panel always has three to show. */
+  /* Fixed two picks per type; the tag ranking only backfills if a pick is unpublished. */
   const videos = useMemo(() => {
+    const picks = RESULT_VIDEO_PICKS[mbti] ?? []
+    const picked = picks.map((id) => CLASSCADE_VIDEO_CATALOG.find((video) => video.id === id && video.published)).filter((video) => video !== undefined)
+    if (picked.length === 2) return picked
     const tags = recommendationTags(result.directions, null, null, {})
-    const ranked = rankVideos(tags, null).map((entry) => entry.video)
-    const seen = new Set(ranked.map((video) => video.id))
-    const fill = CLASSCADE_VIDEO_CATALOG.filter((video) => video.published && !seen.has(video.id))
-    return [...ranked, ...fill].slice(0, 3)
-  }, [result.directions])
-  const [message, setMessage] = useState('')
-
-  /* Share must be called synchronously inside the handler (iOS drops the gesture after
-     an await). Desktop browsers mostly lack navigator.share, so copying the link is the
-     documented fallback — the teacher pastes it into KakaoTalk's 나와의 채팅. */
-  function sendToChat(title: string, url: string) {
-    setMessage('')
-    if (navigator.share) {
-      navigator.share({ title, text: `${title} · 같이교육`, url })
-        .then(() => setMessage('공유 창을 열었어요. 카카오톡 → 나와의 채팅을 고르면 나에게 보낼 수 있어요.'))
-        .catch((error: unknown) => {
-          if (error instanceof DOMException && error.name === 'AbortError') return
-          copyLink(url)
-        })
-      return
-    }
-    copyLink(url)
-  }
-
-  function copyLink(url: string) {
-    navigator.clipboard?.writeText(url)
-      .then(() => setMessage('링크를 복사했어요. 카카오톡 → 나와의 채팅에 붙여넣으면 저장됩니다.'))
-      .catch(() => setMessage('복사에 실패했어요. 영상 링크를 길게 눌러 복사해 주세요.'))
-  }
+    const ranked = rankVideos(tags, null).map((entry) => entry.video).filter((video) => !picked.some((pick) => pick.id === video.id))
+    return [...picked, ...ranked].slice(0, 2)
+  }, [mbti, result.directions])
 
   return (
     <aside className="result-rec journey-enter" aria-label="같이교육 추천 영상">
-      <p className="journey-kicker">WAITING BONUS</p>
-      <h2>기다리는 동안 둘러보세요 ✨</h2>
-      <p className="result-rec__lead">{result.title} 성향에 맞춘 같이교육의 짧은 활동 영상이에요.</p>
+      <p className="journey-kicker">같이교육 PICK</p>
+      <h2>나의 성향 놀이 추천 ✨</h2>
+      <p className="result-rec__lead">선생님의 성향에 맞춘 같이교육의 추천 영상이에요.</p>
       <div className="result-rec__list">
         {videos.map((video) => (
           <article key={video.id}>
             <a href={video.youtubeUrl} target="_blank" rel="noreferrer" aria-label={`${video.title} - 같이교육 영상 보기`}><Thumb src={video.thumbnailUrl} /></a>
             <div>
               <h3>{video.title}</h3>
-              <small>{video.duration} · {video.materials}</small>
-              <div className="result-rec__actions">
-                <a href={video.youtubeUrl} target="_blank" rel="noreferrer">영상 보기 ↗</a>
-                <button type="button" onClick={() => sendToChat(video.title, video.youtubeUrl)}><Icon name="share" size={14} />나에게 보내기</button>
-              </div>
             </div>
           </article>
         ))}
       </div>
-      <p className="result-rec__message" aria-live="polite">{message}</p>
       <div className="result-rec__qr">
         {qr && <img src={qr} alt={`${result.title} 결과와 추천 영상을 여는 QR 코드`} />}
         <div>

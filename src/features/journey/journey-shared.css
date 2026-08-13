@@ -446,3 +446,8 @@
 
 /* 새로 시작하기 sits beside the primary CTA and was reading much smaller than it. */
 @media (min-width: 701px) { .journey-scene--start .journey-start__actions .journey-button--secondary { font-size: clamp(15px, 1.15vw, 21px); } }
+
+/* Base rule stretches the result primary across both grid columns (grid-column: 1/-1,
+   from the old 3-button layout). With two buttons on one row, 추천받기 takes a single
+   half-width cell like its neighbour. */
+.journey-result--art .journey-result__actions .journey-button--primary { grid-column: auto; }
