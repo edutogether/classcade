@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { prepNavBack, prepNavCtaEnabled, prepNavCtaDisabled, resultCtaEnabled, resultCtaDisabled } from '../../../components/prep/prepAssets'
+import { prepNavBack, prepNavMainBack, prepNavCtaEnabled, prepNavCtaDisabled, resultCtaEnabled, resultCtaDisabled } from '../../../components/prep/prepAssets'
 import { ArtLoadingScreen } from '../../../components/prep/ArtLoadingScreen'
 import { JOURNEY_SCENE_ASSETS } from '../../../data/sceneAssets'
 import profileAvatar from '../../../assets/brand/profile-avatar-front.webp'
@@ -79,20 +79,26 @@ function DirectionIcon({ direction, size = 26 }: { direction: NbtiDirection; siz
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{directionIconPaths[direction]}</svg>
 }
 
-/** Tallies weighted votes for the axis's two answered-so-far choices; returns the current leader, or null until at least one of the axis's questions has been answered. */
-function axisLeaning(axis: NbtiAxis, answers: Record<string, string>): NbtiDirection | null {
+/** Tallies weighted votes for the axis's answered-so-far choices. Three outcomes:
+ *  `null` — nothing in this axis answered yet (sidebar shows "?", still forming);
+ *  `'neutral'` — at least one answer exists but the weighted tally is exactly tied
+ *  (sidebar shows "중립" — a real, stable outcome, not a placeholder); or a direction
+ *  once one side leads. */
+function axisLeaning(axis: NbtiAxis, answers: Record<string, string>): NbtiDirection | 'neutral' | null {
   const axisDef = NBTI_AXES.find((entry) => entry.id === axis)
   if (!axisDef) return null
-  let scoreA = 0, scoreB = 0
+  let scoreA = 0, scoreB = 0, answeredAny = false
   for (const question of NBTI_QUESTIONS) {
     if (question.axis !== axis) continue
     const choiceId = answers[question.id]
     if (!choiceId) continue
     const choice = question.choices.find((entry) => entry.id === choiceId)
     if (!choice) continue
+    answeredAny = true
     if (choice.direction === 0) scoreA += question.weight; else scoreB += question.weight
   }
-  if (scoreA === scoreB) return null
+  if (!answeredAny) return null
+  if (scoreA === scoreB) return 'neutral'
   return scoreA > scoreB ? axisDef.directions[0] : axisDef.directions[1]
 }
 
@@ -127,7 +133,8 @@ function GrowingPlayerPanel({ growth, answers, nickname }: { growth: number; ans
         <div className="journey-question__sidebar-chips">
           {NBTI_AXES.map((axis) => {
             const leaning = axisLeaning(axis.id, answers)
-            return <span key={axis.id} className={leaning ? 'is-revealed' : ''}>{leaning ? directionLabels[leaning] : '?'}</span>
+            const label = leaning === 'neutral' ? '중립' : leaning ? directionLabels[leaning] : '?'
+            return <span key={axis.id} className={leaning !== null ? 'is-revealed' : ''}>{label}</span>
           })}
         </div>
       </div>
@@ -239,7 +246,14 @@ export function QuestionScene(props: JourneySceneProps) {
     /* All 16 answers exist by reveal time, so the RESULT backdrop for the actual type
        can be decoded during the interlude; the handoff waits for it (capped) so the
        result scene never pops its background in late ("탁"). */
-    const directions = NBTI_AXES.map((axis) => axisLeaning(axis.id, props.state.answers) ?? axis.directions[0])
+    /* By reveal time every axis has all 4 of its questions answered, so a genuine tie
+       is possible; falling back to directions[0] here is only a tiebreak for computing
+       ONE definite type code — the mid-question sidebar shows the tie honestly as
+       "중립" instead of guessing (see axisLeaning). */
+    const directions = NBTI_AXES.map((axis) => {
+      const leaning = axisLeaning(axis.id, props.state.answers)
+      return leaning && leaning !== 'neutral' ? leaning : axis.directions[0]
+    })
     const resultArt = new Image()
     resultArt.src = nbtiResultArt(nbtiTypeCode(directions)) ?? JOURNEY_SCENE_ASSETS.result.src
     const resultReady = Promise.race([
@@ -268,7 +282,13 @@ export function QuestionScene(props: JourneySceneProps) {
           one full-width panel. */}
       <div className="journey-question-split journey-enter">
         <div className="journey-panel journey-question">
-          <div className="journey-panel__topline"><p>{`장면 ${question.scene}`}</p><Progress current={props.state.questionIndex + 1} total={NBTI_TOTAL_QUESTIONS} label="진행률" /></div>
+          {/* current uses the SAME "answered so far" basis as growth below (not "which
+              question am I viewing") — with the old questionIndex+1 basis, this bar sat
+              at 16/16 the instant Q16 loaded (before any answer), while growth was still
+              at 94/100; selecting Q16's answer then visibly yanked ONLY the growth bar
+              the rest of the way to a ceiling this bar had already been idling at. Now
+              both climb together and land on 100% at the same moment, on every question. */}
+          <div className="journey-panel__topline"><p>{`장면 ${question.scene}`}</p><Progress current={props.state.questionIndex + (selected ? 1 : 0)} total={NBTI_TOTAL_QUESTIONS} label="진행률" /></div>
           <div className="journey-question__body">
             <div className="journey-question__copy"><p className="journey-kicker">{question.chapter}</p><h1>{question.prompt}</h1><p>{question.helper}</p><div className="journey-question__growth" aria-label={`캐릭터 성장 ${growth}%`}><i className="journey-question__growth-stage" aria-hidden="true">{['🌱', '🍀', '🌻', '🌳'][Math.min(3, Math.floor(props.state.questionIndex / 4))]}</i><span>성장</span><div className="journey-question__growth-track" aria-hidden="true"><i style={{ width: `${growth}%` }} /></div><b>{growth}%</b></div></div>
             <p className="journey-panel__fineprint journey-panel__fineprint--above">이 탐색은 체험용 교실 플레이 안내이며, 과학적 성격 진단이 아닙니다.</p>
@@ -285,7 +305,12 @@ export function QuestionScene(props: JourneySceneProps) {
             </div>
           </div>
           <div className="journey-panel__footer">
-            <JourneyNavArt art={prepNavBack} label="← 이전 질문" onClick={() => props.onAction({ type: 'PREVIOUS_NBTI' })} variant="back" />
+            {/* Q1 has no previous question — its back slot returns to the main screen
+                (GO_HOME keeps state.resumeStage so 새로 시작하기 becomes 이전 여정
+                이어가기 there) instead of dispatching PREVIOUS_NBTI into nothing. */}
+            {props.state.questionIndex === 0
+              ? <JourneyNavArt art={prepNavMainBack} label="← 메인 화면으로" onClick={() => props.onAction({ type: 'GO_HOME' })} variant="back" />
+              : <JourneyNavArt art={prepNavBack} label="← 이전 질문" onClick={() => props.onAction({ type: 'PREVIOUS_NBTI' })} variant="back" />}
             {/* The drawn plaque says "다음 질문으로"; the final question needs different
                 copy, so it keeps the CSS button. */}
             {last

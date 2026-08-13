@@ -59,7 +59,11 @@
 .journey-question-split > .journey-question { flex: 0 1 850px; min-width: 0; }
 /* Rides high on the right, level with the backdrop character's eyeline, instead of
    stretching to the question board's full height. */
-.journey-question-split > .journey-question__sidebar { align-self: flex-start; flex: 0 0 clamp(262px, 19vw, 330px); margin-top: 0; }
+/* Width grows into its OWN right-side margin, not out of the question board's space:
+   flex-basis +20px is offset by an equal -20px off margin-right below, so the box's
+   left edge (and top, via align-self:flex-start) never moves — only its right/bottom
+   extent grows, matching the "always grow right/down, never left/up" convention. */
+.journey-question-split > .journey-question__sidebar { align-self: flex-start; flex: 0 0 clamp(282px, 19vw, 350px); margin-top: 0; }
 
 /* Compact type so the left board fits common laptop heights without its inner scrollbar. */
 .journey-question-split .journey-question__copy h1 { font-size: clamp(21px, 1.75vw, 29px); }
@@ -87,7 +91,7 @@
 /* Labeled skill/item slots: icon box with its name underneath. */
 .journey-question__sidebar-slots--labeled { align-items: start; }
 .journey-question__sidebar-slots--labeled figure { display: grid; gap: 5px; justify-items: center; margin: 0; }
-.journey-question__sidebar-slots--labeled figcaption { color: #5c4118; font-size: 11px; font-weight: 800; letter-spacing: -.04em; line-height: 1.2; text-align: center; white-space: nowrap; }
+.journey-question__sidebar-slots--labeled figcaption { color: #5c4118; font-size: 12px; font-weight: 800; letter-spacing: -.04em; line-height: 1.2; text-align: center; white-space: nowrap; }
 
 /* Constant board size: the same fixed height on every question — no grow/shrink between
    questions, trimmed so no dead band is left under the nav row. Small screens still cap
@@ -112,7 +116,7 @@
 /* Top-aligned with the question board — the negative pull left them a step apart. */
 /* Bottom padding runs deeper than the top so the 소지 아이템 row doesn't hug the frame,
    and the board sits a touch further right, off the background banner. */
-.journey-question-split > .journey-question__sidebar { margin-right: clamp(64px, 10vw, 232px); margin-top: 0; padding: clamp(22px, 1.9vw, 34px) clamp(20px, 1.7vw, 30px) clamp(34px, 3vw, 52px); }
+.journey-question-split > .journey-question__sidebar { margin-right: clamp(44px, 10vw, 212px); margin-top: 0; padding: clamp(22px, 1.9vw, 34px) clamp(21px, 1.8vw, 32px) clamp(34px, 3vw, 52px); }
 
 /* Fully opaque player board — translucency over the busy backdrop hurt readability. */
 .journey-question-split > .journey-question__sidebar { background: linear-gradient(160deg, #fffbe8, #e9d3a0); }

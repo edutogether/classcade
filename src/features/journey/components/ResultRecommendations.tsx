@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import QRCode from 'qrcode'
 import { CompassSeal } from '../../../components/VisualPrimitives'
 import { CLASSCADE_VIDEO_CATALOG, rankVideos, recommendationTags } from '../../../data/completionExperience'
@@ -58,8 +58,27 @@ export function ResultRecommendations({ state, mbti }: { state: JourneyState; mb
     return () => { alive = false }
   }, [videos])
 
+  /* The panel's bottom edge is pinned to the primary CTA button's bottom edge — content
+     length (description length varies by MBTI type) and viewport height both move that
+     button, so this is measured live rather than approximated with a fixed CSS offset. */
+  const panelRef = useRef<HTMLElement>(null)
+  useEffect(() => {
+    const align = () => {
+      const panel = panelRef.current
+      const button = document.querySelector('.journey-result__actions .journey-button--primary')
+      if (!panel || !button) return
+      const buttonBottom = button.getBoundingClientRect().bottom
+      const panelHeight = panel.getBoundingClientRect().height
+      panel.style.top = `${Math.max(0, buttonBottom - panelHeight)}px`
+    }
+    align()
+    const raf = requestAnimationFrame(align)
+    window.addEventListener('resize', align)
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', align) }
+  }, [videos, qrs])
+
   return (
-    <aside className="result-rec" aria-label="같이교육 추천 영상">
+    <aside ref={panelRef} className="result-rec" aria-label="같이교육 추천 영상">
       <p className="journey-kicker">같이교육 PICK</p>
       <h2>나의 성향 놀이 추천 ✨</h2>
       <p className="result-rec__lead">선생님의 성향에 맞춘 같이교육의 추천 영상이에요.</p>

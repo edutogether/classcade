@@ -48,6 +48,7 @@ import prepTwoBack from '../../assets/classcade/prep-02-interactive/prep-02-back
 import prepTwoCtaEnabled from '../../assets/classcade/prep-02-interactive/prep-02-cta-enabled.webp'
 import prepTwoCtaDisabled from '../../assets/classcade/prep-02-interactive/prep-02-cta-disabled.webp'
 import prepNavBack from '../../assets/classcade/prep-nav/prep-nav-back-norm.webp'
+import prepNavMainBack from '../../assets/classcade/prep-nav/prep-nav-main-back.webp'
 import prepNavCtaEnabled from '../../assets/classcade/prep-nav/prep-nav-cta-enabled-norm.webp'
 import prepNavCtaDisabled from '../../assets/classcade/prep-nav/prep-nav-cta-disabled-norm.webp'
 /* Final "모험 준비 완료" plaque. The four drawings arrived on four different canvases with
@@ -82,6 +83,7 @@ export {
   prepTwoCtaEnabled,
   prepTwoCtaDisabled,
   prepNavBack,
+  prepNavMainBack,
   prepNavCtaEnabled,
   prepNavCtaDisabled,
   prepFinalCtaEnabled,
