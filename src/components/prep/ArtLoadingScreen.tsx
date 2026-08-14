@@ -9,7 +9,7 @@ const TEXT_X = 866
 /* Dots sit between the bar and the subtitle, not above the bar. */
 const TEXT = {
   title: { x: TEXT_X, y: 475 },
-  dots: { x: TEXT_X, y: 555 },
+  dots: { x: TEXT_X, y: 563 },
   subtitle: { x: TEXT_X, y: 589 },
 }
 
