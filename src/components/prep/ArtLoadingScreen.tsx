@@ -6,12 +6,10 @@ import { loadingMaster } from './prepAssets'
    ever replaced, re-scan and update ONLY these numbers. */
 const ART = { width: 1672, height: 941, slotX: 694, slotY: 531, slotW: 344, slotH: 11 }
 const TEXT_X = 866
-/* Dots sit just above the bar and the subtitle just below it. The subtitle line's own
-   leading eats into its box, so it needs a bigger art-px offset than the dots' tight
-   circle box to read as an equally-sized visible gap on both sides of the bar. */
+/* Dots sit between the bar and the subtitle, not above the bar. */
 const TEXT = {
-  title: { x: TEXT_X, y: 485 },
-  dots: { x: TEXT_X, y: 522 },
+  title: { x: TEXT_X, y: 475 },
+  dots: { x: TEXT_X, y: 555 },
   subtitle: { x: TEXT_X, y: 589 },
 }
 
