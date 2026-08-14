@@ -2,10 +2,14 @@
 
 교실 NBTI 기반 몰입형 교육 게임 (React/TS/Vite/Firebase). 상위 원칙은 [D:\Project\CLAUDE.md](../../CLAUDE.md) 상속 — 여기는 이 앱 전용 상태/이슈만 기록한다.
 
-## 현재 상태 (2026-08-10 기준)
-- 브랜치: `feature/front120-entry-flow-v1` (origin과 동기화됨, 커밋 `38003de`)
+## 현재 상태 (2026-08-14 기준) — **프리즈됨**
+
+`classcade-freeze-20260814` 태그로 복구 지점 고정. `.githooks/pre-push`(portal/googler와 동일 패턴)로 이 태그의 삭제·이동을 막음 — 새 클론에서는 `git config core.hooksPath .githooks`로 활성화해야 보호가 걸린다.
+
+- 배포: `https://edutogether.github.io/classcade/` (GitHub Pages Actions, `main` 푸시 시 자동 배포)
+- 브랜치: `feature/front120-entry-flow-v1`, `main`과 동기화됨
+- 이번 프리즈까지 반영된 것: entry flow 전체(prep 1-4 → 닉네임 → 로딩 → journey), 로딩 화면 v6 아트 전환 + 문구 라이브 DOM화, NBTI "다시 탐색하기"·"메인 화면으로" 인터루드, 헤더 로고 글로우, BGM 볼륨 디바운스, PNG→WebP 전량 전환
 - 2026-08-10 외부 리뷰: `docs/EXTERNAL_HEALTH_REVIEW_20260810.md`
-- entry flow WIP 커밋 완료 + 브라우저 검증 중 발견한 런칭 블로커 3건 수정·푸시 완료 (아래 참고)
 
 ## 알려진 이슈
 
