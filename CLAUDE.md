@@ -13,19 +13,13 @@
 - 브랜치: `main`에서 직접 작업(다른 앱들과 동일한 방식으로 통일, `feature/front120-entry-flow-v1`은 내용 동일한 채 보관만)
 - 이번 프리즈까지 반영된 것: entry flow 전체(prep 1-4 → 닉네임 → 로딩 → journey), 로딩 화면 v6 아트 전환 + 문구 라이브 DOM화, NBTI "다시 탐색하기"·"메인 화면으로" 인터루드, 헤더 로고 글로우, BGM 볼륨 디바운스, PNG→WebP 전량 전환
 - 2026-08-10 외부 리뷰: `docs/EXTERNAL_HEALTH_REVIEW_20260810.md`
-- **2026-08-17 감사 후 수정**: 배포 워크플로우가 Firebase 환경변수 4개(API_KEY/AUTH_DOMAIN/PROJECT_ID/APP_ID)를 전혀 주입하지 않아 프로덕션에서 페어링 기능이 항상 실패하던 치명적 버그 발견·수정. `.github/workflows/deploy-pages.yml`에 `secrets.*` 참조를 추가했으나 **실제 GitHub Actions secret 값 4개는 아직 등록 전** — 등록 전까지 페어링은 여전히 깨진 상태다. Firestore 규칙 테스트(40여개)도 CI에서 한 번도 실행된 적 없었던 것을 발견해 `rules:test` 스텝(JDK21 + firebase-tools 에뮬레이터)으로 연결, CI 통과 확인함.
+- **2026-08-17 감사 후 수정 — 완료**: 배포 워크플로우가 Firebase 환경변수 4개(API_KEY/AUTH_DOMAIN/PROJECT_ID/APP_ID)를 전혀 주입하지 않아 프로덕션에서 페어링 기능이 항상 실패하던 치명적 버그 발견·수정. `.github/workflows/deploy-pages.yml`에 `secrets.*` 참조 추가 + 사용자가 GitHub Actions secret 4개 실제 등록 완료 + 재배포 후 `?pairing=1`에서 실제 코드 조회(`"코드를 찾지 못했어요"` — invalid 상태, network_error 아님)로 Firestore 연결 살아있음을 직접 확인함. Firestore 규칙 테스트(40여개)도 CI에서 한 번도 실행된 적 없었던 것을 발견해 `rules:test` 스텝(JDK21 + firebase-tools 에뮬레이터)으로 연결, CI 통과 확인함. 저장소의 `firestore.rules`와 실제 라이브 프로젝트(`classcade-together`)의 배포된 규칙도 Firebase Rules API로 직접 대조해 **완전히 일치** 확인함(CRLF/LF 줄바꿈 차이만 있고 내용은 동일).
 
 ## 알려진 이슈
 
 리뷰 결과 구조는 견실함. **테스트 밀도만 다소 낮음** — googler/aiways-incheon처럼 급하게 처리할 구조적 문제는 없고, 여유 있을 때 테스트 커버리지 보강하는 정도로 접근하면 됨.
 
-## ⚠️ 미해결 — 사용자 조치 필요
-
-GitHub repo Settings → Secrets and variables → Actions에 아래 4개를 Firebase 콘솔 값으로 등록해야 페어링 기능이 실제로 살아난다(이 세션은 API 키를 직접 다루지 않으므로 등록은 사용자가 직접 해야 함):
-`VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`.
-등록 후 다음 `main` 배포에서 자동 반영되며, 배포 후 `?pairing=1`로 실제 페어링 코드 생성이 되는지 반드시 브라우저로 확인할 것.
-
-`.firebaserc`도 저장소에 없어 Firestore 규칙을 CLI로 라이브 배포하는 경로가 CI에 없다 — 저장소의 `firestore.rules`가 실제 운영 중인 규칙과 같다는 보장이 없다. Firebase 프로젝트 ID를 아는 사람이 `firebase use --add`로 채워야 함.
+`.firebaserc`가 저장소에 없어 `firebase deploy --only firestore:rules` 같은 CLI 배포 명령을 프로젝트 지정 없이 바로 못 쓴다(매번 `--project classcade-together` 필요). 급하지 않음 — 위에서 확인했듯 지금 저장소 규칙과 라이브 규칙은 일치하는 상태라 당장 위험은 아니고, CLI 편의를 위한 것뿐이다.
 
 ## 이번 라운드 목표 — 마감 있음 (2026-08-10 갱신)
 
