@@ -19,7 +19,7 @@
 
 리뷰 결과 구조는 견실함. **테스트 밀도만 다소 낮음** — googler/aiways-incheon처럼 급하게 처리할 구조적 문제는 없고, 여유 있을 때 테스트 커버리지 보강하는 정도로 접근하면 됨.
 
-`.firebaserc`가 저장소에 없어 `firebase deploy --only firestore:rules` 같은 CLI 배포 명령을 프로젝트 지정 없이 바로 못 쓴다(매번 `--project classcade-together` 필요). 급하지 않음 — 위에서 확인했듯 지금 저장소 규칙과 라이브 규칙은 일치하는 상태라 당장 위험은 아니고, CLI 편의를 위한 것뿐이다.
+~~`.firebaserc` 부재~~ — 2026-08-17 추가 완료(`default: classcade-together`), `firebase use` 확인함.
 
 ## 이번 라운드 목표 — 마감 있음 (2026-08-10 갱신)
 
