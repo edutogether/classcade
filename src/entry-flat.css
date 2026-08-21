@@ -417,6 +417,15 @@
   .entry-prep--1 .entry-flat-cards { gap: 5px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .entry-prep--1 .entry-flat-card { font-size: 10px; gap: 4px; min-height: 58px; padding: 6px 3px; }
   .entry-prep--1 .entry-flat-card svg { height: 16px; width: 16px; }
+  /* Selection is already legible from the card's own border/fill turning green; the
+     check-circle badge on top of a card this small mostly just covers the icon. */
+  .entry-flat-card i { display: none; }
+  /* The panel's min-height (373px + 25.6vw, floors at 638px) exists purely so steps 1-4
+     don't visibly change size against each other on a wide desktop board. On a phone
+     that floor forces every short step (1, 2) into a near-empty box with a huge dead
+     gap before the nav buttons — nothing here needs cross-step height parity, each step
+     is its own full navigation, not a live resize. */
+  .entry-prep--flat .entry-prep__panel { min-height: 0; }
   /* The desktop fix put the question and its helper on one row (helper pinned right)
      because the wide board had room. On a phone width there's no room for both, so the
      question itself got squeezed into a narrow column and wrapped 4 lines deep. Stack
