@@ -13,7 +13,7 @@ import {
 import { noteAudioUserGesture, playSceneTheme } from '../lib/audioManager'
 import { moteHash } from '../lib/moteHash'
 import { toggleAudioChannel, type AudioSettings } from '../lib/audioController'
-import { BgmControl } from './BgmControl'
+import { AudioToggleButton } from './AudioToggleButton'
 import { loadPrepDraft, savePrepDraft, clearPrepDraft, type Profile, type PrepDraft } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
 import { ClasscadeEmblem, ClasscadeWordmark, Icon } from './VisualPrimitives'
@@ -313,8 +313,11 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       {!isFlat('nickname') && <img className="entry-prep__reference" src={stageImage} alt="" aria-hidden="true" onError={() => degradeToFlat('nickname')} />}
       <div className="entry-prep__vignette" aria-hidden="true" />
       <EntryMotes count={96} />
-      <div className="entry-prep__top-actions">
-        <BgmControl enabled={audio.bgmEnabled} volume={audio.bgmVolume} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} onVolumeChange={(bgmVolume) => onAudioChange({ ...audio, bgmVolume })} />
+      <div className="entry-prep__top-brand entry-prep__glass-bar">
+        <ClasscadeEmblem /><ClasscadeWordmark />
+      </div>
+      <div className="entry-prep__top-actions entry-prep__glass-bar">
+        <AudioToggleButton kind="bgm" enabled={audio.bgmEnabled} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} />
         <img className="entry-prep__avatar-deco" src={profileAvatar} alt="" aria-hidden="true" />
       </div>
       <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
@@ -407,8 +410,11 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
     {!flat && step === 4 && growthPriorities.length > 0 && <div className={`entry-prep__growth-nodes entry-prep__growth-nodes--${growthPriorities.length}`} aria-hidden="true">{growthPriorities.map((priority, index) => <i key={priority} style={{ '--node': index } as CSSProperties} />)}</div>}
     <div className="entry-prep__vignette" aria-hidden="true" />
     <EntryMotes count={96} />
-    <div className="entry-prep__top-actions">
-      <BgmControl enabled={audio.bgmEnabled} volume={audio.bgmVolume} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} onVolumeChange={(bgmVolume) => onAudioChange({ ...audio, bgmVolume })} />
+    <div className="entry-prep__top-brand entry-prep__glass-bar">
+      <ClasscadeEmblem /><ClasscadeWordmark />
+    </div>
+    <div className="entry-prep__top-actions entry-prep__glass-bar">
+      <AudioToggleButton kind="bgm" enabled={audio.bgmEnabled} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} />
       <img className="entry-prep__avatar-deco" src={profileAvatar} alt="" aria-hidden="true" />
     </div>
     <section className="entry-prep__panel">
