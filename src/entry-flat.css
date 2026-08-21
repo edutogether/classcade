@@ -432,7 +432,15 @@
      them instead - full-width question, helper as its own line underneath. */
   .entry-prep--flat .entry-prep__question-head { display: block; }
   .entry-prep--flat .entry-prep__question-head h2 { white-space: normal; }
-  .entry-prep--flat .entry-prep__question-helper { display: block; margin: 6px 0 0 30px; text-align: left; white-space: normal; }
+  .entry-prep--flat .entry-prep__question-helper { display: block; margin: 6px 0 0 25px; text-align: left; white-space: normal; }
+}
+
+/* Narrow phones (360-375px class Android): the 390px-tuned 5-across step-1 row above
+   still ran tight at this width. Shave gap/padding/icon size further here only. */
+@media (max-width: 375px) {
+  .entry-prep--1 .entry-flat-cards { gap: 3px; }
+  .entry-prep--1 .entry-flat-card { font-size: 9px; gap: 3px; padding: 5px 2px; }
+  .entry-prep--1 .entry-flat-card svg { height: 14px; width: 14px; }
 }
 
 /* --- Landscape phones (booth fallback): short viewport, desktop width -----------------
