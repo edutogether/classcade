@@ -12,7 +12,8 @@ import {
 } from '../data/adventure'
 import { noteAudioUserGesture, playSceneTheme } from '../lib/audioManager'
 import { moteHash } from '../lib/moteHash'
-import type { AudioSettings } from '../lib/audioController'
+import { toggleAudioChannel, type AudioSettings } from '../lib/audioController'
+import { BgmControl } from './BgmControl'
 import { loadPrepDraft, savePrepDraft, clearPrepDraft, type Profile, type PrepDraft } from '../lib/storage'
 import { toggleGrowthPriority as getNextGrowthPriorities } from '../lib/prepSelection'
 import { ClasscadeEmblem, ClasscadeWordmark, Icon } from './VisualPrimitives'
@@ -143,9 +144,10 @@ type AdventurePrepScreenProps = {
   isOffline: boolean
   onComplete: (profile: Profile) => Promise<{ ok: boolean }>
   onScreenChange: (screen: TunerScreen) => void
+  onAudioChange: (audio: AudioSettings) => void
 }
 
-export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline, onComplete, onScreenChange }: AdventurePrepScreenProps) {
+export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline, onComplete, onScreenChange, onAudioChange }: AdventurePrepScreenProps) {
   // A finished profile always wins; a draft only matters for a first-time run that got
   // interrupted (refresh, dropped connection) before there was a profile to restore from.
   const [draft] = useState<PrepDraft | null>(() => (initialProfile ? null : loadPrepDraft().value))
@@ -311,7 +313,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       <div className="entry-prep__vignette" aria-hidden="true" />
       <EntryMotes count={96} />
       <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
-        <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><PrepProgress step={5} /></header>
+        <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><div className="entry-prep__header-actions"><BgmControl enabled={audio.bgmEnabled} volume={audio.bgmVolume} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} onVolumeChange={(bgmVolume) => onAudioChange({ ...audio, bgmVolume })} /><PrepProgress step={5} /></div></header>
         <div className="entry-nickname">
           <p className="entry-kicker">✦ 여정의 마지막 준비 ✦</p>
           <h1 id="nickname-title"><span>용사님의 닉네임을</span> <span>알려주세요</span></h1>
@@ -403,7 +405,10 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
     <section className="entry-prep__panel">
       <header className="entry-prep__header">
         <div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div>
-        <PrepProgress step={stepNumber} />
+        <div className="entry-prep__header-actions">
+          <BgmControl enabled={audio.bgmEnabled} volume={audio.bgmVolume} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} onVolumeChange={(bgmVolume) => onAudioChange({ ...audio, bgmVolume })} />
+          <PrepProgress step={stepNumber} />
+        </div>
       </header>
       <div className="entry-prep__intro">
         <h1>모험 준비</h1>
