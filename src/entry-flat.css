@@ -432,7 +432,7 @@
      them instead - full-width question, helper as its own line underneath. */
   .entry-prep--flat .entry-prep__question-head { display: block; }
   .entry-prep--flat .entry-prep__question-head h2 { white-space: normal; }
-  .entry-prep--flat .entry-prep__question-helper { display: block; margin: 6px 0 0; text-align: left; white-space: normal; }
+  .entry-prep--flat .entry-prep__question-helper { display: block; margin: 6px 0 0 50px; text-align: left; white-space: normal; }
 }
 
 /* --- Landscape phones (booth fallback): short viewport, desktop width -----------------
