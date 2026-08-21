@@ -313,8 +313,12 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       {!isFlat('nickname') && <img className="entry-prep__reference" src={stageImage} alt="" aria-hidden="true" onError={() => degradeToFlat('nickname')} />}
       <div className="entry-prep__vignette" aria-hidden="true" />
       <EntryMotes count={96} />
+      <div className="entry-prep__top-actions">
+        <BgmControl enabled={audio.bgmEnabled} volume={audio.bgmVolume} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} onVolumeChange={(bgmVolume) => onAudioChange({ ...audio, bgmVolume })} />
+        <img className="entry-prep__avatar-deco" src={profileAvatar} alt="" aria-hidden="true" />
+      </div>
       <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
-        <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><div className="entry-prep__header-actions"><BgmControl enabled={audio.bgmEnabled} volume={audio.bgmVolume} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} onVolumeChange={(bgmVolume) => onAudioChange({ ...audio, bgmVolume })} /><img className="entry-prep__avatar-deco" src={profileAvatar} alt="" aria-hidden="true" /><PrepProgress step={5} /></div></header>
+        <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><PrepProgress step={5} /></header>
         <div className="entry-nickname">
           <p className="entry-kicker">✦ 여정의 마지막 준비 ✦</p>
           <h1 id="nickname-title"><span>용사님의 닉네임을</span> <span>알려주세요</span></h1>
@@ -403,14 +407,14 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
     {!flat && step === 4 && growthPriorities.length > 0 && <div className={`entry-prep__growth-nodes entry-prep__growth-nodes--${growthPriorities.length}`} aria-hidden="true">{growthPriorities.map((priority, index) => <i key={priority} style={{ '--node': index } as CSSProperties} />)}</div>}
     <div className="entry-prep__vignette" aria-hidden="true" />
     <EntryMotes count={96} />
+    <div className="entry-prep__top-actions">
+      <BgmControl enabled={audio.bgmEnabled} volume={audio.bgmVolume} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} onVolumeChange={(bgmVolume) => onAudioChange({ ...audio, bgmVolume })} />
+      <img className="entry-prep__avatar-deco" src={profileAvatar} alt="" aria-hidden="true" />
+    </div>
     <section className="entry-prep__panel">
       <header className="entry-prep__header">
         <div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div>
-        <div className="entry-prep__header-actions">
-          <BgmControl enabled={audio.bgmEnabled} volume={audio.bgmVolume} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} onVolumeChange={(bgmVolume) => onAudioChange({ ...audio, bgmVolume })} />
-          <img className="entry-prep__avatar-deco" src={profileAvatar} alt="" aria-hidden="true" />
-          <PrepProgress step={stepNumber} />
-        </div>
+        <PrepProgress step={stepNumber} />
       </header>
       <div className="entry-prep__intro">
         <h1>모험 준비</h1>
