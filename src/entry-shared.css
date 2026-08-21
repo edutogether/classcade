@@ -171,43 +171,9 @@
 .entry-prep__footer,
 .entry-prep__offline { position: relative; z-index: 1; }
 
-.entry-prep__header { align-items: center; display: flex; justify-content: space-between; }
-.entry-prep__brand { align-items: center; color: #57401d; display: flex; font-family: 'Gowun Batang', serif; font-size: clamp(11px, 1.1vw, 16px); font-weight: 700; gap: 12px; letter-spacing: .15em; }
-.entry-prep__brand svg { height: clamp(40px, 4vw, 59px); width: clamp(40px, 4vw, 59px); }
-/* One-piece lock-up: emblem and wordmark keep the artwork's own spacing, so nothing
-   here has to nudge them into alignment. Sized by height; width follows the art. */
-.entry-prep__brand { position: relative; }
-/* Warm halo spread along the lock-up rather than a circle, so the wordmark end is lit
-   too and the mark settles onto the parchment instead of sitting on top of it. */
-.entry-prep__brand::before {
-  background: radial-gradient(ellipse at 32% 50%, rgba(255,222,132,.3), rgba(255,206,96,.11) 48%, transparent 72%);
-  content: ''; filter: blur(9px); inset: -26px -34px; pointer-events: none;
-  position: absolute; z-index: -1;
-}
-/* Two elements rather than the one-piece lock-up: the artwork bakes in a wordmark that
-   reads small against the emblem, and a single image can only scale both together. */
-.entry-prep__brand { align-items: center; display: flex; gap: clamp(2px, .28vw, 5px); }
-.entry-prep__brand .classcade-emblem {
-  filter: drop-shadow(0 2px 6px rgba(90,62,18,.32));
-  flex: 0 0 auto;
-  /* Emblem and wordmark are sized as a pair: the emblem's circle reads about 1.6x the
-     wordmark's cap height before the two look balanced. */
-  height: clamp(53px, 5.7vw, 93px);
-  margin-top: 16px;
-  position: relative;
-  width: clamp(53px, 5.7vw, 93px);
-}
-.entry-prep__brand .classcade-wordmark {
-  display: block;
-  filter: drop-shadow(0 1px 5px rgba(90,62,18,.28));
-  height: clamp(30px, 3.2vw, 50px);
-  margin-left: clamp(-8px, -.5vw, -3px);
-  margin-top: 32px;
-  position: relative;
-  width: auto;
-}
-/* Whole lock-up sits higher in the header band. */
-.entry-prep__brand { align-self: start; margin-top: -56px; }
+/* The brand lock-up moved out of the card to its own glass bar over the world backdrop
+   (see .entry-prep__top-brand) — this row now holds only the progress badge. */
+.entry-prep__header { align-items: center; display: flex; justify-content: flex-end; }
 
 /* Two frosted glass bars over the world backdrop, top-left (brand) and top-right
    (audio + avatar) — the same corners the journey header uses, but as two separate
@@ -216,9 +182,11 @@
    The blur/tint recipe matches .journey-cluster (journey-shared.css) for one consistent
    "glass" look across the app. */
 .entry-prep__glass-bar { align-items: center; backdrop-filter: blur(18px) saturate(1.1); background: linear-gradient(128deg, rgba(20,42,26,.52), rgba(8,26,15,.42)); border: 1px solid rgba(255,244,204,.32); border-radius: 999px; box-shadow: 0 8px 20px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,252,230,.2); display: flex; gap: 12px; padding: 8px 14px; position: absolute; top: clamp(20px, 2.8vw, 40px); z-index: 3; }
-.entry-prep__top-brand { left: clamp(20px, 4vw, 78px); }
-.entry-prep__top-brand .classcade-emblem { height: clamp(30px, 2.6vw, 40px); width: clamp(30px, 2.6vw, 40px); }
-.entry-prep__top-brand .classcade-wordmark { height: clamp(16px, 1.4vw, 22px); }
+/* The brand mark reads fine straight over the world art on its own — unlike the
+   audio/avatar pair, it doesn't need a glass pill to separate it from the backdrop. */
+.entry-prep__top-brand { backdrop-filter: none; background: none; border: 0; box-shadow: none; left: clamp(20px, 4vw, 78px); padding: 0; }
+.entry-prep__top-brand .classcade-emblem { height: clamp(44px, 4.2vw, 62px); width: clamp(44px, 4.2vw, 62px); }
+.entry-prep__top-brand .classcade-wordmark { height: clamp(24px, 2.3vw, 34px); }
 .entry-prep__top-actions { right: clamp(20px, 4vw, 78px); }
 /* AudioToggleButton's own .audio-toggle rules live in journey-shared.css (doesn't load
    until the journey chunk mounts) — restyle it here to match this panel's palette. */
@@ -344,21 +312,15 @@
 }
 
 @media (max-width: 700px) {
-  :root { --entry-panel-x: 14px; --entry-panel-width: calc(100vw - 28px); }
-  .entry-prep { min-height: 100svh; overflow-x: clip; overflow-y: auto; padding: 0 0 24px; }.entry-prep__reference { display: none; }.entry-prep__world { filter: brightness(.6) saturate(.75); height: min(44svh, 380px); object-position: 56% top; position: fixed; }.entry-prep__vignette { background: linear-gradient(180deg, rgba(0,4,2,.12), rgba(0,6,3,.9) 84%), linear-gradient(90deg, rgba(0,5,2,.28), transparent); height: min(44svh, 380px); position: fixed; }.entry-prep__panel { margin: min(27svh, 230px) var(--entry-panel-x) 0; min-height: 0; padding: 18px 15px 18px; width: var(--entry-panel-width); clip-path: polygon(0 2%, 5% 0, 91% 0, 100% 5%, 100% 96%, 94% 100%, 4% 100%, 0 96%); }.entry-prep__panel::before { inset: 6px; }
-  .entry-prep__header { gap: 8px; }.entry-prep__brand { font-size: 8px; gap: 4px; letter-spacing: .11em; margin-top: 0; }.entry-prep__brand svg { height: 34px; width: 34px; }
-  /* Desktop pulls the lock-up up by 56px to sit level with the header band; at mobile
-     panel height that pulled it past the panel's own clipped top corner. Reset both
-     the pull-up and the emblem/wordmark's own desktop offsets, and shrink the pair so
-     the "1/5" progress badge on the other end of the row has room to not clip either. */
-  .entry-prep__brand .classcade-emblem { height: 42px; margin-top: 0; width: 42px; }
-  .entry-prep__brand .classcade-wordmark { height: 22px; margin-left: -7px; margin-top: 8px; }
+  :root { --entry-panel-x: 26px; --entry-panel-width: calc(100vw - 52px); }
+  .entry-prep { min-height: 100svh; overflow-x: clip; overflow-y: auto; padding: 0 0 24px; }.entry-prep__reference { display: none; }.entry-prep__world { filter: brightness(.6) saturate(.75); height: min(44svh, 380px); object-position: 56% top; position: fixed; }.entry-prep__vignette { background: linear-gradient(180deg, rgba(0,4,2,.12), rgba(0,6,3,.9) 84%), linear-gradient(90deg, rgba(0,5,2,.28), transparent); height: min(44svh, 380px); position: fixed; }.entry-prep__panel { margin: min(27svh, 230px) var(--entry-panel-x) 0; min-height: 0; padding: 14px 15px 14px; width: var(--entry-panel-width); clip-path: polygon(0 2%, 5% 0, 91% 0, 100% 5%, 100% 96%, 94% 100%, 4% 100%, 0 96%); }.entry-prep__panel::before { inset: 6px; }
+  .entry-prep__header { gap: 8px; }
   .entry-progress { gap: 7px; }.entry-progress b { font-size: 9px; padding: 5px 8px; }.entry-progress span { gap: 7px; }.entry-progress i { height: 6px; width: 6px; }
-  .entry-prep__glass-bar { gap: 8px; padding: 6px 10px; top: 10px; }.entry-prep__top-brand { left: 10px; }.entry-prep__top-actions { right: 10px; }.entry-prep__top-brand .classcade-emblem { height: 26px; width: 26px; }.entry-prep__top-brand .classcade-wordmark { height: 14px; }.entry-prep__top-actions .audio-toggle { height: 26px; width: 26px; }.entry-prep__avatar-deco { height: 26px; width: 26px; }
-  .entry-prep__illustration { background-size: 300% auto; bottom: auto; height: 220px; mask-image: linear-gradient(90deg, transparent, #000 42%, #000); opacity: .48; top: 22%; width: 55%; }.entry-prep__intro { margin-top: 13px; padding-bottom: 12px; }.entry-prep__intro h1 { font-size: 38px; }.entry-prep--1 .entry-prep__intro h1 { font-size: 32px; }.entry-prep__intro p { font-size: 11px; margin-top: 7px; }.entry-prep__question { max-width: none; padding-top: 15px; }.entry-prep__question-number { font-size: 14px; margin-right: 6px; }.entry-prep__question h2 { font-size: 24px; letter-spacing: -.1em; }.entry-prep__question > p:not(.entry-prep__question-number) { font-size: 11px; line-height: 1.4; margin: 6px 0 12px 74px; }.entry-prep__next-cue { background: rgba(28, 78, 50, .12); border-left: 3px solid #4d9463; color: #176041; font-size: 11px; font-weight: 900; line-height: 1.35; margin: 0 0 8px; padding: 6px 8px; }
+  .entry-prep__glass-bar { gap: 8px; padding: 6px 10px; top: 10px; }.entry-prep__top-brand { left: 10px; padding: 0; }.entry-prep__top-actions { right: 10px; }.entry-prep__top-brand .classcade-emblem { height: 40px; width: 40px; }.entry-prep__top-brand .classcade-wordmark { height: 22px; }.entry-prep__top-actions .audio-toggle { height: 26px; width: 26px; }.entry-prep__avatar-deco { height: 26px; width: 26px; }
+  .entry-prep__illustration { background-size: 300% auto; bottom: auto; height: 220px; mask-image: linear-gradient(90deg, transparent, #000 42%, #000); opacity: .48; top: 22%; width: 55%; }.entry-prep__intro { margin-top: 13px; padding-bottom: 10px; }.entry-prep__intro h1 { font-size: 38px; }.entry-prep--1 .entry-prep__intro { margin-top: 0; }.entry-prep--1 .entry-prep__intro h1 { font-size: 32px; letter-spacing: -.03em; }.entry-prep__intro p { font-size: 11px; margin-top: 7px; }.entry-prep__question { max-width: none; padding-top: 15px; }.entry-prep__question-number { font-size: 14px; margin-right: 6px; }.entry-prep__question h2 { font-size: 24px; letter-spacing: -.03em; }.entry-prep__question > p:not(.entry-prep__question-number) { font-size: 11px; line-height: 1.4; margin: 6px 0 12px 74px; }.entry-prep__next-cue { background: rgba(28, 78, 50, .12); border-left: 3px solid #4d9463; color: #176041; font-size: 11px; font-weight: 900; line-height: 1.35; margin: 0 0 8px; padding: 6px 8px; }
   .entry-choice-grid { gap: 7px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; max-width: none; }.entry-prep--1 .entry-choice-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }.entry-choice-card { font-size: 17px; gap: 6px; min-height: 94px; padding: 10px 5px; }.entry-prep--1 .entry-choice-card { font-size: 15px; min-height: 76px; }.entry-choice-card__icon { transform: scale(.76); }.entry-choice-card__check { height: 24px; right: -5px; top: -6px; width: 24px; }.entry-choice-grid--compact { gap: 7px; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: none; }.entry-choice-grid--compact .entry-choice-card { font-size: 12px; min-height: 55px; }
   .entry-growth-grid { gap: 8px; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: none; }.entry-growth-card { font-size: 12px; gap: 7px; min-height: 68px; padding: 9px; }.entry-growth-card:nth-child(10) { grid-column: 1 / -1; }.entry-growth-card svg { height: 20px; width: 20px; }.entry-growth-other { grid-column: 1 / -1; }.entry-growth-message { font-size: 11px; }
-  .entry-prep__footer { gap: 8px; margin-top: 12px; padding-top: 10px; }.entry-prep__privacy { font-size: 10px; max-width: 40%; }.entry-button { font-size: 15px; gap: 7px; min-height: 53px; padding: 0 9px; }.entry-button--back { min-width: 37%; }.entry-button--next { flex: 1; min-width: 0; }.entry-button--next svg:first-child { height: 24px; width: 24px; }.entry-prep__offline { font-size: 10px; }
+  .entry-prep__footer { gap: 8px; margin-top: 10px; padding-top: 9px; }.entry-prep__privacy { font-size: 10px; max-width: 40%; }.entry-button { font-size: 15px; gap: 7px; min-height: 53px; padding: 0 9px; }.entry-button--back { min-width: 37%; }.entry-button--next { flex: 1; min-width: 0; }.entry-button--next svg:first-child { height: 24px; width: 24px; }.entry-prep__offline { font-size: 10px; }
   .entry-prep--nickname .entry-prep__panel { margin: min(27svh, 230px) var(--entry-panel-x) 0; width: var(--entry-panel-width); }.entry-prep__panel--nickname { min-height: 540px; }.entry-nickname { padding: 22px 4px; }.entry-nickname__orb svg { height: 54px; width: 54px; }.entry-nickname h1 { font-size: clamp(28px, 8.1vw, 33px); letter-spacing: -.13em; line-height: 1.14; max-width: 100%; }.entry-nickname h1 span { display: block; white-space: nowrap; }.entry-nickname > p { font-size: 13px; margin: 8px 0 18px; }.entry-nickname input { font-size: 17px; min-height: 55px; }.entry-nickname small { font-size: 11px; }
   .entry-loading__reference { object-position: 52% center; }.entry-loading__copy { margin-top: 3svh; padding: 0 19px; }.entry-loading__seal { height: min(36vw, 150px); width: min(36vw, 150px); }.entry-loading h1 { font-size: 34px; margin-top: 16px; }.entry-loading__copy > p { font-size: 15px; }.entry-loading__track { width: min(86vw, 360px); }.entry-loading__dots { margin: 14px 0 19px; }
 }
@@ -368,7 +330,7 @@
    card content, reading as squeezed. Claw a little width back here only, so 390 keeps
    the roomier spacing it was tuned for and only this narrower band tightens up. */
 @media (max-width: 375px) {
-  :root { --entry-panel-x: 10px; }
+  :root { --entry-panel-x: 20px; }
   .entry-prep__panel { padding-left: 11px; padding-right: 11px; }
 }
 

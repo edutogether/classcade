@@ -399,6 +399,12 @@
 }
 
 @media (max-width: 700px) {
+  /* The 1100px-band rule above (width: min(96vw, 1040px)) has the same specificity as
+     entry-shared.css's mobile --entry-panel-width variable and both match at this
+     width — this one wins by being a compound selector regardless of source order,
+     silently ignoring the mobile-tuned --entry-panel-x margins. Reassert the variable
+     here at matching specificity so the two side margins actually apply. */
+  .entry-prep--flat .entry-prep__panel { width: var(--entry-panel-width); }
   .entry-flat-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .entry-flat-cards.is-compact { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .entry-flat-card { font-size: 13px; min-height: 62px; padding: 9px 6px; }

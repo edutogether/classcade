@@ -321,7 +321,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         <img className="entry-prep__avatar-deco" src={profileAvatar} alt="" aria-hidden="true" />
       </div>
       <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
-        <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><PrepProgress step={5} /></header>
+        <header className="entry-prep__header"><PrepProgress step={5} /></header>
         <div className="entry-nickname">
           <p className="entry-kicker">✦ 여정의 마지막 준비 ✦</p>
           <h1 id="nickname-title"><span>용사님의 닉네임을</span> <span>알려주세요</span></h1>
@@ -419,7 +419,6 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
     </div>
     <section className="entry-prep__panel">
       <header className="entry-prep__header">
-        <div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div>
         <PrepProgress step={stepNumber} />
       </header>
       <div className="entry-prep__intro">
