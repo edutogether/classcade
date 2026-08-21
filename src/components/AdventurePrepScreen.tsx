@@ -26,6 +26,7 @@ import { PrepTwoChoiceCards } from './prep/PrepTwoChoiceCards'
 import { ChoiceCards } from './prep/ChoiceCards'
 import { PrepFlatCards } from './prep/PrepFlatCards'
 import { PrepProgress } from './prep/PrepProgress'
+import profileAvatar from '../assets/brand/profile-avatar-front.webp'
 import {
   STEP_IMAGES,
   growthIcons,
@@ -313,7 +314,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       <div className="entry-prep__vignette" aria-hidden="true" />
       <EntryMotes count={96} />
       <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
-        <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><div className="entry-prep__header-actions"><BgmControl enabled={audio.bgmEnabled} volume={audio.bgmVolume} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} onVolumeChange={(bgmVolume) => onAudioChange({ ...audio, bgmVolume })} /><PrepProgress step={5} /></div></header>
+        <header className="entry-prep__header"><div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div><div className="entry-prep__header-actions"><BgmControl enabled={audio.bgmEnabled} volume={audio.bgmVolume} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} onVolumeChange={(bgmVolume) => onAudioChange({ ...audio, bgmVolume })} /><img className="entry-prep__avatar-deco" src={profileAvatar} alt="" aria-hidden="true" /><PrepProgress step={5} /></div></header>
         <div className="entry-nickname">
           <p className="entry-kicker">✦ 여정의 마지막 준비 ✦</p>
           <h1 id="nickname-title"><span>용사님의 닉네임을</span> <span>알려주세요</span></h1>
@@ -407,6 +408,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         <div className="entry-prep__brand"><ClasscadeEmblem /><ClasscadeWordmark /></div>
         <div className="entry-prep__header-actions">
           <BgmControl enabled={audio.bgmEnabled} volume={audio.bgmVolume} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} onVolumeChange={(bgmVolume) => onAudioChange({ ...audio, bgmVolume })} />
+          <img className="entry-prep__avatar-deco" src={profileAvatar} alt="" aria-hidden="true" />
           <PrepProgress step={stepNumber} />
         </div>
       </header>
