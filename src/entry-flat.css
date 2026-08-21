@@ -405,11 +405,18 @@
   .entry-flat-cards.is-compact .entry-flat-card { font-size: 11px; min-height: 40px; }
   .entry-button--flat.entry-button--back { min-width: 37%; }
   .entry-button--flat.entry-button--next { flex: 1; min-width: 0; }
-  /* Height-driven here too, so the shared mobile rule (flex:1 + min-width:0) cannot
-     collapse an image-only button to zero width. */
-  .entry-prep--flat .entry-nav-img { flex: 0 0 auto; height: auto; width: 190px; }
-  .entry-prep--flat .entry-nav-img--final { width: 165px; }
+  /* Fixed art-plaque widths (190px/165px) added up to more than the panel's inner
+     width and ran off the edge. Flex-share the row instead so the pair always fits,
+     whatever the phone's actual width. */
+  .entry-prep--flat .entry-nav-img { flex: 1 1 0; height: auto; width: auto; }
+  .entry-prep--flat .entry-nav-img--final { flex: 1 1 0; width: auto; }
   .entry-prep--flat .entry-nav-img img { height: auto; width: 100%; }
+  /* Step 1 (5 school-level cards) read as a cramped 2-column grid with the fifth card
+     stranded alone on its own row. One row of 5 narrow cards reads as a single choice
+     strip instead. */
+  .entry-prep--1 .entry-flat-cards { gap: 5px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .entry-prep--1 .entry-flat-card { font-size: 10px; gap: 4px; min-height: 58px; padding: 6px 3px; }
+  .entry-prep--1 .entry-flat-card svg { height: 16px; width: 16px; }
   /* The desktop fix put the question and its helper on one row (helper pinned right)
      because the wide board had room. On a phone width there's no room for both, so the
      question itself got squeezed into a narrow column and wrapped 4 lines deep. Stack
