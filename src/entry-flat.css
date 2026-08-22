@@ -424,7 +424,7 @@
      centred by justify-content — not just extra margin around cards that still stretch
      to fill the row. */
   .entry-prep--1 .entry-flat-cards { gap: 8px; grid-template-columns: repeat(5, 48px); justify-content: center; }
-  .entry-prep--1 .entry-flat-card { font-size: 8px; gap: 4px; min-height: 50px; padding: 7px 2px; }
+  .entry-prep--1 .entry-flat-card { font-size: 10px; gap: 4px; min-height: 50px; padding: 7px 2px; }
   .entry-prep--1 .entry-flat-card svg { height: 12px; width: 12px; }
   /* .entry-prep--flat .entry-prep__intro's own margin-top (compound selector, applies
      unconditionally) has the same specificity as the .entry-prep--1 rule below and was
