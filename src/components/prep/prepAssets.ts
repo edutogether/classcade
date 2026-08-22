@@ -16,7 +16,7 @@ import portalAcademy from '../../assets/classcade/prep-01-interactive/prep-world
  *  vertical picture for a wide short crop; on a phone's narrow-tall top band it cropped
  *  the windows/bookshelf. Authored tall (1536x2560) with the key elements kept centred
  *  so object-fit:cover has room regardless of the exact phone width/height. */
-import prepWorldBackdropMobile from '../../assets/classcade/prep-01-interactive/prep-world-backdrop-mobile-v1.webp'
+import prepWorldBackdropMobile from '../../assets/classcade/prep-01-interactive/prep-world-backdrop-mobile-v2.webp'
 import prepOneWorldBackdrop from '../../assets/classcade/prep-01-interactive/prep-01-world-backdrop-16x9.webp'
 import prepOneCleanPlate from '../../assets/classcade/prep-01-interactive/prep-01-clean-plate.webp'
 import prepTwoCleanPlate from '../../assets/classcade/prep-02-interactive/prep-02-clean-plate.webp'
