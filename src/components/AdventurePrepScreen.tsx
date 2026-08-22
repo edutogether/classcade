@@ -330,7 +330,6 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
           <h1 id="nickname-title"><span>용사님의 닉네임을</span> <span>알려주세요</span></h1>
           <p>이 여정에서 불릴 이름이에요.</p>
           <label><input value={nickname} maxLength={16} autoComplete="off" aria-label="용사 닉네임" placeholder="예: 우리 같이 놀아요" onChange={(event) => setNickname(event.target.value.slice(0, 16))} /></label>
-          <small>실제 이름이나 학교명 대신 이 모험에서 사용할 별명을 적어주셔도 좋아요.</small>
         </div>
         <footer className="entry-prep__footer">
           <NavArtButton art={prepNavBack} label="← 이전 질문" onClick={previousStep} variant="back" />
@@ -446,7 +445,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
           /* The cue hangs absolutely above the 서울 card via the relative wrapper — being
              out of flow, its appearance can never push the cards or nav. */
           ? <div className="entry-prep__region-wrap">
-            {region && <p className="entry-prep__next-cue" role="status">지역을 선택했어요 · 아래의 다음 질문 버튼으로 이어가요 ↓</p>}
+            <p className={`entry-prep__next-cue ${region ? 'is-visible' : ''}`} role="status" aria-hidden={!region}>지역을 선택했어요 · 아래의 다음 질문 버튼으로 이어가요 ↓</p>
             <PrepFlatCards options={REGION_OPTIONS} value={region} onChange={setRegion} tunePrefix="prep-3" ariaLabel="지역" columns={9} compact />
           </div>
           : <ChoiceCards options={REGION_OPTIONS} value={region} onChange={setRegion} icons={['region']} tunePrefix="prep-3" compact />)}
@@ -456,8 +455,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
             return <button key={option.value} className={`entry-growth-card ${selected ? 'is-selected' : ''}`} type="button" style={flat ? undefined : ({ '--frame-neutral': `url(${choiceFrameNeutral})`, '--frame-selected': `url(${choiceFrameSelected})` } as CSSProperties)} aria-pressed={selected} data-tune-id={`prep-4-option-${index + 1}`} onClick={() => toggleGrowthPriority(option.value)}><Icon name={growthIcons[index]} size={24} /><span>{option.label}</span>{selected && <i aria-hidden="true"><Icon name="check" size={15} /></i>}</button>
           })}
           {otherSelected && <label className="entry-growth-other"><input value={otherText} maxLength={30} placeholder="직접 입력해 주세요." aria-label="기타 항목 직접 입력" onChange={(event) => setOtherText(event.target.value.slice(0, 30))} /></label>}
-          {/* Selecting 기타 without typing silently disables the next button, so say why. */}
-          <p className="entry-growth-message" aria-live="polite">{selectionMessage || (otherSelected && !otherText.trim() ? '기타를 선택했어요 · 옆 칸에 직접 입력하면 다음으로 넘어갈 수 있어요.' : '')}</p>
+          <p className="entry-growth-message" aria-live="polite">{selectionMessage}</p>
         </div>}
       </section>
       <footer className={`entry-prep__footer ${step === 1 ? 'entry-prep__footer--single' : ''}`}>
