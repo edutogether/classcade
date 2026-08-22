@@ -436,6 +436,8 @@
      winning by source order regardless of the media query — the title never actually
      moved. Match its specificity by combining both classes on the same element. */
   .entry-prep--1.entry-prep--flat .entry-prep__intro { margin-top: -20px; }
+  .entry-prep--2.entry-prep--flat .entry-prep__intro { margin-top: -20px; }
+  .entry-prep--2.entry-prep--flat .entry-prep__question-head h2 { font-size: 18px; }
   /* Selection is already legible from the card's own border/fill turning green; the
      check-circle badge on top of a card this small mostly just covers the icon. */
   .entry-flat-card i { display: none; }
