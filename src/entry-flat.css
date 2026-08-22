@@ -420,9 +420,14 @@
   /* Step 1 (5 school-level cards) read as a cramped 2-column grid with the fifth card
      stranded alone on its own row. One row of 5 narrow cards reads as a single choice
      strip instead. */
-  .entry-prep--1 .entry-flat-cards { gap: 5px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .entry-prep--1 .entry-flat-cards { gap: 5px; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0 10px; }
   .entry-prep--1 .entry-flat-card { font-size: 8px; gap: 2px; min-height: 44px; padding: 4px 2px; }
   .entry-prep--1 .entry-flat-card svg { height: 12px; width: 12px; }
+  /* .entry-prep--flat .entry-prep__intro's own margin-top (compound selector, applies
+     unconditionally) has the same specificity as the .entry-prep--1 rule below and was
+     winning by source order regardless of the media query — the title never actually
+     moved. Match its specificity by combining both classes on the same element. */
+  .entry-prep--1.entry-prep--flat .entry-prep__intro { margin-top: -20px; }
   /* Selection is already legible from the card's own border/fill turning green; the
      check-circle badge on top of a card this small mostly just covers the icon. */
   .entry-flat-card i { display: none; }

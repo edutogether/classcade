@@ -194,7 +194,11 @@
 .entry-prep__top-actions { right: clamp(20px, 4vw, 78px); }
 /* AudioToggleButton's own .audio-toggle rules live in journey-shared.css (doesn't load
    until the journey chunk mounts) — restyle it here to match this panel's palette. */
-.entry-prep__top-actions .audio-toggle { align-items: center; background: transparent; border: 0; box-shadow: none; color: #fff3c7; cursor: pointer; display: inline-flex; height: clamp(30px, 2.6vw, 38px); justify-content: center; position: relative; width: clamp(30px, 2.6vw, 38px); }
+/* is-enabled/is-muted only differed by the pill background in journey-shared.css's
+   version; here (no pill) the icon's own color has to carry that distinction instead —
+   otherwise on/off looked identical at a glance. */
+.entry-prep__top-actions .audio-toggle { align-items: center; background: transparent; border: 0; box-shadow: none; color: rgba(255,243,199,.55); cursor: pointer; display: inline-flex; height: clamp(30px, 2.6vw, 38px); justify-content: center; position: relative; width: clamp(30px, 2.6vw, 38px); }
+.entry-prep__top-actions .audio-toggle.is-enabled { color: #ffe296; filter: drop-shadow(0 0 4px rgba(255,214,110,.55)); }
 .entry-prep__top-actions .audio-toggle__slash { background: #fff3c7; height: 2px; position: absolute; transform: rotate(-45deg); width: 18px; }
 .entry-prep__avatar-deco { border: 1px solid #d6ad54; border-radius: 999px; box-shadow: inset 0 1px rgba(255,255,255,.25), 0 2px 6px rgba(90,62,18,.28); height: clamp(30px, 2.6vw, 38px); object-fit: cover; width: clamp(30px, 2.6vw, 38px); }
 .entry-progress { align-items: center; display: flex; gap: 13px; }
