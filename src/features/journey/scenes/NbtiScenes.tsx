@@ -214,7 +214,7 @@ export function StartScene(props: JourneySceneProps) {
           stacked buttons, headphone note. The quest board is painted into the art. */}
       <div className="journey-start__copy journey-enter">
         <p className="journey-kicker"><span>✦</span> NBTI ADVENTURE <span>✦</span></p>
-        <h1 data-tune-id="main-title"><span>당신의 교실 플레이</span><span><em>모험이</em> 시작됩니다</span></h1>
+        <h1 data-tune-id="main-title"><span>당신의 교실 속 플레이,</span><span><em>모험이</em> 시작됩니다 !</span></h1>
         <p className="journey-start__description" data-tune-id="main-description">나의 교실 유형을 발견하며, 캐릭터를 성장시켜 보세요.</p>
         <ul className="journey-start__cards" aria-label="여정 정보">
           {journeyItems.map((item) => <li key={item.title}><Icon name={item.icon} size={25} /><span><b>{item.title}</b><small>{item.detail}</small></span></li>)}
@@ -223,7 +223,7 @@ export function StartScene(props: JourneySceneProps) {
           {props.state.resumeStage ? <SecondaryButton onClick={() => props.onAction({ type: 'RESUME_JOURNEY' })} tuneId="main-resume-cta"><Icon name="reset" size={20} />이전 여정 이어가기</SecondaryButton> : <SecondaryButton onClick={() => setStarting('reset')} tuneId="main-resume-cta"><Icon name="reset" size={20} />새로 시작하기</SecondaryButton>}
           <PrimaryButton onClick={() => setStarting('questions')} tuneId="main-primary-cta">교실 NBTI 시작하기</PrimaryButton>
         </div>
-        <p className="journey-start__audio-note" data-tune-id="main-headphone-note"><Icon name="speaker" size={17} />더욱 더 몰입감을 높이고 싶다면 BGM을 켜고 플레이해보세요 !</p>
+        <p className="journey-start__audio-note" data-tune-id="main-headphone-note"><Icon name="speaker" size={17} />더욱 몰입감을 높이고 싶다면 BGM을 켜고 플레이해보세요 !</p>
       </div>
     </SceneFrame>
   )
