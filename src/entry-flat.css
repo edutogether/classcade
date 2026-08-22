@@ -428,16 +428,17 @@
   /* Fixed-width columns (not 1fr) so the cards themselves are narrower, with the row
      centred by justify-content — not just extra margin around cards that still stretch
      to fill the row. */
-  .entry-prep--1 .entry-flat-cards { gap: 8px; grid-template-columns: repeat(5, 48px); justify-content: center; }
-  .entry-prep--1 .entry-flat-card { font-size: 10px; gap: 4px; min-height: 50px; padding: 7px 2px; }
-  .entry-prep--1 .entry-flat-card svg { height: 12px; width: 12px; }
-  /* 2열로 두니 카드가 3줄로 쌓여서 전체 블록이 1단계보다 훨씬 커졌음(위아래를
-     가린다는 지적) — 1단계처럼 5칸 한 줄로 바꿈. 처음엔 1fr로 폭을 꽉 채웠더니
-     카드가 1단계보다 눈에 띄게 커 보이고 패널 전체 높이도 늘어나 "화면이 통째로
-     커지는" 느낌을 줬음 — 1단계와 똑같이 48px 고정폭 + justify-content:center로
-     맞춰서 두 단계 사이에 프레임 크기가 흔들리지 않게 함. */
+  /* Steps 1-2 both show 5 cards in a single row, so they share one literal rule
+     (not two copies with near-identical numbers) — that split previously let a
+     font-size/gap/line-height mismatch (10px/4px vs 8px/3px/1.15) creep in and
+     make step 2's cards read subtly bigger even after the grid itself was
+     unified, which looked like the whole frame growing between steps. Only the
+     card text/options are meant to change step to step, not the card geometry. */
+  .entry-prep--1 .entry-flat-cards,
   .entry-prep--2 .entry-flat-cards { gap: 8px; grid-template-columns: repeat(5, 48px); justify-content: center; }
-  .entry-prep--2 .entry-flat-card { font-size: 8px; gap: 3px; line-height: 1.15; min-height: 50px; padding: 7px 2px; }
+  .entry-prep--1 .entry-flat-card,
+  .entry-prep--2 .entry-flat-card { font-size: 10px; gap: 4px; min-height: 50px; padding: 7px 2px; }
+  .entry-prep--1 .entry-flat-card svg,
   .entry-prep--2 .entry-flat-card svg { height: 12px; width: 12px; }
   /* Step 3 has 17 region cards, too many for a single row like steps 1-2 — the compact
      class's default 3-column/40px-min-height grid still read as noticeably chunkier
@@ -449,11 +450,9 @@
      unconditionally) has the same specificity as the .entry-prep--1 rule below and was
      winning by source order regardless of the media query — the title never actually
      moved. Match its specificity by combining both classes on the same element. */
-  .entry-prep--1.entry-prep--flat .entry-prep__intro { margin-top: -20px; }
-  .entry-prep--2.entry-prep--flat .entry-prep__intro { margin-top: -20px; }
+  .entry-prep--1.entry-prep--flat .entry-prep__intro,
+  .entry-prep--2.entry-prep--flat .entry-prep__intro,
   .entry-prep--3.entry-prep--flat .entry-prep__intro { margin-top: -20px; }
-  .entry-prep--2.entry-prep--flat .entry-prep__question-head h2 { font-size: 18px; }
-  .entry-prep--3.entry-prep--flat .entry-prep__question-head h2 { font-size: 18px; }
   /* Selection is already legible from the card's own border/fill turning green; the
      check-circle badge on top of a card this small mostly just covers the icon. */
   .entry-flat-card i { display: none; }
@@ -469,7 +468,9 @@
      them instead - full-width question, helper as its own line underneath. */
   .entry-prep--flat .entry-prep__question-head { display: block; }
   .entry-prep--flat .entry-prep__question-head h2 { white-space: normal; }
-  .entry-prep--1.entry-prep--flat .entry-prep__question-head h2 { font-size: 18px; }
+  .entry-prep--1.entry-prep--flat .entry-prep__question-head h2,
+  .entry-prep--2.entry-prep--flat .entry-prep__question-head h2,
+  .entry-prep--3.entry-prep--flat .entry-prep__question-head h2 { font-size: 18px; }
   .entry-prep--flat .entry-prep__question-helper { display: block; font-size: 9px; margin: 6px 0 0 25px; text-align: left; white-space: normal; }
 }
 
