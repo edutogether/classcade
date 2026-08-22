@@ -431,12 +431,11 @@
   .entry-prep--1 .entry-flat-cards { gap: 8px; grid-template-columns: repeat(5, 48px); justify-content: center; }
   .entry-prep--1 .entry-flat-card { font-size: 10px; gap: 4px; min-height: 50px; padding: 7px 2px; }
   .entry-prep--1 .entry-flat-card svg { height: 12px; width: 12px; }
-  /* Step 2's labels are longer (예비교사, 21년 이상) so it keeps its 2-column grid
-     rather than 1단계's fixed 5-across row, but the card itself — font, padding,
-     height, icon — now matches 1단계's exactly instead of the much larger general
-     fallback above, so the two screens feel like the same product. */
-  .entry-prep--2 .entry-flat-cards { gap: 8px; }
-  .entry-prep--2 .entry-flat-card { font-size: 10px; gap: 4px; min-height: 50px; padding: 7px 8px; }
+  /* 2열로 두니 카드가 3줄로 쌓여서 전체 블록이 1단계보다 훨씬 커졌음(위아래를
+     가린다는 지적) — 1단계처럼 5칸 한 줄로 바꾸고, 라벨이 길어서(예비교사,
+     21년 이상) 필요하면 텍스트가 2줄로 접히도록 카드를 조금 더 높임. */
+  .entry-prep--2 .entry-flat-cards { gap: 6px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .entry-prep--2 .entry-flat-card { font-size: 8px; gap: 3px; line-height: 1.15; min-height: 54px; padding: 6px 2px; }
   .entry-prep--2 .entry-flat-card svg { height: 12px; width: 12px; }
   /* .entry-prep--flat .entry-prep__intro's own margin-top (compound selector, applies
      unconditionally) has the same specificity as the .entry-prep--1 rule below and was
