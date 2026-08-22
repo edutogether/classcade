@@ -52,7 +52,8 @@
    material, same audio-toggle/avatar sizes — so the header doesn't visibly change
    character between the prep steps and the journey screens that follow them. */
 @media (max-width: 700px) {
-  .journey-cluster { backdrop-filter: blur(26px) saturate(1.4); background: linear-gradient(135deg, rgba(255,255,255,.125), rgba(255,255,255,.035)); gap: 8px; min-height: 38px; padding: 0 10px; }
+  .journey-cluster { backdrop-filter: blur(26px) saturate(1.4); background: linear-gradient(135deg, rgba(255,255,255,.125), rgba(255,255,255,.035)); border: 0; gap: 8px; min-height: 38px; padding: 0 10px; }
+  .journey-header__profile { margin-left: 2px; }
   /* A later, pre-existing "everything mobile" block (further down this file) also sets
      .journey-header .audio-toggle to 44px at this same width — same specificity, later
      source order, so it was winning regardless of this rule. Match its specificity by
@@ -170,7 +171,7 @@
   .journey-header .journey-brand::before { height: 92px; left: -16px; width: 92px; }
   .journey-header .journey-brand::after { height: 64px; left: 38px; width: 180px; }
   .journey-header .classcade-emblem { height: 42px; width: 42px; }
-  .journey-header .classcade-wordmark { height: 27px; margin: 3px 0 0 -5px; }
+  .journey-header .classcade-wordmark { height: 27px; margin: 5px 0 0 -10px; }
 }
 
 /* Reusable parchment and question/game choice controls. */
@@ -279,8 +280,8 @@
 
 @media (max-width: 700px) {
   .journey-scene--start .journey-art { height: clamp(286px,37svh,318px); }
-  .journey-scene--start .journey-art img { bottom: auto; height: clamp(370px,48svh,420px); inset: auto 0 auto 0; object-position: 57% 24%; top: -8px; width: 100%; }
-  .journey-scene--start .journey-scene__stage { padding-top: clamp(306px,38svh,336px); }
+  .journey-scene--start .journey-art img { bottom: auto; filter: brightness(1.22); height: clamp(370px,48svh,420px); inset: auto 0 auto 0; object-position: 57% 24%; top: -8px; width: 100%; }
+  .journey-scene--start .journey-scene__stage { padding-top: clamp(326px, calc(38svh + 20px), 356px); }
   .journey-start__copy .journey-kicker { font-size: 10px; margin-bottom: 10px; }
   .journey-start__copy h1 { font-size: clamp(35px,10.9vw,47px); }
   .journey-start__description { font-size: 12px; line-height: 1.55; margin: 11px 0 12px; }
