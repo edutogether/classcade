@@ -432,10 +432,12 @@
   .entry-prep--1 .entry-flat-card { font-size: 10px; gap: 4px; min-height: 50px; padding: 7px 2px; }
   .entry-prep--1 .entry-flat-card svg { height: 12px; width: 12px; }
   /* 2열로 두니 카드가 3줄로 쌓여서 전체 블록이 1단계보다 훨씬 커졌음(위아래를
-     가린다는 지적) — 1단계처럼 5칸 한 줄로 바꾸고, 라벨이 길어서(예비교사,
-     21년 이상) 필요하면 텍스트가 2줄로 접히도록 카드를 조금 더 높임. */
-  .entry-prep--2 .entry-flat-cards { gap: 6px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
-  .entry-prep--2 .entry-flat-card { font-size: 8px; gap: 3px; line-height: 1.15; min-height: 54px; padding: 6px 2px; }
+     가린다는 지적) — 1단계처럼 5칸 한 줄로 바꿈. 처음엔 1fr로 폭을 꽉 채웠더니
+     카드가 1단계보다 눈에 띄게 커 보이고 패널 전체 높이도 늘어나 "화면이 통째로
+     커지는" 느낌을 줬음 — 1단계와 똑같이 48px 고정폭 + justify-content:center로
+     맞춰서 두 단계 사이에 프레임 크기가 흔들리지 않게 함. */
+  .entry-prep--2 .entry-flat-cards { gap: 8px; grid-template-columns: repeat(5, 48px); justify-content: center; }
+  .entry-prep--2 .entry-flat-card { font-size: 8px; gap: 3px; line-height: 1.15; min-height: 50px; padding: 7px 2px; }
   .entry-prep--2 .entry-flat-card svg { height: 12px; width: 12px; }
   /* Step 3 has 17 region cards, too many for a single row like steps 1-2 — the compact
      class's default 3-column/40px-min-height grid still read as noticeably chunkier
