@@ -215,7 +215,7 @@ export function StartScene(props: JourneySceneProps) {
       <div className="journey-start__copy journey-enter">
         <p className="journey-kicker"><span>✦</span> NBTI ADVENTURE <span>✦</span></p>
         <h1 data-tune-id="main-title"><span>당신의 교실 플레이</span><span><em>모험이</em> 시작됩니다</span></h1>
-        <p className="journey-start__description" data-tune-id="main-description">여러분의 선택으로 나의 교실 유형을 발견하고,<br />선생님 캐릭터를 성장시켜 보세요.</p>
+        <p className="journey-start__description" data-tune-id="main-description">나의 교실 유형을 발견하며, 캐릭터를 성장시켜 보세요.</p>
         <ul className="journey-start__cards" aria-label="여정 정보">
           {journeyItems.map((item) => <li key={item.title}><Icon name={item.icon} size={25} /><span><b>{item.title}</b><small>{item.detail}</small></span></li>)}
         </ul>
