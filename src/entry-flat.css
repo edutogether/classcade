@@ -423,8 +423,8 @@
   /* Fixed-width columns (not 1fr) so the cards themselves are narrower, with the row
      centred by justify-content — not just extra margin around cards that still stretch
      to fill the row. */
-  .entry-prep--1 .entry-flat-cards { gap: 5px; grid-template-columns: repeat(5, 48px); justify-content: center; }
-  .entry-prep--1 .entry-flat-card { font-size: 8px; gap: 2px; min-height: 44px; padding: 4px 1px; }
+  .entry-prep--1 .entry-flat-cards { gap: 8px; grid-template-columns: repeat(5, 48px); justify-content: center; }
+  .entry-prep--1 .entry-flat-card { font-size: 8px; gap: 4px; min-height: 50px; padding: 7px 2px; }
   .entry-prep--1 .entry-flat-card svg { height: 12px; width: 12px; }
   /* .entry-prep--flat .entry-prep__intro's own margin-top (compound selector, applies
      unconditionally) has the same specificity as the .entry-prep--1 rule below and was
@@ -450,13 +450,10 @@
   .entry-prep--flat .entry-prep__question-helper { display: block; font-size: 9px; margin: 6px 0 0 25px; text-align: left; white-space: normal; }
 }
 
-/* Narrow phones (360-375px class Android): the 390px-tuned 5-across step-1 row above
-   still ran tight at this width. Shave gap/padding/icon size further here only. */
-@media (max-width: 375px) {
-  .entry-prep--1 .entry-flat-cards { gap: 3px; }
-  .entry-prep--1 .entry-flat-card { font-size: 9px; gap: 3px; padding: 5px 2px; }
-  .entry-prep--1 .entry-flat-card svg { height: 14px; width: 14px; }
-}
+/* The step-1 card row now uses fixed-width columns (see .entry-prep--1 .entry-flat-cards
+   above) rather than 1fr-stretch, so it no longer needs to shrink further on narrower
+   phones — the old width-based tightening here just fought the general rule's padding
+   at exactly 375px and made the cards read as cramped again. */
 
 /* --- Landscape phones (booth fallback): short viewport, desktop width -----------------
    The fixed panel min-height was sized for tall screens; on a 390px-tall landscape phone
