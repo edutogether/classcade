@@ -60,6 +60,12 @@
      keeping both ancestor classes. */
   .journey-header .journey-cluster .audio-toggle { height: 38px; width: 38px; }
   .journey-header .journey-cluster .audio-toggle svg { height: 22px; width: 22px; }
+  /* PC keeps the hover-reveal volume slider; mobile has no hover, so the button is
+     already a plain toggle there in practice — but Chrome DevTools' device emulator
+     still fires real mouse hover, which was popping the slider open even at phone
+     widths during testing. Hide the panel outright below 700px so mobile always
+     behaves as a pure on/off button, regardless of how it's being tested. */
+  .bgm-control__panel { display: none !important; }
   .journey-header__profile img { box-shadow: inset 0 1px rgba(255,255,255,.35), 0 2px 6px rgba(0,0,0,.3); }
   .journey-equalizer { display: grid; gap: 2px; grid-template-columns: repeat(6, 2px); height: 18px; width: 16px; }
 }
@@ -359,7 +365,7 @@
 @media (max-width: 1100px) { .journey-start__description[data-tune-id='main-description'] { font-size: clamp(11px, .92vw, 14px); }.journey-start__actions { max-width: 550px; } }
 @media (max-width: 700px) {
   .journey-start__guide { font-size: 10px; line-height: 1.5; margin: -4px 0 13px; }.journey-result__directions { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 13px 0; }.journey-result__directions span { padding: 7px 8px; }.journey-result__directions small { white-space: normal; }.journey-result__directions b { font-size: 13px; }.journey-result__caution, .journey-result__next { font-size: 11px; }
-  .journey-start__copy h1[data-tune-id='main-title'] { font-size: clamp(34px, 9.35vw, 42px); line-height: calc(.98em + 10px); }.journey-start__description[data-tune-id='main-description'] { font-size: 13px; letter-spacing: -.03em; line-height: 1.45; margin: 11px 0 13px; }.journey-start__actions { gap: 7px; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }.journey-start__actions .journey-button--primary { font-size: 15px; min-height: 56px; padding: 0 9px; }.journey-start__actions .journey-button--primary .journey-button__seal { display: none; }.journey-start__actions .journey-button--secondary { font-size: 10px; letter-spacing: -.08em; line-height: 1.2; min-height: 56px; padding: 0 6px; }.journey-start__actions .journey-button--secondary svg { display: none; }.journey-start__audio-note[data-tune-id='main-headphone-note'] { font-size: 11px; margin-top: 13px; }.journey-start__sparkles i { height: 3px; width: 3px; }.bgm-control__panel { width: 180px; }
+  .journey-start__copy h1[data-tune-id='main-title'] { font-size: clamp(34px, 9.35vw, 42px); line-height: calc(.98em + 10px); }.journey-start__description[data-tune-id='main-description'] { font-size: 13px; letter-spacing: -.03em; line-height: 1.45; margin: 11px 0 13px; }.journey-start__actions { gap: 7px; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }.journey-start__actions .journey-button--primary { font-size: 15px; min-height: 56px; padding: 0 9px; }.journey-start__actions .journey-button--primary .journey-button__seal { display: none; }.journey-start__actions .journey-button--secondary { font-size: 15px; gap: 6px; letter-spacing: -.02em; line-height: 1.2; min-height: 56px; padding: 0 6px; }.journey-start__actions .journey-button--secondary svg { height: 18px; width: 18px; }.journey-start__audio-note[data-tune-id='main-headphone-note'] { font-size: 11px; margin-top: 13px; }.journey-start__sparkles i { height: 3px; width: 3px; }.bgm-control__panel { width: 180px; }
 }
 
 /* Firebase pairing remains inside the existing result/start scenes, not a separate generic modal. */

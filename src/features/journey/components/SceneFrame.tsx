@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties, type ReactNode, type RefObject } from 'react'
-import { AudioToggleButton } from '../../../components/AudioToggleButton'
+import { BgmControl } from '../../../components/BgmControl'
 import { SCENE_THEMES } from '../../../lib/audioSceneThemes'
 import { ClasscadeEmblem, ClasscadeWordmark, CompassSeal, Icon } from '../../../components/VisualPrimitives'
 import { moteHash } from '../../../lib/moteHash'
@@ -49,7 +49,7 @@ function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef, prof
       <div className="journey-header__actions">
         {/* One translucent pill holding the whole cluster, as in the reference header. */}
         <div className="journey-cluster">
-          <AudioToggleButton kind="bgm" enabled={state.audio.bgmEnabled} onToggle={() => onAction({ type: 'SET_AUDIO', audio: toggleAudioChannel(state.audio, 'bgm') })} />
+          <BgmControl enabled={state.audio.bgmEnabled} volume={state.audio.bgmVolume} onToggle={() => onAction({ type: 'SET_AUDIO', audio: toggleAudioChannel(state.audio, 'bgm') })} onVolumeChange={(bgmVolume) => onAction({ type: 'SET_AUDIO', audio: { ...state.audio, bgmVolume } })} />
           {/* Leftward tape marquee; the text is doubled so the loop has no visible seam. */}
           <span className="journey-song" aria-label={SCENE_BGM_TITLE[scene]}>
             <span className="journey-song__track" aria-hidden="true"><span>{SCENE_BGM_TITLE[scene]}</span><span>{SCENE_BGM_TITLE[scene]}</span></span>
