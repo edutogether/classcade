@@ -34,6 +34,7 @@ import {
   choiceFrameSelected,
   prepFourReference,
   portalAcademy,
+  prepWorldBackdropMobile,
   prepOneWorldBackdrop,
   prepOneCleanPlate,
   prepTwoCleanPlate,
@@ -310,6 +311,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   if (step === 'nickname') {
     return <main className={`entry-prep entry-prep--nickname ${isFlat('nickname') ? 'entry-prep--flat' : ''} ${exiting ? 'is-exiting' : ''}`} aria-labelledby="nickname-title">
       <img className="entry-prep__world" src={portalAcademy} alt="" aria-hidden="true" />
+      <img className="entry-prep__world entry-prep__world--mobile" src={prepWorldBackdropMobile} alt="" aria-hidden="true" />
       {!isFlat('nickname') && <img className="entry-prep__reference" src={stageImage} alt="" aria-hidden="true" onError={() => degradeToFlat('nickname')} />}
       <div className="entry-prep__vignette" aria-hidden="true" />
       <EntryMotes count={96} />
@@ -405,6 +407,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   const flat = screen ? isFlat(screen) : true
   return <main className={`entry-prep entry-prep--${step} ${flat ? 'entry-prep--flat' : ''} ${exiting ? 'is-exiting' : ''}`} aria-labelledby={`prep-${step}-title`}>
     <img className="entry-prep__world" src={portalAcademy} alt="" aria-hidden="true" />
+    <img className="entry-prep__world entry-prep__world--mobile" src={prepWorldBackdropMobile} alt="" aria-hidden="true" />
     {!flat && <img className="entry-prep__reference" src={stageImage} alt="" aria-hidden="true" data-tune-id={`prep-${step}-hero`} onError={() => screen && degradeToFlat(screen)} />}
     {!flat && step === 3 && region && <i className={`entry-prep__region-marker entry-prep__region-marker--${REGION_OPTIONS.findIndex((option) => option.value === region) + 1}`} aria-hidden="true" />}
     {!flat && step === 4 && growthPriorities.length > 0 && <div className={`entry-prep__growth-nodes entry-prep__growth-nodes--${growthPriorities.length}`} aria-hidden="true">{growthPriorities.map((priority, index) => <i key={priority} style={{ '--node': index } as CSSProperties} />)}</div>}

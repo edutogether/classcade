@@ -12,6 +12,11 @@ import loadingMaster from '../../assets/classcade/master-screens/loading-master-
 /** Shared backdrop for prep 1-4. Authored at 16:9 so it fills wide screens without the
  *  side gaps the previous 4:3-ish plate left. */
 import portalAcademy from '../../assets/classcade/prep-01-interactive/prep-world-backdrop-16x9-v2.webp'
+/** Same scene, recomposed portrait for mobile — the 16:9 backdrop above only has enough
+ *  vertical picture for a wide short crop; on a phone's narrow-tall top band it cropped
+ *  the windows/bookshelf. Authored tall (1536x2560) with the key elements kept centred
+ *  so object-fit:cover has room regardless of the exact phone width/height. */
+import prepWorldBackdropMobile from '../../assets/classcade/prep-01-interactive/prep-world-backdrop-mobile-v1.webp'
 import prepOneWorldBackdrop from '../../assets/classcade/prep-01-interactive/prep-01-world-backdrop-16x9.webp'
 import prepOneCleanPlate from '../../assets/classcade/prep-01-interactive/prep-01-clean-plate.webp'
 import prepTwoCleanPlate from '../../assets/classcade/prep-02-interactive/prep-02-clean-plate.webp'
@@ -72,6 +77,7 @@ export {
   choiceFrameSelected,
   loadingMaster,
   portalAcademy,
+  prepWorldBackdropMobile,
   prepOneWorldBackdrop,
   prepOneCleanPlate,
   prepTwoCleanPlate,
