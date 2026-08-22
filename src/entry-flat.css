@@ -458,7 +458,8 @@
      moved. Match its specificity by combining both classes on the same element. */
   .entry-prep--1.entry-prep--flat .entry-prep__intro,
   .entry-prep--2.entry-prep--flat .entry-prep__intro,
-  .entry-prep--3.entry-prep--flat .entry-prep__intro { margin-top: -20px; }
+  .entry-prep--3.entry-prep--flat .entry-prep__intro,
+  .entry-prep--4.entry-prep--flat .entry-prep__intro { margin-top: -20px; }
   /* Selection is already legible from the card's own border/fill turning green; the
      check-circle badge on top of a card this small mostly just covers the icon. */
   .entry-flat-card i { display: none; }
@@ -476,7 +477,8 @@
   .entry-prep--flat .entry-prep__question-head h2 { white-space: normal; }
   .entry-prep--1.entry-prep--flat .entry-prep__question-head h2,
   .entry-prep--2.entry-prep--flat .entry-prep__question-head h2,
-  .entry-prep--3.entry-prep--flat .entry-prep__question-head h2 { font-size: 18px; }
+  .entry-prep--3.entry-prep--flat .entry-prep__question-head h2,
+  .entry-prep--4.entry-prep--flat .entry-prep__question-head h2 { font-size: 18px; }
   .entry-prep--flat .entry-prep__question-helper { display: block; font-size: 9px; margin: 6px 0 0 25px; text-align: left; white-space: normal; }
 }
 
