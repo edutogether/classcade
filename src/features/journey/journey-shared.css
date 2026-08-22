@@ -163,11 +163,17 @@
   width: 210px;
   z-index: -1;
 }
+/* This screen uses a tightly-cropped copy of the shared wordmark (no baked-in
+   transparent margin), unlike every other screen that still uses the original —
+   so the CSS margin here means what it says instead of mostly landing inside
+   the image's own empty edge. Values below are re-derived to land the glyph
+   at the same screen position the padded asset used to, before compensating
+   for the small extra nudges requested on this screen specifically. */
 .journey-header .classcade-wordmark {
   display: block;
   filter: drop-shadow(0 1px 4px rgba(0,0,0,.5));
   height: 33px;
-  margin: 14px 0 0 -10px;
+  margin: 14px 0 0 14px;
   object-fit: contain;
   position: relative;
   width: auto;
@@ -177,7 +183,7 @@
   .journey-header .journey-brand::before { height: 92px; left: -16px; width: 92px; }
   .journey-header .journey-brand::after { height: 64px; left: 38px; width: 180px; }
   .journey-header .classcade-emblem { height: 42px; width: 42px; }
-  .journey-header .classcade-wordmark { height: 27px; margin: 5px 0 0 -10px; }
+  .journey-header .classcade-wordmark { height: 27px; margin: 5px 0 0 9px; }
 }
 
 /* Reusable parchment and question/game choice controls. */

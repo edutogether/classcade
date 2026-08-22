@@ -4,6 +4,7 @@ import { SCENE_THEMES } from '../../../lib/audioSceneThemes'
 import { ClasscadeEmblem, ClasscadeWordmark, CompassSeal, Icon } from '../../../components/VisualPrimitives'
 import { moteHash } from '../../../lib/moteHash'
 import profileAvatar from '../../../assets/brand/profile-avatar-front.webp'
+import classcadeWordmarkTrimmed from '../../../assets/brand/classcade-wordmark-trimmed.webp'
 import { JOURNEY_SCENE_ASSETS, type JourneySceneAsset } from '../../../data/sceneAssets'
 import { toggleAudioChannel } from '../../../lib/audioController'
 import type { JourneyAction, JourneyState } from '../journeyState'
@@ -45,7 +46,7 @@ const SCENE_BGM_TITLE: Record<SceneName, string> = {
 function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef, profile, scene }: Omit<SceneContext, 'notice'> & { scene: SceneName }) {
   return (
     <header className="journey-header">
-      <div className="journey-brand" aria-label="브랜드 로고"><ClasscadeEmblem /><ClasscadeWordmark /></div>
+      <div className="journey-brand" aria-label="브랜드 로고"><ClasscadeEmblem /><ClasscadeWordmark src={classcadeWordmarkTrimmed} /></div>
       <div className="journey-header__actions">
         {/* One translucent pill holding the whole cluster, as in the reference header. */}
         <div className="journey-cluster">

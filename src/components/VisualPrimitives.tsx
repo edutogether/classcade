@@ -68,9 +68,12 @@ export function ClasscadeEmblem({ className = '' }: { className?: string }) {
   )
 }
 
-/** Gold CLASSCADE wordmark. */
-export function ClasscadeWordmark({ className = '' }: { className?: string }) {
-  return <img className={`classcade-wordmark ${className}`} src={classcadeWordmark} alt="CLASSCADE" />
+/** Gold CLASSCADE wordmark. `src` defaults to the shared asset (its own large baked-in
+ *  transparent margin, matched by every screen's tuned position) — pass an override
+ *  only where a screen needs a tighter-cropped version without re-tuning every other
+ *  screen that still expects the default margin. */
+export function ClasscadeWordmark({ className = '', src }: { className?: string; src?: string }) {
+  return <img className={`classcade-wordmark ${className}`} src={src ?? classcadeWordmark} alt="CLASSCADE" />
 }
 
 /** Stacked emblem-over-wordmark lock-up, for the tall result reveal panel. */
