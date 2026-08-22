@@ -405,13 +405,11 @@
      silently ignoring the mobile-tuned --entry-panel-x margins. Reassert the variable
      here at matching specificity so the two side margins actually apply. */
   .entry-prep--flat .entry-prep__panel { width: var(--entry-panel-width); }
-  /* .entry-prep--flat is a flex container with align-items:center, so the panel is
-     actually vertically CENTRED, not positioned by its own margin-top the way it looks
-     at a glance — every "margin-top" tweak for step 1 up to now barely moved it. Push
-     it down by giving it an asymmetric margin box (top only) at matching specificity:
-     centering a taller-on-top margin box shifts the visible card down, not the margin
-     value itself moving it. */
-  .entry-prep--1.entry-prep--flat .entry-prep__panel { margin-bottom: 0; margin-top: 260px; }
+  /* Tried pushing the card down here (asymmetric margin against the always-on
+     align-items:center centering) — reverted. The centering is what keeps this layout
+     from breaking across the full range of phone resolutions/aspect ratios, so the fix
+     for "not much to look at above/below the card" belongs in the art (composing it so
+     both bands read well), not in un-centering the card. */
   .entry-flat-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .entry-flat-cards.is-compact { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .entry-flat-card { font-size: 13px; min-height: 62px; padding: 9px 6px; }
