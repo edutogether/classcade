@@ -437,13 +437,21 @@
   .entry-prep--2 .entry-flat-cards { gap: 6px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .entry-prep--2 .entry-flat-card { font-size: 8px; gap: 3px; line-height: 1.15; min-height: 54px; padding: 6px 2px; }
   .entry-prep--2 .entry-flat-card svg { height: 12px; width: 12px; }
+  /* Step 3 has 17 region cards, too many for a single row like steps 1-2 — the compact
+     class's default 3-column/40px-min-height grid still read as noticeably chunkier
+     than the matched steps. Widen to 4 columns (fewer rows) and shrink the card unit
+     to the same density as steps 1-2. */
+  .entry-prep--3 .entry-flat-cards.is-compact { gap: 6px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .entry-prep--3 .entry-flat-cards.is-compact .entry-flat-card { font-size: 9px; gap: 3px; min-height: 38px; padding: 5px 2px; }
   /* .entry-prep--flat .entry-prep__intro's own margin-top (compound selector, applies
      unconditionally) has the same specificity as the .entry-prep--1 rule below and was
      winning by source order regardless of the media query — the title never actually
      moved. Match its specificity by combining both classes on the same element. */
   .entry-prep--1.entry-prep--flat .entry-prep__intro { margin-top: -20px; }
   .entry-prep--2.entry-prep--flat .entry-prep__intro { margin-top: -20px; }
+  .entry-prep--3.entry-prep--flat .entry-prep__intro { margin-top: -20px; }
   .entry-prep--2.entry-prep--flat .entry-prep__question-head h2 { font-size: 18px; }
+  .entry-prep--3.entry-prep--flat .entry-prep__question-head h2 { font-size: 18px; }
   /* Selection is already legible from the card's own border/fill turning green; the
      check-circle badge on top of a card this small mostly just covers the icon. */
   .entry-flat-card i { display: none; }
