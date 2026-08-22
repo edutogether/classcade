@@ -431,6 +431,13 @@
   .entry-prep--1 .entry-flat-cards { gap: 8px; grid-template-columns: repeat(5, 48px); justify-content: center; }
   .entry-prep--1 .entry-flat-card { font-size: 10px; gap: 4px; min-height: 50px; padding: 7px 2px; }
   .entry-prep--1 .entry-flat-card svg { height: 12px; width: 12px; }
+  /* Step 2's labels are longer (예비교사, 21년 이상) so it keeps its 2-column grid
+     rather than 1단계's fixed 5-across row, but the card itself — font, padding,
+     height, icon — now matches 1단계's exactly instead of the much larger general
+     fallback above, so the two screens feel like the same product. */
+  .entry-prep--2 .entry-flat-cards { gap: 8px; }
+  .entry-prep--2 .entry-flat-card { font-size: 10px; gap: 4px; min-height: 50px; padding: 7px 8px; }
+  .entry-prep--2 .entry-flat-card svg { height: 12px; width: 12px; }
   /* .entry-prep--flat .entry-prep__intro's own margin-top (compound selector, applies
      unconditionally) has the same specificity as the .entry-prep--1 rule below and was
      winning by source order regardless of the media query — the title never actually
