@@ -421,8 +421,8 @@
      stranded alone on its own row. One row of 5 narrow cards reads as a single choice
      strip instead. */
   .entry-prep--1 .entry-flat-cards { gap: 5px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
-  .entry-prep--1 .entry-flat-card { font-size: 9px; gap: 3px; min-height: 52px; padding: 5px 3px; }
-  .entry-prep--1 .entry-flat-card svg { height: 14px; width: 14px; }
+  .entry-prep--1 .entry-flat-card { font-size: 8px; gap: 2px; min-height: 44px; padding: 4px 2px; }
+  .entry-prep--1 .entry-flat-card svg { height: 12px; width: 12px; }
   /* Selection is already legible from the card's own border/fill turning green; the
      check-circle badge on top of a card this small mostly just covers the icon. */
   .entry-flat-card i { display: none; }
@@ -438,7 +438,8 @@
      them instead - full-width question, helper as its own line underneath. */
   .entry-prep--flat .entry-prep__question-head { display: block; }
   .entry-prep--flat .entry-prep__question-head h2 { white-space: normal; }
-  .entry-prep--flat .entry-prep__question-helper { display: block; margin: 6px 0 0 25px; text-align: left; white-space: normal; }
+  .entry-prep--1.entry-prep--flat .entry-prep__question-head h2 { font-size: 18px; }
+  .entry-prep--flat .entry-prep__question-helper { display: block; font-size: 9px; margin: 6px 0 0 25px; text-align: left; white-space: normal; }
 }
 
 /* Narrow phones (360-375px class Android): the 390px-tuned 5-across step-1 row above
