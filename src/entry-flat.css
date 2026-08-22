@@ -419,9 +419,15 @@
   /* Fixed art-plaque widths (190px/165px) added up to more than the panel's inner
      width and ran off the edge. Flex-share the row instead so the pair always fits,
      whatever the phone's actual width. */
-  .entry-prep--flat .entry-nav-img { flex: 1 1 0; height: auto; max-width: 132px; width: auto; }
-  .entry-prep--flat .entry-nav-img--final { flex: 1 1 0; max-width: 168px; width: auto; }
-  .entry-prep--flat .entry-nav-img img { height: auto; width: 100%; }
+  /* The back/next/final art buttons are separate baked-in-text images, each with its
+     own intrinsic aspect ratio — at a shared width they rendered at different heights
+     (back 34.4px vs next 31.5px), so the footer (and the panel height above it) grew
+     by a couple px the moment step 2's back button appeared, even though every other
+     rule was already identical between steps. Pin height instead of width so every
+     nav button, on every step, occupies the exact same footer height. */
+  .entry-prep--flat .entry-nav-img { flex: 1 1 0; height: 31.5px; max-width: 132px; width: auto; }
+  .entry-prep--flat .entry-nav-img--final { flex: 1 1 0; height: 31.5px; max-width: 168px; width: auto; }
+  .entry-prep--flat .entry-nav-img img { height: 100%; object-fit: contain; width: auto; }
   /* Step 1 (5 school-level cards) read as a cramped 2-column grid with the fifth card
      stranded alone on its own row. One row of 5 narrow cards reads as a single choice
      strip instead. */
