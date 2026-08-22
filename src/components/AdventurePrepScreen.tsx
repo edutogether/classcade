@@ -320,6 +320,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       </div>
       <div className="entry-prep__top-actions entry-prep__glass-bar">
         <AudioToggleButton kind="bgm" enabled={audio.bgmEnabled} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} />
+        <span className={`entry-prep__equalizer ${audio.bgmEnabled ? 'is-playing' : ''}`} aria-hidden="true">{Array.from({ length: 4 }, (_, index) => <i key={index} />)}</span>
         <img className="entry-prep__avatar-deco" src={profileAvatar} alt="" aria-hidden="true" />
       </div>
       <section className="entry-prep__panel entry-prep__panel--nickname" data-tune-id="nickname-panel">
@@ -418,6 +419,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
     </div>
     <div className="entry-prep__top-actions entry-prep__glass-bar">
       <AudioToggleButton kind="bgm" enabled={audio.bgmEnabled} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} />
+      <span className={`entry-prep__equalizer ${audio.bgmEnabled ? 'is-playing' : ''}`} aria-hidden="true">{Array.from({ length: 4 }, (_, index) => <i key={index} />)}</span>
       <img className="entry-prep__avatar-deco" src={profileAvatar} alt="" aria-hidden="true" />
     </div>
     <section className="entry-prep__panel">
@@ -458,12 +460,14 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
           <p className="entry-growth-message" aria-live="polite">{selectionMessage || (otherSelected && !otherText.trim() ? '기타를 선택했어요 · 옆 칸에 직접 입력하면 다음으로 넘어갈 수 있어요.' : '')}</p>
         </div>}
       </section>
-      <footer className="entry-prep__footer">
+      <footer className={`entry-prep__footer ${step === 1 ? 'entry-prep__footer--single' : ''}`}>
         {flat ? <>
-          <NavArtButton art={prepNavBack} label="← 이전 질문" onClick={previousStep} disabled={step === 1} variant="back" />
+          {/* Step 1 has nothing before it — a disabled-but-visible back button implied
+              a step 0 that doesn't exist. Just don't render it here. */}
+          {step > 1 && <NavArtButton art={prepNavBack} label="← 이전 질문" onClick={previousStep} variant="back" />}
           <NavArtButton art={canContinue ? prepNavCtaEnabled : prepNavCtaDisabled} label="다음 질문" onClick={nextStep} disabled={!canContinue} variant="next" tuneId="prep-next-button" />
         </> : <>
-          <button type="button" className="entry-button entry-button--back entry-nav-img" onClick={previousStep} aria-label="이전 질문"><img src={prepNavBack} alt="" aria-hidden="true" /></button>
+          {step > 1 && <button type="button" className="entry-button entry-button--back entry-nav-img" onClick={previousStep} aria-label="이전 질문"><img src={prepNavBack} alt="" aria-hidden="true" /></button>}
           <button type="button" className="entry-button entry-button--next entry-nav-img" disabled={!canContinue} onClick={nextStep} data-tune-id="prep-next-button" aria-label="다음 질문으로"><img src={canContinue ? prepNavCtaEnabled : prepNavCtaDisabled} alt="" aria-hidden="true" /></button>
         </>}
       </footer>
