@@ -70,7 +70,12 @@ export default function App() {
     const requestedType = typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('type')
     const sharedCode = requestedType ? resultCodeForMbti(requestedType) : null
     if (sharedCode) return { ...createJourneyState('nbti_result'), resultCode: sharedCode }
-    return boot.detailedJourneyResult.value ?? createJourneyState()
+    const restored = boot.detailedJourneyResult.value
+    if (!restored) return createJourneyState()
+    /* Muting is a private, in-the-moment choice (booth is noisy, a call comes in, etc)
+       — it shouldn't outlive the tab. bgmVolume still carries over so a chosen level
+       isn't lost, only the on/off switch itself resets to on every fresh load. */
+    return { ...restored, audio: { ...restored.audio, bgmEnabled: true } }
   })
   const sharedResultRequested = typeof window !== 'undefined' && !!resultCodeForMbti(new URLSearchParams(window.location.search).get('type') ?? '')
   const pairingEntryRequested = typeof window !== 'undefined' && (new URLSearchParams(window.location.search).get('pairing') === '1' || deviceRole === 'laptop-station')
