@@ -35,7 +35,7 @@
 .journey-cluster__divider { align-self: center; background: rgba(255,244,204,.26); flex: 0 0 auto; height: 30px; width: 1px; }
 .journey-header__profile { align-items: center; background: transparent; border: 0; border-radius: 28px; color: #fff3c6; cursor: pointer; display: inline-flex; flex: 0 0 auto; gap: 9px; padding: 4px 10px 4px 4px; text-align: left; transition: background .2s ease; }
 .journey-header__profile:hover, .journey-header__profile:focus-visible { background: rgba(255,244,204,.12); }
-.journey-header__profile img { border: 2px solid rgba(255,250,224,.85); border-radius: 50%; box-shadow: 0 3px 10px rgba(0,0,0,.3); flex: 0 0 auto; height: 46px; object-fit: cover; width: 46px; }
+.journey-header__profile img { border: 0; border-radius: 50%; box-shadow: inset 0 1px rgba(255,255,255,.35), 0 3px 10px rgba(0,0,0,.3); flex: 0 0 auto; height: 46px; object-fit: cover; width: 46px; }
 .journey-header__profile > svg { flex: 0 0 auto; transition: transform .2s ease; }
 .journey-header__profile:hover > svg { transform: translateY(1px); }
 .journey-header__identity { display: grid; gap: 1px; max-width: 130px; min-width: 66px; }
@@ -48,7 +48,12 @@
 @media (prefers-reduced-motion: reduce) { .journey-equalizer.is-playing i { animation: none; height: 12px; } }
 /* Narrower screens drop the decorative title/bars first, then the identity text. */
 @media (max-width: 1280px) { .journey-song, .journey-equalizer { display: none; } }
-@media (max-width: 900px) { .journey-cluster { backdrop-filter: none; background: rgba(7,24,14,.72); gap: 6px; min-height: 50px; } .journey-cluster__divider { display: none; } .journey-header__identity { display: none; } .journey-header__profile { padding: 2px; } .journey-header__profile img { height: 38px; width: 38px; } .journey-header__profile > svg { display: none; } }
+/* backdrop-filter/background used to be dropped here for a near-opaque solid fill
+   (a perf tradeoff from before the glass redesign) — that left the 701-900px band
+   rendering the pill opaque while both wider (desktop) and narrower (700px mobile
+   rule below) tiers were translucent. Let the base rule's blurred/translucent
+   material fall through here instead so there's no opaque gap in the middle. */
+@media (max-width: 900px) { .journey-cluster { gap: 6px; min-height: 50px; } .journey-cluster__divider { display: none; } .journey-header__identity { display: none; } .journey-header__profile { padding: 2px; } .journey-header__profile img { height: 38px; width: 38px; } .journey-header__profile > svg { display: none; } }
 /* Matches the entry (prep) flow's mobile header pill exactly — same blurred-glass
    material, same audio-toggle/avatar sizes — so the header doesn't visibly change
    character between the prep steps and the journey screens that follow them. */
