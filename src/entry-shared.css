@@ -361,7 +361,7 @@
      "still too big" — nickname was never brought down to match and still read like an
      older, larger pass (31.6px/-.13em). Match the family scale instead of the screen's
      own separate size. */
-  .entry-nickname h1 { font-size: 25px; letter-spacing: -.03em; line-height: 1.2; max-width: 100%; }.entry-nickname h1 span { display: block; white-space: nowrap; }.entry-nickname > p { font-size: 11px; margin: 6px 0 14px; }.entry-nickname input { font-size: 14px; min-height: 46px; padding: 0 14px; }
+  .entry-nickname h1 { font-size: 25px; letter-spacing: -.03em; line-height: 1.2; max-width: 100%; }.entry-nickname h1 span { display: block; white-space: nowrap; }.entry-nickname > p { font-size: 11px; margin: 6px 0 14px; }.entry-nickname input { font-size: 14px; min-height: 50px; padding: 0 14px; }
   .entry-loading__reference { object-position: 52% center; }.entry-loading__copy { margin-top: 3svh; padding: 0 19px; }.entry-loading__seal { height: min(36vw, 150px); width: min(36vw, 150px); }.entry-loading h1 { font-size: 34px; margin-top: 16px; }.entry-loading__copy > p { font-size: 15px; }.entry-loading__track { width: min(86vw, 360px); }.entry-loading__dots { margin: 14px 0 19px; }
 }
 

@@ -55,7 +55,7 @@ function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef, prof
           <span className="journey-song" aria-label={SCENE_BGM_TITLE[scene]}>
             <span className="journey-song__track" aria-hidden="true"><span>{SCENE_BGM_TITLE[scene]}</span><span>{SCENE_BGM_TITLE[scene]}</span></span>
           </span>
-          <span className={`journey-equalizer ${state.audio.bgmEnabled ? 'is-playing' : ''}`} aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</span>
+          <span className={`journey-equalizer ${state.audio.bgmEnabled ? 'is-playing' : ''}`} aria-hidden="true">{Array.from({ length: 4 }, (_, index) => <i key={index} />)}</span>
           <span className="journey-cluster__divider" aria-hidden="true" />
           {/* The profile IS the teacher-panel trigger now — there is no second button. */}
           <button className="journey-header__profile" type="button" ref={teacherTriggerRef} onClick={() => { if (teacherTriggerRef.current) onTeacherOpen(teacherTriggerRef.current) }} aria-haspopup="dialog" aria-label="선생님 패널 열기">

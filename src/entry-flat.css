@@ -451,7 +451,7 @@
      than the matched steps. Widen to 4 columns (fewer rows) and shrink the card unit
      to the same density as steps 1-2. */
   .entry-prep--3 .entry-flat-cards.is-compact { gap: 6px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .entry-prep--3 .entry-flat-cards.is-compact .entry-flat-card { font-size: 10px; gap: 3px; min-height: 44px; padding: 6px 4px; }
+  .entry-prep--3 .entry-flat-cards.is-compact .entry-flat-card { font-size: 11px; gap: 3px; min-height: 44px; padding: 6px 4px; }
   /* .entry-prep--flat .entry-prep__intro's own margin-top (compound selector, applies
      unconditionally) has the same specificity as the .entry-prep--1 rule below and was
      winning by source order regardless of the media query — the title never actually

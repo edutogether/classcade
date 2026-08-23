@@ -22,14 +22,15 @@
 .journey-song__track > span { flex: 0 0 auto; padding-right: 8.5em; }
 @keyframes journey-song-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .journey-song__track { animation: none; } .journey-song__track > span:last-child { display: none; } }
-.journey-equalizer { align-items: end; display: grid; flex: 0 0 auto; gap: 3px; grid-template-columns: repeat(6, 3px); height: 24px; justify-content: center; width: 40px; }
-.journey-equalizer i { background: linear-gradient(#ffe9a0, #e0ab3c); border-radius: 99px; box-shadow: 0 0 6px rgba(255,222,130,.45); height: 6px; opacity: .5; }
+/* Matches the entry (prep) flow's equalizer exactly — same bar count, size, and
+   color recipe at every width, not just on mobile, so this reads as the same
+   little widget everywhere it appears instead of a bigger 6-bar cousin on PC. */
+.journey-equalizer { align-items: end; display: grid; flex: 0 0 auto; gap: 2px; grid-template-columns: repeat(4, 3px); height: 18px; justify-content: center; width: 18px; }
+.journey-equalizer i { background: linear-gradient(#ffe9a0, #e0ab3c); border-radius: 99px; box-shadow: 0 0 5px rgba(255,222,130,.4); height: 4px; opacity: .35; }
 .journey-equalizer.is-playing i { animation: journey-equalize .78s ease-in-out infinite alternate; opacity: 1; }
 .journey-equalizer.is-playing i:nth-child(2) { animation-delay: -.24s; animation-duration: .58s; }
 .journey-equalizer.is-playing i:nth-child(3) { animation-delay: -.43s; animation-duration: .94s; }
 .journey-equalizer.is-playing i:nth-child(4) { animation-delay: -.12s; animation-duration: .66s; }
-.journey-equalizer.is-playing i:nth-child(5) { animation-delay: -.35s; animation-duration: .86s; }
-.journey-equalizer.is-playing i:nth-child(6) { animation-delay: -.51s; animation-duration: .72s; }
 @keyframes journey-equalize { from { height: 4px; } to { height: 20px; } }
 .journey-cluster__divider { align-self: center; background: rgba(255,244,204,.26); flex: 0 0 auto; height: 30px; width: 1px; }
 .journey-header__profile { align-items: center; background: transparent; border: 0; border-radius: 28px; color: #fff3c6; cursor: pointer; display: inline-flex; flex: 0 0 auto; gap: 9px; padding: 4px 10px 4px 4px; text-align: left; transition: background .2s ease; }
@@ -67,7 +68,7 @@
      behaves as a pure on/off button, regardless of how it's being tested. */
   .bgm-control__panel { display: none !important; }
   .journey-header__profile img { box-shadow: inset 0 1px rgba(255,255,255,.35), 0 2px 6px rgba(0,0,0,.3); }
-  .journey-equalizer { display: grid; gap: 2px; grid-template-columns: repeat(6, 2px); height: 18px; width: 16px; }
+  .journey-equalizer { display: grid; }
 }
 
 .journey-scene__stage { align-items: center; display: grid; min-height: 100svh; padding: calc(clamp(62px, 8.3vh, 88px) + clamp(24px, 4.2vh, 64px)) clamp(24px, 5.1vw, 98px) clamp(26px, 4.3vh, 55px); position: relative; width: 100%; }
