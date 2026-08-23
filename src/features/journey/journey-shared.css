@@ -53,8 +53,8 @@
    material, same audio-toggle/avatar sizes — so the header doesn't visibly change
    character between the prep steps and the journey screens that follow them. */
 @media (max-width: 700px) {
-  .journey-cluster { backdrop-filter: blur(26px) saturate(1.4); background: linear-gradient(135deg, rgba(255,255,255,.125), rgba(255,255,255,.035)); border: 0; gap: 8px; min-height: 38px; padding: 0 10px; }
-  .journey-header__profile { margin-left: 2px; }
+  .journey-cluster { backdrop-filter: blur(26px) saturate(1.4); background: linear-gradient(135deg, rgba(255,255,255,.125), rgba(255,255,255,.035)); border: 0; gap: 8px; min-height: 0; padding: 6px 10px; }
+  .journey-header__profile { margin-left: 2px; padding: 0; }
   /* A later, pre-existing "everything mobile" block (further down this file) also sets
      .journey-header .audio-toggle to 44px at this same width — same specificity, later
      source order, so it was winning regardless of this rule. Match its specificity by
