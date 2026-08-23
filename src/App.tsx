@@ -198,7 +198,7 @@ export default function App() {
       return { ok: false }
     }
     setProfile(nextProfile)
-    setNotice('모험 준비가 저장되었습니다. 이제 나만의 교실 플레이를 찾아볼까요?')
+    setNotice('모험 준비가 저장되었습니다.\n이제 나만의 교실 플레이를 찾아볼까요?')
     beginJourneyTransition()
     return { ok: true }
   }

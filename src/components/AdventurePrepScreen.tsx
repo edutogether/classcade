@@ -27,6 +27,7 @@ import { ChoiceCards } from './prep/ChoiceCards'
 import { PrepFlatCards } from './prep/PrepFlatCards'
 import { PrepProgress } from './prep/PrepProgress'
 import profileAvatar from '../assets/brand/profile-avatar-front.webp'
+import classcadeWordmarkTrimmed from '../assets/brand/classcade-wordmark-trimmed.webp'
 import {
   STEP_IMAGES,
   growthIcons,
@@ -316,7 +317,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       <div className="entry-prep__vignette" aria-hidden="true" />
       <EntryMotes count={96} />
       <div className="entry-prep__top-brand entry-prep__glass-bar">
-        <ClasscadeEmblem /><ClasscadeWordmark />
+        <ClasscadeEmblem /><ClasscadeWordmark src={classcadeWordmarkTrimmed} />
       </div>
       <div className="entry-prep__top-actions entry-prep__glass-bar">
         <AudioToggleButton kind="bgm" enabled={audio.bgmEnabled} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} />
@@ -414,7 +415,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
     <div className="entry-prep__vignette" aria-hidden="true" />
     <EntryMotes count={96} />
     <div className="entry-prep__top-brand entry-prep__glass-bar">
-      <ClasscadeEmblem /><ClasscadeWordmark />
+      <ClasscadeEmblem /><ClasscadeWordmark src={classcadeWordmarkTrimmed} />
     </div>
     <div className="entry-prep__top-actions entry-prep__glass-bar">
       <AudioToggleButton kind="bgm" enabled={audio.bgmEnabled} onToggle={() => onAudioChange(toggleAudioChannel(audio, 'bgm'))} />
