@@ -58,6 +58,18 @@ jobs:
       - name: Build production site
         run: npm run build
 
+      - name: Guard against edutogether.kr domain reclaim
+        run: |
+          # edutogether.kr은 edutogether/portal이 쓰는 커스텀 도메인이다(2026-08-13 이전됨).
+          # 이 저장소에 CNAME 파일이 하나라도 들어가면 GitHub Pages가 그 도메인을
+          # 다시 이 앱으로 연결해버려 portal이 즉시 깨진다. public/에 정적 파일을
+          # 넣는 게 이 앱의 일반적인 관행이라 실수로 섞여 들어올 위험이 있어 빌드
+          # 단계에서 막는다.
+          if find public dist -maxdepth 1 -iname 'CNAME' 2>/dev/null | grep -q .; then
+            echo "::error::CNAME file found in public/ or dist/ — this would reclaim edutogether.kr from edutogether/portal. Remove it before deploying."
+            exit 1
+          fi
+
       - name: Prepare and verify Pages artifact
         run: |
           cp dist/index.html dist/404.html
