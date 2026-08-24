@@ -252,9 +252,9 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
 
   const title = useMemo(() => {
     if (step === 1) return { number: '01', question: '어느 교실에서 함께하고 있나요?', helper: '함께하고 있는 학생들의 학교급을 선택해 주세요.' }
-    if (step === 2) return { number: '02', question: '선생님의 교실 여정은 어느 정도인가요?', helper: '선생님의 경험에 가장 가까운 단계를 선택해 주세요.' }
-    if (step === 3) return { number: '03', question: '어느 지역에서 오셨나요?', helper: '현재 거주하시는 권역을 선택해 주세요.' }
-    return { number: '04', question: '지금 교실에서 더 키우고 싶은 것은 무엇인가요?', helper: '최대 3개까지 선택할 수 있어요.' }
+    if (step === 2) return { number: '02', question: '선생님의 교육 여정은 얼마나 되었나요?', helper: '선생님의 경험에 가장 가까운 단계를 선택해 주세요.' }
+    if (step === 3) return { number: '03', question: '선생님의 교실은 어디에 있나요?', helper: '현재 거주하시는 권역을 선택해 주세요.' }
+    return { number: '04', question: '교실에서 키우고 싶은 것은 무엇인가요?', helper: '최대 3개까지 선택할 수 있어요.' }
   }, [step])
 
   function nextStep() {
@@ -366,7 +366,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       <img className="entry-prep02-stage__plate" src={prepTwoCleanPlate} alt="" aria-hidden="true" />
       <EntryMotes count={96} className="entry-motes--prep02" />
       <section className="entry-prep02-plate" aria-labelledby="prep-2-title">
-        <h1 id="prep-2-title" className="sr-only">모험 준비 — 선생님의 교실 여정은 어느 정도인가요?</h1>
+        <h1 id="prep-2-title" className="sr-only">모험 준비 — 선생님의 교육 여정은 얼마나 되었나요?</h1>
         <svg className="entry-prep02-plate__path" viewBox="0 0 1484 1060" preserveAspectRatio="none" aria-hidden="true"><path d="M196 690 Q 340 706 454 672 T 634 690 T 813 672 T 993 690 Q 1080 702 1128 692" /></svg>
         <PrepTwoChoiceCards value={careerRange} previewValue={careerPreview} onChange={setCareerRange} onPreviewChange={setCareerPreview} />
         <button type="button" className="entry-prep02-plate__back entry-nav-img" onClick={previousStep} aria-label="이전 질문"><img src={prepTwoBack} alt="" aria-hidden="true" /></button>
@@ -381,7 +381,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
        into the image; the DOM contributes invisible hit targets over the painted plaques,
        a selected-state overlay that repaints the label, and the per-region map glow. */
     return <main className={`entry-prep entry-prep--3 entry-prep03-map ${exiting ? 'is-exiting' : ''}`} aria-labelledby="prep-3-title">
-      <h1 id="prep-3-title" className="sr-only">모험 준비 — 어느 지역에서 오셨나요?</h1>
+      <h1 id="prep-3-title" className="sr-only">모험 준비 — 선생님의 교실은 어디에 있나요?</h1>
       <div className="prep3-map">
         <img className="prep3-map__bg" src={prepThreeMapMaster} alt="" aria-hidden="true" onError={() => degradeToFlat('prep3')} />
         {REGION_OPTIONS.map((option, index) => {
