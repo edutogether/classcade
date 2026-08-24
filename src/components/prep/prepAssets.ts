@@ -9,6 +9,9 @@ import prepFourCleanPlate from '../../assets/classcade/prep-04-interactive/prep-
 import choiceFrameNeutral from '../../assets/classcade/prep-nav/choice-frame-neutral.webp'
 import choiceFrameSelected from '../../assets/classcade/prep-nav/choice-frame-selected.webp'
 import loadingMaster from '../../assets/classcade/master-screens/loading-master-v6.webp'
+/** Same loading scene, recomposed portrait for mobile — the 16:9 desktop master only has
+ *  enough width to keep the bar frame and logo readable at wide aspect ratios. */
+import loadingMasterMobile from '../../assets/classcade/master-screens/loading-master-mobile.webp'
 /** Shared backdrop for prep 1-4. Authored at 16:9 so it fills wide screens without the
  *  side gaps the previous 4:3-ish plate left. */
 import portalAcademy from '../../assets/classcade/prep-01-interactive/prep-world-backdrop-16x9-v2.webp'
@@ -76,6 +79,7 @@ export {
   choiceFrameNeutral,
   choiceFrameSelected,
   loadingMaster,
+  loadingMasterMobile,
   portalAcademy,
   prepWorldBackdropMobile,
   prepOneWorldBackdrop,
