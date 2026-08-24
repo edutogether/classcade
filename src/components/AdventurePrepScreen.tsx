@@ -344,7 +344,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         <header className="entry-prep__header"><PrepProgress step={5} /></header>
         <div className="entry-nickname">
           <p className="entry-kicker">✦ 여정의 마지막 준비 ✦</p>
-          <h1 id="nickname-title"><span>용사님의 닉네임을</span> <span>알려주세요</span></h1>
+          <h1 id="nickname-title">용사님의 닉네임을 알려주세요</h1>
           <p>이 여정에서 불릴 이름이에요.</p>
           <label><input value={nickname} maxLength={16} autoComplete="off" aria-label="용사 닉네임" placeholder="예: 우리 같이 놀아요" onChange={(event) => setNickname(event.target.value.slice(0, 16))} /></label>
         </div>

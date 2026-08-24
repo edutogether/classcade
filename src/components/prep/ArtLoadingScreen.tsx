@@ -74,13 +74,13 @@ export function ArtLoadingScreen({ progress, title, subtitle, className = '', ch
             style={{ height: geo.slot.height, left: geo.slot.left, top: geo.slot.top, width: (geo.slot.width * Math.min(100, Math.max(0, progress))) / 100 }}
             aria-hidden="true"
           />
-          <p className="entry-loading__live-title" style={{ left: geo.text.title.left, top: geo.text.title.top, fontSize: 34 * geo.scale } as CSSProperties} aria-hidden="true">{title}</p>
+          <p className="entry-loading__live-title" style={{ left: geo.text.title.left, top: geo.text.title.top, fontSize: (isMobile ? 46 : 34) * geo.scale } as CSSProperties} aria-hidden="true">{title}</p>
           <div className="entry-loading__live-dots" style={{ left: geo.text.dots.left, top: geo.text.dots.top, gap: 10 * geo.scale } as CSSProperties} aria-hidden="true">
             <i style={{ width: 7 * geo.scale, height: 7 * geo.scale }} />
             <i style={{ width: 7 * geo.scale, height: 7 * geo.scale }} />
             <i style={{ width: 7 * geo.scale, height: 7 * geo.scale }} />
           </div>
-          <p className="entry-loading__live-subtitle" style={{ left: geo.text.subtitle.left, top: geo.text.subtitle.top, fontSize: 18 * geo.scale } as CSSProperties} aria-hidden="true">{subtitle}</p>
+          <p className="entry-loading__live-subtitle" style={{ left: geo.text.subtitle.left, top: geo.text.subtitle.top, fontSize: (isMobile ? 26 : 18) * geo.scale } as CSSProperties} aria-hidden="true">{subtitle}</p>
         </>
       )}
       <p className="sr-only" role="status">{title} {progress}%</p>
