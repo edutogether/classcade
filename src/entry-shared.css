@@ -267,6 +267,12 @@
 .entry-growth-card__trigger { align-items: center; background: none; border: 0; color: inherit; cursor: pointer; display: flex; font: inherit; gap: inherit; padding: 0; text-align: inherit; width: 100%; }
 .entry-growth-card__input { background: transparent; border: 0; color: inherit; font: inherit; min-width: 0; outline: 0; padding: 0; width: 100%; }
 .entry-growth-card__input::placeholder { color: inherit; opacity: .55; }
+/* The app-wide input:focus-visible rule (App.css) draws a 3px ring offset 3px out from
+   the box — on this small pill that gap reads as a stray yellow halo rather than a
+   focus state. Put the ring on the card instead, flush against its own rounded corners,
+   so it reads as "this card is active" rather than a generic accessibility outline. */
+.entry-growth-card__input:focus-visible { outline: 0; }
+.entry-growth-card--other:focus-within { border-radius: 10px; outline: 2px solid #caa243; outline-offset: 0; }
 
 .entry-prep__footer { align-items: center; border-top: 1px solid rgba(111, 72, 22, .26); display: flex; justify-content: space-between; margin-top: auto; padding-top: 18px; }
 /* Step 1: no back button to space-between against, so the lone next button would
