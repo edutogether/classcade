@@ -259,7 +259,14 @@
 /* The card-icon recolor must not reach the badge's check glyph (kept white everywhere). */
 .entry-growth-card i svg { color: #fff; }
 .entry-growth-card i { align-items: center; background: linear-gradient(160deg, #3fae6d, #1a7a44); border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 0 2px rgba(20, 60, 35, .3), 0 2px 8px rgba(9, 40, 22, .45); color: #fff; display: grid; height: 26px; justify-items: center; position: absolute; right: -8px; top: -9px; width: 26px; }
-.entry-growth-other { align-items: center; background: rgba(255,248,222,.64); border: 1px solid rgba(142,99,39,.67); display: flex; gap: 8px; grid-column: 1 / -1; min-height: 53px; padding: 6px 10px; }.entry-growth-other span { color: #5a3f20; font-size: 13px; font-weight: 800; white-space: nowrap; }.entry-growth-other input { background: transparent; border: 0; color: #3a2710; min-height: 39px; outline: 0; padding: 0 6px; width: 100%; }.entry-growth-message { color: #a03922; font-size: 12px; font-weight: 800; grid-column: 1 / -1; margin: -5px 0 0; min-height: 16px; }
+.entry-growth-message { color: #a03922; font-size: 12px; font-weight: 800; grid-column: 1 / -1; margin: -5px 0 0; min-height: 16px; }
+/* 기타 card: typing directly into the card selects it, clearing it deselects it, so
+   there's no separate input row growing the grid taller when it's picked. The
+   trigger button and the input both fill the card exactly, inheriting its own
+   flex/padding/type styling rather than declaring their own box. */
+.entry-growth-card__trigger { align-items: center; background: none; border: 0; color: inherit; cursor: pointer; display: flex; font: inherit; gap: inherit; padding: 0; text-align: inherit; width: 100%; }
+.entry-growth-card__input { background: transparent; border: 0; color: inherit; font: inherit; min-width: 0; outline: 0; padding: 0; width: 100%; }
+.entry-growth-card__input::placeholder { color: inherit; opacity: .55; }
 
 .entry-prep__footer { align-items: center; border-top: 1px solid rgba(111, 72, 22, .26); display: flex; justify-content: space-between; margin-top: auto; padding-top: 18px; }
 /* Step 1: no back button to space-between against, so the lone next button would

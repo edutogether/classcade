@@ -162,6 +162,9 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   const [region, setRegion] = useState<Region | null>(initialProfile?.region ?? draft?.region ?? null)
   const [growthPriorities, setGrowthPriorities] = useState<GrowthPriority[]>(initialProfile?.growthPriorities ?? draft?.growthPriorities ?? [])
   const [otherText, setOtherText] = useState(initialProfile?.growthPriorityOther ?? draft?.growthPriorityOther ?? '')
+  const [otherEditing, setOtherEditing] = useState(false)
+  const otherInputRef = useRef<HTMLInputElement>(null)
+  useEffect(() => { if (otherEditing) otherInputRef.current?.focus() }, [otherEditing])
   const [nickname, setNickname] = useState(initialProfile?.nickname ?? draft?.nickname ?? '')
   const [selectionMessage, setSelectionMessage] = useState('')
   const [loadingProgress, setLoadingProgress] = useState(4)
@@ -285,6 +288,19 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       return
     }
     if (next.clearsOtherText) setOtherText('')
+    setGrowthPriorities(next.values)
+  }
+
+  /* The 기타 card turns into a live text field on click rather than staying a plain
+     toggle — typing something selects it, clearing it deselects it, so there's no
+     separate input row pushing the grid taller. */
+  function handleOtherInputChange(nextText: string) {
+    setOtherText(nextText)
+    const hasText = Boolean(nextText.trim())
+    if (hasText === otherSelected) return
+    const next = getNextGrowthPriorities(growthPriorities, 'other')
+    if (hasText && next.reachedLimit) { setSelectionMessage('최대 3개까지 선택할 수 있어요.'); return }
+    setSelectionMessage('')
     setGrowthPriorities(next.values)
   }
 
@@ -453,9 +469,19 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         {step === 4 && <div className="entry-growth-grid" role="group" aria-label="교실 성장 우선순위">
           {GROWTH_PRIORITY_OPTIONS.map((option, index) => {
             const selected = growthPriorities.includes(option.value)
-            return <button key={option.value} className={`entry-growth-card ${selected ? 'is-selected' : ''}`} type="button" style={flat ? undefined : ({ '--frame-neutral': `url(${choiceFrameNeutral})`, '--frame-selected': `url(${choiceFrameSelected})` } as CSSProperties)} aria-pressed={selected} data-tune-id={`prep-4-option-${index + 1}`} onClick={() => toggleGrowthPriority(option.value)}><Icon name={growthIcons[index]} size={24} /><span>{option.label}</span>{selected && <i aria-hidden="true"><Icon name="check" size={15} /></i>}</button>
+            const cardStyle = flat ? undefined : ({ '--frame-neutral': `url(${choiceFrameNeutral})`, '--frame-selected': `url(${choiceFrameSelected})` } as CSSProperties)
+            if (option.value === 'other') {
+              const showInput = otherEditing || selected
+              return (
+                <div key={option.value} className={`entry-growth-card entry-growth-card--other ${selected ? 'is-selected' : ''}`} style={cardStyle} data-tune-id={`prep-4-option-${index + 1}`}>
+                  {showInput
+                    ? <input ref={otherInputRef} className="entry-growth-card__input" value={otherText} maxLength={30} placeholder="직접 입력해 주세요." aria-label="기타 항목 직접 입력" onChange={(event) => handleOtherInputChange(event.target.value.slice(0, 30))} onBlur={() => setOtherEditing(false)} />
+                    : <button type="button" className="entry-growth-card__trigger" aria-pressed={false} onClick={() => setOtherEditing(true)}><Icon name={growthIcons[index]} size={24} /><span>{option.label}</span></button>}
+                </div>
+              )
+            }
+            return <button key={option.value} className={`entry-growth-card ${selected ? 'is-selected' : ''}`} type="button" style={cardStyle} aria-pressed={selected} data-tune-id={`prep-4-option-${index + 1}`} onClick={() => toggleGrowthPriority(option.value)}><Icon name={growthIcons[index]} size={24} /><span>{option.label}</span>{selected && <i aria-hidden="true"><Icon name="check" size={15} /></i>}</button>
           })}
-          {otherSelected && <label className="entry-growth-other"><input value={otherText} maxLength={30} placeholder="직접 입력해 주세요." aria-label="기타 항목 직접 입력" onChange={(event) => setOtherText(event.target.value.slice(0, 30))} /></label>}
           <p className="entry-growth-message" aria-live="polite">{selectionMessage}</p>
         </div>}
       </section>
