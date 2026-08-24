@@ -22,7 +22,9 @@ const ART_MOBILE = { width: 941, height: 1672, slotX: 285, slotY: 936, slotW: 37
 const TEXT_MOBILE_X = 470
 const TEXT_MOBILE = {
   title: { x: TEXT_MOBILE_X, y: 872 },
-  dots: { x: TEXT_MOBILE_X, y: 964 },
+  /* Sat squeezed between the bar and subtitle at first — moved up under the logo,
+     its own open band with room to breathe, instead of the tight gap below the bar. */
+  dots: { x: TEXT_MOBILE_X, y: 800 },
   subtitle: { x: TEXT_MOBILE_X, y: 990 },
 }
 
@@ -75,7 +77,7 @@ export function ArtLoadingScreen({ progress, title, subtitle, className = '', ch
             aria-hidden="true"
           />
           <p className="entry-loading__live-title" style={{ left: geo.text.title.left, top: geo.text.title.top, fontSize: (isMobile ? 46 : 34) * geo.scale } as CSSProperties} aria-hidden="true">{title}</p>
-          <div className="entry-loading__live-dots" style={{ left: geo.text.dots.left, top: geo.text.dots.top, gap: 10 * geo.scale } as CSSProperties} aria-hidden="true">
+          <div className="entry-loading__live-dots" style={{ left: geo.text.dots.left, top: geo.text.dots.top, gap: (isMobile ? 16 : 10) * geo.scale } as CSSProperties} aria-hidden="true">
             <i style={{ width: 7 * geo.scale, height: 7 * geo.scale }} />
             <i style={{ width: 7 * geo.scale, height: 7 * geo.scale }} />
             <i style={{ width: 7 * geo.scale, height: 7 * geo.scale }} />
