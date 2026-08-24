@@ -488,8 +488,16 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
       <footer className={`entry-prep__footer ${step === 1 ? 'entry-prep__footer--single' : ''}`}>
         {flat ? <>
           {/* Step 1 has nothing before it — a disabled-but-visible back button implied
-              a step 0 that doesn't exist. Just don't render it here. */}
-          {step > 1 && <NavArtButton art={prepNavBack} label="← 이전 질문" onClick={previousStep} variant="back" />}
+              a step 0 that doesn't exist. Render an invisible same-shape placeholder
+              instead of omitting it outright: with only one real flex item, that item's
+              flex-grow filled the whole row and got clamped by its own max-width, landing
+              a few px narrower than the next button on step 2+ (which shares the row and
+              shrinks against the back button) — so "다음 질문" visibly slid sideways the
+              moment step 2 added a back button. Reserving the same slot on step 1 keeps
+              the flex math identical on every step, so the button never moves. */}
+          {step > 1
+            ? <NavArtButton art={prepNavBack} label="← 이전 질문" onClick={previousStep} variant="back" />
+            : <span className="entry-button entry-button--back entry-nav-img" aria-hidden="true" style={{ visibility: 'hidden' }} />}
           <NavArtButton art={canContinue ? prepNavCtaEnabled : prepNavCtaDisabled} label="다음 질문" onClick={nextStep} disabled={!canContinue} variant="next" tuneId="prep-next-button" />
         </> : <>
           {step > 1 && <button type="button" className="entry-button entry-button--back entry-nav-img" onClick={previousStep} aria-label="이전 질문"><img src={prepNavBack} alt="" aria-hidden="true" /></button>}
