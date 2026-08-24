@@ -505,7 +505,7 @@
    absolute box landed right on top of the question helper text instead, garbling both.
    Render the cue in-flow at all times (kept invisible until a region is picked) so it
    always reserves its own line and the cards below it never move when it appears. */
-.entry-prep--flat .entry-prep__region-wrap { margin-block: auto; transform: translateY(2px); }
-.entry-prep--flat .entry-prep__region-wrap .entry-flat-cards { margin-block: 0; }
-.entry-prep--flat .entry-prep__next-cue { visibility: hidden; }
+.entry-prep--flat .entry-prep__region-wrap { margin-block: auto; }
+.entry-prep--flat .entry-prep__region-wrap .entry-flat-cards { margin-block: 0; transform: translateY(2px); }
+.entry-prep--flat .entry-prep__next-cue { transform: translateY(-2px); visibility: hidden; }
 .entry-prep--flat .entry-prep__next-cue.is-visible { visibility: visible; }
