@@ -414,6 +414,6 @@
 @media (max-width: 700px) {
   .entry-prep--flat .entry-nickname { padding: 30px 4px; }
   .entry-prep--flat .entry-nickname h1 { margin-top: 0; }
-  .entry-prep--flat .entry-nickname > p { margin: 4px 0 10px; }
-  .entry-prep--flat .entry-nickname .entry-kicker { margin-bottom: 6px; }
+  .entry-prep--flat .entry-nickname > p { margin: 10px 0; }
+  .entry-prep--flat .entry-nickname .entry-kicker { margin-bottom: 10px; }
 }

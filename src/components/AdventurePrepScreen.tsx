@@ -475,7 +475,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
               return (
                 <div key={option.value} className={`entry-growth-card entry-growth-card--other ${selected ? 'is-selected' : ''}`} style={cardStyle} data-tune-id={`prep-4-option-${index + 1}`}>
                   {showInput
-                    ? <input ref={otherInputRef} className="entry-growth-card__input" value={otherText} maxLength={30} placeholder="직접 입력해 주세요." aria-label="기타 항목 직접 입력" onChange={(event) => handleOtherInputChange(event.target.value.slice(0, 30))} onBlur={() => setOtherEditing(false)} />
+                    ? <><Icon name={growthIcons[index]} size={24} /><input ref={otherInputRef} className="entry-growth-card__input" value={otherText} maxLength={30} placeholder="직접 입력해 주세요." aria-label="기타 항목 직접 입력" onChange={(event) => handleOtherInputChange(event.target.value.slice(0, 30))} onBlur={() => setOtherEditing(false)} /></>
                     : <button type="button" className="entry-growth-card__trigger" aria-pressed={false} onClick={() => setOtherEditing(true)}><Icon name={growthIcons[index]} size={24} /><span>{option.label}</span></button>}
                 </div>
               )
