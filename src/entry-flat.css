@@ -425,8 +425,8 @@
      by a couple px the moment step 2's back button appeared, even though every other
      rule was already identical between steps. Pin height instead of width so every
      nav button, on every step, occupies the exact same footer height. */
-  .entry-prep--flat .entry-nav-img { flex: 1 1 0; height: 31.5px; max-width: 132px; width: auto; }
-  .entry-prep--flat .entry-nav-img--final { flex: 1 1 0; height: 31.5px; max-width: 168px; width: auto; }
+  .entry-prep--flat .entry-nav-img { flex: 1 1 0; height: 37px; max-width: 151px; width: auto; }
+  .entry-prep--flat .entry-nav-img--final { flex: 1 1 0; height: 37px; max-width: 192px; width: auto; }
   .entry-prep--flat .entry-nav-img img { height: 100%; object-fit: contain; width: auto; }
   /* Step 1 (5 school-level cards) read as a cramped 2-column grid with the fifth card
      stranded alone on its own row. One row of 5 narrow cards reads as a single choice
