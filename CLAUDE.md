@@ -2,9 +2,9 @@
 
 교실 NBTI 기반 몰입형 교육 게임 (React/TS/Vite/Firebase). 상위 원칙은 [D:\Projects\CLAUDE.md](../../CLAUDE.md) 상속 — 여기는 이 앱 전용 상태/이슈만 기록한다.
 
-## 현재 상태 (2026-08-14 기준) — **프리즈됨**
+## 현재 상태 (2026-08-25 기준) — 대표가 모바일 화면을 픽셀 단위로 계속 다듬는 중 (프리즈 아님)
 
-`classcade-freeze-20260814` 태그로 복구 지점 고정. `.githooks/pre-push`(portal/googler와 동일 패턴)로 이 태그의 삭제·이동을 막음 — 새 클론에서는 `git config core.hooksPath .githooks`로 활성화해야 보호가 걸린다.
+`classcade-freeze-20260814` 태그는 그 시점 복구 지점으로 여전히 유효하며 `.githooks/pre-push`(portal/googler와 동일 패턴)로 삭제·이동을 막고 있다 — 새 클론에서는 `git config core.hooksPath .githooks`로 활성화해야 보호가 걸린다. 다만 8/14 이후에도 개발이 계속 이어져 지금은 "프리즈된 상태"가 아니다.
 
 - 배포: `https://edutogether.github.io/classcade/` (GitHub Pages Actions, `main` 푸시 시 자동 배포)
 - **⚠️ `edutogether.kr` 커스텀 도메인을 이 저장소에 다시 설정하지 말 것.** 그 도메인은
@@ -14,6 +14,7 @@
 - 이번 프리즈까지 반영된 것: entry flow 전체(prep 1-4 → 닉네임 → 로딩 → journey), 로딩 화면 v6 아트 전환 + 문구 라이브 DOM화, NBTI "다시 탐색하기"·"메인 화면으로" 인터루드, 헤더 로고 글로우, BGM 볼륨 디바운스, PNG→WebP 전량 전환
 - 2026-08-10 외부 리뷰: `docs/EXTERNAL_HEALTH_REVIEW_20260810.md`
 - **2026-08-17 감사 후 수정 — 완료**: 배포 워크플로우가 Firebase 환경변수 4개(API_KEY/AUTH_DOMAIN/PROJECT_ID/APP_ID)를 전혀 주입하지 않아 프로덕션에서 페어링 기능이 항상 실패하던 치명적 버그 발견·수정. `.github/workflows/deploy-pages.yml`에 `secrets.*` 참조 추가 + 사용자가 GitHub Actions secret 4개 실제 등록 완료 + 재배포 후 `?pairing=1`에서 실제 코드 조회(`"코드를 찾지 못했어요"` — invalid 상태, network_error 아님)로 Firestore 연결 살아있음을 직접 확인함. Firestore 규칙 테스트(40여개)도 CI에서 한 번도 실행된 적 없었던 것을 발견해 `rules:test` 스텝(JDK21 + firebase-tools 에뮬레이터)으로 연결, CI 통과 확인함. 저장소의 `firestore.rules`와 실제 라이브 프로젝트(`classcade-together`)의 배포된 규칙도 Firebase Rules API로 직접 대조해 **완전히 일치** 확인함(CRLF/LF 줄바꿈 차이만 있고 내용은 동일).
+- **2026-08-21~25 — 모바일 프렙(모험 준비) 화면 전면 재작업(40여개 커밋)**: 대표가 직접 픽셀 단위로 모바일 1~5단계 화면을 반복 다듬음. 굵직한 변화만 요약하면 — 1~5단계 카드·제목·질문 폰트 크기와 여백을 서로 완전히 통일(단계 전환 시 프레임 크기가 흔들리던 문제 제거), 이전/다음 버튼 높이를 전 단계 공통 31.5px로 고정, 진행도 배지 숫자를 tabular-nums로 폭 고정, 모바일 전용 배경 이미지 신규 적용(밝기/구도 여러 차례 교정), 로딩 화면에 모바일 전용 세로 비율 아트 추가, BGM 볼륨 슬라이더를 모바일에서는 단순 on/off 토글로 단순화(PC는 슬라이더 유지), 메인 화면 워드마크가 안 움직이던 진짜 원인(이미지 자체의 투명 여백)을 찾아 수정, 4단계 "기타 직접 입력" 카드를 클릭 즉시 그 자리에서 입력하는 방식으로 교체. 배포 워크플로우에 `edutogether.kr` 도메인 재claim 방어 가드도 이 기간에 추가됨(`f27cd7e`).
 
 ## 🔴 2026-08-25 발견 — 페어링 서브시스템 원천 도달 불가능 (대표 결정 대기, 재논의·임의 수정 금지)
 
