@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from 'react'
+import { reportError } from '../lib/errorReporting'
 
 type Props = { children: ReactNode }
 type State = { failed: boolean }
@@ -14,6 +15,10 @@ export class ChunkErrorBoundary extends Component<Props, State> {
 
   static getDerivedStateFromError() {
     return { failed: true }
+  }
+
+  componentDidCatch(error: Error) {
+    reportError(error)
   }
 
   render() {
