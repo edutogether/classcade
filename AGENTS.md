@@ -111,19 +111,16 @@ Before presenting a scene:
 - production build passes
 - screenshots are from the real implementation, not design exports
 
-## Git workflow
+## Git workflow (2026-08-26 정정 — 아래는 개발 극초반에 쓴 것으로 지금 실제 방식과 다름)
 
-- default branch: `main`
-- work in a feature branch
-- recommended first branch: `feature/nbti-visual-vertical-slice`
+**실제로는 `main`에서 직접 작업하고, push까지 자율 진행한다** — feature 브랜치·draft PR·머지 승인 절차는 초기 계획이었고 채택되지 않았다. 최신 워크플로우·승인 절차는 이 폴더의 `CLAUDE.md`와 최상위 `D:\Projects\CLAUDE.md`를 따른다 — 충돌 시 그쪽이 우선.
+
 - do not push secrets or `.env` files
 - keep commits small and descriptive
-- do not merge to `main` without user approval
-- use a draft pull request for review
 
-## Current status
+## Current status (2026-08-26 정정)
 
-The repository is initialized. The next task is project foundation and a design specification for the first start scene. Do not implement the final visual scene until the user has reviewed and approved its detailed specification or updated mockup.
+~~The repository is initialized.~~ — 이건 개발 극초반(2026-08-02) 시점 기록이다. 지금은 골든패스 전체가 구현되어 실제 라이브 서비스 중이다(`edutogether.github.io/classcade`). 위 "Mission"·"Visual source of truth"·"Hard rejections" 섹션은 여전히 제품 설계 원칙으로 유효하지만, 이 섹션과 아래 진행상황 서술은 더 이상 현재 상태가 아니다 — 최신 상태는 `CLAUDE.md` 참고.
 
 ## Golden-path priority — 2026-08-02
 
