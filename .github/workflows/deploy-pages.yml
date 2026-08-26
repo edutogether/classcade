@@ -99,3 +99,34 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  firestore-rules:
+    # Deliberately independent of `deploy`: this only needs `build` to have
+    # proven the rules pass the emulator suite (npm run rules:test). A failure
+    # here (e.g. a service-account permission gap) must never block the site
+    # itself from deploying — 2026-08-26 incident where bundling this into the
+    # `build` job's own steps made one failed rules-deploy fail `build`, which
+    # `deploy` needs, silently skipping the Pages deploy entirely.
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy Firestore rules
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-service-account.json
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$GOOGLE_APPLICATION_CREDENTIALS"
+          npx firebase deploy --only firestore:rules --project classcade-together --non-interactive
+          rm -f "$GOOGLE_APPLICATION_CREDENTIALS"
