@@ -11,7 +11,6 @@ import { loadJourneyState, saveJourneyState } from './features/journey/journeyPe
 import { createJourneyState, journeyReducer, journeyStatusForStage, type JourneyAction, type JourneyState } from './features/journey/journeyState'
 import { resultCodeForMbti } from './data/nbtiResults.provisional'
 import { resolveEntryState } from './lib/entryState'
-import { preloadMainTheme } from './lib/audioManager'
 import { EntryVisualTuner } from './features/entry/EntryVisualTuner'
 import type { PairingPayload } from './features/pairing/pairingContract'
 import { restorePairingJourney } from './features/pairing/pairingContract'
@@ -107,10 +106,6 @@ export default function App() {
       window.removeEventListener('online', syncOnlineStatus)
       window.removeEventListener('offline', syncOnlineStatus)
     }
-  }, [])
-
-  useEffect(() => {
-    preloadMainTheme()
   }, [])
 
   /* Fade the index.html boot splash out only after the first screen is actually ready:

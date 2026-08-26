@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties, type ReactNode, type RefObject } from 'react'
+import { memo, useEffect, useState, type CSSProperties, type ReactNode, type RefObject } from 'react'
 import { BgmControl } from '../../../components/BgmControl'
 import { SCENE_THEMES } from '../../../lib/audioSceneThemes'
 import { ClasscadeEmblem, ClasscadeWordmark, CompassSeal, Icon } from '../../../components/VisualPrimitives'
@@ -69,7 +69,11 @@ function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef, prof
   )
 }
 
-function SceneArt({ asset, artSrc }: { asset: JourneySceneAsset; artSrc?: string }) {
+/* Memoized: the 96 firefly nodes only depend on the scene's asset/artSrc, but
+   SceneFrame re-renders on every journey-state change (e.g. per-tick BGM volume
+   drag) — without this, all 96 nodes were reconciled dozens of times a second
+   during a drag with no visual reason to. */
+const SceneArt = memo(function SceneArt({ asset, artSrc }: { asset: JourneySceneAsset; artSrc?: string }) {
   return (
     <div className={`journey-art journey-art--${asset.tone}`} aria-hidden="true">
       <picture><source media="(max-width: 700px)" srcSet={artSrc ?? asset.mobileSrc ?? asset.src} /><img src={artSrc ?? asset.src} alt="" style={{ '--scene-position': asset.position } as CSSProperties} /></picture>
@@ -92,7 +96,7 @@ function SceneArt({ asset, artSrc }: { asset: JourneySceneAsset; artSrc?: string
       <div className="journey-art__leaves"><i /><i /><i /></div>
     </div>
   )
-}
+})
 
 /** The notice pill fades in AND out: the element stays mounted 450ms after the text
  *  clears so the out-animation can run — an instant unmount was the last visible
