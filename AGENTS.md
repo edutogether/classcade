@@ -6,7 +6,7 @@ Build **같교오락실 / CLASSCADE**, an immersive educational adventure for te
 
 The product journey is:
 
-1. Enter through `edutogether.kr`
+1. Enter through `edutogether.github.io/classcade/`
 2. Complete Classroom NBTI on mobile or PC
 3. Grow a small animated 2D character through choices
 4. Reveal a high-fidelity final character illustration and result
