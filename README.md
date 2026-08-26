@@ -12,7 +12,7 @@
 - 휴대전화에서 노트북으로 QR·6자리 코드 이어하기
 - 우리 반 게임 만들기
 - 결과·Story 이미지 저장 및 공유
-- 행사 기간 공식 진입 주소: `edutogether.kr`
+- 공식 배포 주소: `edutogether.github.io/classcade`(`edutogether.kr`은 별도 portal 저장소 소유 — 재설정 금지, `CLAUDE.md` LOCKED 참고)
 
 ## Visual quality contract
 
