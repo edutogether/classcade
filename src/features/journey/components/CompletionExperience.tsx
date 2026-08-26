@@ -9,7 +9,7 @@ type Props = { state: JourneyState; onAction: (action: JourneyAction) => void; o
 
 function VideoThumbnail({ src }: { src?: string }) {
   const [failed, setFailed] = useState(!src)
-  return <div className="completion-video__thumb">{failed ? <CompassSeal /> : <img src={src} alt="" onError={() => setFailed(true)} />}</div>
+  return <div className="completion-video__thumb">{failed ? <CompassSeal /> : <img src={src} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setFailed(true)} />}</div>
 }
 
 export function CompletionExperience({ state, onAction, onNextParticipant }: Props) {

@@ -8,7 +8,7 @@ import type { JourneyState } from '../journeyState'
 function Thumb({ src }: { src?: string }) {
   const [failed, setFailed] = useState(!src)
   if (failed) return <span className="result-rec__thumb result-rec__thumb--fallback" aria-hidden="true"><CompassSeal /></span>
-  return <span className="result-rec__thumb"><img src={src} alt="" onError={() => setFailed(true)} /></span>
+  return <span className="result-rec__thumb"><img src={src} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setFailed(true)} /></span>
 }
 
 /** 16개 유형별 고정 추천 2편 (2026-08-13 큐레이션, 같은 날 2차 개정).
