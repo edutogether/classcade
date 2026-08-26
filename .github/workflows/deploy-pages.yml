@@ -52,6 +52,15 @@ jobs:
       - name: Run Firestore rules tests
         run: npm run rules:test
 
+      - name: Deploy Firestore rules
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-service-account.json
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$GOOGLE_APPLICATION_CREDENTIALS"
+          npx firebase deploy --only firestore:rules --project classcade-together --non-interactive
+          rm -f "$GOOGLE_APPLICATION_CREDENTIALS"
+
       - name: Lint
         run: npm run lint
 
