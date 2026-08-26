@@ -1,7 +1,6 @@
 import { useEffect, useState, type RefObject } from 'react'
 import { noteAudioUserGesture, playAudioCue, playSceneTheme } from '../../lib/audioManager'
 import type { JourneyAction, JourneyState } from './journeyState'
-import { CompleteScene, GameAdjustScene, GameCandidatesScene, GameChoiceScene, GameConceptsScene, GameConditionsScene, GameIntroScene, ShakeScene, ShareScene } from './scenes/GameScenes'
 import { QuestionScene, ResultScene, StartScene } from './scenes/NbtiScenes'
 import { PairingEntryScene, PairingScene } from '../pairing/PairingScreens'
 import { JourneyExitDialog } from './components/JourneyExitDialog'
@@ -46,34 +45,28 @@ export function JourneyApp({ state, notice, onAction, onTeacherOpen, teacherTrig
 
   const dispatch = (action: JourneyAction) => {
     noteAudioUserGesture()
-    if (['ANSWER_NBTI', 'ANSWER_GAME', 'NEXT_NBTI', 'NEXT_GAME'].includes(action.type)) playAudioCue('choice', state.audio)
-    if (action.type === 'OPEN_GAME_INTRO') playAudioCue('reveal', state.audio)
-    if (action.type === 'OPEN_SHARING') playAudioCue('complete', state.audio)
+    if (action.type === 'ANSWER_NBTI' || action.type === 'NEXT_NBTI') playAudioCue('choice', state.audio)
     onAction(action)
   }
   const sceneProps: JourneySceneProps = { state, notice, onAction: dispatch, onTeacherOpen, teacherTriggerRef, profile: profile ?? undefined, onRequestHome: () => { setExitDialogMode('home'); setExitDialogOpen(true) }, onNextParticipant: onNextParticipant ? () => { setExitDialogMode('next'); setExitDialogOpen(true) } : undefined }
 
   let content: React.ReactNode
-  /* 2026-08-13: the journey now ends at the result screen. The pairing and game-builder
-     scenes below are kept in the codebase but are no longer reachable — any stage that
-     still points at them (a restored session, a stale saved stage) falls back to the
-     result screen rather than dead-ending on a disconnected page. */
+  /* 2026-08-13: the journey now ends at the result screen. The game-builder stages that
+     used to follow it are gone entirely (see below); any stage value that no longer
+     exists (a stale saved session) falls through the if/else chain to the result screen
+     rather than dead-ending on a disconnected page. */
   if (pairingEntry) content = <PairingEntryScene {...sceneProps} onPaired={(payload) => onPaired?.(payload)} onStart={() => onStartHere?.()} onBack={() => onExitPairingEntry?.()} />
   else if (state.stage === 'nbti_start') content = <StartScene {...sceneProps} />
   else if (state.stage === 'nbti_question') content = <QuestionScene {...sceneProps} />
   else content = <ResultScene {...sceneProps} onPair={() => { savePairingGateOpen(true); setPairingOpen(true) }} />
 
+  /* 2026-08-27: the classroom-game-builder scenes that used to live here (game_intro
+     through sharing) were deleted entirely — 대표 decided against reviving them. Only
+     the pairing code-issuance screen remains unreachable, pending the separate LOCKED
+     pairing-redesign decision in this repo's CLAUDE.md. */
   const disconnectedScenes = (): React.ReactNode => {
     if (state.stage === 'nbti_result' && pairingOpen && profile) return <PairingScene {...sceneProps} profile={profile} journeyId={journeyId} onBack={() => { savePairingGateOpen(false); setPairingOpen(false) }} />
-    if (state.stage === 'game_intro') return <GameIntroScene {...sceneProps} />
-    if (state.stage === 'game_conditions') return <GameConditionsScene {...sceneProps} />
-    if (state.stage === 'game_concepts') return <GameConceptsScene {...sceneProps} />
-    if (state.stage === 'game_candidates') return <GameCandidatesScene {...sceneProps} />
-    if (state.stage === 'game_adjust') return <GameAdjustScene {...sceneProps} />
-    if (state.stage === 'game_choice') return <GameChoiceScene {...sceneProps} />
-    if (state.stage === 'game_shake') return <ShakeScene {...sceneProps} />
-    if (state.stage === 'game_complete') return <CompleteScene {...sceneProps} />
-    return <ShareScene {...sceneProps} />
+    return null
   }
   void disconnectedScenes
 

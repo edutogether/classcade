@@ -9,10 +9,13 @@ The product journey is:
 1. Enter through `edutogether.github.io/classcade/`
 2. Complete Classroom NBTI on mobile or PC
 3. Grow a small animated 2D character through choices
-4. Reveal a high-fidelity final character illustration and result
-5. Continue to a laptop through QR or a six-digit code
-6. Create a classroom game
-7. Generate and save a shareable Story result
+4. Reveal a high-fidelity final character illustration and result, with classroom play recommendations matched to it
+
+**(2026-08-27 정정)** 원래 계획에 있던 5~7단계("노트북으로 이어하기 → 우리 반 게임 만들기 →
+Story 공유")는 지금 존재하지 않는다. 게임 만들기 서브시스템은 대표 결정으로 코드·데이터·아트
+전부 완전히 삭제됐다(나중에 다시 만들 수도 있으나 시기 미정). 노트북 이어하기(페어링)는 이
+결정과 별개로 여전히 보류 중이며, 이 저장소 `CLAUDE.md`의 LOCKED 항목이 그 상태를 관리한다.
+지금 여정은 4번(결과 확인 + 놀이 추천)에서 끝난다.
 
 ## Visual source of truth
 

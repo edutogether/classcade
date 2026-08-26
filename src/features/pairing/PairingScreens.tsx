@@ -21,10 +21,9 @@ function PairingVideoThumb({ src }: { src?: string }) {
 
 function MobileWaitingContent({ directions }: { directions: readonly NbtiDirection[] }) {
   const videos = useMemo(() => {
-    /* Ranked by the player's NBTI direction tags (no game data exists yet at pairing
-       time, so conditions/candidate are null). Backfilled from the catalogue so the
+    /* Ranked by the player's NBTI direction tags. Backfilled from the catalogue so the
        panel always shows two, even for types whose tags match little. */
-    const ranked = rankVideos(recommendationTags(directions, null, null, {}), null).map((entry) => entry.video)
+    const ranked = rankVideos(recommendationTags(directions)).map((entry) => entry.video)
     const seen = new Set(ranked.map((video) => video.id))
     const fill = CLASSCADE_VIDEO_CATALOG.filter((video) => video.published && !seen.has(video.id))
     return [...ranked, ...fill].slice(0, 2)
@@ -62,7 +61,10 @@ export function PairingScene({ state, profile, journeyId, onBack, ...sceneProps 
   {/* profile is destructured out of sceneProps above, so it must be handed to SceneFrame
       explicitly — otherwise the header falls back to the generic '선생님'. */}
   return <SceneFrame scene="result" state={state} profile={profile} {...sceneProps}>
-    <div className="pairing-mobile-flow journey-enter"><div className="pairing-gate" data-tune-id="pairing-mobile-gate"><p className="journey-kicker">✦ NOTEBOOK LINK ✦</p><ClasscadeLockup /><h1><span>이제 노트북으로</span> <span>이동해주세요</span></h1><p><b>{result.title}</b> 결과가 준비되었습니다. 이 코드를 CLASSCADE 노트북에 입력하면 우리 반 게임 만들기가 이어집니다.</p><output className="pairing-gate__code" aria-label={`연결 코드 ${record?.code?.split('').join(' ') ?? ''}`}>{record?.code ? `${record.code.slice(0, 3)} ${record.code.slice(3)}` : '··· ···'}</output><p className="pairing-gate__timer">남은 시간 <b>{Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}</b></p><p className={`pairing-gate__status is-${status}`} aria-live="polite">{statusCopy(status)}</p><PrimaryButton onClick={create} disabled={status === 'issuing'}>{status === 'expired' || status === 'network_error' ? '새 코드 만들기' : record ? '새 코드 발급' : '연결 문 여는 중'}</PrimaryButton><div className="pairing-gate__row"><SecondaryButton onClick={onBack}>결과로 돌아가기</SecondaryButton><SecondaryButton onClick={() => { onBack(); sceneProps.onAction({ type: 'OPEN_GAME_INTRO' }) }}>이 기기에서 이어하기</SecondaryButton></div></div><MobileWaitingContent directions={result.directions} /></div>
+    <div className="pairing-mobile-flow journey-enter"><div className="pairing-gate" data-tune-id="pairing-mobile-gate"><p className="journey-kicker">✦ NOTEBOOK LINK ✦</p><ClasscadeLockup /><h1><span>이제 노트북으로</span> <span>이동해주세요</span></h1><p><b>{result.title}</b> 결과가 준비되었습니다. 이 코드를 CLASSCADE 노트북에 입력하면 이 결과를 이어서 확인할 수 있습니다.</p><output className="pairing-gate__code" aria-label={`연결 코드 ${record?.code?.split('').join(' ') ?? ''}`}>{record?.code ? `${record.code.slice(0, 3)} ${record.code.slice(3)}` : '··· ···'}</output><p className="pairing-gate__timer">남은 시간 <b>{Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}</b></p><p className={`pairing-gate__status is-${status}`} aria-live="polite">{statusCopy(status)}</p><PrimaryButton onClick={create} disabled={status === 'issuing'}>{status === 'expired' || status === 'network_error' ? '새 코드 만들기' : record ? '새 코드 발급' : '연결 문 여는 중'}</PrimaryButton>{/* 2026-08-27: the "이 기기에서 이어하기" hand-off used to dispatch OPEN_GAME_INTRO into
+    the classroom-game-builder flow, which 대표 decided to delete entirely — that action
+    type no longer exists, so this row is just the one remaining exit now. */}
+<div className="pairing-gate__row"><SecondaryButton onClick={onBack}>결과로 돌아가기</SecondaryButton></div></div><MobileWaitingContent directions={result.directions} /></div>
   </SceneFrame>
 }
 

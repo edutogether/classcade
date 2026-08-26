@@ -42,8 +42,8 @@ export function ResultRecommendations({ state, mbti }: { state: JourneyState; mb
     const picks = RESULT_VIDEO_PICKS[mbti] ?? []
     const picked = picks.map((id) => CLASSCADE_VIDEO_CATALOG.find((video) => video.id === id && video.published)).filter((video) => video !== undefined)
     if (picked.length === 2) return picked
-    const tags = recommendationTags(result.directions, null, null, {})
-    const ranked = rankVideos(tags, null).map((entry) => entry.video).filter((video) => !picked.some((pick) => pick.id === video.id))
+    const tags = recommendationTags(result.directions)
+    const ranked = rankVideos(tags).map((entry) => entry.video).filter((video) => !picked.some((pick) => pick.id === video.id))
     return [...picked, ...ranked].slice(0, 2)
   }, [mbti, result.directions])
 

@@ -57,15 +57,7 @@ export type CareerRange = typeof CAREER_RANGE_OPTIONS[number]['value']
 export type Region = typeof REGION_OPTIONS[number]['value']
 export type GrowthPriority = typeof GROWTH_PRIORITY_OPTIONS[number]['value']
 
-export type JourneyStatus = 'new' | 'nbti_in_progress' | 'nbti_complete' | 'game_in_progress' | 'complete'
-
-export const JOURNEY_CTA: Record<JourneyStatus, { primary: string; secondary: string }> = {
-  new: { primary: '교실 NBTI 시작하기', secondary: '이전 여정 이어가기' },
-  nbti_in_progress: { primary: 'NBTI 이어하기', secondary: '처음부터 다시하기' },
-  nbti_complete: { primary: '노트북으로 이어하기', secondary: 'NBTI 결과 다시 보기' },
-  game_in_progress: { primary: '우리 반 게임 계속하기', secondary: 'NBTI 결과 다시 보기' },
-  complete: { primary: '완성 결과 보기', secondary: '공유하기' },
-}
+export type JourneyStatus = 'new' | 'nbti_in_progress' | 'nbti_complete'
 
 export function optionLabel(options: readonly Option[], value: string) {
   return options.find((option) => option.value === value)?.label ?? '선택 정보 없음'

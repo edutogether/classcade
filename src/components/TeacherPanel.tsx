@@ -30,8 +30,6 @@ const statusLabel: Record<JourneyStatus, string> = {
   new: '새 모험 준비 완료',
   nbti_in_progress: 'NBTI 여정 진행 중',
   nbti_complete: 'NBTI 여정 완료',
-  game_in_progress: '우리 반 게임 진행 중',
-  complete: '완성된 여정',
 }
 
 function confirmationCopy(action: Exclude<PendingAction, null>) {

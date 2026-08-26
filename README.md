@@ -1,18 +1,18 @@
 # CLASSCADE | 같이교육 같교오락실
 
-**같교오락실**은 교실 NBTI로 나만의 플레이 유형을 발견하고, 선택으로 캐릭터를 성장시키며, 그 결과를 이어 우리 반만의 교실 게임을 완성하는 몰입형 교육 어드벤처입니다.
+**같교오락실**은 교실 NBTI로 나만의 플레이 유형을 발견하고, 선택으로 캐릭터를 성장시키며, 그 결과에 맞는 우리 반 놀이를 추천받는 몰입형 교육 어드벤처입니다.
 
-**CLASSCADE by Edutogether** is an immersive educational adventure where participants discover their classroom play style through NBTI, grow a character through every choice, and create a game made for their own class.
+**CLASSCADE by Edutogether** is an immersive educational adventure where participants discover their classroom play style through NBTI, grow a character through every choice, and get classroom play recommendations matched to their result.
 
 ## Product scope
 
 - 교실 NBTI: 모바일·PC 지원
 - 선택에 따라 성장하는 2D 캐릭터
 - 최종 고해상도 결과 일러스트
-- 휴대전화에서 노트북으로 QR·6자리 코드 이어하기
-- 우리 반 게임 만들기
-- 결과·Story 이미지 저장 및 공유
+- 결과 유형에 맞춘 같이교육 놀이 영상 추천
 - 공식 배포 주소: `edutogether.github.io/classcade`(`edutogether.kr`은 별도 portal 저장소 소유 — 재설정 금지, `CLAUDE.md` LOCKED 참고)
+
+**(2026-08-27 정정)** 원래 계획에 있던 "우리 반 게임 만들기"(성향 기반 교실 게임 자동 생성)는 대표 결정으로 완전 삭제됐다 — 코드·데이터·아트 전부 제거, 나중에 다시 만들 수도 있지만 시기 미정. QR·6자리 코드로 노트북에 이어하는 기능(페어링)은 이 결정과 별개로 여전히 보류 중이며, 이 폴더 `CLAUDE.md`의 LOCKED 항목을 따른다.
 
 ## Visual quality contract
 

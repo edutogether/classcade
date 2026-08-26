@@ -206,7 +206,7 @@ export default function App() {
   function applyJourneyAction(action: JourneyAction) {
     const nextState = journeyReducer(journeyState, action)
     if (nextState === journeyState) {
-      if (action.type === 'NEXT_NBTI' || action.type === 'NEXT_GAME') setNotice('먼저 하나의 선택을 골라 주세요.')
+      if (action.type === 'NEXT_NBTI') setNotice('먼저 하나의 선택을 골라 주세요.')
       return
     }
     if (action.type === 'SET_AUDIO') {
@@ -232,7 +232,6 @@ export default function App() {
     }
     if (action.type === 'START_NBTI') setNotice('첫 번째 선택이 나만의 교실 플레이 기록을 만듭니다.')
     if (action.type === 'NEXT_NBTI' && nextState.stage === 'nbti_result') setNotice('체험용 교실 플레이 결과가 완성되었습니다.')
-    if (action.type === 'ADD_SHAKE' && nextState.stage === 'game_complete') setNotice('보물 상자가 열렸어요. 완성 카드를 확인해 보세요.')
   }
 
   function restartNbti() {

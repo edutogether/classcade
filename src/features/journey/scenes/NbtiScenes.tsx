@@ -11,7 +11,7 @@ import { ResultRecommendations } from '../components/ResultRecommendations'
 import { PrimaryButton, Progress, SceneFrame, SecondaryButton, type JourneySceneProps } from '../components/SceneFrame'
 import { playSceneTheme } from '../../../lib/audioManager'
 
-const journeyItems = [{ icon: 'clock' as const, title: '약 1분', detail: '간단한 여정' }, { icon: 'spark' as const, title: '캐릭터 성장', detail: '선택이 힘이 돼요' }, { icon: 'gamepad' as const, title: '우리 반 게임', detail: '까지 연결돼요' }]
+const journeyItems = [{ icon: 'clock' as const, title: '약 1분', detail: '간단한 여정' }, { icon: 'spark' as const, title: '캐릭터 성장', detail: '선택이 힘이 돼요' }, { icon: 'gamepad' as const, title: '놀이 추천', detail: '결과와 함께 받아요' }]
 const directionLabels: Record<NbtiDirection, string> = { design: '설계', response: '반응', whole: '전체', individual: '개별', criteria: '기준', empathy: '공감', completion: '완성', expansion: '확장' }
 const directionEmoji: Record<NbtiDirection, string> = { design: '📐', response: '⚡', whole: '🤝', individual: '🌱', criteria: '📏', empathy: '💗', completion: '🧩', expansion: '🌈' }
 
