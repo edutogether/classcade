@@ -36,5 +36,9 @@ export default defineConfig(({ mode }) => {
         interval: 300,
       },
     },
+    test: {
+      environment: 'jsdom',
+      setupFiles: ['./src/testSetup.ts'],
+    },
   }
 })
