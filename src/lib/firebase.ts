@@ -1,6 +1,11 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from 'firebase/app'
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check'
 import { connectAuthEmulator, getAuth, signInAnonymously, type Auth, type User } from 'firebase/auth'
 import { connectFirestoreEmulator, getFirestore, type Firestore } from 'firebase/firestore'
+
+/** Public reCAPTCHA v3 site key for Firebase App Check — this is the client-facing site
+ *  key, not a secret (verification happens server-side against Google); safe to ship. */
+const RECAPTCHA_V3_SITE_KEY = '6Lfb4ZktAAAAACTEbTimAcHUxkGGbLIaBDlaVvoT'
 
 type FirebaseRuntime = { app: FirebaseApp; auth: Auth; db: Firestore }
 
@@ -18,8 +23,14 @@ function config() {
 export function firebaseRuntime(): FirebaseRuntime {
   if (runtime) return runtime
   const app = getApps().length ? getApp() : initializeApp(config())
+  const useEmulator = import.meta.env.VITE_FIREBASE_USE_EMULATOR === 'true'
+  /** reCAPTCHA v3 can't verify against the emulator or a local dev origin, so App Check
+   *  is only wired up for the deployed production build. */
+  if (!useEmulator && import.meta.env.PROD) {
+    initializeAppCheck(app, { provider: new ReCaptchaV3Provider(RECAPTCHA_V3_SITE_KEY), isTokenAutoRefreshEnabled: true })
+  }
   const auth = getAuth(app); const db = getFirestore(app)
-  if (import.meta.env.VITE_FIREBASE_USE_EMULATOR === 'true') {
+  if (useEmulator) {
     const host = import.meta.env.VITE_FIREBASE_EMULATOR_HOST || '127.0.0.1'
     const authPort = Number(import.meta.env.VITE_FIREBASE_AUTH_EMULATOR_PORT || 9099)
     const firestorePort = Number(import.meta.env.VITE_FIREBASE_FIRESTORE_EMULATOR_PORT || 8081)
