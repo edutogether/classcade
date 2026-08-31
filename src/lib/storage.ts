@@ -9,6 +9,7 @@ import {
   type Region,
   type SchoolLevel,
 } from '../data/adventure'
+import { reportError } from './errorReporting'
 
 export const PROFILE_STORAGE_KEY = 'classcade.profile.v1'
 export const JOURNEY_STORAGE_KEY = 'classcade.journey.v1'
@@ -18,7 +19,6 @@ export const PAIRING_ISSUED_CODE_STORAGE_KEY = 'classcade.pairing-issued-code.v1
 export const PREP_DRAFT_STORAGE_KEY = 'classcade.prep-draft.v1'
 
 const NBTI_PROGRESS_STORAGE_KEY = 'classcade.nbti.v1'
-const GAME_PROGRESS_STORAGE_KEY = 'classcade.game.v1'
 
 export type DeviceMode = 'personal' | 'shared'
 export type DeviceRole = 'mobile-participant' | 'laptop-station'
@@ -66,7 +66,7 @@ export type StorageResult<T> =
   | { ok: false; value: T; reason: 'unavailable' | 'read_failed' | 'write_failed' }
 
 const journeyStatuses: JourneyStatus[] = ['new', 'nbti_in_progress', 'nbti_complete']
-const sessionKeys = [PROFILE_STORAGE_KEY, JOURNEY_STORAGE_KEY, JOURNEY_STATE_STORAGE_KEY, ANONYMOUS_JOURNEY_ID_STORAGE_KEY, NBTI_PROGRESS_STORAGE_KEY, GAME_PROGRESS_STORAGE_KEY, PAIRING_ISSUED_CODE_STORAGE_KEY, PREP_DRAFT_STORAGE_KEY]
+const sessionKeys = [PROFILE_STORAGE_KEY, JOURNEY_STORAGE_KEY, JOURNEY_STATE_STORAGE_KEY, ANONYMOUS_JOURNEY_ID_STORAGE_KEY, NBTI_PROGRESS_STORAGE_KEY, PAIRING_ISSUED_CODE_STORAGE_KEY, PREP_DRAFT_STORAGE_KEY]
 const hasValue = <T extends string>(options: readonly { value: T }[], value: unknown): value is T =>
   typeof value === 'string' && options.some((option) => option.value === value)
 
@@ -139,7 +139,8 @@ function read(backend: StorageBackend | null, key: string): StorageResult<string
   if (!backend) return { ok: false, value: null, reason: 'unavailable' }
   try {
     return { ok: true, value: backend.getItem(key) }
-  } catch {
+  } catch (error) {
+    reportError(error)
     return { ok: false, value: null, reason: 'read_failed' }
   }
 }
@@ -149,7 +150,8 @@ function write(backend: StorageBackend | null, key: string, value: string): Stor
   try {
     backend.setItem(key, value)
     return { ok: true, value: undefined }
-  } catch {
+  } catch (error) {
+    reportError(error)
     return { ok: false, value: undefined, reason: 'write_failed' }
   }
 }
@@ -159,7 +161,8 @@ function remove(backend: StorageBackend | null, key: string): StorageResult<unde
   try {
     backend.removeItem(key)
     return { ok: true, value: undefined }
-  } catch {
+  } catch (error) {
+    reportError(error)
     return { ok: false, value: undefined, reason: 'write_failed' }
   }
 }
@@ -333,10 +336,10 @@ export function hasActiveSession(deviceMode: DeviceMode = resolveDeviceMode(), o
   return { ok: true, value: profile.value !== null && journey.value.status !== 'new' }
 }
 
-/** Clears future NBTI result/answer data and game progress while retaining basic profile data. */
+/** Clears future NBTI result/answer data while retaining basic profile data. */
 export function clearNbtiAndProgress(deviceMode: DeviceMode = resolveDeviceMode(), options?: StorageOptions): StorageResult<undefined> {
   const backend = getStorageBackend(deviceMode, options)
-  for (const key of [NBTI_PROGRESS_STORAGE_KEY, GAME_PROGRESS_STORAGE_KEY, JOURNEY_STATE_STORAGE_KEY]) {
+  for (const key of [NBTI_PROGRESS_STORAGE_KEY, JOURNEY_STATE_STORAGE_KEY]) {
     const result = remove(backend, key)
     if (!result.ok) return result
   }

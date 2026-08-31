@@ -31,7 +31,6 @@ type SceneFrameProps = SceneContext & {
   children: ReactNode
   compact?: boolean
   artSrc?: string
-  canonicalGame?: boolean
 }
 
 /* Header shows whichever track this scene is actually playing. */
@@ -115,9 +114,9 @@ function ScenePill({ notice }: { notice: string }) {
   return <p className={`journey-notice ${leaving ? 'is-leaving' : ''}`} aria-live="polite">{shown}</p>
 }
 
-export function SceneFrame({ scene, children, state, onAction, onTeacherOpen, teacherTriggerRef, notice, profile, compact = false, artSrc, canonicalGame = false }: SceneFrameProps) {
+export function SceneFrame({ scene, children, state, onAction, onTeacherOpen, teacherTriggerRef, notice, profile, compact = false, artSrc }: SceneFrameProps) {
   return (
-    <main className={`journey-scene journey-scene--${scene}${canonicalGame ? ' journey-scene--canonical-game' : ''}${compact ? ' is-compact' : ''}`}>
+    <main className={`journey-scene journey-scene--${scene}${compact ? ' is-compact' : ''}`}>
       <SceneArt asset={JOURNEY_SCENE_ASSETS[scene]} artSrc={artSrc} />
       <JourneyHeader state={state} onAction={onAction} onTeacherOpen={onTeacherOpen} teacherTriggerRef={teacherTriggerRef} profile={profile} scene={scene} />
       <section className="journey-scene__stage">{children}</section>

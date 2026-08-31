@@ -9,6 +9,8 @@ export function initErrorReporting() {
   if (!dsn || !import.meta.env.PROD) return
   Sentry.init({
     dsn,
+    environment: import.meta.env.MODE,
+    release: import.meta.env.VITE_BUILD_SHA,
     sendDefaultPii: false,
     tracesSampleRate: 0,
     replaysSessionSampleRate: 0,
