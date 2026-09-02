@@ -51,7 +51,12 @@ function entryFor(theme: SceneTheme): Entry | null {
     const audio = document.createElement('audio')
     audio.src = SCENE_THEMES[theme].src
     audio.loop = true
-    audio.preload = 'auto'
+    /* Not 'auto': each theme element is created once and kept alive for the rest of the
+       tab's life (see the players Map), even for tracks a given visitor's path never
+       reaches — 'auto' would eagerly fetch all four tracks (~8.9MB combined) regardless
+       of how far a visitor gets. play() below still fetches the full track the moment
+       it's actually needed; 'metadata' only skips the unconditional upfront download. */
+    audio.preload = 'metadata'
     audio.volume = 0
     /* Attached (invisibly) so devtools and tests can observe playback state. */
     audio.dataset.sceneTheme = theme

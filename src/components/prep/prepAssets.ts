@@ -172,6 +172,4 @@ export const PREP_TWO_CARD_ART: Record<CareerRange, { neutral?: string; selected
    All four states share one 2058x764 canvas with a transparent background. */
 import resultCtaEnabled from '../../assets/classcade/prep-nav/result-cta-enabled.webp'
 import resultCtaDisabled from '../../assets/classcade/prep-nav/result-cta-disabled.webp'
-import resultCtaHover from '../../assets/classcade/prep-nav/result-cta-hover.webp'
-import resultCtaActive from '../../assets/classcade/prep-nav/result-cta-active.webp'
-export { resultCtaEnabled, resultCtaDisabled, resultCtaHover, resultCtaActive }
+export { resultCtaEnabled, resultCtaDisabled }

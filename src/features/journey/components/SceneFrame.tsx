@@ -11,7 +11,7 @@ import type { JourneyAction, JourneyState } from '../journeyState'
 import type { Profile } from '../../../lib/storage'
 import './JourneyControls.css'
 
-export type SceneName = 'start' | 'question' | 'result' | 'game' | 'complete'
+export type SceneName = 'start' | 'question' | 'result'
 
 type SceneContext = {
   state: JourneyState
@@ -38,8 +38,6 @@ const SCENE_BGM_TITLE: Record<SceneName, string> = {
   start: SCENE_THEMES.main.title,
   question: SCENE_THEMES.question.title,
   result: SCENE_THEMES.result.title,
-  game: SCENE_THEMES.question.title,
-  complete: SCENE_THEMES.main.title,
 }
 
 function JourneyHeader({ state, onAction, onTeacherOpen, teacherTriggerRef, profile, scene }: Omit<SceneContext, 'notice'> & { scene: SceneName }) {

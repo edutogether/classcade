@@ -5,6 +5,7 @@ dist
 .DS_Store
 *-debug.log
 *.log
-.env
+.env*
 .cache
 _mobile-audit/
+.claude/settings.local.json
