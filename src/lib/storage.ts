@@ -135,7 +135,7 @@ export function getStorageBackend(deviceMode: DeviceMode, options: StorageOption
   }
 }
 
-function read(backend: StorageBackend | null, key: string): StorageResult<string | null> {
+export function read(backend: StorageBackend | null, key: string): StorageResult<string | null> {
   if (!backend) return { ok: false, value: null, reason: 'unavailable' }
   try {
     return { ok: true, value: backend.getItem(key) }
@@ -145,7 +145,7 @@ function read(backend: StorageBackend | null, key: string): StorageResult<string
   }
 }
 
-function write(backend: StorageBackend | null, key: string, value: string): StorageResult<undefined> {
+export function write(backend: StorageBackend | null, key: string, value: string): StorageResult<undefined> {
   if (!backend) return { ok: false, value: undefined, reason: 'unavailable' }
   try {
     backend.setItem(key, value)
@@ -156,7 +156,7 @@ function write(backend: StorageBackend | null, key: string, value: string): Stor
   }
 }
 
-function remove(backend: StorageBackend | null, key: string): StorageResult<undefined> {
+export function remove(backend: StorageBackend | null, key: string): StorageResult<undefined> {
   if (!backend) return { ok: false, value: undefined, reason: 'unavailable' }
   try {
     backend.removeItem(key)

@@ -4,8 +4,8 @@ import { SharedSessionGate } from './components/SharedSessionGate'
 import { TeacherPanel } from './components/TeacherPanel'
 import { ChunkErrorBoundary } from './components/ChunkErrorBoundary'
 
-/** Deferred: the NBTI + game-builder flow is the heavier half of the bundle and isn't
- *  needed until the prep screens finish, so most first loads skip downloading it. */
+/** Deferred: the NBTI flow is the heavier half of the bundle and isn't needed until
+ *  the prep screens finish, so most first loads skip downloading it. */
 const JourneyApp = lazy(() => import('./features/journey/JourneyApp').then((module) => ({ default: module.JourneyApp })))
 import { loadJourneyState, saveJourneyState } from './features/journey/journeyPersistence'
 import { createJourneyState, journeyReducer, journeyStatusForStage, type JourneyAction, type JourneyState } from './features/journey/journeyState'
@@ -14,7 +14,6 @@ import { resolveEntryState } from './lib/entryState'
 import { EntryVisualTuner } from './features/entry/EntryVisualTuner'
 import type { PairingPayload } from './features/pairing/pairingContract'
 import { restorePairingJourney } from './features/pairing/pairingContract'
-import { revokeActivePairingCode } from './features/pairing/activePairingCode'
 import { applyTuning, createTuning, type TunerScreen } from './features/entry/visualTuning'
 import {
   clearActiveSession,
@@ -280,6 +279,10 @@ export default function App() {
   }
 
   async function resetMobileRoundOne() {
+    /* Dynamically imported: activePairingCode pulls in the Firestore pairing store (and
+       the whole Firebase SDK chain), which must not weigh down the first-load bundle for
+       visitors who never reach a paired mobile round. */
+    const { revokeActivePairingCode } = await import('./features/pairing/activePairingCode')
     const revocation = await revokeActivePairingCode()
     if (revocation === 'network_error') { setNotice('현재 연결 코드를 안전하게 폐기하지 못했어요. 네트워크를 확인한 뒤 다시 시도해 주세요.'); return }
     applyJourneyAction({ type: 'RESET_NBTI' })

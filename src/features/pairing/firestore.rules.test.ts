@@ -15,8 +15,19 @@ beforeAll(async () => { environment = await initializeTestEnvironment({ projectI
 afterEach(async () => { await environment.clearFirestore() })
 afterAll(async () => { await environment.cleanup() })
 
-const describeRules = process.env.FIRESTORE_EMULATOR_HOST ? describe : describe.skip
-describeRules('pairingSessions Firestore rules', () => {
+const emulatorReady = !!process.env.FIRESTORE_EMULATOR_HOST
+// `npm run rules:test` targets only this file inside `firebase emulators:exec`; if that ever
+// fails to actually start the emulator, npm_lifecycle_event still reads 'rules:test' but
+// FIRESTORE_EMULATOR_HOST is unset — fail loudly instead of silently reporting 0 assertions.
+const requiredButMissing = !emulatorReady && process.env.npm_lifecycle_event === 'rules:test'
+const describeRules = emulatorReady ? describe : requiredButMissing ? describe : describe.skip
+describeRules(requiredButMissing ? 'pairingSessions Firestore rules (emulator required)' : 'pairingSessions Firestore rules', () => {
+  if (requiredButMissing) {
+    it('requires FIRESTORE_EMULATOR_HOST to be set by firebase emulators:exec', () => {
+      throw new Error('rules:test ran without a live Firestore emulator (FIRESTORE_EMULATOR_HOST unset) — the rules tests did not actually execute.')
+    })
+    return
+  }
   it('denies unauthenticated creation and permits a valid anonymous creation', async () => {
     await assertFails(setDoc(doc(environment.unauthenticatedContext().firestore(), 'pairingSessions', '123456'), session('123456')))
     await assertSucceeds(setDoc(ref(anonymous('mobile'), '123456'), session('123456')))
@@ -26,6 +37,11 @@ describeRules('pairingSessions Firestore rules', () => {
     await assertFails(setDoc(ref(anonymous('mobile'), '123456'), { ...session('123456'), email: 'blocked@example.test' }))
     await assertFails(setDoc(ref(anonymous('mobile'), '123457'), { ...session('123457'), payload: { ...session('123457').payload, profile: { ...session('123457').payload.profile, schoolName: 'blocked' } } }))
     await assertFails(setDoc(ref(anonymous('mobile'), '123458'), session('123458', Date.now() + 6 * 60_000)))
+  })
+  it('denies oversized string and map fields', async () => {
+    const oversized = session('123459')
+    await assertFails(setDoc(ref(anonymous('mobile'), '123459'), { ...oversized, payload: { ...oversized.payload, journeyId: 'x'.repeat(101) } }))
+    await assertFails(setDoc(ref(anonymous('mobile'), '123459'), { ...oversized, payload: { ...oversized.payload, profile: { ...oversized.payload.profile, growthPriorityOther: 'x'.repeat(31) } } }))
   })
   it('allows exactly one unchanged payload consumption and blocks listing, mutation, and reuse', async () => {
     await assertSucceeds(setDoc(ref(anonymous('mobile'), '123456'), session('123456')))

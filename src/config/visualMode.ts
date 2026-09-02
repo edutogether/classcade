@@ -23,9 +23,7 @@
  * artwork is finished, not toggled ad hoc from a URL.
  */
 
-export type VisualScreen =
-  | 'prep1' | 'prep2' | 'prep3' | 'prep4' | 'nickname'
-  | 'gameConditions' | 'gameCandidates' | 'gameComplete'
+export type VisualScreen = 'prep1' | 'prep2' | 'prep3' | 'prep4' | 'nickname'
 
 export type VisualMode = 'flat' | 'art'
 
@@ -36,9 +34,6 @@ const DEFAULTS: Record<VisualScreen, VisualMode> = {
   prep3: 'flat',
   prep4: 'flat',
   nickname: 'flat',
-  gameConditions: 'flat',
-  gameCandidates: 'flat',
-  gameComplete: 'flat',
 }
 
 const STORAGE_KEY = 'classcade.visual-mode.v1'
