@@ -23,6 +23,17 @@
 - **2026-08-17 감사 후 수정 — 완료**: 배포 워크플로우가 Firebase 환경변수 4개(API_KEY/AUTH_DOMAIN/PROJECT_ID/APP_ID)를 전혀 주입하지 않아 프로덕션에서 페어링 기능이 항상 실패하던 치명적 버그 발견·수정. `.github/workflows/deploy-pages.yml`에 `secrets.*` 참조 추가 + 사용자가 GitHub Actions secret 4개 실제 등록 완료 + 재배포 후 `?pairing=1`에서 실제 코드 조회(`"코드를 찾지 못했어요"` — invalid 상태, network_error 아님)로 Firestore 연결 살아있음을 직접 확인함. Firestore 규칙 테스트(`it` 5개, assertion 21개 — 2026-08-26 재감사에서 정확한 개수로 정정)도 CI에서 한 번도 실행된 적 없었던 것을 발견해 `rules:test` 스텝(JDK21 + firebase-tools 에뮬레이터)으로 연결, CI 통과 확인함. 저장소의 `firestore.rules`와 실제 라이브 프로젝트(`classcade-together`)의 배포된 규칙도 Firebase Rules API로 직접 대조해 **완전히 일치** 확인함(CRLF/LF 줄바꿈 차이만 있고 내용은 동일).
 - **2026-08-21~25 — 모바일 프렙(모험 준비) 화면 전면 재작업(40여개 커밋)**: 대표가 직접 픽셀 단위로 모바일 1~5단계 화면을 반복 다듬음. 굵직한 변화만 요약하면 — 1~5단계 카드·제목·질문 폰트 크기와 여백을 서로 완전히 통일(단계 전환 시 프레임 크기가 흔들리던 문제 제거), 이전/다음 버튼 높이를 전 단계 공통 31.5px로 고정, 진행도 배지 숫자를 tabular-nums로 폭 고정, 모바일 전용 배경 이미지 신규 적용(밝기/구도 여러 차례 교정), 로딩 화면에 모바일 전용 세로 비율 아트 추가, BGM 볼륨 슬라이더를 모바일에서는 단순 on/off 토글로 단순화(PC는 슬라이더 유지), 메인 화면 워드마크가 안 움직이던 진짜 원인(이미지 자체의 투명 여백)을 찾아 수정, 4단계 "기타 직접 입력" 카드를 클릭 즉시 그 자리에서 입력하는 방식으로 교체. 배포 워크플로우에 `edutogether.kr` 도메인 재claim 방어 가드도 이 기간에 추가됨(`f27cd7e`).
 
+## 운영 콘솔 설정 (코드로 확인 불가 — 대표가 직접 설정한 값의 기록)
+
+감사 세션은 이 값들을 코드로 검증할 수 없다. 아래는 대표가 콘솔에서 직접 설정하고 확인해준 실제 상태이므로, 감사 시 "확인 불가"로 남기지 말고 이 기록을 근거로 삼는다(값이 바뀌면 대표가 알려줄 때 여기를 갱신한다).
+
+- **GCP 예산 알림 (2026-09-07 설정 완료)**: `classcade-budget-alert`, 프로젝트 `classcade-together`, 월 ₩25,000, 임계값 50%/90%/100%, 이메일 알림 켜짐. **Alerts only — spend cap enforcement가 아니다**: 한도를 넘어도 서비스가 자동으로 멈추지는 않고 메일만 온다.
+- **App Check enforcement (2026-09-07 전환 완료)**: Cloud Firestore를 Monitoring → **Enforced**. 전환 직전 검증된 요청 100%/미검증 0%를 확인한 뒤 진행했고, 전환 후 라이브(`?pairing=1`)에서 여섯 자리 코드를 실제 제출해 Firestore 조회가 정상 통과하는 것("코드를 찾지 못했어요" = 정상 invalid 응답, 네트워크·권한 오류 아님)과 콘솔 에러 0건을 확인함.
+- **App Check — Authentication(PREVIEW)은 Monitoring 유지**: 아직 정식 기능이 아니고, 잘못 걸리면 로그인이 전면 차단되는 위험이 Firestore보다 크다는 판단. 정식 출시되면 그때 재검토한다.
+- **미완료 — Sentry DSN 등록**: Sentry 프로젝트 생성 + GitHub Actions secret `VITE_SENTRY_DSN` 등록이 남아 있다. 그전까지 `src/lib/errorReporting.ts`의 `initErrorReporting()`은 의도대로 비활성 상태이고 `reportError()` 호출은 전부 no-op이다(배포 번들 실측으로 확인됨).
+
+**⚠️ App Check Enforced와 `index.html`의 CSP는 이제 서로 묶여 있다.** Enforced 상태에서는 App Check 토큰이 없으면 Firestore가 요청을 아예 거부한다. 그 토큰은 reCAPTCHA v3 스크립트(`www.google.com`/`www.gstatic.com`)를 받아와야 발급되므로, CSP의 `script-src`/`frame-src`에서 이 두 도메인을 빼면 페어링이 경고 수준이 아니라 **완전히 막힌다**. CSP를 조이는 변경을 할 때는 반드시 라이브 `?pairing=1`에서 여섯 자리 코드 제출까지 실제로 확인할 것(현재 조합은 2026-09-07에 검증 완료).
+
 ## ✅ 2026-08-27 — 게임빌더 서브시스템 완전 삭제 (완료, 대표 결정)
 
 2026-08-25 발견된 문제("코드발급 미호출로 페어링 구조적 도달 불가능")를 다시 들여다보니, `disconnectedScenes()`에 갇혀 있던 게 페어링(코드발급 UI) 하나가 아니라 그 뒤에 이어지는 **교실 게임 만들기 전체(9/12 스테이지 — game_intro~sharing)** 였다는 게 2026-08-26 재감사에서 드러났다. 대표는 이 둘을 분리해서 결정했다:
