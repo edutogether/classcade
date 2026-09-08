@@ -3,7 +3,7 @@ import { noteAudioUserGesture } from '../../lib/audioManager'
 import { Icon, type IconName } from '../VisualPrimitives'
 import { choiceFrameNeutral, choiceFrameSelected } from './prepAssets'
 
-export function ChoiceCards<T extends string>({ options, value, onChange, onPreviewChange, previewValue, icons, tunePrefix, compact = false }: {
+export function ChoiceCards<T extends string>({ options, value, onChange, onPreviewChange, previewValue, icons, tunePrefix, ariaLabel, compact = false }: {
   options: readonly { value: T; label: string }[]
   value: T | null
   onChange: (value: T) => void
@@ -11,10 +11,11 @@ export function ChoiceCards<T extends string>({ options, value, onChange, onPrev
   previewValue?: T | null
   icons: readonly IconName[]
   tunePrefix: string
+  ariaLabel: string
   compact?: boolean
 }) {
   return (
-    <div className={`entry-choice-grid ${compact ? 'entry-choice-grid--compact' : ''}`} role="radiogroup">
+    <div className={`entry-choice-grid ${compact ? 'entry-choice-grid--compact' : ''}`} role="radiogroup" aria-label={ariaLabel}>
       {options.map((option, index) => {
         const selected = value === option.value
         const previewed = previewValue === option.value

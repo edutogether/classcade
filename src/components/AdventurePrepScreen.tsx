@@ -466,7 +466,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
             <p className={`entry-prep__next-cue ${region ? 'is-visible' : ''}`} role="status" aria-hidden={!region}>지역을 선택했어요 · 아래의 다음 질문 버튼으로 이어가요 ↓</p>
             <PrepFlatCards options={REGION_OPTIONS} value={region} onChange={setRegion} tunePrefix="prep-3" ariaLabel="지역" columns={9} compact />
           </div>
-          : <ChoiceCards options={REGION_OPTIONS} value={region} onChange={setRegion} icons={['region']} tunePrefix="prep-3" compact />)}
+          : <ChoiceCards options={REGION_OPTIONS} value={region} onChange={setRegion} icons={['region']} tunePrefix="prep-3" ariaLabel="지역" compact />)}
         {step === 4 && <div className="entry-growth-grid" role="group" aria-label="교실 성장 우선순위">
           {GROWTH_PRIORITY_OPTIONS.map((option, index) => {
             const selected = growthPriorities.includes(option.value)

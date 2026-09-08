@@ -41,7 +41,10 @@ export function ArtLoadingScreen({ progress, title, subtitle, className = '', ch
 }) {
   const mainRef = useRef<HTMLElement>(null)
   const [geo, setGeo] = useState<Geometry | null>(null)
-  const [isMobile, setIsMobile] = useState(false)
+  /* Seeded from the real viewport rather than defaulting to false: the <img> below commits
+     on the first render, so a false default made phones request the desktop master
+     (175KB) before the layout effect corrected it to the mobile one. */
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 700)
   useLayoutEffect(() => {
     const measure = () => {
       const el = mainRef.current

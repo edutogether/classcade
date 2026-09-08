@@ -3,9 +3,11 @@ import { createRoot } from 'react-dom/client'
 import App from './App'
 import { ChunkErrorBoundary } from './components/ChunkErrorBoundary'
 import { initErrorReporting, reportError } from './lib/errorReporting'
+import { watchBackgroundFavicon } from './lib/backgroundFavicon'
 import './index.css'
 
 initErrorReporting()
+watchBackgroundFavicon()
 
 window.addEventListener('unhandledrejection', (event) => reportError(event.reason))
 
