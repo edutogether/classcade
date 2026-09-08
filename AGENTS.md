@@ -30,6 +30,7 @@ Story 공유")는 지금 존재하지 않는다. 게임 만들기 서브시스�
 | 로컬 실행 | `npm run dev` |
 | 빌드 | `npm run build` |
 | Firestore 규칙 테스트 | `npm run rules:test` (JDK 21 필요) |
+| 자산 계측(배경 낭비·처리방침 도달성) | `npm run measure:assets <URL>` — 배경 이미지나 CSS 미디어쿼리를 건드렸을 때 돌린다. Playwright가 의존성에 없어 최초 1회 별도 설치가 필요하며, 스크립트 맨 위 주석에 실행 방법과 정상값이 적혀 있다. |
 
 **배포**: `main`에 push하면 `.github/workflows/deploy-pages.yml`이 GitHub Pages로 자동 배포한다(`edutogether.github.io/classcade`). 별도 배포 명령은 없다.
 

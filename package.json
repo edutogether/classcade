@@ -10,7 +10,8 @@
     "test": "vitest run && tsc -b --noEmit",
     "preview": "vite preview",
     "entry:tune:apply": "node scripts/apply-entry-tuning.mjs",
-    "rules:test": "firebase emulators:exec --only firestore \"vitest run src/features/pairing/firestore.rules.test.ts\""
+    "rules:test": "firebase emulators:exec --only firestore \"vitest run src/features/pairing/firestore.rules.test.ts\"",
+    "measure:assets": "node scripts/measure-assets.mjs"
   },
   "dependencies": {
     "@sentry/react": "^10.71.0",

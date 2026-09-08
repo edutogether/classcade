@@ -162,4 +162,19 @@ describe('AdventurePrepScreen golden path (flat rendering, the shipped default)'
     renderScreen({ isOffline: true })
     expect(screen.getByRole('status')).toHaveTextContent('오프라인 상태예요')
   })
+
+  /* Regression guard for a measured defect: the desktop and mobile backdrops used to be
+     two <img> elements toggled with display:none, and a hidden <img> is still fetched —
+     every visitor downloaded 482,836 B and threw half of it away (measured 2026-09-08).
+     <picture> makes the browser fetch only the matching source. jsdom can't measure bytes,
+     but it can hold the structure that produces them: exactly one backdrop <img>, with the
+     phone variant offered through a <source media> instead of a second element. */
+  it('offers the phone backdrop via <picture>, not a second always-fetched <img>', () => {
+    const { container } = renderScreen()
+
+    expect(container.querySelectorAll('img.entry-prep__world')).toHaveLength(1)
+    const source = container.querySelector('picture > source')
+    expect(source).toHaveAttribute('media', '(max-width: 700px)')
+    expect(source?.getAttribute('srcset')).toBeTruthy()
+  })
 })

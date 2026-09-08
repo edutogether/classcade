@@ -53,6 +53,19 @@ describe('App boot behavior', () => {
     await waitFor(() => expect(document.querySelector('.journey-header')).toBeInTheDocument())
   })
 
+  /* Regression guard for a measured compliance gap: the privacy policy used to be linked
+     only from prep step 5, which a ?type= QR visitor never passes through — they land
+     straight on the result screen, so the policy was unreachable for them (measured
+     2026-09-08: 0 links on that entry). */
+  it('keeps the privacy policy reachable for a ?type= visitor who never sees the prep flow', async () => {
+    window.history.pushState({}, '', '/?type=ESTJ')
+
+    render(<App />)
+
+    const link = await screen.findByRole('link', { name: /개인정보 처리방침/ })
+    expect(link).toHaveAttribute('href', expect.stringContaining('privacy.html'))
+  })
+
   it('discards a malformed stored journey state instead of crashing', () => {
     window.sessionStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(validProfile()))
     window.sessionStorage.setItem(JOURNEY_STATE_STORAGE_KEY, '{not valid json')
