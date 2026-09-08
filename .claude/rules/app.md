@@ -27,11 +27,14 @@
   - `src/features/pairing/activePairingCode.ts`, `src/features/journey/JourneyApp.tsx:27-29` — `lib/storage.ts` 어댑터를 우회해 `localStorage`를 직접 만진다. 특히 페어링 게이트 키는 "전체 여정 초기화"를 살아남는다.
   - `src/features/pairing/PairingScreens.tsx:19` — 썸네일 `<img>`에 `referrerPolicy="no-referrer"`가 빠져 결과 화면과 불일치한다.
   - Firestore 콘솔 — `pairingSessions.expiresAt`에 TTL 정책이 없어 만료 문서가 계속 쌓인다.
+  - `?pairing=1`(`PairingEntryScene`) 진입자는 개인정보 처리방침에 도달할 방법이 없다. 프렙 5단계와 결과 화면에는 링크가 있지만 이 진입 경로는 둘 다 거치지 않는다(2026-09-08 Playwright 실측: 링크 0개). 이 화면이 동결 대상이라 그때 함께 처리한다.
 
 - **`index.html`의 CSP에서 아래를 빼지 않는다.** 각각을 빼면 조용히 기능이 죽는다(에러가 눈에 띄지 않는다):
   - `script-src`/`frame-src`의 `https://www.google.com`, `https://www.gstatic.com` — App Check의 reCAPTCHA v3 스크립트가 여기서 온다. **Firestore App Check가 Enforced로 전환된 뒤(2026-09-07)로는 토큰이 없으면 Firestore가 요청을 거부하므로, 이걸 빼면 페어링이 경고가 아니라 완전히 차단된다.**
   - `connect-src`의 `https://*.ingest.us.sentry.io` — Sentry 전송 대상이다. 실제로 2026-09-08에 이게 빠진 채 배포되어 모니터링이 전량 차단된 적이 있다.
   - CSP를 조이는 변경을 할 때는 반드시 라이브에서 `?pairing=1`에 여섯 자리 코드를 넣어 제출까지 해보고(정상이면 "코드를 찾지 못했어요"), 콘솔에 CSP 위반이 없는지 확인한다.
+
+- **`prep-03-map-master.webp`를 "중복 파일"이라는 이유로 지우지 않는다.** 이 파일은 `prep-world-backdrop-16x9-v2.webp`와 SHA-256이 같지만 중복이 아니라 **의도된 자리표시자**다 — 3단계 아트모드의 지역 지도 원화가 아직 없어서 배경 이미지를 임시로 같은 경로에 놓아둔 것이고, 그 취지가 `src/components/prep/prepAssets.ts`의 import 주석에 적혀 있다("swap the real drawing in at this exact path, no code change needed"). 해시 기준으로 중복 자산을 훑는 정리 작업이 이걸 지우면 진짜 원화가 들어올 자리가 사라지고 3단계 아트모드 렌더가 깨진다. 빌드 시 Vite가 두 참조를 한 파일로 합치므로 방문자가 받는 바이트는 애초에 늘지 않는다.
 
 - **PC/모바일 화면의 시각 디자인(배치·색·간격·아트)을 임의로 바꾸지 않는다.** Bumm님이 직접 픽셀 단위로 다듬는 영역이다. 동작 버그와 접근성 결함은 정상적으로 고친다.
 
