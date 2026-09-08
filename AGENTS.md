@@ -17,6 +17,29 @@ Story 공유")는 지금 존재하지 않는다. 게임 만들기 서브시스�
 결정과 별개로 여전히 보류 중이며, 이 저장소 `CLAUDE.md`의 LOCKED 항목이 그 상태를 관리한다.
 지금 여정은 4번(결과 확인 + 놀이 추천)에서 끝난다.
 
+## Working on this repo — read this first (2026-09-08 추가)
+
+이 저장소는 클로드 외의 도구(Codex 등)로도 작업한다. 도구와 무관하게 아래는 그대로 적용된다.
+
+**명령**
+
+| 목적 | 명령 |
+|---|---|
+| 테스트 | `npm run test` (vitest + `tsc -b --noEmit`) |
+| 린트 | `npm run lint` |
+| 로컬 실행 | `npm run dev` |
+| 빌드 | `npm run build` |
+| Firestore 규칙 테스트 | `npm run rules:test` (JDK 21 필요) |
+
+**배포**: `main`에 push하면 `.github/workflows/deploy-pages.yml`이 GitHub Pages로 자동 배포한다(`edutogether.github.io/classcade`). 별도 배포 명령은 없다.
+
+**절대 하면 안 되는 것** — 자세한 근거는 `.claude/rules/app.md`, 최신 상태는 `CLAUDE.md`.
+
+1. **`edutogether.kr` 커스텀 도메인을 이 저장소에 설정하지 않는다.** 2026-08-13에 `edutogether/portal`로 이전됐다. CNAME 파일이 들어가면 포털이 즉시 깨진다(워크플로에 방어 가드 있음, 가드 삭제도 금지).
+2. **페어링 서브시스템(`src/features/pairing/`)은 보류(아카이브)된 기능이다.** 도달 불가한 것은 버그가 아니라 확정된 결정이다 — 결함으로 보고하거나 삭제를 제안하지 않는다.
+3. **`index.html`의 CSP에서 `www.google.com`/`www.gstatic.com`(script-src·frame-src)과 `*.ingest.us.sentry.io`(connect-src)를 빼지 않는다.** 앞의 것을 빼면 App Check 토큰 발급이 막혀 페어링이 완전히 차단되고(Firestore가 Enforced), 뒤의 것을 빼면 오류 모니터링이 조용히 죽는다. 둘 다 실제로 발생했던 사고다.
+4. **PC/모바일 화면의 시각 디자인(배치·색·간격·아트)은 임의로 바꾸지 않는다.** 소유자가 직접 다듬는 영역이다. 동작 버그와 접근성 결함은 정상적으로 고친다.
+
 ## Visual source of truth
 
 The user-approved start, question, and result mockups are **minimum implementation quality**, not mood references.
@@ -89,7 +112,7 @@ For the first vertical slice, the order is:
 2. Main question and growing 2D character
 3. Result reveal
 
-No backend, Firebase, QR pairing, Story sharing, or full classroom-game flow may be implemented before the visual vertical slice is approved, unless the user explicitly changes this order.
+~~No backend, Firebase, QR pairing, Story sharing, or full classroom-game flow may be implemented before the visual vertical slice is approved~~ — **(2026-09-08 정정)** 이 순서 제약은 개발 극초반 계획이고 이미 지나갔다. 시각 슬라이스는 승인됐고 Firebase는 구현되어 라이브다. 현재 상태를 현재 규칙으로 오해하지 말 것 — 페어링은 보류(아카이브), 게임 만들기는 완전 삭제이며 둘 다 "아직 구현 전"이 아니다.
 
 ## Initial target viewports
 
@@ -125,6 +148,8 @@ Before presenting a scene:
 
 ~~The repository is initialized.~~ — 이건 개발 극초반(2026-08-02) 시점 기록이다. 지금은 골든패스 전체가 구현되어 실제 라이브 서비스 중이다(`edutogether.github.io/classcade`). 위 "Mission"·"Visual source of truth"·"Hard rejections" 섹션은 여전히 제품 설계 원칙으로 유효하지만, 이 섹션과 아래 진행상황 서술은 더 이상 현재 상태가 아니다 — 최신 상태는 `CLAUDE.md` 참고.
 
-## Golden-path priority — 2026-08-02
+## Golden-path priority — 2026-08-02 (2026-09-08 정정 — 아래 골든패스 서술은 현행이 아님)
 
-The user has approved a local, end-to-end golden-path implementation: preparation, NBTI start and questions, provisional result, the result-dependent second game, accessible shake fallback, completion, and sharing. Keep the existing visual contract and entry/storage behavior, but make every transition work before adding new art directions or backend integrations. Any result or NBTI label must be clearly presented as provisional exploration rather than a scientific diagnosis.
+**정정**: 아래 문단이 말하는 "result-dependent second game", "completion", "sharing"은 게임 만들기 서브시스템이며 2026-08-27에 코드·데이터·아트가 전부 삭제됐다(위 Mission 섹션 참고). 현재 골든패스는 **프렙 1~4 → 닉네임 → 로딩 → 시작 → NBTI 16문항 → 결과 → 놀이 추천**에서 끝나며, 전부 구현·배포되어 실사용 중이다.
+
+~~The user has approved a local, end-to-end golden-path implementation: preparation, NBTI start and questions, provisional result, the result-dependent second game, accessible shake fallback, completion, and sharing.~~ Keep the existing visual contract and entry/storage behavior, but make every transition work before adding new art directions or backend integrations. Any result or NBTI label must be clearly presented as provisional exploration rather than a scientific diagnosis.
