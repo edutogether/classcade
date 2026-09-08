@@ -582,3 +582,8 @@
 
 /* Card description: two clamped lines, never grows the bar. */
 .result-rec__desc { -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: #6b5326; display: -webkit-box; font-size: clamp(11px, .85vw, 13px); font-weight: 600; line-height: 1.45; margin-top: 3px; overflow: hidden; }
+
+/* Fine-print link in the result screen's disclaimer line. The prep flow's own privacy
+   link sits on step 5, which a ?type= QR visitor never passes through — they land
+   straight on this screen, so the policy has to be reachable from here too. */
+.journey-result__privacy { color: inherit; text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
