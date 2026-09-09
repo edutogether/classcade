@@ -1,4 +1,4 @@
-name: Deploy CLASSCADE to GitHub Pages
+name: Deploy CLASSCADE to Firebase Hosting
 
 on:
   push:
@@ -7,19 +7,20 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: deploy
   cancel-in-progress: false
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     env:
-      VITE_SITE_URL: https://edutogether.github.io/classcade
-      VITE_BASE_PATH: /classcade/
+      # Firebase Hosting serves from the site root, unlike GitHub Pages which served this
+      # app under /classcade/. Everything path-related is driven from these two values —
+      # there is no hardcoded path prefix anywhere in src/ or index.html (audited 2026-09-09).
+      VITE_SITE_URL: https://classcade-together.web.app
+      VITE_BASE_PATH: /
       VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
       VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
       VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
@@ -35,9 +36,6 @@ jobs:
         with:
           node-version: 22
           cache: npm
-
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
 
       - name: Verify required Firebase secrets are set
         run: |
@@ -80,21 +78,20 @@ jobs:
       - name: Guard against edutogether.kr domain reclaim
         run: |
           # edutogether.kr은 edutogether/portal이 쓰는 커스텀 도메인이다(2026-08-13 이전됨).
-          # 이 저장소에 CNAME 파일이 하나라도 들어가면 GitHub Pages가 그 도메인을
-          # 다시 이 앱으로 연결해버려 portal이 즉시 깨진다. public/에 정적 파일을
-          # 넣는 게 이 앱의 일반적인 관행이라 실수로 섞여 들어올 위험이 있어 빌드
-          # 단계에서 막는다.
+          # GitHub Pages 배포는 이 워크플로에서 걷어냈지만 Pages 설정 자체는 아직 살아
+          # 있으므로(폐지는 별도 단계), CNAME 파일이 들어오면 여전히 포털이 깨질 수 있다.
           if find public dist -maxdepth 1 -iname 'CNAME' 2>/dev/null | grep -q .; then
             echo "::error::CNAME file found in public/ or dist/ — this would reclaim edutogether.kr from edutogether/portal. Remove it before deploying."
             exit 1
           fi
 
-      - name: Prepare and verify Pages artifact
+      - name: Verify build artifact
         run: |
-          cp dist/index.html dist/404.html
+          # No 404.html here: GitHub Pages needed a copied index.html as its SPA fallback,
+          # Firebase Hosting does that with the "**" rewrite in firebase.json.
           test -f dist/index.html
-          test -f dist/404.html
           test -d dist/assets
+          test -f dist/privacy.html
           test -f dist/og/classcade-share-v2.png
           test -f dist/favicon.svg
           test -f dist/favicon-32x32.png
@@ -103,31 +100,36 @@ jobs:
           test "$(find dist/assets -maxdepth 1 -type f -name '*.mp3' | wc -l)" -ge 1
           test "$(find dist/assets -maxdepth 1 -type f -name '*.m4a' | wc -l)" -ge 3
 
-      - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: dist
+      - name: Deploy to Firebase Hosting
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-service-account.json
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$GOOGLE_APPLICATION_CREDENTIALS"
+          npx firebase deploy --only hosting --project classcade-together --non-interactive
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Remove Firebase service account credentials
+        if: always()
+        run: rm -f "${{ runner.temp }}/firebase-service-account.json"
 
       - name: Smoke-check the deployed site
         run: |
-          url="${{ steps.deployment.outputs.page_url }}"
-          # GitHub's CDN can take a few seconds to actually serve a just-deployed
-          # artifact; retry briefly instead of failing on the first cold response.
+          url="https://classcade-together.web.app/"
+          # Hosting propagation can lag a few seconds; retry rather than fail on a cold read.
           for attempt in 1 2 3 4 5; do
             status="$(curl -s -o /tmp/smoke.html -w '%{http_code}' "$url")"
             if [ "$status" = "200" ] && grep -q '<title>CLASSCADE' /tmp/smoke.html; then
               echo "Smoke check passed (HTTP $status, title present)."
+              # The whole point of moving off GitHub Pages was response headers, so a deploy
+              # that silently drops them is a failed deploy.
+              headers="$(curl -sI "$url")"
+              for header in "content-security-policy" "x-frame-options" "x-content-type-options" "referrer-policy" "permissions-policy"; do
+                if ! echo "$headers" | grep -qi "^$header:"; then
+                  echo "::error::Security header missing from the deployed response: $header"
+                  exit 1
+                fi
+              done
+              echo "Security headers present."
               exit 0
             fi
             echo "Attempt $attempt: HTTP $status, retrying in 5s..."
@@ -137,13 +139,12 @@ jobs:
           exit 1
 
   firestore-rules:
-    # Deliberately independent of `deploy`: this only needs `build` to have
-    # proven the rules pass the emulator suite (npm run rules:test). A failure
-    # here (e.g. a service-account permission gap) must never block the site
-    # itself from deploying — 2026-08-26 incident where bundling this into the
-    # `build` job's own steps made one failed rules-deploy fail `build`, which
-    # `deploy` needs, silently skipping the Pages deploy entirely.
-    needs: build
+    # Deliberately independent of the deploy above: this only needs the build job to have
+    # proven the rules pass the emulator suite (npm run rules:test). A failure here (e.g. a
+    # service-account permission gap) must never block the site itself from deploying —
+    # 2026-08-26 incident where bundling this into the build job's own steps made one failed
+    # rules-deploy fail the build, silently skipping the site deploy entirely.
+    needs: build-and-deploy
     runs-on: ubuntu-latest
     permissions:
       contents: read

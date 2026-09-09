@@ -6,14 +6,10 @@
     <meta name="theme-color" content="#07140e" />
     <meta name="color-scheme" content="dark" />
     <meta name="description" content="나의 교사 유형을 발견하고, 성향에 맞는 놀이 추천을 받아보세요." />
-    <!-- script-src/frame-src include www.google.com + www.gstatic.com for Firebase App
-         Check's reCAPTCHA v3 (lib/firebase.ts) — that path is reachable in production via
-         ?pairing=1 / role=laptop-station, not just the frozen code-issuance UI. connect-src
-         allows *.googleapis.com for Firestore/Auth. style-src needs 'unsafe-inline': the app
-         uses React inline style={{...}} extensively for per-element CSS custom properties
-         (firefly mote positions etc). No SRI on the Google Fonts stylesheet link below —
-         see CLAUDE.md/COMMON_STANDARDS.md §8, that URL serves non-deterministic bytes. -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com; media-src 'self'; connect-src 'self' https://*.googleapis.com https://www.google.com https://*.ingest.us.sentry.io; frame-src https://www.google.com; base-uri 'self'; object-src 'none'" />
+    <!-- CSP는 firebase.json 의 hosting.headers 에 있다 — 여기 <meta> 로 두지 않는다.
+         두 벌을 두면 한쪽만 고치는 함정이 되고, meta 로는 frame-ancestors 가 무시된다
+         (GitHub Pages 는 응답 헤더를 못 붙여서 meta 로 둘 수밖에 없었고, Firebase Hosting
+         으로 옮긴 이유 자체가 이것이다). 허용 출처의 근거는 firebase.json 참고. -->
     <link rel="canonical" href="__SITE_URL__/" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
