@@ -23,7 +23,7 @@
 
 | 날짜 | 슬러그 | 등급 | 상태 | 요약 |
 |---|---|---|---|---|
-| | | | | |
+| 2026-09-09 | [firebase-hosting-migration](2026-09-09-firebase-hosting-migration/intent.md) | 2 | done | GitHub Pages → Firebase Hosting 이전, 주소를 `classcade.edutogether.kr`로 통일. 목적은 Pages에서 불가능했던 보안 응답 헤더. **사후 기록** |
 
 ## 폴더 규칙
 
