@@ -40,6 +40,10 @@
 
 - **PC/모바일 화면의 시각 디자인(배치·색·간격·아트)을 임의로 바꾸지 않는다.** Bumm님이 직접 픽셀 단위로 다듬는 영역이다. 동작 버그와 접근성 결함은 정상적으로 고친다.
 
+## 카카오톡 공유 카드
+- `index.html`의 og/twitter 태그는 Portal(`apps.ts`) 기준 문구·그림으로 통일한다(2026-09-10). 그림은 Portal(`edutogether.kr/assets/og/classcade.jpg`) 원본을 받아 `public/og.jpg`로 이 저장소 자체 도메인에서 배포한다 — Portal 쪽 배포가 막혀도 이 앱 카드는 영향받지 않게 하기 위해서다.
+- **포털이 카드 그림·문구를 바꾸면 여기도 같이 바꾼다.** `og:title` 규칙은 `{앱 이름} | {hook}` 형식으로 6개 앱이 동일하다.
+
 ## 명령
 - 테스트: `npm run test` (vitest + `tsc -b --noEmit`)
 - 린트: `npm run lint`
