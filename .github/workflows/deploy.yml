@@ -19,7 +19,7 @@ jobs:
       # Firebase Hosting serves from the site root, unlike GitHub Pages which served this
       # app under /classcade/. Everything path-related is driven from these two values —
       # there is no hardcoded path prefix anywhere in src/ or index.html (audited 2026-09-09).
-      VITE_SITE_URL: https://classcade-together.web.app
+      VITE_SITE_URL: https://classcade.edutogether.kr
       VITE_BASE_PATH: /
       VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
       VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
@@ -114,7 +114,9 @@ jobs:
 
       - name: Smoke-check the deployed site
         run: |
-          url="https://classcade-together.web.app/"
+          # 사용자가 실제로 접속하는 커스텀 도메인으로 검증한다 — Hosting 자체뿐 아니라
+          # DNS·인증서까지 매 배포마다 함께 확인된다.
+          url="https://classcade.edutogether.kr/"
           # Hosting propagation can lag a few seconds; retry rather than fail on a cold read.
           for attempt in 1 2 3 4 5; do
             status="$(curl -s -o /tmp/smoke.html -w '%{http_code}' "$url")"

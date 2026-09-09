@@ -6,7 +6,7 @@ Build **같교오락실 / CLASSCADE**, an immersive educational adventure for te
 
 The product journey is:
 
-1. Enter through `edutogether.github.io/classcade/`
+1. Enter through `https://classcade.edutogether.kr`
 2. Complete Classroom NBTI on mobile or PC
 3. Grow a small animated 2D character through choices
 4. Reveal a high-fidelity final character illustration and result, with classroom play recommendations matched to it
@@ -32,7 +32,7 @@ Story 공유")는 지금 존재하지 않는다. 게임 만들기 서브시스�
 | Firestore 규칙 테스트 | `npm run rules:test` (JDK 21 필요) |
 | 자산 계측(배경 낭비·처리방침 도달성) | `npm run measure:assets <URL>` — 배경 이미지나 CSS 미디어쿼리를 건드렸을 때 돌린다. Playwright가 의존성에 없어 최초 1회 별도 설치가 필요하며, 스크립트 맨 위 주석에 실행 방법과 정상값이 적혀 있다. |
 
-**배포**: `main`에 push하면 `.github/workflows/deploy-pages.yml`이 GitHub Pages로 자동 배포한다(`edutogether.github.io/classcade`). 별도 배포 명령은 없다.
+**배포**: `main`에 push하면 `.github/workflows/deploy.yml`이 Firebase Hosting으로 자동 배포한다(`https://classcade.edutogether.kr`). 별도 배포 명령은 없다. 2026-09-09에 GitHub Pages에서 이전했다 — 보안 응답 헤더를 붙이기 위해서다(Pages는 헤더를 설정할 수 없다).
 
 **절대 하면 안 되는 것** — 자세한 근거는 `.claude/rules/app.md`, 최신 상태는 `CLAUDE.md`.
 
@@ -147,7 +147,7 @@ Before presenting a scene:
 
 ## Current status (2026-08-26 정정)
 
-~~The repository is initialized.~~ — 이건 개발 극초반(2026-08-02) 시점 기록이다. 지금은 골든패스 전체가 구현되어 실제 라이브 서비스 중이다(`edutogether.github.io/classcade`). 위 "Mission"·"Visual source of truth"·"Hard rejections" 섹션은 여전히 제품 설계 원칙으로 유효하지만, 이 섹션과 아래 진행상황 서술은 더 이상 현재 상태가 아니다 — 최신 상태는 `CLAUDE.md` 참고.
+~~The repository is initialized.~~ — 이건 개발 극초반(2026-08-02) 시점 기록이다. 지금은 골든패스 전체가 구현되어 실제 라이브 서비스 중이다(`https://classcade.edutogether.kr`). 위 "Mission"·"Visual source of truth"·"Hard rejections" 섹션은 여전히 제품 설계 원칙으로 유효하지만, 이 섹션과 아래 진행상황 서술은 더 이상 현재 상태가 아니다 — 최신 상태는 `CLAUDE.md` 참고.
 
 ## Golden-path priority — 2026-08-02 (2026-09-08 정정 — 아래 골든패스 서술은 현행이 아님)
 

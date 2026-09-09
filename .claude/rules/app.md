@@ -4,7 +4,7 @@
 ## 앱
 - 무엇: 교사가 교실 NBTI 16문항을 풀고 성향에 맞는 같이교육 놀이 영상을 추천받는 몰입형 웹 앱
 - 사용자: 실사용 중인 교사 (전시·시연이 아니라 상시 서비스)
-- 배포: **GitHub Pages** — 헌법 3.2의 명시적 예외. `main` 푸시 시 `.github/workflows/deploy-pages.yml`이 자동 배포한다. Firebase Hosting을 쓰지 않는 이유는 `edutogether.kr`이 portal 저장소로 넘어갔고(2026-08-13) 이 앱은 `edutogether.github.io/classcade` 기본 URL을 그대로 쓰기로 확정됐기 때문이다.
+- 배포: **Firebase Hosting** — `main` 푸시 시 `.github/workflows/deploy.yml`이 자동 배포한다. 주소는 `https://classcade.edutogether.kr`. 2026-09-09에 GitHub Pages에서 이전했다: Pages는 응답 헤더를 설정할 수 없어 CSP를 `<meta>`로만 둘 수 있었고 `frame-ancestors` 같은 지시어는 아예 적용되지 않았다. 보안 헤더는 `firebase.json`의 `hosting.headers`에 있다.
 
 ## 배포 폴더
 - Firebase Hosting을 쓰지 않으므로 `firebase.json`에 `hosting`/`public` 항목이 **없다** — 이 파일은 `firestore.rules` 배포 전용이다.
@@ -46,6 +46,18 @@
 - 로컬 실행: `npm run dev`
 - 빌드: `npm run build`
 - 에뮬레이터(Firestore 규칙 테스트): `npm run rules:test` — JDK 21 필요
+
+## 주소를 바꿀 때 반드시 함께 하는 것 (2026-09-09 이전에서 확인)
+
+배포 주소가 바뀌면 **코드만 고쳐서는 앱이 조용히 죽습니다.** 콘솔 쪽 세 곳을 같이 해야 하고, 이건 대표님만 할 수 있습니다.
+
+1. **Firebase 맞춤 도메인 추가** + DNS(CNAME)를 새 주소 → `classcade-together.web.app`으로.
+2. **reCAPTCHA 승인 도메인에 새 도메인 추가.** App Check가 Firestore에서 **Enforced**이고 reCAPTCHA의 **`출처 확인(Verify the origin)`이 켜져 있어서**, 새 도메인이 목록에 없으면 토큰 발급이 403으로 막히고 **Firestore 요청이 전부 거부**됩니다. 경고가 아니라 차단입니다.
+3. **Firebase 인증 승인된 도메인에 새 도메인 추가.** 익명 로그인이 페어링에 쓰입니다.
+
+코드 쪽은 `.github/workflows/deploy.yml`의 `VITE_SITE_URL` 한 곳뿐입니다(`canonical`·`og:url`·OG 이미지가 전부 여기서 나옵니다). `VITE_BASE_PATH`는 Firebase가 루트로 서빙하므로 `/` 그대로 둡니다.
+
+**확인 방법**: 새 도메인에서 `?pairing=1`에 아무 여섯 자리나 넣고 제출해 **"코드를 찾지 못했어요"**가 나오면 정상입니다(그 응답이 나온다는 건 App Check·익명 로그인·Firestore가 전부 통과했다는 뜻). 403이나 "네트워크를 확인해 주세요"가 나오면 위 2·3번이 안 먹은 것입니다. **헤드리스 브라우저로는 검증할 수 없습니다** — reCAPTCHA v3가 자동화를 차단해 정상 상태에서도 403이 납니다. 실제 브라우저나 헤드 모드로 확인하세요.
 
 ## 자주 틀리는 것
 

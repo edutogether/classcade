@@ -10,7 +10,7 @@
 - 선택에 따라 성장하는 2D 캐릭터
 - 최종 고해상도 결과 일러스트
 - 결과 유형에 맞춘 같이교육 놀이 영상 추천
-- 공식 배포 주소: `edutogether.github.io/classcade`(`edutogether.kr`은 별도 portal 저장소 소유 — 재설정 금지, `CLAUDE.md` LOCKED 참고)
+- 공식 배포 주소: `https://classcade.edutogether.kr` (Firebase Hosting, 2026-09-09 GitHub Pages에서 이전)
 
 **(2026-08-27 정정)** 원래 계획에 있던 "우리 반 게임 만들기"(성향 기반 교실 게임 자동 생성)는 대표 결정으로 완전 삭제됐다 — 코드·데이터·아트 전부 제거, 나중에 다시 만들 수도 있지만 시기 미정. QR·6자리 코드로 노트북에 이어하는 기능(페어링)은 이 결정과 별개로 **보류(아카이브)** 상태다 — 나중에 다시 켤 기능으로 코드를 그대로 보존하며, 결함이나 미결 과제가 아니다. 이 폴더 `CLAUDE.md`의 LOCKED 항목을 따른다.
 
@@ -26,5 +26,5 @@
 
 ## Status
 
-- 2026-08-01 착수 → 골든패스 전체 구현 완료, `edutogether.github.io/classcade`에서 라이브 서비스 중.
+- 2026-08-01 착수 → 골든패스 전체 구현 완료, `https://classcade.edutogether.kr`에서 라이브 서비스 중.
 - EduPlus Week 2026(COEX, 8/12~14) 대응은 이미 종료됨. 현재 상태·최근 작업은 `CLAUDE.md` 참고.

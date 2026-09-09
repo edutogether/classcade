@@ -31,7 +31,7 @@
  *   2) 다른 터미널에서:
  *        npm i -g playwright && npx playwright install chromium   # 최초 1회
  *        node scripts/measure-assets.mjs http://localhost:4180/
- *      배포본을 직접 재려면 URL 자리에 https://edutogether.github.io/classcade/ 를 넣는다.
+ *      배포본을 직접 재려면 URL 자리에 https://classcade.edutogether.kr/ 를 넣는다.
  *
  * 종료코드: 정상 0 / 기준 위반 1 (CI에 넣을 수 있게)
  */

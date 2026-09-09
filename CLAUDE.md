@@ -13,10 +13,10 @@
 
 `classcade-freeze-20260814` 태그는 그 시점 복구 지점으로 여전히 유효하며 `.githooks/pre-push`(portal/googler와 동일 패턴)로 삭제·이동을 막고 있다 — 새 클론에서는 `git config core.hooksPath .githooks`로 활성화해야 보호가 걸린다. 다만 8/14 이후에도 개발이 계속 이어져 지금은 "프리즈된 상태"가 아니다.
 
-- 배포: `https://edutogether.github.io/classcade/` (GitHub Pages Actions, `main` 푸시 시 자동 배포)
+- 배포: `https://classcade.edutogether.kr` (Firebase Hosting, `main` 푸시 시 `.github/workflows/deploy.yml`이 자동 배포). 2026-09-09에 GitHub Pages에서 이전 — 보안 응답 헤더가 이유이고, 그 헤더는 `firebase.json`의 `hosting.headers`에 있다.
 - **⚠️ `edutogether.kr` 커스텀 도메인을 이 저장소에 다시 설정하지 말 것.** 그 도메인은
   2026-08-13에 `edutogether/portal`(같교오락실 포털)로 이전됐고 지금 그쪽이 쓰고 있음.
-  여기서 재설정하면 포털이 즉시 깨짐. 배포 주소는 위 GitHub Pages 기본 URL 그대로 유지.
+  여기서 재설정하면 포털이 즉시 깨짐. 이 앱은 `edutogether.kr` 루트가 아니라 **서브도메인 `classcade.edutogether.kr`**을 Firebase Hosting 맞춤 도메인으로 쓴다 — 루트 도메인은 여전히 portal 것이다.
 - 브랜치: `main`에서 직접 작업(다른 앱들과 동일한 방식으로 통일, `feature/front120-entry-flow-v1`은 내용 동일한 채 보관만)
 - 이번 프리즈까지 반영된 것: entry flow 전체(prep 1-4 → 닉네임 → 로딩 → journey), 로딩 화면 v6 아트 전환 + 문구 라이브 DOM화, NBTI "다시 탐색하기"·"메인 화면으로" 인터루드, 헤더 로고 글로우, BGM 볼륨 디바운스, PNG→WebP 전량 전환
 - 2026-08-10 외부 리뷰: `_docs/archive/EXTERNAL_HEALTH_REVIEW_20260810.md`
@@ -32,7 +32,7 @@
 - **App Check — Authentication(PREVIEW)은 Monitoring 유지**: 아직 정식 기능이 아니고, 잘못 걸리면 로그인이 전면 차단되는 위험이 Firestore보다 크다는 판단. 정식 출시되면 그때 재검토한다.
 - **Sentry DSN 등록 (2026-09-08 완료)**: Sentry 프로젝트 생성 + GitHub Actions secret `VITE_SENTRY_DSN` 등록 완료. 배포 번들 실측으로 확인함 — DSN 문자열(`...ingest.us.sentry.io/4512045242449920`)과 `Sentry.init` 옵션 객체(`sendDefaultPii`/`replaysOnErrorSampleRate`)가 실제로 들어가 있다(등록 전에는 이 둘 다 번들에서 0건이라 `initErrorReporting()`이 통째로 죽은 코드였음). 이제 `reportError()` 호출이 프로덕션에서 실제로 전송된다. 처리방침(`public/privacy.html` §3)의 Sentry 고지는 등록 **전에** 먼저 반영해뒀으므로 지금은 문구와 실제 동작이 일치한다.
 
-**⚠️ App Check Enforced와 `index.html`의 CSP는 이제 서로 묶여 있다.** Enforced 상태에서는 App Check 토큰이 없으면 Firestore가 요청을 아예 거부한다. 그 토큰은 reCAPTCHA v3 스크립트(`www.google.com`/`www.gstatic.com`)를 받아와야 발급되므로, CSP의 `script-src`/`frame-src`에서 이 두 도메인을 빼면 페어링이 경고 수준이 아니라 **완전히 막힌다**. CSP를 조이는 변경을 할 때는 반드시 라이브 `?pairing=1`에서 여섯 자리 코드 제출까지 실제로 확인할 것(현재 조합은 2026-09-07에 검증 완료).
+**⚠️ App Check Enforced와 CSP는 서로 묶여 있다**(CSP는 2026-09-09 이전으로 `index.html`의 `<meta>`가 아니라 `firebase.json`의 `hosting.headers`에 있다). Enforced 상태에서는 App Check 토큰이 없으면 Firestore가 요청을 아예 거부한다. 그 토큰은 reCAPTCHA v3 스크립트(`www.google.com`/`www.gstatic.com`)를 받아와야 발급되므로, CSP의 `script-src`/`frame-src`에서 이 두 도메인을 빼면 페어링이 경고 수준이 아니라 **완전히 막힌다**. CSP를 조이는 변경을 할 때는 반드시 라이브 `?pairing=1`에서 여섯 자리 코드 제출까지 실제로 확인할 것(현재 조합은 2026-09-09 새 도메인에서 재검증 완료).
 
 ## ✅ 2026-08-27 — 게임빌더 서브시스템 완전 삭제 (완료, 대표 결정)
 
