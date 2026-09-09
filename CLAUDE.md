@@ -11,7 +11,7 @@
 
 ## 현재 상태 (2026-08-25 기준) — 대표가 모바일 화면을 픽셀 단위로 계속 다듬는 중 (프리즈 아님)
 
-`classcade-freeze-20260814` 태그는 그 시점 복구 지점으로 여전히 유효하며 `.githooks/pre-push`(portal/googler와 동일 패턴)로 삭제·이동을 막고 있다 — 새 클론에서는 `git config core.hooksPath .githooks`로 활성화해야 보호가 걸린다. 다만 8/14 이후에도 개발이 계속 이어져 지금은 "프리즈된 상태"가 아니다.
+**현재 유효한 복구 지점은 `classcade-freeze-20260909-firebase-migration`이다**(GitHub Pages → Firebase Hosting 이전 완료 시점 — 태그 메시지에 상세 내역 있음). 이전 태그(`20260814`/`20260817`/`20260823`/`20260826`)는 각자 그 시점으로는 여전히 유효하지만 최신 복구 지점이 아니다. 전부 `.githooks/pre-push`(portal/googler와 동일 패턴)로 삭제·이동을 막고 있다 — 새 클론에서는 `git config core.hooksPath .githooks`로 활성화해야 보호가 걸린다. 새 freeze 태그를 찍을 때는 이 줄도 함께 갱신할 것 — 태그만 새로 찍고 이 서술을 안 고쳐 사고 난 전례가 이 조직에 두 번 있다.
 
 - 배포: `https://classcade.edutogether.kr` (Firebase Hosting, `main` 푸시 시 `.github/workflows/deploy.yml`이 자동 배포). 2026-09-09에 GitHub Pages에서 이전 — 보안 응답 헤더가 이유이고, 그 헤더는 `firebase.json`의 `hosting.headers`에 있다.
 - **⚠️ `edutogether.kr` 커스텀 도메인을 이 저장소에 다시 설정하지 말 것.** 그 도메인은
