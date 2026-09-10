@@ -81,4 +81,6 @@
 
 - **반대 방향도 난다 — 배포가 실패했는데 라이브가 멀쩡해 보인다.** 2026-09-10, `public/og/classcade-share-v2.png`를 지운 뒤에도 워크플로의 "Verify build artifact"가 그 파일을 계속 단언해서 **연속 두 번의 배포가 실패**했다. 라이브는 직전 성공분(`b13f97c`)을 그대로 서빙하고 있어 화면상 아무 이상이 없었고, 아무도 몇 시간 동안 눈치채지 못했다. 그 사이에 급한 수정을 push했다면 조용히 안 나갔을 것이다. **push한 뒤에는 `gh run list --limit 1 --json headSha,conclusion`으로 "방금 그 커밋"의 실행 결과를 확인한다**("최근 실행"이 아니라 — COMMON_STANDARDS §21-7). 그리고 **산출물을 지울 때는 그것을 단언하는 CI 줄이 있는지 함께 본다.**
 
+- **`.github/workflows/deploy.yml`의 "Verify build artifact" 스텝이 하드코딩된 파일명을 단언하는 곳이 7곳 있다**(`dist/index.html`·`dist/assets`·`dist/privacy.html`·`dist/og.jpg`·`dist/favicon.svg`·`dist/favicon-32x32.png`·`dist/apple-touch-icon.png`·`dist/site.webmanifest`, mp3·m4a 개수 하한 2곳). 2026-09-10 사고(바로 위 항목) 이후로 지금 깨진 곳은 없지만 **구조적으로 같은 종류의 함정**이다 — 이 파일들 중 하나를 지우거나 이름을 바꾸면 같은 패턴이 재발한다. 실패 시 메시지 자체에 "이 파일을 의도적으로 지웠다면 `deploy.yml`의 이 스텝도 같이 고칠 것"이라는 안내를 넣어뒀다(`require_file` 헬퍼) — 파일 목록은 지우지 말고, **그 파일을 실제로 지우거나 이름 바꿀 때 같은 커밋에서 이 스텝도 같이 고친다.**
+
 - **유닛 테스트가 전부 통과해도 실제 브라우저에서만 드러나는 결함이 있다.** 두 번 났다: 2~4단계 이전/다음 버튼이 미완성 "PLACEHOLDER" 문구가 박힌 PNG였던 것, 모바일에서 1단계 안내 문구가 넘쳐 "다음 질문" 버튼을 덮어 폰에서는 1단계를 통과할 수 없었던 것. 화면에 영향 있는 변경은 실제 브라우저에서 데스크톱·모바일 폭 둘 다 확인한다.

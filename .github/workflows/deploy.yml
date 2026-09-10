@@ -164,21 +164,38 @@ jobs:
         run: |
           # No 404.html here: GitHub Pages needed a copied index.html as its SPA fallback,
           # Firebase Hosting does that with the "**" rewrite in firebase.json.
-          test -f dist/index.html
-          test -d dist/assets
-          test -f dist/privacy.html
-          # index.html's og:image/twitter:image point at /og.jpg (Portal-matched share
-          # card, 2026-09-10). The previous og/classcade-share-v2.png was deleted with
-          # that change but this line kept asserting it, so the two deploys after the
-          # deletion failed here and the site silently stopped receiving updates.
-          # Assert the file the page actually references.
-          test -f dist/og.jpg
-          test -f dist/favicon.svg
-          test -f dist/favicon-32x32.png
-          test -f dist/apple-touch-icon.png
-          test -f dist/site.webmanifest
-          test "$(find dist/assets -maxdepth 1 -type f -name '*.mp3' | wc -l)" -ge 1
-          test "$(find dist/assets -maxdepth 1 -type f -name '*.m4a' | wc -l)" -ge 3
+          #
+          # 2026-09-10: this step asserted a since-deleted og image for two deploys after
+          # the file was intentionally removed, and the site silently stopped receiving
+          # updates because nobody read this step's bare "test -f" failure as anything
+          # more than "some file is missing". require_file below always names this exact
+          # step and file so a future intentional deletion/rename points straight back here
+          # instead of costing someone a debugging session.
+          require_file() {
+            if [ ! -e "$1" ]; then
+              echo "::error::Verify build artifact — expected '$1' but it's missing. If you intentionally deleted or renamed this file, update the matching require_file line in .github/workflows/deploy.yml's 'Verify build artifact' step (not just index.html/the source file) before merging."
+              exit 1
+            fi
+          }
+          require_file dist/index.html
+          require_file dist/assets
+          require_file dist/privacy.html
+          # index.html's og:image/twitter:image point at /og.jpg (Portal-matched share card).
+          require_file dist/og.jpg
+          require_file dist/favicon.svg
+          require_file dist/favicon-32x32.png
+          require_file dist/apple-touch-icon.png
+          require_file dist/site.webmanifest
+          mp3_count="$(find dist/assets -maxdepth 1 -type f -name '*.mp3' | wc -l)"
+          if [ "$mp3_count" -lt 1 ]; then
+            echo "::error::Verify build artifact — expected at least 1 .mp3 under dist/assets, found $mp3_count. If the BGM asset was intentionally removed or renamed, update this check in .github/workflows/deploy.yml's 'Verify build artifact' step."
+            exit 1
+          fi
+          m4a_count="$(find dist/assets -maxdepth 1 -type f -name '*.m4a' | wc -l)"
+          if [ "$m4a_count" -lt 3 ]; then
+            echo "::error::Verify build artifact — expected at least 3 .m4a files under dist/assets, found $m4a_count. If a theme track was intentionally removed or renamed, update this check in .github/workflows/deploy.yml's 'Verify build artifact' step."
+            exit 1
+          fi
 
       - name: Deploy to Firebase Hosting
         env:
