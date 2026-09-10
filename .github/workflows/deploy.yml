@@ -13,7 +13,82 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  test:
+    # Always runs regardless of what changed — COMMON_STANDARDS §23-3 explicitly warns
+    # against a workflow-wide paths-ignore because some tests exercise documentation
+    # (this repo's own privacy-policy-link tests are the same shape). Only the deploy
+    # job below is path-filtered.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Set up Java (Firestore emulator requires JDK 21+)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Run Firestore rules tests
+        run: npm run rules:test
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (compile check)
+        run: npm run build
+
+  changes:
+    # Cheap job: decides whether this push touched anything besides docs/rules text.
+    # A plain `paths-ignore` on the workflow trigger would also skip the test job above
+    # (§23-3), so this is computed per-push here instead and only gates the deploy jobs.
+    runs-on: ubuntu-latest
+    outputs:
+      code_changed: ${{ steps.diff.outputs.code_changed }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Diff against the previous commit
+        id: diff
+        run: |
+          before="${{ github.event.before }}"
+          after="${{ github.sha }}"
+          if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
+            # workflow_dispatch, or the first push of a new branch: no safe diff base, so
+            # treat it as a real change rather than silently skipping the deploy.
+            echo "No usable previous commit to diff against — treating as changed."
+            echo "code_changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          changed="$(git diff --name-only "$before" "$after")"
+          echo "Changed files:"
+          echo "$changed"
+          # Mirrors COMMON_STANDARDS §23-3's paths-ignore list: '**/*.md', '_docs/**', '.claude/**'.
+          if echo "$changed" | grep -vE '(^|/)[^/]+\.md$|^_docs/|^\.claude/' | grep -q .; then
+            echo "code_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Only docs/.claude files changed — skipping deploy."
+            echo "code_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    needs: [test, changes]
+    if: needs.changes.outputs.code_changed == 'true'
     runs-on: ubuntu-latest
     env:
       # Firebase Hosting serves from the site root, unlike GitHub Pages which served this
@@ -56,21 +131,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Run tests
-        run: npm run test
-
-      - name: Set up Java (Firestore emulator requires JDK 21+)
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '21'
-
-      - name: Run Firestore rules tests
-        run: npm run rules:test
-
-      - name: Lint
-        run: npm run lint
 
       - name: Build production site
         run: npm run build
@@ -193,12 +253,14 @@ jobs:
           exit 1
 
   firestore-rules:
-    # Deliberately independent of the deploy above: this only needs the build job to have
-    # proven the rules pass the emulator suite (npm run rules:test). A failure here (e.g. a
-    # service-account permission gap) must never block the site itself from deploying —
-    # 2026-08-26 incident where bundling this into the build job's own steps made one failed
-    # rules-deploy fail the build, silently skipping the site deploy entirely.
-    needs: build-and-deploy
+    # Deliberately independent of the hosting deploy above (both only need `test` +
+    # `changes` to have passed) — a service-account permission gap deploying rules must
+    # never block the site itself from deploying, and vice versa (2026-08-26 incident
+    # where bundling this into one job made one failed rules-deploy skip the site deploy
+    # entirely). Gated on the same code_changed check: docs-only commits don't touch
+    # firestore.rules either.
+    needs: [test, changes]
+    if: needs.changes.outputs.code_changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
