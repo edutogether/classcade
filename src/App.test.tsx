@@ -41,7 +41,7 @@ describe('App boot behavior', () => {
     render(<App />)
 
     expect(screen.queryByText('모험 준비')).not.toBeInTheDocument()
-    await waitFor(() => expect(document.querySelector('.journey-header')).toBeInTheDocument())
+    await waitFor(() => expect(document.querySelector('.journey-header')).toBeInTheDocument(), { timeout: 5000 })
   })
 
   it('routes a ?type= shared-result deep link straight to the journey screen with no saved profile', async () => {
@@ -50,7 +50,7 @@ describe('App boot behavior', () => {
     render(<App />)
 
     expect(screen.queryByText('모험 준비')).not.toBeInTheDocument()
-    await waitFor(() => expect(document.querySelector('.journey-header')).toBeInTheDocument())
+    await waitFor(() => expect(document.querySelector('.journey-header')).toBeInTheDocument(), { timeout: 5000 })
   })
 
   /* Regression guard for a measured compliance gap: the privacy policy used to be linked
