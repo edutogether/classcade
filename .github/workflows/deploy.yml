@@ -92,7 +92,12 @@ jobs:
           test -f dist/index.html
           test -d dist/assets
           test -f dist/privacy.html
-          test -f dist/og/classcade-share-v2.png
+          # index.html's og:image/twitter:image point at /og.jpg (Portal-matched share
+          # card, 2026-09-10). The previous og/classcade-share-v2.png was deleted with
+          # that change but this line kept asserting it, so the two deploys after the
+          # deletion failed here and the site silently stopped receiving updates.
+          # Assert the file the page actually references.
+          test -f dist/og.jpg
           test -f dist/favicon.svg
           test -f dist/favicon-32x32.png
           test -f dist/apple-touch-icon.png
@@ -124,7 +129,7 @@ jobs:
               echo "Smoke check passed (HTTP $status, title present)."
               # The whole point of moving off GitHub Pages was response headers, so a deploy
               # that silently drops them is a failed deploy.
-              headers="$(curl -sI "$url")"
+              headers="$(curl -sI "$url" | tr -d '\r')"
               for header in "content-security-policy" "x-frame-options" "x-content-type-options" "referrer-policy" "permissions-policy"; do
                 if ! echo "$headers" | grep -qi "^$header:"; then
                   echo "::error::Security header missing from the deployed response: $header"
@@ -132,6 +137,53 @@ jobs:
                 fi
               done
               echo "Security headers present."
+
+              # Presence is not enough. Three CSP allowances are load-bearing and their
+              # removal fails SILENTLY in the browser (see .claude/rules/app.md):
+              #   script-src/frame-src www.google.com + www.gstatic.com -> App Check's
+              #     reCAPTCHA v3. Firestore App Check is Enforced, so without a token
+              #     every Firestore request is REJECTED, not merely warned about.
+              #   connect-src *.ingest.us.sentry.io -> Sentry delivery. This was actually
+              #     shipped missing once (2026-09-08) and monitoring went to zero events.
+              # A header-existence check passes just as happily with any of these removed,
+              # so assert the values. Expectations are written out here on purpose rather
+              # than read back from firebase.json — a check that takes its expectation
+              # from the thing it watches always agrees with it.
+              csp="$(echo "$headers" | grep -i '^content-security-policy:' | cut -d: -f2-)"
+              checked=0
+              for requirement in \
+                "script-src=https://www.google.com" \
+                "script-src=https://www.gstatic.com" \
+                "frame-src=https://www.google.com" \
+                "connect-src=https://*.ingest.us.sentry.io" \
+                "frame-ancestors='none'"; do
+                directive="${requirement%%=*}"
+                token="${requirement#*=}"
+                # Slice out just this directive: its name up to the next ';'. The `|| value=""`
+                # is not a swallowed failure — the step runs under `bash -e`, where a
+                # no-match grep inside an assignment aborts the whole step with no output.
+                # Turning "no match" into an empty string is what lets the check below
+                # report WHICH directive vanished instead of dying silently.
+                value="$(echo "$csp" | tr ';' '\n' | grep -E "(^| )$directive ")" || value=""
+                if [ -z "$value" ]; then
+                  echo "::error::CSP directive '$directive' is missing from the deployed Content-Security-Policy."
+                  exit 1
+                fi
+                case "$value" in
+                  *"$token"*) checked=$((checked + 1)) ;;
+                  *)
+                    echo "::error::CSP '$directive' no longer allows '$token' — this breaks App Check/Firestore or Sentry silently. Deployed value:$value"
+                    exit 1
+                    ;;
+                esac
+              done
+              # Guard the guard: if the list above is ever emptied or the directive parsing
+              # stops matching, "0 violations" must not read as success (COMMON_STANDARDS §21-1).
+              if [ "$checked" -ne 5 ]; then
+                echo "::error::CSP value check verified $checked of the 5 required allowances — the check itself is broken."
+                exit 1
+              fi
+              echo "CSP value check passed ($checked required allowances verified)."
               exit 0
             fi
             echo "Attempt $attempt: HTTP $status, retrying in 5s..."

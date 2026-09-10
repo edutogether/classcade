@@ -38,7 +38,7 @@ Story 공유")는 지금 존재하지 않는다. 게임 만들기 서브시스�
 
 1. **`edutogether.kr` 커스텀 도메인을 이 저장소에 설정하지 않는다.** 2026-08-13에 `edutogether/portal`로 이전됐다. CNAME 파일이 들어가면 포털이 즉시 깨진다(워크플로에 방어 가드 있음, 가드 삭제도 금지).
 2. **페어링 서브시스템(`src/features/pairing/`)은 보류(아카이브)된 기능이다.** 도달 불가한 것은 버그가 아니라 확정된 결정이다 — 결함으로 보고하거나 삭제를 제안하지 않는다.
-3. **`index.html`의 CSP에서 `www.google.com`/`www.gstatic.com`(script-src·frame-src)과 `*.ingest.us.sentry.io`(connect-src)를 빼지 않는다.** 앞의 것을 빼면 App Check 토큰 발급이 막혀 페어링이 완전히 차단되고(Firestore가 Enforced), 뒤의 것을 빼면 오류 모니터링이 조용히 죽는다. 둘 다 실제로 발생했던 사고다.
+3. **CSP에서 `www.google.com`/`www.gstatic.com`(script-src·frame-src)과 `*.ingest.us.sentry.io`(connect-src)를 빼지 않는다.** CSP는 `index.html`이 아니라 **`firebase.json`의 `hosting.headers`**에 있다(2026-09-09 Firebase Hosting 이전 이후). 앞의 것을 빼면 App Check 토큰 발급이 막혀 페어링이 완전히 차단되고(Firestore가 Enforced), 뒤의 것을 빼면 오류 모니터링이 조용히 죽는다. 둘 다 실제로 발생했던 사고다.
 4. **PC/모바일 화면의 시각 디자인(배치·색·간격·아트)은 임의로 바꾸지 않는다.** 소유자가 직접 다듬는 영역이다. 동작 버그와 접근성 결함은 정상적으로 고친다.
 
 ## Visual source of truth

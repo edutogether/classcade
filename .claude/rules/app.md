@@ -7,8 +7,8 @@
 - 배포: **Firebase Hosting** — `main` 푸시 시 `.github/workflows/deploy.yml`이 자동 배포한다. 주소는 `https://classcade.edutogether.kr`. 2026-09-09에 GitHub Pages에서 이전했다: Pages는 응답 헤더를 설정할 수 없어 CSP를 `<meta>`로만 둘 수 있었고 `frame-ancestors` 같은 지시어는 아예 적용되지 않았다. 보안 헤더는 `firebase.json`의 `hosting.headers`에 있다.
 
 ## 배포 폴더
-- Firebase Hosting을 쓰지 않으므로 `firebase.json`에 `hosting`/`public` 항목이 **없다** — 이 파일은 `firestore.rules` 배포 전용이다.
-- Pages 산출물은 `dist/`이고 Vite가 생성한다. `_docs/`·`.claude/`는 `dist/`에 들어가지 않는다(빌드 입력이 `index.html`과 `src/`, `public/`뿐). 확인일 9/8
+- `firebase.json`의 `hosting.public` = `dist`. 이 파일은 Firestore 규칙과 Hosting(재작성·응답 헤더)을 **둘 다** 담는다 — 2026-09-09 Firebase Hosting 이전 때 `hosting` 블록이 추가됐다.
+- 산출물은 `dist/`이고 Vite가 생성한다. `_docs/`·`.claude/`는 `dist/`에 들어가지 않는다(빌드 입력이 `index.html`과 `src/`, `public/`뿐). 확인일 9/10
 
 ## 데이터
 - 개인정보·미성년자 데이터: **학생 정보는 일절 수집하지 않는다.** 교사 본인에 대해 5개 항목만 받는다 — 학교급·교직 경력 구간·지역(광역)·성장 우선순위(최대 3개, 기타 30자)·닉네임(16자). 이름·이메일·전화·학교명은 어떤 항목에서도 받지 않는다.
@@ -40,10 +40,11 @@
   - Firestore 콘솔 — `pairingSessions.expiresAt`에 TTL 정책이 없어 만료 문서가 계속 쌓인다.
   - `?pairing=1`(`PairingEntryScene`) 진입자는 개인정보 처리방침에 도달할 방법이 없다. 프렙 5단계와 결과 화면에는 링크가 있지만 이 진입 경로는 둘 다 거치지 않는다(2026-09-08 Playwright 실측: 링크 0개). 이 화면이 동결 대상이라 그때 함께 처리한다.
 
-- **`index.html`의 CSP에서 아래를 빼지 않는다.** 각각을 빼면 조용히 기능이 죽는다(에러가 눈에 띄지 않는다):
+- **CSP에서 아래를 빼지 않는다.** CSP는 2026-09-09 이전 이후 `index.html`의 `<meta>`가 아니라 **`firebase.json`의 `hosting.headers`**에 있다(`index.html`에는 그 사실을 알리는 주석만 남아 있다). 각각을 빼면 조용히 기능이 죽는다(에러가 눈에 띄지 않는다):
   - `script-src`/`frame-src`의 `https://www.google.com`, `https://www.gstatic.com` — App Check의 reCAPTCHA v3 스크립트가 여기서 온다. **Firestore App Check가 Enforced로 전환된 뒤(2026-09-07)로는 토큰이 없으면 Firestore가 요청을 거부하므로, 이걸 빼면 페어링이 경고가 아니라 완전히 차단된다.**
   - `connect-src`의 `https://*.ingest.us.sentry.io` — Sentry 전송 대상이다. 실제로 2026-09-08에 이게 빠진 채 배포되어 모니터링이 전량 차단된 적이 있다.
   - CSP를 조이는 변경을 할 때는 반드시 라이브에서 `?pairing=1`에 여섯 자리 코드를 넣어 제출까지 해보고(정상이면 "코드를 찾지 못했어요"), 콘솔에 CSP 위반이 없는지 확인한다.
+  - 배포 워크플로의 스모크 검사가 이 다섯 가지 허용(`script-src`의 google·gstatic, `frame-src`의 google, `connect-src`의 sentry, `frame-ancestors 'none'`)을 **값까지** 대조해 하나라도 빠지면 배포를 실패시킨다(2026-09-10 추가). 헤더가 있는지만 보던 이전 검사는 이 다섯 개를 다 빼도 통과했다. 기대 목록은 워크플로에 직접 적혀 있다 — `firebase.json`에서 읽어오면 감시 대상과 항상 같아져 감시가 되지 않기 때문이다.
 
 - **`prep-03-map-master.webp`를 "중복 파일"이라는 이유로 지우지 않는다.** 이 파일은 `prep-world-backdrop-16x9-v2.webp`와 SHA-256이 같지만 중복이 아니라 **의도된 자리표시자**다 — 3단계 아트모드의 지역 지도 원화가 아직 없어서 배경 이미지를 임시로 같은 경로에 놓아둔 것이고, 그 취지가 `src/components/prep/prepAssets.ts`의 import 주석에 적혀 있다("swap the real drawing in at this exact path, no code change needed"). 해시 기준으로 중복 자산을 훑는 정리 작업이 이걸 지우면 진짜 원화가 들어올 자리가 사라지고 3단계 아트모드 렌더가 깨진다. 빌드 시 Vite가 두 참조를 한 파일로 합치므로 방문자가 받는 바이트는 애초에 늘지 않는다.
 
@@ -77,5 +78,7 @@
 ## 자주 틀리는 것
 
 - **설정값이 비어 있거나 막혀 있어도 빌드·배포는 조용히 성공한다.** 두 번 났다: 2026-08-17 Firebase 시크릿 4종이 워크플로에 주입되지 않아 프로덕션 페어링이 항상 실패, 2026-09-08 CSP `connect-src`가 Sentry 전송을 막아 모니터링 이벤트가 0건. 둘 다 빌드·테스트·배포가 전부 초록이었다. 시크릿 4종은 이제 CI가 빌드 전에 막지만, **"각각은 검증을 통과했는데 합쳐지니 서로를 무효화하는"** 조합은 여전히 자동으로 안 잡힌다 — 설정을 건드렸으면 라이브에서 그 기능이 실제로 동작하는지 눈으로 확인한다.
+
+- **반대 방향도 난다 — 배포가 실패했는데 라이브가 멀쩡해 보인다.** 2026-09-10, `public/og/classcade-share-v2.png`를 지운 뒤에도 워크플로의 "Verify build artifact"가 그 파일을 계속 단언해서 **연속 두 번의 배포가 실패**했다. 라이브는 직전 성공분(`b13f97c`)을 그대로 서빙하고 있어 화면상 아무 이상이 없었고, 아무도 몇 시간 동안 눈치채지 못했다. 그 사이에 급한 수정을 push했다면 조용히 안 나갔을 것이다. **push한 뒤에는 `gh run list --limit 1 --json headSha,conclusion`으로 "방금 그 커밋"의 실행 결과를 확인한다**("최근 실행"이 아니라 — COMMON_STANDARDS §21-7). 그리고 **산출물을 지울 때는 그것을 단언하는 CI 줄이 있는지 함께 본다.**
 
 - **유닛 테스트가 전부 통과해도 실제 브라우저에서만 드러나는 결함이 있다.** 두 번 났다: 2~4단계 이전/다음 버튼이 미완성 "PLACEHOLDER" 문구가 박힌 PNG였던 것, 모바일에서 1단계 안내 문구가 넘쳐 "다음 질문" 버튼을 덮어 폰에서는 1단계를 통과할 수 없었던 것. 화면에 영향 있는 변경은 실제 브라우저에서 데스크톱·모바일 폭 둘 다 확인한다.

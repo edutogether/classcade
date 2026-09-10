@@ -8,6 +8,23 @@ dist
 .env*
 .cache
 _mobile-audit/
+# Secrets — the deploy workflow only ever writes a service account to the runner's temp
+# dir, but a key pulled down for a local `firebase deploy` must never become a commit.
+*.pem
+cert/
+serviceAccount*.json
+_backups/
+
+# .claude/ local-only paths (CONVENTIONS §7 standard list). Listed one by one on purpose:
+# a blanket `.claude/*` would also swallow settings.json and rules/, which must be committed.
 .claude/settings.local.json
 .claude/worktrees/
 .claude/scheduled_tasks.lock
+.claude/scheduled_tasks.json
+.claude/routines/.state/
+.claude/checkpoints/
+.claude/mailbox/
+.claude/agent-registry.json
+.claude/agent-memory-local
+.claude/first-run
+.claude/assistant-daemon-state.json
