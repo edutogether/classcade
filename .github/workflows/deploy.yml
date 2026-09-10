@@ -75,10 +75,25 @@ jobs:
             echo "code_changed=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          changed="$(git diff --name-only "$before" "$after")"
+          # Fail open on every path below: this job deciding "no need to deploy" is what
+          # silently withholds a deploy (COMMON_STANDARDS §21-12 — the 2026-09-10 incident
+          # where two deploys failed and nobody noticed because the live site looked fine).
+          # A wrong "true" costs one unnecessary deploy; a wrong "false" costs an unnoticed
+          # outage. Only skip when the evidence is unambiguous.
+          if ! changed="$(git diff --name-only "$before" "$after")"; then
+            echo "git diff failed — treating as changed."
+            echo "code_changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           echo "Changed files:"
           echo "$changed"
+          if [ -z "$changed" ]; then
+            echo "Diff came back empty (e.g. a merge commit) — treating as changed."
+            echo "code_changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           # Mirrors COMMON_STANDARDS §23-3's paths-ignore list: '**/*.md', '_docs/**', '.claude/**'.
+          # Any file outside that list (docs mixed with code included) flips this true.
           if echo "$changed" | grep -vE '(^|/)[^/]+\.md$|^_docs/|^\.claude/' | grep -q .; then
             echo "code_changed=true" >> "$GITHUB_OUTPUT"
           else
