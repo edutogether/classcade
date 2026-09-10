@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 2026-09-10 — 종합감사 100/100, 배포 파이프라인 정비
+
+- 카카오톡 공유 카드를 Portal 기준으로 통일, `_docs/CHANGELOG.md` 신설,
+  DOC-STANDARD 기준 문서 정리(CLAUDE.md 82→38줄, `_docs/ops/rollback.md`
+  신설), COMMON_STANDARDS §7 방식 종합감사 10/10 항목 100점(연속 2회
+  배포 실패를 일으키던 배포 워크플로의 산출물 검증 결함과 CSP 값 미검증
+  결함 발견·수정, npm audit devDependency 12건→8건, App.test.tsx 간헐
+  실패 수정), `classcade-freeze-20260910-audited-100` 태그.
+- COMMON_STANDARDS §23 지시로 배포 워크플로를 test/changes/deploy/
+  firestore-rules 잡으로 분리 — 문서 전용 커밋은 배포를 건너뛴다.
+  (`8b4ea54`)
+
 이 저장소의 굵직한 변경을 시간순(최신이 위)으로 기록한다. git 로그·태그에서
 **확인되는 사실만** 적는다 — 추정이나 요약이 아닌 근거는 커밋 해시로 남긴다.
 2026-09-10에 처음 만들었고, 그 이전 이력은 기존 `CLAUDE.md`·`.claude/rules/app.md`·
