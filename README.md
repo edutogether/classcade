@@ -20,6 +20,34 @@
 
 변경 가능한 범위는 실제 로고, 메뉴명, 문구, 기능 정합성, 반응형 재배치입니다. 레이아웃의 밀도, 판타지 세계관, 일러스트 비중, 광원, 음영, 캐릭터 존재감, 게임 UI 감각을 단순화해서는 안 됩니다.
 
+## 기술 스택
+
+React 19 + TypeScript + Vite 7, Firebase(Firestore·App Check·익명 인증, 페어링 기능에서만 사용), Sentry(오류 리포팅). 테스트는 Vitest + Testing Library, Firestore 규칙 테스트는 firebase-tools 에뮬레이터.
+
+## 로컬 실행
+
+```bash
+npm install
+npm run dev          # http://localhost:5173
+```
+
+| 목적 | 명령 |
+|---|---|
+| 테스트 (vitest + `tsc -b --noEmit`) | `npm run test` |
+| 린트 | `npm run lint` |
+| 빌드 | `npm run build` |
+| Firestore 규칙 테스트 (JDK 21 필요) | `npm run rules:test` |
+
+Node 22(CI 기준, `.github/workflows/deploy.yml`)를 권장한다. 페어링(모바일→노트북 이어하기) 기능을 로컬에서 실제로 동작시키려면 `VITE_FIREBASE_*` 환경변수(`src/lib/firebase.ts` 참고)가 필요하지만, 이 환경변수 없이도 앱 자체(교실 NBTI·결과·놀이 추천)는 정상 실행된다.
+
+## 문서 안내
+
+- 이 앱만의 규칙·상태: [`CLAUDE.md`](CLAUDE.md)
+- 도구 무관 사실(명령·금지사항, Codex 등에서도 읽음): [`AGENTS.md`](AGENTS.md)
+- 이 앱에서 겪은 함정과 그 근거: [`.claude/rules/app.md`](.claude/rules/app.md)
+- 변경 이력: [`_docs/CHANGELOG.md`](_docs/CHANGELOG.md)
+- 배포 후 문제 발생 시 롤백 절차: [`_docs/ops/rollback.md`](_docs/ops/rollback.md)
+
 ## Development gate (2026-08-26 정정 — 개발 극초반 계획, 지금은 아래처럼 안 함)
 
 ~~한 화면씩 만들고 매번 사용자 승인 받은 뒤 다음 화면 진행~~ — 이건 개발 착수 시점(8/1) 계획이고, 실제로는 골든패스 전체가 이미 구현·배포되어 라이브 서비스 중이다. 현재 작업 방식·승인 절차는 이 폴더의 `CLAUDE.md`와 최상위 `D:\Projects\CLAUDE.md`를 따른다.

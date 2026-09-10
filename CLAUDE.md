@@ -9,70 +9,24 @@
   2. 노트북에서 사전 5단계 진행 → 코드 불필요 → 계속 그 노트북에서 진행
   3. 모바일에서 사전 5단계 진행 → 코드 불필요 → 계속 그 모바일에서 진행
 
-## 현재 상태 (2026-08-25 기준) — 대표가 모바일 화면을 픽셀 단위로 계속 다듬는 중 (프리즈 아님)
+## 현재 상태 (2026-09-10 기준)
 
-**현재 유효한 복구 지점은 `classcade-freeze-20260909-firebase-migration`이다**(GitHub Pages → Firebase Hosting 이전 완료 시점 — 태그 메시지에 상세 내역 있음). 이전 태그(`20260814`/`20260817`/`20260823`/`20260826`)는 각자 그 시점으로는 여전히 유효하지만 최신 복구 지점이 아니다. 전부 `.githooks/pre-push`(portal/googler와 동일 패턴)로 삭제·이동을 막고 있다 — 새 클론에서는 `git config core.hooksPath .githooks`로 활성화해야 보호가 걸린다. 새 freeze 태그를 찍을 때는 이 줄도 함께 갱신할 것 — 태그만 새로 찍고 이 서술을 안 고쳐 사고 난 전례가 이 조직에 두 번 있다.
+**현재 유효한 복구 지점은 `classcade-freeze-20260909-firebase-migration`이다**(GitHub Pages → Firebase Hosting 이전 완료 시점 — 태그 메시지에 상세 내역 있음). 이전 태그(`20260814`/`20260817`/`20260823`/`20260826`)는 각자 그 시점으로는 여전히 유효하지만 최신 복구 지점이 아니다. 전부 `.githooks/pre-push`(portal/googler와 동일 패턴)로 삭제·이동을 막고 있다 — 새 클론에서는 `git config core.hooksPath .githooks`로 활성화해야 보호가 걸린다. 새 freeze 태그를 찍을 때는 이 줄도 함께 갱신할 것 — 태그만 새로 찍고 이 서술을 안 고쳐 사고 난 전례가 이 조직에 두 번 있다. 롤백 절차는 `_docs/ops/rollback.md` 참고.
 
 - 배포: `https://classcade.edutogether.kr` (Firebase Hosting, `main` 푸시 시 `.github/workflows/deploy.yml`이 자동 배포). 2026-09-09에 GitHub Pages에서 이전 — 보안 응답 헤더가 이유이고, 그 헤더는 `firebase.json`의 `hosting.headers`에 있다.
 - **⚠️ `edutogether.kr` 커스텀 도메인을 이 저장소에 다시 설정하지 말 것.** 그 도메인은
   2026-08-13에 `edutogether/portal`(같교오락실 포털)로 이전됐고 지금 그쪽이 쓰고 있음.
   여기서 재설정하면 포털이 즉시 깨짐. 이 앱은 `edutogether.kr` 루트가 아니라 **서브도메인 `classcade.edutogether.kr`**을 Firebase Hosting 맞춤 도메인으로 쓴다 — 루트 도메인은 여전히 portal 것이다.
-- 브랜치: `main`에서 직접 작업(다른 앱들과 동일한 방식으로 통일, `feature/front120-entry-flow-v1`은 내용 동일한 채 보관만)
-- 이번 프리즈까지 반영된 것: entry flow 전체(prep 1-4 → 닉네임 → 로딩 → journey), 로딩 화면 v6 아트 전환 + 문구 라이브 DOM화, NBTI "다시 탐색하기"·"메인 화면으로" 인터루드, 헤더 로고 글로우, BGM 볼륨 디바운스, PNG→WebP 전량 전환
-- 2026-08-10 외부 리뷰: `_docs/archive/EXTERNAL_HEALTH_REVIEW_20260810.md`
-- **2026-08-17 감사 후 수정 — 완료**: 배포 워크플로우가 Firebase 환경변수 4개(API_KEY/AUTH_DOMAIN/PROJECT_ID/APP_ID)를 전혀 주입하지 않아 프로덕션에서 페어링 기능이 항상 실패하던 치명적 버그 발견·수정. `.github/workflows/deploy-pages.yml`에 `secrets.*` 참조 추가 + 사용자가 GitHub Actions secret 4개 실제 등록 완료 + 재배포 후 `?pairing=1`에서 실제 코드 조회(`"코드를 찾지 못했어요"` — invalid 상태, network_error 아님)로 Firestore 연결 살아있음을 직접 확인함. Firestore 규칙 테스트(`it` 5개, assertion 21개 — 2026-08-26 재감사에서 정확한 개수로 정정)도 CI에서 한 번도 실행된 적 없었던 것을 발견해 `rules:test` 스텝(JDK21 + firebase-tools 에뮬레이터)으로 연결, CI 통과 확인함. 저장소의 `firestore.rules`와 실제 라이브 프로젝트(`classcade-together`)의 배포된 규칙도 Firebase Rules API로 직접 대조해 **완전히 일치** 확인함(CRLF/LF 줄바꿈 차이만 있고 내용은 동일).
-- **2026-08-21~25 — 모바일 프렙(모험 준비) 화면 전면 재작업(40여개 커밋)**: 대표가 직접 픽셀 단위로 모바일 1~5단계 화면을 반복 다듬음. 굵직한 변화만 요약하면 — 1~5단계 카드·제목·질문 폰트 크기와 여백을 서로 완전히 통일(단계 전환 시 프레임 크기가 흔들리던 문제 제거), 이전/다음 버튼 높이를 전 단계 공통 31.5px로 고정, 진행도 배지 숫자를 tabular-nums로 폭 고정, 모바일 전용 배경 이미지 신규 적용(밝기/구도 여러 차례 교정), 로딩 화면에 모바일 전용 세로 비율 아트 추가, BGM 볼륨 슬라이더를 모바일에서는 단순 on/off 토글로 단순화(PC는 슬라이더 유지), 메인 화면 워드마크가 안 움직이던 진짜 원인(이미지 자체의 투명 여백)을 찾아 수정, 4단계 "기타 직접 입력" 카드를 클릭 즉시 그 자리에서 입력하는 방식으로 교체. 배포 워크플로우에 `edutogether.kr` 도메인 재claim 방어 가드도 이 기간에 추가됨(`f27cd7e`).
-
-## 운영 콘솔 설정 (코드로 확인 불가 — 대표가 직접 설정한 값의 기록)
-
-감사 세션은 이 값들을 코드로 검증할 수 없다. 아래는 대표가 콘솔에서 직접 설정하고 확인해준 실제 상태이므로, 감사 시 "확인 불가"로 남기지 말고 이 기록을 근거로 삼는다(값이 바뀌면 대표가 알려줄 때 여기를 갱신한다).
-
-- **GCP 예산 알림 (2026-09-07 설정 완료)**: `classcade-budget-alert`, 프로젝트 `classcade-together`, 월 ₩25,000, 임계값 50%/90%/100%, 이메일 알림 켜짐. **Alerts only — spend cap enforcement가 아니다**: 한도를 넘어도 서비스가 자동으로 멈추지는 않고 메일만 온다.
-- **App Check enforcement (2026-09-07 전환 완료)**: Cloud Firestore를 Monitoring → **Enforced**. 전환 직전 검증된 요청 100%/미검증 0%를 확인한 뒤 진행했고, 전환 후 라이브(`?pairing=1`)에서 여섯 자리 코드를 실제 제출해 Firestore 조회가 정상 통과하는 것("코드를 찾지 못했어요" = 정상 invalid 응답, 네트워크·권한 오류 아님)과 콘솔 에러 0건을 확인함.
-- **App Check — Authentication(PREVIEW)은 Monitoring 유지**: 아직 정식 기능이 아니고, 잘못 걸리면 로그인이 전면 차단되는 위험이 Firestore보다 크다는 판단. 정식 출시되면 그때 재검토한다.
-- **Sentry DSN 등록 (2026-09-08 완료)**: Sentry 프로젝트 생성 + GitHub Actions secret `VITE_SENTRY_DSN` 등록 완료. 배포 번들 실측으로 확인함 — DSN 문자열(`...ingest.us.sentry.io/4512045242449920`)과 `Sentry.init` 옵션 객체(`sendDefaultPii`/`replaysOnErrorSampleRate`)가 실제로 들어가 있다(등록 전에는 이 둘 다 번들에서 0건이라 `initErrorReporting()`이 통째로 죽은 코드였음). 이제 `reportError()` 호출이 프로덕션에서 실제로 전송된다. 처리방침(`public/privacy.html` §3)의 Sentry 고지는 등록 **전에** 먼저 반영해뒀으므로 지금은 문구와 실제 동작이 일치한다.
-
-**⚠️ App Check Enforced와 CSP는 서로 묶여 있다**(CSP는 2026-09-09 이전으로 `index.html`의 `<meta>`가 아니라 `firebase.json`의 `hosting.headers`에 있다). Enforced 상태에서는 App Check 토큰이 없으면 Firestore가 요청을 아예 거부한다. 그 토큰은 reCAPTCHA v3 스크립트(`www.google.com`/`www.gstatic.com`)를 받아와야 발급되므로, CSP의 `script-src`/`frame-src`에서 이 두 도메인을 빼면 페어링이 경고 수준이 아니라 **완전히 막힌다**. CSP를 조이는 변경을 할 때는 반드시 라이브 `?pairing=1`에서 여섯 자리 코드 제출까지 실제로 확인할 것(현재 조합은 2026-09-09 새 도메인에서 재검증 완료).
-
-## ✅ 2026-08-27 — 게임빌더 서브시스템 완전 삭제 (완료, 대표 결정)
-
-2026-08-25 발견된 문제("코드발급 미호출로 페어링 구조적 도달 불가능")를 다시 들여다보니, `disconnectedScenes()`에 갇혀 있던 게 페어링(코드발급 UI) 하나가 아니라 그 뒤에 이어지는 **교실 게임 만들기 전체(9/12 스테이지 — game_intro~sharing)** 였다는 게 2026-08-26 재감사에서 드러났다. 대표는 이 둘을 분리해서 결정했다:
-
-- **페어링(코드발급 UI, `PairingScene`)** — 여전히 **보류**(아래 LOCKED 섹션 참고, 안 바뀜).
-- **게임 만들기 서브시스템** — **완전 삭제로 결정**("나중에 다시 만들 수도 있지만 지금 이 상태로는 아니다, 시기 미정"). 삭제 완료됨:
-  - `scenes/GameScenes.tsx`(196줄), `data/classroomGameBuilder.ts`(198줄), `data/gameVariants.provisional.ts`(66줄), `components/CanonicalGameScene.tsx`(37줄), `components/CompletionExperience.tsx`(80줄) 전부 삭제.
-  - 게임빌더 전용 아트 3장 + 이미 죽어있던 고아 PNG 1장(`concept-selection-master.png`, 3.5MB) 삭제.
-  - `JourneyStage`/`JourneyState`/`JourneyAction`에서 game_* 필드·액션 전부 제거, `version` 2→**3**으로 올려 옛 형식의 저장된 세션은 안전하게 폐기되도록 함(파싱 실패 시 새 여정으로 폴백하는 기존 메커니즘 그대로 재사용).
-  - `recommendationTags`/`rankVideos`(둘 다 살아있는 "놀이 추천" 기능이 씀)에서 항상 `null`이던 조건 필터링 인자를 제거해 시그니처 단순화 — 실제 동작은 완전히 동일(원래도 조건이 늘 null이었음).
-  - README/AGENTS.md의 "우리 반 게임 만들기" 관련 서술 제거·정정.
-  - 검증: tsc/eslint/vitest(71개 통과)/build/rules:test 전부 통과 + 실브라우저로 시작→NBTI 16문항→결과→놀이추천 골든패스 전체 재확인(콘솔 에러 0).
-
-**⚠️ 부수 발견 — 코드로 못 고치는 것**: 시작 화면 퀘스트보드와 결과 화면 팻말에 "학급 게임 연결" / "우리 반 게임 만들기"라는 문구가 **정적 아트 이미지에 직접 그려져(painted) 있음** — 라이브 DOM 텍스트가 아니라서 코드 수정으로 안 고쳐짐. 새 아트를 받거나 크롭/가리기 전까지는 화면에 남아있는 상태(`start-master-v4.webp`, 결과 화면 배경 아트). 다음 아트 작업 라운드에서 같이 처리 필요.
-
-이 정리로 첫 화면 번들이 게임빌더 코드/아트만큼은 줄었지만(index 청크 실측 801.73KB), 페어링이 여전히 보류 상태라 Firebase SDK는 그대로 딸려 들어간다 — 로딩 무게 문제의 근본 해결은 페어링 결정이 나야 완결된다.
+- 브랜치: `main`에서 직접 작업.
+- 지나간 개발 이력(게임빌더 삭제 경위, 첫 실사용 마감 라운드 등)은 `_docs/CHANGELOG.md`와
+  `_docs/archive/`에 있다. 운영 콘솔 설정(App Check·Sentry·예산 알림)은
+  `.claude/rules/app.md`로 옮겼다.
 
 ## 알려진 이슈
 
 리뷰 결과 구조는 견실함. 페어링(LOCKED, 보류)을 빼면 급하게 처리할 구조적 문제는 없다.
 
-- **시작/결과 화면 아트에 삭제된 게임빌더 관련 문구가 그림으로 박혀있음**(위 2026-08-27 섹션 참고) — 코드로 못 고침, 다음 아트 작업 때 새 그림 필요.
-
-~~`.firebaserc` 부재~~ — 2026-08-17 추가 완료(`default: classcade-together`), `firebase use` 확인함.
-
-## 이번 라운드 목표 — 마감 있음 (2026-08-10 갱신)
-
-**수요일(2026-08-12)부터 실제로 작동해야 함. 마감: 화요일(2026-08-11) 밤.** 여기는 googler/aiways-incheon과 달리 "전시/시연"이 아니라 실사용 대상이라 기준이 더 높다.
-
-만점(10/10) 기준으로 지금 남은 갭:
-1. ~~**front120-entry-flow-v1 WIP 완료**~~ — 완료 (커밋 `38003de`). vitest/eslint/tsc/build 통과 + Playwright로 데스크톱·모바일(390x844) 골든 패스(prep 1-4 → 닉네임 → 로딩 → journey 진입, 뒤로가기 포함) 실제 브라우저 확인 완료. 그 과정에서 유닛 테스트로는 안 잡히는 런칭 블로커 3건을 찾아 수정함:
-   - 2~4단계 이전/다음 버튼이 실제로는 미완성 "PLACEHOLDER" 텍스트가 박힌 PNG였음(`prep-02-*`, `prep-nav-*` 에셋). 이미 스타일이 갖춰져 있던 텍스트 버튼(`front120-button`, `front120-prep02-plate__*`)으로 되돌림.
-   - 닉네임 화면 제목이 데스크톱 폭에서 `<span>` 사이 공백 없이 "닉네임을알려주세요"로 붙어 나옴 → 공백 추가.
-   - **가장 심각**: 모바일 뷰포트(폰)에서 1단계 안내 문구가 `white-space:nowrap`으로 넘쳐서 "다음 질문으로" CTA 버튼 위를 덮어 클릭을 가로챔 — 폰에서는 1단계를 절대 통과할 수 없었음. `overflow:hidden` + `pointer-events:none`으로 수정.
-2. **`AdventurePrepScreen.tsx`(434줄, 사용자가 제일 많이 보는 화면), `App.tsx`(239줄) 테스트 추가** — 마감 전 가능하면, 안 되면 최소한 수동 브라우저 확인으로 대체. (수동 브라우저 확인은 위 1번에서 완료했지만, 회귀 방지용 자동 테스트는 아직 없음.)
-3. ~~**`.gitignore`에 `*-debug.log` 추가**~~ — 완료 (기존 WIP 커밋에 포함됨).
-
-## 다음 작업 후보 (마감 이후, 급하지 않음)
-- 나머지 테스트 커버리지 보강
+- **시작/결과 화면 아트에 삭제된 게임빌더 관련 문구가 그림으로 박혀있음**(경위는 `_docs/archive/game-builder-deletion-20260827.md`) — 정적 아트 이미지에 직접 그려진 문구라 코드 수정으로 안 고쳐짐, 다음 아트 작업 때 새 그림 필요.
 
 ## 대표와의 소통 경로 (2026-08-26 확정, 2026-09-06 push/배포 승인 갱신 — 반드시 지킬 것)
 이 세션은 대표와 직접 대화를 시작하지 않는다. 진행상황 공유·질문·의사결정 요청은 전부 **팀장(D:\Projects 최상위 세션, "Project Engineering")을 거쳐서만** 한다 — 대표가 이 세션 창을 직접 열어서 먼저 말을 걸어온 경우에만 그 건에 한해 답한다(최상위 CLAUDE.md "조직 구조" 섹션 참고). 팀장에게서 온 메시지("Project Engineering의 메시지")는 곧 대표의 지시가 전달된 것이므로 별도로 대표에게 재확인하지 말고 그대로 실행한다.
