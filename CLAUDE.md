@@ -1,5 +1,7 @@
 # CLAUDE.md — classcade (CLASSCADE)
 
+표시: 🔴 어기면 실사용자 화면이 깨지거나 개인정보가 샌다 · 🟠 중간 · 🟡 낮음 · 🟢 확인 끝남 (COMMON_STANDARDS §30)
+
 교실 NBTI 기반 몰입형 교육 게임 (React/TS/Vite/Firebase). **실사용 중인 교사 대상 상시 서비스다 — 전시·시연이 아니다.** 상위 원칙은 [D:\Projects\CLAUDE.md](../../CLAUDE.md) 상속 — 여기는 이 앱 전용 상태/이슈만 기록한다.
 
 이 앱만의 함정·금지사항 전체 목록은 [`.claude/rules/app.md`](.claude/rules/app.md)에 있다 — 아래 LOCKED 외에도 CSP에서 App Check·Sentry 도메인 제거 금지, 자리표시자 이미지(`prep-03-map-master.webp`) 삭제 금지, PC/모바일 시각 디자인 임의 변경 금지가 있다. **작업 전에 반드시 읽는다.**

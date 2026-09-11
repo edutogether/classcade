@@ -1,6 +1,8 @@
 # CLASSCADE 개별 규칙
 헌법(D:\Projects\CLAUDE.md → _shared/CONVENTIONS.md, COMMON_STANDARDS.md)에 없는 것만.
 
+표시: 🔴 어기면 실사용자 화면이 깨지거나 개인정보가 샌다 · 🟠 중간 · 🟡 낮음 · 🟢 확인 끝남 (COMMON_STANDARDS §30)
+
 ## 앱
 - 무엇: 교사가 교실 NBTI 16문항을 풀고 성향에 맞는 같이교육 놀이 영상을 추천받는 몰입형 웹 앱
 - 사용자: 실사용 중인 교사 (전시·시연이 아니라 상시 서비스)
