@@ -358,6 +358,8 @@
 .entry-loading__live-title { color: #fff3d6; font-weight: 700; letter-spacing: -.03em; }
 .entry-loading__live-subtitle { color: #e9c98a; font-weight: 600; }
 .entry-loading__live-dots { display: flex; left: 0; position: absolute; top: 0; transform: translate(-50%, -50%); }
+/* 1.2s cycle — MIN_LOADING_DISPLAY_MS in ArtLoadingScreen.tsx (2400ms = two loops,
+   COMMON_STANDARDS §27) is derived from this number by hand. Change one, change both. */
 .entry-loading__live-dots i { animation: entry-pulse 1.2s ease-in-out infinite; background: #ffe8a1; border-radius: 50%; box-shadow: 0 0 8px #ffca54; }
 .entry-loading__live-dots i:nth-child(2) { animation-delay: .16s; }
 .entry-loading__live-dots i:nth-child(3) { animation-delay: .32s; }

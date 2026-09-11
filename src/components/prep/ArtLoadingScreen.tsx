@@ -1,6 +1,15 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { loadingMaster, loadingMasterMobile } from './prepAssets'
 
+/* The three-dot pulse (`.entry-loading__live-dots i`) loops on a 1.2s cycle — see
+   `entry-pulse` in src/entry-flat.css. COMMON_STANDARDS §27: every splash/loading screen
+   must stay up for at least two full loops of its own animation, on every device path,
+   measured under fast/cached conditions (not just the slow-network case). Every screen
+   that renders this component schedules its own hand-off timer against this constant —
+   change the CSS cycle length and update this alongside it, they don't derive from one
+   another. */
+export const MIN_LOADING_DISPLAY_MS = 2400
+
 /* The gold bar frame's inner slot and the empty space around it where text used to be
    baked into the art, pixel-scanned from loading-master-v6.png. If the loading art is
    ever replaced, re-scan and update ONLY these numbers. */

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
-import { ArtLoadingScreen } from './prep/ArtLoadingScreen'
+import { ArtLoadingScreen, MIN_LOADING_DISPLAY_MS } from './prep/ArtLoadingScreen'
 import {
   CAREER_RANGE_OPTIONS,
   GROWTH_PRIORITY_OPTIONS,
@@ -239,7 +239,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
         updatedAt: now,
       })
       if (!result.ok) setLoadingError('모험 기록을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.')
-    }, 2110)
+    }, MIN_LOADING_DISPLAY_MS)
     return () => {
       progressTimers.forEach(window.clearTimeout)
       window.clearTimeout(audioTimer)

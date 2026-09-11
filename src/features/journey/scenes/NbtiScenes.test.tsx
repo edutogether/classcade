@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { StartScene, QuestionScene, ResultScene } from './NbtiScenes'
 import { createJourneyState } from '../journeyState'
@@ -28,6 +28,30 @@ describe('StartScene', () => {
     render(<StartScene {...baseProps({ state: { ...createJourneyState(), resumeStage: 'nbti_question' } })} />)
     expect(screen.getByText('이전 여정 이어가기')).toBeInTheDocument()
     expect(screen.queryByText('새로 시작하기')).not.toBeInTheDocument()
+  })
+
+  it('keeps the loading interlude up for at least two dot-pulse cycles before starting the NBTI (COMMON_STANDARDS §27)', async () => {
+    // The dot animation (`entry-pulse`, src/entry-flat.css) loops every 1.2s, so two full
+    // loops is 2400ms. This is an independent literal, not the MIN_LOADING_DISPLAY_MS
+    // export itself — if that export were ever accidentally lowered, this still catches it.
+    const TWO_PULSE_CYCLES_MS = 2400
+    vi.useFakeTimers()
+    try {
+      const onAction = vi.fn()
+      render(<StartScene {...baseProps({ onAction })} />)
+      fireEvent.click(screen.getByText('교실 NBTI 시작하기'))
+
+      // 80ms before the two-cycle mark, on the interval's own 80ms tick boundary — tight
+      // enough that the pre-fix 22ms/% divisor (completing at the 2240ms tick) would
+      // already have fired here, while the fix (completing at the 2400ms tick) hasn't.
+      await vi.advanceTimersByTimeAsync(TWO_PULSE_CYCLES_MS - 80)
+      expect(onAction).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'START_NBTI' }))
+
+      await vi.advanceTimersByTimeAsync(160)
+      expect(onAction).toHaveBeenCalledWith({ type: 'START_NBTI' })
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })
 

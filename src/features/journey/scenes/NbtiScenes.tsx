@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { prepNavBack, prepNavMainBack, prepNavCtaEnabled, prepNavCtaDisabled, resultCtaEnabled, resultCtaDisabled } from '../../../components/prep/prepAssets'
-import { ArtLoadingScreen } from '../../../components/prep/ArtLoadingScreen'
+import { ArtLoadingScreen, MIN_LOADING_DISPLAY_MS } from '../../../components/prep/ArtLoadingScreen'
 import { JOURNEY_SCENE_ASSETS } from '../../../data/sceneAssets'
 import profileAvatar from '../../../assets/brand/profile-avatar-front.webp'
 import { ClasscadeLockup, Icon } from '../../../components/VisualPrimitives'
@@ -191,7 +191,7 @@ export function StartScene(props: JourneySceneProps) {
     ])
     const startedAt = Date.now()
     const timer = window.setInterval(() => {
-      const percent = Math.min(100, Math.round((Date.now() - startedAt) / 22))
+      const percent = Math.min(100, Math.round((Date.now() - startedAt) / (MIN_LOADING_DISPLAY_MS / 100)))
       setStartProgress(percent)
       if (percent >= 100) {
         window.clearInterval(timer)
@@ -292,7 +292,7 @@ export function QuestionScene(props: JourneySceneProps) {
     ])
     const startedAt = Date.now()
     const timer = window.setInterval(() => {
-      const percent = Math.min(100, Math.round((Date.now() - startedAt) / 22))
+      const percent = Math.min(100, Math.round((Date.now() - startedAt) / (MIN_LOADING_DISPLAY_MS / 100)))
       setReturnProgress(percent)
       if (percent >= 100) {
         window.clearInterval(timer)
@@ -397,7 +397,7 @@ export function ResultScene(props: JourneySceneProps & { onPair: () => void }) {
     playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
     const startedAt = Date.now()
     const timer = window.setInterval(() => {
-      const percent = Math.min(100, Math.round((Date.now() - startedAt) / 22))
+      const percent = Math.min(100, Math.round((Date.now() - startedAt) / (MIN_LOADING_DISPLAY_MS / 100)))
       setRestartProgress(percent)
       if (percent >= 100) { window.clearInterval(timer); restartFromScratch() }
     }, 80)
@@ -421,7 +421,7 @@ export function ResultScene(props: JourneySceneProps & { onPair: () => void }) {
     ])
     const startedAt = Date.now()
     const timer = window.setInterval(() => {
-      const percent = Math.min(100, Math.round((Date.now() - startedAt) / 22))
+      const percent = Math.min(100, Math.round((Date.now() - startedAt) / (MIN_LOADING_DISPLAY_MS / 100)))
       setReviewProgress(percent)
       if (percent >= 100) {
         window.clearInterval(timer)
