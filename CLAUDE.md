@@ -20,7 +20,7 @@ Bumm님 지시가 있을 때만 수시로 돌리고, **세션이 먼저 제안�
 
 ## 현재 상태 (2026-09-10 기준)
 
-**현재 유효한 복구 지점은 `classcade-freeze-20260910-audited-100`이다**(종합감사 10항목 100점 완료 시점 — 태그 메시지에 발견·수정 결함, 재채점 근거, 라이브 실측값 상세 내역 있음). `.githooks/pre-push`(portal/googler와 동일 패턴)가 이 태그의 삭제·이동을 막고 있다 — 새 클론에서는 `git config core.hooksPath .githooks`로 활성화해야 보호가 걸린다. 새 freeze 태그를 찍을 때는 이 줄도 함께 갱신할 것 — 태그만 새로 찍고 이 서술을 안 고쳐 사고 난 전례가 이 조직에 두 번 있다. 롤백 절차는 `_docs/ops/rollback.md` 참고.
+**현재 유효한 복구 지점은 `classcade-freeze-20260910-audited-100`이다**(종합감사 10/10 완료 시점 — 태그 메시지에 발견·수정 결함, 재채점 근거, 라이브 실측값 상세 내역 있음). 점수는 **10/10 (2026-09-10 트리 기준, 이후 커밋 있음 — 정확한 건수는 `git rev-list --count classcade-freeze-20260910-audited-100..HEAD`로 확인)**이며, 재감사 전까지 그 이후 커밋의 점수는 확정값이 아니다. `.githooks/pre-push`(portal/googler와 동일 패턴)가 이 태그의 삭제·이동을 막고 있다 — 새 클론에서는 `git config core.hooksPath .githooks`로 활성화해야 보호가 걸린다. 새 freeze 태그를 찍을 때는 이 줄도 함께 갱신할 것 — 태그만 새로 찍고 이 서술을 안 고쳐 사고 난 전례가 이 조직에 두 번 있다. 롤백 절차는 `_docs/ops/rollback.md` 참고.
 
 2026-09-10에 COMMON_STANDARDS §23-6(대표 지시 1회성 소급 정리)로 옛 태그 5개(`20260814`/`20260817`/`20260823`/`20260826`/`20260909-firebase-migration`)를 삭제 없이 `refs/archive/tags/<이름>`으로 옮겼다 — `git tag` 목록에는 안 보이지만 `git checkout refs/archive/tags/<이름>`으로 여전히 돌아갈 수 있다. 경위는 `_docs/archive/tags-20260910.md` 참고.
 

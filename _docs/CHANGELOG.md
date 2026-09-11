@@ -13,11 +13,11 @@
   세션을 시드해 재방문(캐시 있음) 조건으로 클릭→화면 전환까지 MutationObserver로
   정밀 측정, 4,626ms 동안 떠 있는 것(하한 2,400ms 대비 여유) 확인.
 
-## 2026-09-10 — 종합감사 100/100, 배포 파이프라인 정비
+## 2026-09-10 — 종합감사 10/10, 배포 파이프라인 정비
 
 - 카카오톡 공유 카드를 Portal 기준으로 통일, `_docs/CHANGELOG.md` 신설,
   DOC-STANDARD 기준 문서 정리(CLAUDE.md 82→38줄, `_docs/ops/rollback.md`
-  신설), COMMON_STANDARDS §7 방식 종합감사 10/10 항목 100점(연속 2회
+  신설), COMMON_STANDARDS §7 방식 종합감사 10/10(연속 2회
   배포 실패를 일으키던 배포 워크플로의 산출물 검증 결함과 CSP 값 미검증
   결함 발견·수정, npm audit devDependency 12건→8건, App.test.tsx 간헐
   실패 수정), `classcade-freeze-20260910-audited-100` 태그.
