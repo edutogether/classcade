@@ -19,18 +19,18 @@
 
 감사 세션은 이 값들을 코드로 검증할 수 없다. 아래는 대표가 콘솔에서 직접 설정하고 확인해준 실제 상태이므로, 감사 시 "확인 불가"로 남기지 말고 이 기록을 근거로 삼는다(값이 바뀌면 대표가 알려줄 때 여기를 갱신한다).
 
-- **GCP 예산 알림 (2026-09-07 설정 완료)**: `classcade-budget-alert`, 프로젝트 `classcade-together`, 월 ₩25,000, 임계값 50%/90%/100%, 이메일 알림 켜짐. **Alerts only — spend cap enforcement가 아니다**: 한도를 넘어도 서비스가 자동으로 멈추지는 않고 메일만 온다.
-- **App Check enforcement (2026-09-07 전환 완료)**: Cloud Firestore를 Monitoring → **Enforced**. 전환 직전 검증된 요청 100%/미검증 0%를 확인한 뒤 진행했고, 전환 후 라이브(`?pairing=1`)에서 여섯 자리 코드를 실제 제출해 Firestore 조회가 정상 통과하는 것("코드를 찾지 못했어요" = 정상 invalid 응답, 네트워크·권한 오류 아님)과 콘솔 에러 0건을 확인함.
-- **App Check — Authentication(PREVIEW)은 Monitoring 유지**: 아직 정식 기능이 아니고, 잘못 걸리면 로그인이 전면 차단되는 위험이 Firestore보다 크다는 판단. 정식 출시되면 그때 재검토한다.
-- **Sentry DSN 등록 (2026-09-08 완료)**: Sentry 프로젝트 생성 + GitHub Actions secret `VITE_SENTRY_DSN` 등록 완료. 배포 번들 실측으로 확인함 — DSN 문자열(`...ingest.us.sentry.io/4512045242449920`)과 `Sentry.init` 옵션 객체(`sendDefaultPii`/`replaysOnErrorSampleRate`)가 실제로 들어가 있다(등록 전에는 이 둘 다 번들에서 0건이라 `initErrorReporting()`이 통째로 죽은 코드였음). 이제 `reportError()` 호출이 프로덕션에서 실제로 전송된다. 처리방침(`public/privacy.html` §3)의 Sentry 고지는 등록 **전에** 먼저 반영해뒀으므로 지금은 문구와 실제 동작이 일치한다.
+- 🟢 **GCP 예산 알림 (2026-09-07 설정 완료)**: `classcade-budget-alert`, 프로젝트 `classcade-together`, 월 ₩25,000, 임계값 50%/90%/100%, 이메일 알림 켜짐. **Alerts only — spend cap enforcement가 아니다**: 한도를 넘어도 서비스가 자동으로 멈추지는 않고 메일만 온다.
+- 🟢 **App Check enforcement (2026-09-07 전환 완료)**: Cloud Firestore를 Monitoring → **Enforced**. 전환 직전 검증된 요청 100%/미검증 0%를 확인한 뒤 진행했고, 전환 후 라이브(`?pairing=1`)에서 여섯 자리 코드를 실제 제출해 Firestore 조회가 정상 통과하는 것("코드를 찾지 못했어요" = 정상 invalid 응답, 네트워크·권한 오류 아님)과 콘솔 에러 0건을 확인함.
+- 🟡 **App Check — Authentication(PREVIEW)은 Monitoring 유지**: 아직 정식 기능이 아니고, 잘못 걸리면 로그인이 전면 차단되는 위험이 Firestore보다 크다는 판단. 정식 출시되면 그때 재검토한다.
+- 🟢 **Sentry DSN 등록 (2026-09-08 완료)**: Sentry 프로젝트 생성 + GitHub Actions secret `VITE_SENTRY_DSN` 등록 완료. 배포 번들 실측으로 확인함 — DSN 문자열(`...ingest.us.sentry.io/4512045242449920`)과 `Sentry.init` 옵션 객체(`sendDefaultPii`/`replaysOnErrorSampleRate`)가 실제로 들어가 있다(등록 전에는 이 둘 다 번들에서 0건이라 `initErrorReporting()`이 통째로 죽은 코드였음). 이제 `reportError()` 호출이 프로덕션에서 실제로 전송된다. 처리방침(`public/privacy.html` §3)의 Sentry 고지는 등록 **전에** 먼저 반영해뒀으므로 지금은 문구와 실제 동작이 일치한다.
 
-**⚠️ App Check Enforced와 CSP는 서로 묶여 있다**(CSP는 2026-09-09 이전으로 `index.html`의 `<meta>`가 아니라 `firebase.json`의 `hosting.headers`에 있다). Enforced 상태에서는 App Check 토큰이 없으면 Firestore가 요청을 아예 거부한다. 그 토큰은 reCAPTCHA v3 스크립트(`www.google.com`/`www.gstatic.com`)를 받아와야 발급되므로, CSP의 `script-src`/`frame-src`에서 이 두 도메인을 빼면 페어링이 경고 수준이 아니라 **완전히 막힌다**. CSP를 조이는 변경을 할 때는 반드시 라이브 `?pairing=1`에서 여섯 자리 코드 제출까지 실제로 확인할 것(현재 조합은 2026-09-09 새 도메인에서 재검증 완료).
+🔴 **App Check Enforced와 CSP는 서로 묶여 있다**(CSP는 2026-09-09 이전으로 `index.html`의 `<meta>`가 아니라 `firebase.json`의 `hosting.headers`에 있다). Enforced 상태에서는 App Check 토큰이 없으면 Firestore가 요청을 아예 거부한다. 그 토큰은 reCAPTCHA v3 스크립트(`www.google.com`/`www.gstatic.com`)를 받아와야 발급되므로, CSP의 `script-src`/`frame-src`에서 이 두 도메인을 빼면 페어링이 경고 수준이 아니라 **완전히 막힌다**. CSP를 조이는 변경을 할 때는 반드시 라이브 `?pairing=1`에서 여섯 자리 코드 제출까지 실제로 확인할 것(현재 조합은 2026-09-09 새 도메인에서 재검증 완료).
 
 ## 이 앱에서 절대 하면 안 되는 것
 
-- **`edutogether.kr` 커스텀 도메인을 이 저장소에 다시 설정하지 않는다.** 그 도메인은 2026-08-13에 `edutogether/portal`로 이전됐고 지금 그쪽이 쓰고 있다. 여기에 CNAME 파일이 하나라도 들어가면 Pages가 도메인을 다시 이 앱으로 가져가 포털이 즉시 깨진다. 배포 워크플로에 방어 가드가 있지만 가드를 지우는 것도 금지.
+- 🔴 **`edutogether.kr` 커스텀 도메인을 이 저장소에 다시 설정하지 않는다.** 그 도메인은 2026-08-13에 `edutogether/portal`로 이전됐고 지금 그쪽이 쓰고 있다. 여기에 CNAME 파일이 하나라도 들어가면 Pages가 도메인을 다시 이 앱으로 가져가 포털이 즉시 깨진다. 배포 워크플로에 방어 가드가 있지만 가드를 지우는 것도 금지.
 
-- **페어링 서브시스템은 보류(아카이브)된 기능이다 — 결함으로 잡거나 삭제를 제안하지 않는다.** 코드발급 UI가 도달 불가한 것은 버그가 아니라 Bumm님이 두 차례 확인해 내린 결정(2026-08-26)이다. 감사에서 감점하지 않고(COMMON_STANDARDS §4-4), "되살릴까 지울까"는 이미 닫힌 질문이라 다시 올리지 않는다. 모바일·PC 에셋이 완성되어 화면을 더 안 고치는 시점에 UX 3안 중 하나로 재설계하며 그때 함께 의논한다.
+- 🟠 **페어링 서브시스템은 보류(아카이브)된 기능이다 — 결함으로 잡거나 삭제를 제안하지 않는다.** 코드발급 UI가 도달 불가한 것은 버그가 아니라 Bumm님이 두 차례 확인해 내린 결정(2026-08-26)이다. 감사에서 감점하지 않고(COMMON_STANDARDS §4-4), "되살릴까 지울까"는 이미 닫힌 질문이라 다시 올리지 않는다. 모바일·PC 에셋이 완성되어 화면을 더 안 고치는 시점에 UX 3안 중 하나로 재설계하며 그때 함께 의논한다.
 
   재설계할 때 **함께 풀어야 할 것들** (지금 고치지 말 것, 목록으로만 유지):
   - `src/features/pairing/pairingContract.ts:24` — 이관 코드를 `Math.random()`으로 만든다. 프로필과 NBTI 답변 전체를 넘기는 토큰이므로 `crypto.getRandomValues`로 바꿔야 한다.
@@ -40,17 +40,17 @@
   - Firestore 콘솔 — `pairingSessions.expiresAt`에 TTL 정책이 없어 만료 문서가 계속 쌓인다.
   - `?pairing=1`(`PairingEntryScene`) 진입자는 개인정보 처리방침에 도달할 방법이 없다. 프렙 5단계와 결과 화면에는 링크가 있지만 이 진입 경로는 둘 다 거치지 않는다(2026-09-08 Playwright 실측: 링크 0개). 이 화면이 동결 대상이라 그때 함께 처리한다.
 
-- **CSP에서 아래를 빼지 않는다.** CSP는 2026-09-09 이전 이후 `index.html`의 `<meta>`가 아니라 **`firebase.json`의 `hosting.headers`**에 있다(`index.html`에는 그 사실을 알리는 주석만 남아 있다). 각각을 빼면 조용히 기능이 죽는다(에러가 눈에 띄지 않는다):
+- 🔴 **CSP에서 아래를 빼지 않는다.** CSP는 2026-09-09 이전 이후 `index.html`의 `<meta>`가 아니라 **`firebase.json`의 `hosting.headers`**에 있다(`index.html`에는 그 사실을 알리는 주석만 남아 있다). 각각을 빼면 조용히 기능이 죽는다(에러가 눈에 띄지 않는다):
   - `script-src`/`frame-src`의 `https://www.google.com`, `https://www.gstatic.com` — App Check의 reCAPTCHA v3 스크립트가 여기서 온다. **Firestore App Check가 Enforced로 전환된 뒤(2026-09-07)로는 토큰이 없으면 Firestore가 요청을 거부하므로, 이걸 빼면 페어링이 경고가 아니라 완전히 차단된다.**
   - `connect-src`의 `https://*.ingest.us.sentry.io` — Sentry 전송 대상이다. 실제로 2026-09-08에 이게 빠진 채 배포되어 모니터링이 전량 차단된 적이 있다.
   - CSP를 조이는 변경을 할 때는 반드시 라이브에서 `?pairing=1`에 여섯 자리 코드를 넣어 제출까지 해보고(정상이면 "코드를 찾지 못했어요"), 콘솔에 CSP 위반이 없는지 확인한다.
   - 배포 워크플로의 스모크 검사가 이 다섯 가지 허용(`script-src`의 google·gstatic, `frame-src`의 google, `connect-src`의 sentry, `frame-ancestors 'none'`)을 **값까지** 대조해 하나라도 빠지면 배포를 실패시킨다(2026-09-10 추가). 헤더가 있는지만 보던 이전 검사는 이 다섯 개를 다 빼도 통과했다. 기대 목록은 워크플로에 직접 적혀 있다 — `firebase.json`에서 읽어오면 감시 대상과 항상 같아져 감시가 되지 않기 때문이다.
 
-- **`prep-03-map-master.webp`를 "중복 파일"이라는 이유로 지우지 않는다.** 이 파일은 `prep-world-backdrop-16x9-v2.webp`와 SHA-256이 같지만 중복이 아니라 **의도된 자리표시자**다 — 3단계 아트모드의 지역 지도 원화가 아직 없어서 배경 이미지를 임시로 같은 경로에 놓아둔 것이고, 그 취지가 `src/components/prep/prepAssets.ts`의 import 주석에 적혀 있다("swap the real drawing in at this exact path, no code change needed"). 해시 기준으로 중복 자산을 훑는 정리 작업이 이걸 지우면 진짜 원화가 들어올 자리가 사라지고 3단계 아트모드 렌더가 깨진다. 빌드 시 Vite가 두 참조를 한 파일로 합치므로 방문자가 받는 바이트는 애초에 늘지 않는다.
+- 🟠 **`prep-03-map-master.webp`를 "중복 파일"이라는 이유로 지우지 않는다.** 이 파일은 `prep-world-backdrop-16x9-v2.webp`와 SHA-256이 같지만 중복이 아니라 **의도된 자리표시자**다 — 3단계 아트모드의 지역 지도 원화가 아직 없어서 배경 이미지를 임시로 같은 경로에 놓아둔 것이고, 그 취지가 `src/components/prep/prepAssets.ts`의 import 주석에 적혀 있다("swap the real drawing in at this exact path, no code change needed"). 해시 기준으로 중복 자산을 훑는 정리 작업이 이걸 지우면 진짜 원화가 들어올 자리가 사라지고 3단계 아트모드 렌더가 깨진다. 빌드 시 Vite가 두 참조를 한 파일로 합치므로 방문자가 받는 바이트는 애초에 늘지 않는다.
 
-- **`firebase.json`의 `Cache-Control: no-cache`를 `**/*.html` 같은 패턴으로 좁히지 않는다.** 그 패턴은 **루트 요청(`/`)에 매칭되지 않아** Firebase 기본값 `max-age=3600`이 걸리고, 그러면 배포 후 최대 1시간 동안 재방문자가 옛 HTML(=옛 자산 해시)을 받습니다. 2026-09-09 이전 작업에서 실제로 이렇게 나가서 실측으로 잡았습니다. 전역 `**` 블록에 `no-cache`를 두고 `/assets/**`(해시 붙은 자산)만 immutable로 덮는 지금 구조를 유지하세요. JSON이라 이 설명을 파일 안에 주석으로 둘 수 없어 여기 적습니다.
+- 🟠 **`firebase.json`의 `Cache-Control: no-cache`를 `**/*.html` 같은 패턴으로 좁히지 않는다.** 그 패턴은 **루트 요청(`/`)에 매칭되지 않아** Firebase 기본값 `max-age=3600`이 걸리고, 그러면 배포 후 최대 1시간 동안 재방문자가 옛 HTML(=옛 자산 해시)을 받습니다. 2026-09-09 이전 작업에서 실제로 이렇게 나가서 실측으로 잡았습니다. 전역 `**` 블록에 `no-cache`를 두고 `/assets/**`(해시 붙은 자산)만 immutable로 덮는 지금 구조를 유지하세요. JSON이라 이 설명을 파일 안에 주석으로 둘 수 없어 여기 적습니다.
 
-- **PC/모바일 화면의 시각 디자인(배치·색·간격·아트)을 임의로 바꾸지 않는다.** Bumm님이 직접 픽셀 단위로 다듬는 영역이다. 동작 버그와 접근성 결함은 정상적으로 고친다.
+- 🟡 **PC/모바일 화면의 시각 디자인(배치·색·간격·아트)을 임의로 바꾸지 않는다.** Bumm님이 직접 픽셀 단위로 다듬는 영역이다. 동작 버그와 접근성 결함은 정상적으로 고친다.
 
 ## 카카오톡 공유 카드
 - `index.html`의 og/twitter 태그는 Portal(`apps.ts`) 기준 문구·그림으로 통일한다(2026-09-10). 그림은 Portal(`edutogether.kr/assets/og/classcade.jpg`) 원본을 받아 `public/og.jpg`로 이 저장소 자체 도메인에서 배포한다 — Portal 쪽 배포가 막혀도 이 앱 카드는 영향받지 않게 하기 위해서다.
@@ -77,12 +77,12 @@
 
 ## 자주 틀리는 것
 
-- **설정값이 비어 있거나 막혀 있어도 빌드·배포는 조용히 성공한다.** 두 번 났다: 2026-08-17 Firebase 시크릿 4종이 워크플로에 주입되지 않아 프로덕션 페어링이 항상 실패, 2026-09-08 CSP `connect-src`가 Sentry 전송을 막아 모니터링 이벤트가 0건. 둘 다 빌드·테스트·배포가 전부 초록이었다. 시크릿 4종은 이제 CI가 빌드 전에 막지만, **"각각은 검증을 통과했는데 합쳐지니 서로를 무효화하는"** 조합은 여전히 자동으로 안 잡힌다 — 설정을 건드렸으면 라이브에서 그 기능이 실제로 동작하는지 눈으로 확인한다.
+- 🟡 **설정값이 비어 있거나 막혀 있어도 빌드·배포는 조용히 성공한다.** 두 번 났다: 2026-08-17 Firebase 시크릿 4종이 워크플로에 주입되지 않아 프로덕션 페어링이 항상 실패, 2026-09-08 CSP `connect-src`가 Sentry 전송을 막아 모니터링 이벤트가 0건. 둘 다 빌드·테스트·배포가 전부 초록이었다. 시크릿 4종은 이제 CI가 빌드 전에 막지만, **"각각은 검증을 통과했는데 합쳐지니 서로를 무효화하는"** 조합은 여전히 자동으로 안 잡힌다 — 설정을 건드렸으면 라이브에서 그 기능이 실제로 동작하는지 눈으로 확인한다.
 
-- **반대 방향도 난다 — 배포가 실패했는데 라이브가 멀쩡해 보인다.** 2026-09-10, `public/og/classcade-share-v2.png`를 지운 뒤에도 워크플로의 "Verify build artifact"가 그 파일을 계속 단언해서 **연속 두 번의 배포가 실패**했다. 라이브는 직전 성공분(`b13f97c`)을 그대로 서빙하고 있어 화면상 아무 이상이 없었고, 아무도 몇 시간 동안 눈치채지 못했다. 그 사이에 급한 수정을 push했다면 조용히 안 나갔을 것이다. **push한 뒤에는 `gh run list --limit 1 --json headSha,conclusion`으로 "방금 그 커밋"의 실행 결과를 확인한다**("최근 실행"이 아니라 — COMMON_STANDARDS §21-7). 그리고 **산출물을 지울 때는 그것을 단언하는 CI 줄이 있는지 함께 본다.**
+- 🟠 **반대 방향도 난다 — 배포가 실패했는데 라이브가 멀쩡해 보인다.** 2026-09-10, `public/og/classcade-share-v2.png`를 지운 뒤에도 워크플로의 "Verify build artifact"가 그 파일을 계속 단언해서 **연속 두 번의 배포가 실패**했다. 라이브는 직전 성공분(`b13f97c`)을 그대로 서빙하고 있어 화면상 아무 이상이 없었고, 아무도 몇 시간 동안 눈치채지 못했다. 그 사이에 급한 수정을 push했다면 조용히 안 나갔을 것이다. **push한 뒤에는 `gh run list --limit 1 --json headSha,conclusion`으로 "방금 그 커밋"의 실행 결과를 확인한다**("최근 실행"이 아니라 — COMMON_STANDARDS §21-7). 그리고 **산출물을 지울 때는 그것을 단언하는 CI 줄이 있는지 함께 본다.**
 
-- **`.github/workflows/deploy.yml`의 "Verify build artifact" 스텝이 하드코딩된 파일명을 단언하는 곳이 7곳 있다**(`dist/index.html`·`dist/assets`·`dist/privacy.html`·`dist/og.jpg`·`dist/favicon.svg`·`dist/favicon-32x32.png`·`dist/apple-touch-icon.png`·`dist/site.webmanifest`, mp3·m4a 개수 하한 2곳). 2026-09-10 사고(바로 위 항목) 이후로 지금 깨진 곳은 없지만 **구조적으로 같은 종류의 함정**이다 — 이 파일들 중 하나를 지우거나 이름을 바꾸면 같은 패턴이 재발한다. 실패 시 메시지 자체에 "이 파일을 의도적으로 지웠다면 `deploy.yml`의 이 스텝도 같이 고칠 것"이라는 안내를 넣어뒀다(`require_file` 헬퍼) — 파일 목록은 지우지 말고, **그 파일을 실제로 지우거나 이름 바꿀 때 같은 커밋에서 이 스텝도 같이 고친다.**
+- 🟡 **`.github/workflows/deploy.yml`의 "Verify build artifact" 스텝이 하드코딩된 파일명을 단언하는 곳이 7곳 있다**(`dist/index.html`·`dist/assets`·`dist/privacy.html`·`dist/og.jpg`·`dist/favicon.svg`·`dist/favicon-32x32.png`·`dist/apple-touch-icon.png`·`dist/site.webmanifest`, mp3·m4a 개수 하한 2곳). 2026-09-10 사고(바로 위 항목) 이후로 지금 깨진 곳은 없지만 **구조적으로 같은 종류의 함정**이다 — 이 파일들 중 하나를 지우거나 이름을 바꾸면 같은 패턴이 재발한다. 실패 시 메시지 자체에 "이 파일을 의도적으로 지웠다면 `deploy.yml`의 이 스텝도 같이 고칠 것"이라는 안내를 넣어뒀다(`require_file` 헬퍼) — 파일 목록은 지우지 말고, **그 파일을 실제로 지우거나 이름 바꿀 때 같은 커밋에서 이 스텝도 같이 고친다.**
 
-- **"자주 뻗는다"는 인상이 오면 개수부터 세지 말고 원인으로 묶는다.** 2026-09-10 대표님이 "얘 자꾸 뻗는 게 이상해"라고 하셨을 때 최근 30일 배포 실행 194회를 전수 조사했다 — 실패 9회였지만 원인은 3종(현재 파이프라인의 진짜 결함 1건이 후속 커밋 4개에서 반복 카운트된 것, Dependabot 자체 업데이트 시도 실패 3건은 우리 파이프라인과 무관한 GitHub 쪽 소음, GitHub Pages 시절 1회성 결함 2건은 이미 그날 해결됨)뿐이었다. **"실패가 반복되는 것"과 "고장이 여러 개인 것"은 다르다** — 후자로 착각하면 이미 고친 걸 다시 고치려 들거나 없는 문제를 찾아 헤맨다. 근본 원인은 결함 자체가 아니라 **"커밋하고 그 커밋의 CI 결과를 확인하지 않은 채 다음 작업으로 넘어간 습관"**이었다 — 코드를 고친 뒤로는 매 push마다 `gh run list --json headSha`로 그 커밋의 실행을 확인하는 것으로 바꿨고(2026-09-10 이후 push 전부 그렇게 확인), 그 뒤로 재발이 없다.
+- 🟡 **"자주 뻗는다"는 인상이 오면 개수부터 세지 말고 원인으로 묶는다.** 2026-09-10 대표님이 "얘 자꾸 뻗는 게 이상해"라고 하셨을 때 최근 30일 배포 실행 194회를 전수 조사했다 — 실패 9회였지만 원인은 3종(현재 파이프라인의 진짜 결함 1건이 후속 커밋 4개에서 반복 카운트된 것, Dependabot 자체 업데이트 시도 실패 3건은 우리 파이프라인과 무관한 GitHub 쪽 소음, GitHub Pages 시절 1회성 결함 2건은 이미 그날 해결됨)뿐이었다. **"실패가 반복되는 것"과 "고장이 여러 개인 것"은 다르다** — 후자로 착각하면 이미 고친 걸 다시 고치려 들거나 없는 문제를 찾아 헤맨다. 근본 원인은 결함 자체가 아니라 **"커밋하고 그 커밋의 CI 결과를 확인하지 않은 채 다음 작업으로 넘어간 습관"**이었다 — 코드를 고친 뒤로는 매 push마다 `gh run list --json headSha`로 그 커밋의 실행을 확인하는 것으로 바꿨고(2026-09-10 이후 push 전부 그렇게 확인), 그 뒤로 재발이 없다.
 
-- **유닛 테스트가 전부 통과해도 실제 브라우저에서만 드러나는 결함이 있다.** 두 번 났다: 2~4단계 이전/다음 버튼이 미완성 "PLACEHOLDER" 문구가 박힌 PNG였던 것, 모바일에서 1단계 안내 문구가 넘쳐 "다음 질문" 버튼을 덮어 폰에서는 1단계를 통과할 수 없었던 것. 화면에 영향 있는 변경은 실제 브라우저에서 데스크톱·모바일 폭 둘 다 확인한다.
+- 🟡 **유닛 테스트가 전부 통과해도 실제 브라우저에서만 드러나는 결함이 있다.** 두 번 났다: 2~4단계 이전/다음 버튼이 미완성 "PLACEHOLDER" 문구가 박힌 PNG였던 것, 모바일에서 1단계 안내 문구가 넘쳐 "다음 질문" 버튼을 덮어 폰에서는 1단계를 통과할 수 없었던 것. 화면에 영향 있는 변경은 실제 브라우저에서 데스크톱·모바일 폭 둘 다 확인한다.
