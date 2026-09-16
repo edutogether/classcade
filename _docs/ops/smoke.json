@@ -1,0 +1,25 @@
+{
+  "$comment": "배포 후 검증용 주요 화면 선언 (_shared/CONVENTIONS.md §3.5). 화면 문구를 바꾸면 이 파일의 expect도 같은 커밋에서 고친다.",
+  "baseUrl": "https://classcade.edutogether.kr",
+  "screens": [
+    {
+      "name": "첫 화면 (모험 준비)",
+      "path": "/",
+      "expect": [
+        "CLASSCADE",
+        "모험 준비",
+        "교실 모험을 시작하기 전"
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "screen": "2~5단계 문항과 결과 화면",
+      "reason": "같은 URL 안에서 클릭으로 넘어가는 단계다. 문항을 눌러 진행시키면 검사가 3분을 넘기고 앱 상태도 남긴다."
+    },
+    {
+      "screen": "학교급 선택 항목(유아·초등·중등·고등·특수)",
+      "reason": "선택지는 늘거나 이름이 바뀔 수 있어 expect로 쓰지 않는다."
+    }
+  ]
+}
