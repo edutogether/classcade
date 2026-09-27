@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 2026-09-27 — React 19.3.0 업그레이드 (지시 Bumm 9/27)
+
+- `react`·`react-dom`·`@types/react`·`@types/react-dom`을 19.1.1 계열에서 19.3.0으로
+  올림. 이번엔 이 네 패키지만 — Vite·TypeScript 등은 건드리지 않음(한 번에 한 변화).
+  린트·`tsc -b --noEmit`·vitest(119 통과)·`rules:test`(에뮬레이터 6개 통과)·빌드 전부
+  로컬 통과, 새로 생긴 경고 없음. 로컬 dev 서버에서 프렙 1→2단계 선택·전환·콘솔 에러
+  0건 확인. 업그레이드 직전 지점을 `classcade-freeze-20260927-pre-react1930` 태그로
+  고정.
+
 ## 2026-09-11 — 로딩 화면 두 바퀴 하한 (COMMON_STANDARDS §27)
 
 - 모든 로딩 인터루드(프렙 완료·NBTI 시작/재시작/복귀/결과 전환, 총 6곳)의 점 애니메이션
