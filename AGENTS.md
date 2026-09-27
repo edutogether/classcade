@@ -38,8 +38,7 @@ Story 공유")는 지금 존재하지 않는다. 게임 만들기 서브시스�
 - **로컬(집 PC) 전용 작업** — 클라우드에서는 하지 않는다: 콘솔 작업, 운영 데이터 읽기·쓰기, 배포 승인,
   집 PC 모니터를 쓰는 측정. 클라우드는 코드 수정·검사·PR까지만. 이 앱에서는 구체적으로 —
   Firebase/GCP 콘솔의 App Check·Sentry·예산 알림 설정 확인·변경, 그리고 라이브 도메인에서
-  `?pairing=1`에 여섯 자리 코드를 제출해 App Check·Firestore 통과 여부를 확인하는 작업
-  (reCAPTCHA v3가 자동화를 차단해 헤드리스로는 검증 불가하다)이 여기 해당한다.
+  `?pairing=1`에 여섯 자리 코드를 제출해 App Check·Firestore 통과 여부를 확인하는 작업(reCAPTCHA v3가 자동화를 차단해 헤드리스로는 검증 불가하다)이 여기 해당한다.
 
 ## Working on this repo — read this first (2026-09-08 추가)
 
@@ -64,6 +63,7 @@ Story 공유")는 지금 존재하지 않는다. 게임 만들기 서브시스�
 2. **페어링 서브시스템(`src/features/pairing/`)은 보류(아카이브)된 기능이다.** 도달 불가한 것은 버그가 아니라 확정된 결정이다 — 결함으로 보고하거나 삭제를 제안하지 않는다.
 3. **CSP에서 `www.google.com`/`www.gstatic.com`(script-src·frame-src)과 `*.ingest.us.sentry.io`(connect-src)를 빼지 않는다.** CSP는 `index.html`이 아니라 **`firebase.json`의 `hosting.headers`**에 있다(2026-09-09 Firebase Hosting 이전 이후). 앞의 것을 빼면 App Check 토큰 발급이 막혀 페어링이 완전히 차단되고(Firestore가 Enforced), 뒤의 것을 빼면 오류 모니터링이 조용히 죽는다. 둘 다 실제로 발생했던 사고다.
 4. **PC/모바일 화면의 시각 디자인(배치·색·간격·아트)은 임의로 바꾸지 않는다.** 소유자가 직접 다듬는 영역이다. 동작 버그와 접근성 결함은 정상적으로 고친다.
+5. **`.claude/rules/app.md`의 금지·함정 목록도 반드시 읽는다.** 위 4개는 요약이고, 자산 자리표시자·캐시 헤더 패턴·CSP 스모크 검사 등 여기 없는 항목이 더 있다.
 
 ## Visual source of truth
 

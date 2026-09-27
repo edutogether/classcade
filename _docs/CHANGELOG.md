@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2026-09-27 — AGENTS.md 금지 목록에 app.md 참조 추가 (지시 Bumm 경유 팀장)
+
+- Codex는 `.claude/rules/app.md`를 자동으로 읽지 않으므로, AGENTS.md "절대 하면 안 되는 것"
+  목록에 "app.md의 금지·함정 목록도 반드시 읽는다"는 5번 항목을 추가함. 자리 확보를 위해
+  기존 로컬 전용 작업 설명 한 줄을 병합, 180줄 유지. 문서만 변경.
+
 ## 2026-09-27 — AGENTS.md에 조직 공통 규칙 절 추가 (지시 Bumm 경유 팀장)
 
 - Codex 클라우드·Claude 클라우드 등 `D:\Projects` 공통 문서를 못 보는 도구를 위해,
