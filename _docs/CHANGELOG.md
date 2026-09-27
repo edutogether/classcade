@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2026-09-27 — LOCKED 페어링 규칙에 1회성 lint 예외 기록 (대표 직접 승인)
+
+- `eslint-plugin-react-hooks` 7.x 도입에 필요한 `PairingScreens.tsx` 2곳의
+  `react-hooks/set-state-in-effect` 위반 수정을 이번 건에 한해 허용하는 예외를
+  CLAUDE.md LOCKED 절에 날짜와 함께 기록. 동작 불변 조건, "되살리기/삭제/재설계"
+  질문 재개 아님을 명시.
+
 ## 2026-09-27 — PR 검사 워크플로 신설 (지시 Bumm 경유 팀장)
 
 - `.github/workflows/pr-checks.yml` 신설 — `main` 대상 PR을 열면 배포 워크플로의 `test`
