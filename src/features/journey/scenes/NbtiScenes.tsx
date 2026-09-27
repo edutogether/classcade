@@ -1,5 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
-import { useLatestRef } from '../../../lib/useLatestRef'
+import { useEffect, useEffectEvent, useState, type ReactNode } from 'react'
 import { prepNavBack, prepNavMainBack, prepNavCtaEnabled, prepNavCtaDisabled, resultCtaEnabled, resultCtaDisabled } from '../../../components/prep/prepAssets'
 import { ArtLoadingScreen, MIN_LOADING_DISPLAY_MS } from '../../../components/prep/ArtLoadingScreen'
 import { JOURNEY_SCENE_ASSETS } from '../../../data/sceneAssets'
@@ -172,11 +171,11 @@ export function StartScene(props: JourneySceneProps) {
      prep step 1 — both behind the same loading interlude. */
   const [starting, setStarting] = useState<false | 'questions' | 'reset'>(false)
   const [startProgress, setStartProgress] = useState(0)
-  /* onAction is a fresh function on every JourneyApp render; going through a ref keeps
-     it OUT of the effect deps. With it as a dep, any unrelated re-render (a notice
-     fading, audio state syncing) restarted the interlude stopwatch and the bar visibly
-     ran BACKWARD before creeping forward again. */
-  const startActionRef = useLatestRef(props.onAction)
+  /* onAction is a fresh function on every JourneyApp render; an Effect Event always sees
+     the latest one without needing to be in the effect's deps. With onAction itself as a
+     dep, any unrelated re-render (a notice fading, audio state syncing) restarted the
+     interlude stopwatch and the bar visibly ran BACKWARD before creeping forward again. */
+  const onStart = useEffectEvent(() => props.onAction({ type: 'START_NBTI' }))
   useEffect(() => {
     if (!starting) return
     playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
@@ -196,7 +195,7 @@ export function StartScene(props: JourneySceneProps) {
       if (percent >= 100) {
         window.clearInterval(timer)
         if (mode === 'reset') { restartFromScratch(); return }
-        void nextSceneReady.then(() => startActionRef.current({ type: 'START_NBTI' }))
+        void nextSceneReady.then(() => onStart())
       }
     }, 80)
     return () => window.clearInterval(timer)
@@ -239,8 +238,8 @@ export function QuestionScene(props: JourneySceneProps) {
      result — the reveal itself is instant, so the bar is pure theatre (~2.6s). */
   const [revealing, setRevealing] = useState(false)
   const [revealProgress, setRevealProgress] = useState(0)
-  /* Ref, not dep: a re-render mid-interlude must not restart the stopwatch (see StartScene). */
-  const revealActionRef = useLatestRef(props.onAction)
+  /* Effect Event, not dep: a re-render mid-interlude must not restart the stopwatch (see StartScene). */
+  const onReveal = useEffectEvent(() => props.onAction({ type: 'NEXT_NBTI' }))
   useEffect(() => {
     if (!revealing) return
     playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
@@ -267,7 +266,7 @@ export function QuestionScene(props: JourneySceneProps) {
       setRevealProgress(percent)
       if (percent >= 100) {
         window.clearInterval(timer)
-        void resultReady.then(() => revealActionRef.current({ type: 'NEXT_NBTI' }))
+        void resultReady.then(() => onReveal())
       }
     }, 80)
     return () => window.clearInterval(timer)
@@ -278,7 +277,7 @@ export function QuestionScene(props: JourneySceneProps) {
      first. */
   const [returningHome, setReturningHome] = useState(false)
   const [returnProgress, setReturnProgress] = useState(0)
-  const returnActionRef = useLatestRef(props.onAction)
+  const onReturnHome = useEffectEvent(() => props.onAction({ type: 'GO_HOME' }))
   useEffect(() => {
     if (!returningHome) return
     playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
@@ -294,7 +293,7 @@ export function QuestionScene(props: JourneySceneProps) {
       setReturnProgress(percent)
       if (percent >= 100) {
         window.clearInterval(timer)
-        void startReady.then(() => returnActionRef.current({ type: 'GO_HOME' }))
+        void startReady.then(() => onReturnHome())
       }
     }, 80)
     return () => window.clearInterval(timer)
@@ -406,7 +405,7 @@ export function ResultScene(props: JourneySceneProps & { onPair: () => void }) {
      other scene change in the app goes through this same loading interlude. */
   const [reviewing, setReviewing] = useState(false)
   const [reviewProgress, setReviewProgress] = useState(0)
-  const reviewActionRef = useLatestRef(props.onAction)
+  const onReview = useEffectEvent(() => props.onAction({ type: 'REVIEW_NBTI' }))
   useEffect(() => {
     if (!reviewing) return
     playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
@@ -422,7 +421,7 @@ export function ResultScene(props: JourneySceneProps & { onPair: () => void }) {
       setReviewProgress(percent)
       if (percent >= 100) {
         window.clearInterval(timer)
-        void questionReady.then(() => reviewActionRef.current({ type: 'REVIEW_NBTI' }))
+        void questionReady.then(() => onReview())
       }
     }, 80)
     return () => window.clearInterval(timer)

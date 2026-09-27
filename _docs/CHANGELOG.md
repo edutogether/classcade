@@ -7,17 +7,32 @@
   10 필수 peer)를 한 가지에서 함께 올림 — 각각 따로는 peer dependency 충돌로 설치 자체가
   안 됨(Dependabot PR #6/#9 단독 실패로 확인).
 - react-hooks 7의 신규 규칙(`react-hooks/refs`, `react-hooks/set-state-in-effect`)이
-  잡은 12곳을 전부 실제로 고침(eslint-disable 없음) — 7곳은 `src/lib/useLatestRef.ts`
-  신설로 "렌더 중 ref 갱신"을 레이아웃 이펙트로 이동, 5곳은 "이펙트 안 setState"를
-  렌더 중 조정 또는 마이크로태스크 지연으로 재구성. LOCKED 페어링(`PairingScreens.tsx`
-  2곳)은 대표 9/27 직접 승인 예외로 고쳤고, 새 테스트(`PairingScreens.test.tsx`)로
-  동작 불변(코드 발급→waiting 도달, 동기 실패→network_error 도달)을 증명함.
-  린트·타입체크·vitest(121통과)·rules:test(6통과)·build·실제 브라우저(로컬 dev, 프렙
-  전 구간·NBTI 인터루드 3종·선생님 패널 재설정) 전부 확인, 콘솔 에러 0건.
+  잡은 12곳을 전부 구조적으로 고침(eslint-disable도, 규칙을 우회하는 마이크로태스크
+  지연도 없음 — 팀장 1차 검토에서 마이크로태스크 지연 3곳을 "우회"로 지적받아 재작업함):
+  - 5곳(`AdventurePrepScreen.tsx` 1·`NbtiScenes.tsx` 4)은 React 19.2+ 정식 API
+    `useEffectEvent`로 전환 — "최신 콜백을 이펙트 deps 없이 호출"이 바로 이 훅의
+    설계 목적이라 `useLatestRef` 자체 훅이 필요 없어짐.
+  - `BgmControl.tsx` 2곳 중 1곳(`volumeRef`, 읽기 전용)도 `useEffectEvent`로 전환.
+    나머지 1곳(`displayVolumeRef`)은 rAF 루프·드래그 핸들러 등 이펙트 밖에서도 값을
+    "쓰는" 진짜 ref라 `useEffectEvent`로 대체 불가 — `useLatestRef`(신설,
+    `src/lib/useLatestRef.ts`) 유지, 이유를 PR에 남김.
+  - `SceneFrame.tsx` 공지 배지: "사라지기 시작" 판단도 렌더 중 이전 값 비교로 파생,
+    실제 타이머는 `leaving` 상태에만 반응하도록 재구성 — 마이크로태스크 제거.
+  - **LOCKED 페어링(`PairingScreens.tsx` 2곳, 대표 9/27 직접 승인 예외, CLAUDE.md
+    기록·PR #12)**: 코드 발급 이펙트는 `create()` 호출 대신 인라인 프로미스 체인으로
+    재작성(그 이펙트 분기에서 status는 이미 초기값으로 'issuing'이라 동기 setState
+    자체가 불필요했음), Strict Mode 이중 실행에서 코드가 두 번 발급되지 않도록
+    `issuingRef` 가드 추가. `watchPairing`의 동기 throw는 `firestorePairingStore.ts`
+    자체가 잡아 `onError` 콜백으로 넘기도록 고쳐 호출부의 try/catch를 아예 없앰.
+  - 새 테스트로 증명: `PairingScreens.test.tsx`(코드 발급→waiting, onError→
+    network_error, **Strict Mode 이중 실행에서도 발급 정확히 1회**),
+    `firestorePairingStore.test.ts`(watchPairing 동기 실패 시 throw 없이 onError 호출).
+  린트·타입체크·vitest(123통과)·rules:test(6통과)·build·실제 브라우저(로컬 dev, 프렙
+  전 구간·NBTI 인터루드 3종·BGM 토글·선생님 패널 재설정) 전부 확인, 콘솔 에러 0건.
   Vite 8의 Rolldown 전환으로 산출물 청크 구성이 바뀌었으나(`rolldown-runtime` 청크
   신규) 배포 워크플로가 요구하는 고정 경로 산출물·용량 하한은 전부 그대로 존재함을
-  확인. 팀장 검토 후 대표 "합쳐" 지시가 오면 병합·배포한다 — 이 커밋 시점엔 아직
-  main에 반영되지 않음.
+  확인. 팀장 검토 후 대표 "합쳐" 지시가 오면 병합·배포한다 — 이 시점엔 아직 main에
+  반영되지 않음.
 
 ## 2026-09-27 — LOCKED 페어링 규칙에 1회성 lint 예외 기록 (대표 직접 승인)
 

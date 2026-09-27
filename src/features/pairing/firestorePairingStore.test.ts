@@ -191,4 +191,13 @@ describe('watchPairing', () => {
     watchPairing('123456', callback, vi.fn())
     expect(callback).toHaveBeenCalledWith('connected')
   })
+
+  it('routes a synchronous registration failure to onError instead of throwing', async () => {
+    const { onSnapshot } = await import('firebase/firestore')
+    const mockOnSnapshot = vi.mocked(onSnapshot)
+    mockOnSnapshot.mockImplementation(() => { throw new Error('registration failed') })
+    const onError = vi.fn()
+    expect(() => watchPairing('123456', vi.fn(), onError)).not.toThrow()
+    expect(onError).toHaveBeenCalledOnce()
+  })
 })

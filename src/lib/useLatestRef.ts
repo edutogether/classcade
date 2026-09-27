@@ -1,12 +1,12 @@
 import { useLayoutEffect, useRef } from 'react'
 
-/** Keeps `value` readable via `.current` without putting it in an effect's dependency
- *  array — several interlude timers in this app intentionally exclude a fresh-every-render
- *  callback from their deps so an unrelated re-render can't restart the timer (see call
- *  sites). Assigning `ref.current = value` directly during render is what
- *  `react-hooks/refs` (eslint-plugin-react-hooks 7) flags; this does the same assignment
- *  in a layout effect that runs before paint on every render, so any effect declared after
- *  this hook in the same component still reads the latest value within the same commit. */
+/** Keeps `value` synced onto a real, settable ref without assigning `ref.current = value`
+ *  directly during render (what `react-hooks/refs`, eslint-plugin-react-hooks 7, flags) —
+ *  the assignment happens in a layout effect that runs before paint on every render, so any
+ *  effect declared after this hook in the same component still reads the latest value
+ *  within the same commit. Use this only when the ref is also WRITTEN to from elsewhere
+ *  (an animation loop, a plain event handler) — a value that's only ever READ inside an
+ *  effect should use `useEffectEvent` from 'react' instead, which needs no ref at all. */
 export function useLatestRef<T>(value: T) {
   const ref = useRef(value)
   useLayoutEffect(() => {
