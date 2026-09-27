@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 2026-09-27 — vite 8 · eslint 10 · react-hooks 7 동시 업그레이드 (대표 지시, PR로 대기)
+## 2026-09-27 — vite 8 · eslint 10 · react-hooks 7 동시 업그레이드 (승인 Bumm 9/27, 배포 완료)
 
 - `vite`(7→8.3.0, 기본 번들러 Rollup→Rolldown 전환) · `@vitejs/plugin-react`(5→6.1.1,
   vite 8 필수 peer) · `eslint`(9→10.11.0) · `eslint-plugin-react-hooks`(5→7.1.1, eslint
@@ -31,8 +31,15 @@
   전 구간·NBTI 인터루드 3종·BGM 토글·선생님 패널 재설정) 전부 확인, 콘솔 에러 0건.
   Vite 8의 Rolldown 전환으로 산출물 청크 구성이 바뀌었으나(`rolldown-runtime` 청크
   신규) 배포 워크플로가 요구하는 고정 경로 산출물·용량 하한은 전부 그대로 존재함을
-  확인. 팀장 검토 후 대표 "합쳐" 지시가 오면 병합·배포한다 — 이 시점엔 아직 main에
-  반영되지 않음.
+  확인.
+- **PR #12를 대표 승인으로 squash 병합**(`444ca04`, 지시 Bumm 9/27) 후 가지 삭제.
+  `main` 배포 워크플로 4개 잡(changes·test·deploy·firestore-rules) 전부 success,
+  약 1분 50초. 라이브(`https://classcade.edutogether.kr`)에서 세션 자신의 브라우저로
+  `_docs/ops/smoke.json`의 첫 화면 문구 3개 확인, 콘솔 에러 0건. 응답 헤더에서
+  CSP 5개 필수 허용값(script-src google·gstatic, frame-src google, connect-src
+  sentry, frame-ancestors none)과 보안 헤더 5종, 캐시 정책(루트 `no-cache` ·
+  해시 자산 `immutable`) 전부 확인. 로컬 빌드가 만든 것과 같은 해시의
+  `rolldown-runtime-hePW80VL.js`가 라이브에 실제로 떠 있음을 직접 확인.
 
 ## 2026-09-27 — LOCKED 페어링 규칙에 1회성 lint 예외 기록 (대표 직접 승인)
 
