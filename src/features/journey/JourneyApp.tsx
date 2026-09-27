@@ -32,6 +32,15 @@ export function JourneyApp({ state, notice, onAction, onTeacherOpen, teacherTrig
   const [pairingOpen, setPairingOpen] = useState(loadPairingGateOpen)
   const [exitDialogOpen, setExitDialogOpen] = useState(false)
   const [exitDialogMode, setExitDialogMode] = useState<'home' | 'next'>('home')
+  /* Close the pairing gate the moment the stage leaves nbti_result — during render (not
+     in an effect) so react-hooks/set-state-in-effect doesn't flag it. The localStorage
+     write is idempotent (removeItem), so running it a render earlier than the old effect
+     did changes nothing observable. */
+  const [pairingGateStage, setPairingGateStage] = useState(state.stage)
+  if (state.stage !== pairingGateStage) {
+    setPairingGateStage(state.stage)
+    if (state.stage !== 'nbti_result') { savePairingGateOpen(false); setPairingOpen(false) }
+  }
   useEffect(() => {
     /* One track per phase: the main theme announces the start screen, a lighter track
        carries the questions, and everything fades out at the result. */
@@ -41,7 +50,6 @@ export function JourneyApp({ state, notice, onAction, onTeacherOpen, teacherTrig
   /* Unmount = leaving the journey (처음으로 -> prep): without this the last track kept
      playing straight through the prep screens. */
   useEffect(() => () => playSceneTheme(null, false, 0), [])
-  useEffect(() => { if (state.stage !== 'nbti_result') { savePairingGateOpen(false); setPairingOpen(false) } }, [state.stage])
 
   const dispatch = (action: JourneyAction) => {
     noteAudioUserGesture()

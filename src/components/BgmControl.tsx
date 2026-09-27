@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
+import { useLatestRef } from '../lib/useLatestRef'
 import { Icon } from './VisualPrimitives'
 
 type BgmControlProps = {
@@ -24,12 +25,15 @@ export function BgmControl({ enabled, volume, onToggle, onVolumeChange }: BgmCon
      updates displayVolume synchronously below and never touches this effect. */
   const [displayVolume, setDisplayVolume] = useState(enabled ? volume : 0)
   const rafRef = useRef<number | null>(null)
-  const volumeRef = useRef(volume)
-  volumeRef.current = volume
-  const displayVolumeRef = useRef(displayVolume)
-  displayVolumeRef.current = displayVolume
+  /* `volume` is only ever READ here (never written), so an Effect Event — which reads the
+     latest render's value without needing to be in this effect's deps — replaces the ref
+     outright. `displayVolume` is different: the rAF step below and handleDrag() (a plain
+     event handler, not an effect) both WRITE it imperatively, so it stays a real ref via
+     useLatestRef; an Effect Event has no settable `.current` to hold that. */
+  const getVolume = useEffectEvent(() => volume)
+  const displayVolumeRef = useLatestRef(displayVolume)
   useEffect(() => {
-    const target = enabled ? volumeRef.current : 0
+    const target = enabled ? getVolume() : 0
     if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
     const start = displayVolumeRef.current
     const delta = target - start
@@ -45,7 +49,10 @@ export function BgmControl({ enabled, volume, onToggle, onVolumeChange }: BgmCon
     }
     rafRef.current = requestAnimationFrame(step)
     return () => { if (rafRef.current !== null) cancelAnimationFrame(rafRef.current) }
-  }, [enabled])
+    /* displayVolumeRef has stable identity (useLatestRef wraps useRef), so listing it here
+       is a no-op for when this effect re-runs — it only silences exhaustive-deps, which
+       can't see through the custom hook the way it does useRef. */
+  }, [enabled, displayVolumeRef])
 
   function handleDrag(next: number) {
     if (rafRef.current !== null) { cancelAnimationFrame(rafRef.current); rafRef.current = null }

@@ -101,13 +101,22 @@ const SceneArt = memo(function SceneArt({ asset, artSrc }: { asset: JourneyScene
 function ScenePill({ notice }: { notice: string }) {
   const [shown, setShown] = useState(notice)
   const [leaving, setLeaving] = useState(false)
+  /* Both the "show" and "start leaving" transitions are pure reactions to `notice`
+     changing — derived during render (compared against its previous value), not in the
+     effect below, so react-hooks/set-state-in-effect doesn't apply to either. Only the
+     actual 450ms unmount delay needs a real timer, and its own setState calls happen
+     inside the timer's own callback (an external clock event), which the rule allows. */
+  const [prevNotice, setPrevNotice] = useState(notice)
+  if (notice !== prevNotice) {
+    setPrevNotice(notice)
+    if (notice) { setShown(notice); setLeaving(false) }
+    else if (shown) { setLeaving(true) }
+  }
   useEffect(() => {
-    if (notice) { setShown(notice); setLeaving(false); return }
-    if (!shown) return
-    setLeaving(true)
+    if (!leaving) return
     const timer = window.setTimeout(() => { setShown(''); setLeaving(false) }, 450)
     return () => window.clearTimeout(timer)
-  }, [notice, shown])
+  }, [leaving])
   if (!shown) return null
   return <p className={`journey-notice ${leaving ? 'is-leaving' : ''}`} aria-live="polite">{shown}</p>
 }

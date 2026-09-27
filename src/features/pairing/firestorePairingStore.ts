@@ -56,10 +56,19 @@ export class FirestorePairingStore implements PairingStore {
   }
 }
 
+/** Registration itself can throw synchronously (e.g. `firebaseRuntime()` before init) —
+ *  routed through `onError` here rather than left for the caller to catch, so a caller's
+ *  effect only ever needs the "setState inside a callback" shape and never a synchronous
+ *  try/catch (which react-hooks/set-state-in-effect flags). */
 export function watchPairing(code: string, callback: (status: 'waiting' | 'connected' | 'expired') => void, onError: () => void): Unsubscribe {
-  return onSnapshot(doc(firebaseRuntime().db, 'pairingSessions', code), (snapshot) => {
-    if (!snapshot.exists()) { callback('expired'); return }
-    const value = snapshot.data() as FirestorePairingDocument
-    callback(value.expiresAt.toMillis() <= Date.now() ? 'expired' : value.status)
-  }, onError)
+  try {
+    return onSnapshot(doc(firebaseRuntime().db, 'pairingSessions', code), (snapshot) => {
+      if (!snapshot.exists()) { callback('expired'); return }
+      const value = snapshot.data() as FirestorePairingDocument
+      callback(value.expiresAt.toMillis() <= Date.now() ? 'expired' : value.status)
+    }, onError)
+  } catch {
+    onError()
+    return () => {}
+  }
 }

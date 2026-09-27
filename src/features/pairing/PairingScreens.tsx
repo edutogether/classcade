@@ -44,7 +44,35 @@ export function PairingScene({ state, profile, journeyId, onBack, ...sceneProps 
       saveActivePairingCode(next.code, next.expiresAt); setRecord(next); setStatus('waiting')
     } catch { setStatus('network_error') }
   }, [journeyId, profile, record, state, status])
-  useEffect(() => { if (!record) void create() }, [record, create])
+  /* Written as an inline promise chain rather than calling create() — create()'s first
+     line sets status synchronously ('issuing'), which is exactly what
+     react-hooks/set-state-in-effect flags. That set is redundant here anyway: status is
+     already 'issuing' from the initial useState above whenever this branch runs (record
+     is null both times), so skipping it changes nothing observable. create() keeps its
+     synchronous setStatus('issuing') for the "새 코드 발급" button below, a plain click
+     handler the rule doesn't apply to.
+     `issuingRef` guards against Strict Mode's dev-only double-invocation of this effect
+     (mount → cleanup → mount again, synchronously, before the first issuePairingCode call
+     resolves) — without it, that double-invoke would silently create two Firestore
+     documents for one screen visit and leak the first one. The ref survives across that
+     double-invoke (only effects re-run, not the component instance), so the second
+     invocation sees it already claimed and skips issuing again — matching the original
+     create()-based effect, this has no cancellation guard beyond that: a genuinely
+     unmounted screen's late result is simply not observed by anyone. */
+  const issuingRef = useRef(false)
+  useEffect(() => {
+    if (record || issuingRef.current) return
+    issuingRef.current = true
+    issuePairingCode(store, createPairingPayload(state, profile, journeyId))
+      .then((created) => {
+        issuingRef.current = false
+        const next = { code: created.code, expiresAt: created.expiresAt }
+        saveActivePairingCode(next.code, next.expiresAt)
+        setRecord(next)
+        setStatus('waiting')
+      })
+      .catch(() => { issuingRef.current = false; setStatus('network_error') })
+  }, [record, state, profile, journeyId])
   useEffect(() => {
     if (!record) return
     const tick = () => { const left = Math.max(0, Math.ceil((record.expiresAt - Date.now()) / 1000)); setSeconds(left); if (!left) setStatus('expired') }
@@ -53,9 +81,12 @@ export function PairingScene({ state, profile, journeyId, onBack, ...sceneProps 
   const activeCode = status === 'expired' ? undefined : record?.code
   useEffect(() => {
     if (!activeCode) return
-    let unsubscribe: (() => void) | undefined
-    try { unsubscribe = watchPairing(activeCode, (next) => setStatus(next === 'connected' ? 'connected' : next === 'expired' ? 'expired' : 'waiting'), () => setStatus('network_error')) } catch { setStatus('network_error') }
-    return () => unsubscribe?.()
+    /* No try/catch here — watchPairing itself now routes a synchronous setup failure to
+       onError (see firestorePairingStore.ts) instead of throwing, so both status updates
+       reach setState only via a callback argument, the one shape
+       react-hooks/set-state-in-effect accepts. */
+    const unsubscribe = watchPairing(activeCode, (next) => setStatus(next === 'connected' ? 'connected' : next === 'expired' ? 'expired' : 'waiting'), () => setStatus('network_error'))
+    return () => unsubscribe()
   }, [activeCode])
   const result = getProvisionalResult(state.resultCode)
   {/* profile is destructured out of sceneProps above, so it must be handed to SceneFrame
