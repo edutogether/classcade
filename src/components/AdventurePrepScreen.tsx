@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useLatestRef } from '../lib/useLatestRef'
 import { ArtLoadingScreen, MIN_LOADING_DISPLAY_MS } from './prep/ArtLoadingScreen'
 import {
   CAREER_RANGE_OPTIONS,
@@ -195,8 +196,7 @@ export function AdventurePrepScreen({ initialProfile, audio, exiting, isOffline,
   /* onComplete is a new function on every App render; a ref keeps it out of the loading
      effect's deps so an unrelated re-render can't restart the bar timeline (which made
      the bar visibly run backward on the journey interludes before the same fix). */
-  const onCompleteRef = useRef(onComplete)
-  onCompleteRef.current = onComplete
+  const onCompleteRef = useLatestRef(onComplete)
   useEffect(() => {
     if (step !== 'loading') return
     /* Decode the start screen's big backdrop while the bar fills — without this the art

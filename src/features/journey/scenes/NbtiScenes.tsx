@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
+import { useLatestRef } from '../../../lib/useLatestRef'
 import { prepNavBack, prepNavMainBack, prepNavCtaEnabled, prepNavCtaDisabled, resultCtaEnabled, resultCtaDisabled } from '../../../components/prep/prepAssets'
 import { ArtLoadingScreen, MIN_LOADING_DISPLAY_MS } from '../../../components/prep/ArtLoadingScreen'
 import { JOURNEY_SCENE_ASSETS } from '../../../data/sceneAssets'
@@ -175,8 +176,7 @@ export function StartScene(props: JourneySceneProps) {
      it OUT of the effect deps. With it as a dep, any unrelated re-render (a notice
      fading, audio state syncing) restarted the interlude stopwatch and the bar visibly
      ran BACKWARD before creeping forward again. */
-  const startActionRef = useRef(props.onAction)
-  startActionRef.current = props.onAction
+  const startActionRef = useLatestRef(props.onAction)
   useEffect(() => {
     if (!starting) return
     playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
@@ -240,8 +240,7 @@ export function QuestionScene(props: JourneySceneProps) {
   const [revealing, setRevealing] = useState(false)
   const [revealProgress, setRevealProgress] = useState(0)
   /* Ref, not dep: a re-render mid-interlude must not restart the stopwatch (see StartScene). */
-  const revealActionRef = useRef(props.onAction)
-  revealActionRef.current = props.onAction
+  const revealActionRef = useLatestRef(props.onAction)
   useEffect(() => {
     if (!revealing) return
     playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
@@ -279,8 +278,7 @@ export function QuestionScene(props: JourneySceneProps) {
      first. */
   const [returningHome, setReturningHome] = useState(false)
   const [returnProgress, setReturnProgress] = useState(0)
-  const returnActionRef = useRef(props.onAction)
-  returnActionRef.current = props.onAction
+  const returnActionRef = useLatestRef(props.onAction)
   useEffect(() => {
     if (!returningHome) return
     playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)
@@ -408,8 +406,7 @@ export function ResultScene(props: JourneySceneProps & { onPair: () => void }) {
      other scene change in the app goes through this same loading interlude. */
   const [reviewing, setReviewing] = useState(false)
   const [reviewProgress, setReviewProgress] = useState(0)
-  const reviewActionRef = useRef(props.onAction)
-  reviewActionRef.current = props.onAction
+  const reviewActionRef = useLatestRef(props.onAction)
   useEffect(() => {
     if (!reviewing) return
     playSceneTheme(null, props.state.audio.bgmEnabled, props.state.audio.bgmVolume)

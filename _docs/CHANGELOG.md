@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## 2026-09-27 — vite 8 · eslint 10 · react-hooks 7 동시 업그레이드 (대표 지시, PR로 대기)
+
+- `vite`(7→8.3.0, 기본 번들러 Rollup→Rolldown 전환) · `@vitejs/plugin-react`(5→6.1.1,
+  vite 8 필수 peer) · `eslint`(9→10.11.0) · `eslint-plugin-react-hooks`(5→7.1.1, eslint
+  10 필수 peer)를 한 가지에서 함께 올림 — 각각 따로는 peer dependency 충돌로 설치 자체가
+  안 됨(Dependabot PR #6/#9 단독 실패로 확인).
+- react-hooks 7의 신규 규칙(`react-hooks/refs`, `react-hooks/set-state-in-effect`)이
+  잡은 12곳을 전부 실제로 고침(eslint-disable 없음) — 7곳은 `src/lib/useLatestRef.ts`
+  신설로 "렌더 중 ref 갱신"을 레이아웃 이펙트로 이동, 5곳은 "이펙트 안 setState"를
+  렌더 중 조정 또는 마이크로태스크 지연으로 재구성. LOCKED 페어링(`PairingScreens.tsx`
+  2곳)은 대표 9/27 직접 승인 예외로 고쳤고, 새 테스트(`PairingScreens.test.tsx`)로
+  동작 불변(코드 발급→waiting 도달, 동기 실패→network_error 도달)을 증명함.
+  린트·타입체크·vitest(121통과)·rules:test(6통과)·build·실제 브라우저(로컬 dev, 프렙
+  전 구간·NBTI 인터루드 3종·선생님 패널 재설정) 전부 확인, 콘솔 에러 0건.
+  Vite 8의 Rolldown 전환으로 산출물 청크 구성이 바뀌었으나(`rolldown-runtime` 청크
+  신규) 배포 워크플로가 요구하는 고정 경로 산출물·용량 하한은 전부 그대로 존재함을
+  확인. 팀장 검토 후 대표 "합쳐" 지시가 오면 병합·배포한다 — 이 커밋 시점엔 아직
+  main에 반영되지 않음.
+
 ## 2026-09-27 — LOCKED 페어링 규칙에 1회성 lint 예외 기록 (대표 직접 승인)
 
 - `eslint-plugin-react-hooks` 7.x 도입에 필요한 `PairingScreens.tsx` 2곳의

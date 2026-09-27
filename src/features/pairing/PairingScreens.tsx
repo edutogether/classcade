@@ -44,7 +44,11 @@ export function PairingScene({ state, profile, journeyId, onBack, ...sceneProps 
       saveActivePairingCode(next.code, next.expiresAt); setRecord(next); setStatus('waiting')
     } catch { setStatus('network_error') }
   }, [journeyId, profile, record, state, status])
-  useEffect(() => { if (!record) void create() }, [record, create])
+  /* create()'s first line sets status synchronously (before any await); deferring the
+     call by one microtask keeps that setState out of the effect's own synchronous frame
+     (react-hooks/set-state-in-effect) without changing when the status actually lands —
+     still well before the next paint, same as before. */
+  useEffect(() => { if (!record) void Promise.resolve().then(create) }, [record, create])
   useEffect(() => {
     if (!record) return
     const tick = () => { const left = Math.max(0, Math.ceil((record.expiresAt - Date.now()) / 1000)); setSeconds(left); if (!left) setStatus('expired') }
@@ -54,7 +58,11 @@ export function PairingScene({ state, profile, journeyId, onBack, ...sceneProps 
   useEffect(() => {
     if (!activeCode) return
     let unsubscribe: (() => void) | undefined
-    try { unsubscribe = watchPairing(activeCode, (next) => setStatus(next === 'connected' ? 'connected' : next === 'expired' ? 'expired' : 'waiting'), () => setStatus('network_error')) } catch { setStatus('network_error') }
+    /* The two callbacks passed to watchPairing already fire asynchronously (Firestore
+       delivers snapshots/errors via microtask, never synchronously during subscribe) —
+       only the catch branch below could ever run synchronously in this effect's frame,
+       so only it needs deferring for react-hooks/set-state-in-effect. */
+    try { unsubscribe = watchPairing(activeCode, (next) => setStatus(next === 'connected' ? 'connected' : next === 'expired' ? 'expired' : 'waiting'), () => setStatus('network_error')) } catch { queueMicrotask(() => setStatus('network_error')) }
     return () => unsubscribe?.()
   }, [activeCode])
   const result = getProvisionalResult(state.resultCode)

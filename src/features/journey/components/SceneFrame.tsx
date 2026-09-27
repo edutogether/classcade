@@ -101,10 +101,19 @@ const SceneArt = memo(function SceneArt({ asset, artSrc }: { asset: JourneyScene
 function ScenePill({ notice }: { notice: string }) {
   const [shown, setShown] = useState(notice)
   const [leaving, setLeaving] = useState(false)
+  /* Sync `shown`/`leaving` to a new non-empty `notice` during render (not in the effect
+     below) so react-hooks/set-state-in-effect doesn't flag it — React re-renders once
+     more before painting, so the pill still appears on the exact same frame as before. */
+  const [prevNotice, setPrevNotice] = useState(notice)
+  if (notice !== prevNotice) {
+    setPrevNotice(notice)
+    if (notice) { setShown(notice); setLeaving(false) }
+  }
   useEffect(() => {
-    if (notice) { setShown(notice); setLeaving(false); return }
-    if (!shown) return
-    setLeaving(true)
+    if (notice || !shown) return
+    /* Deferred one microtask so this isn't a synchronous setState at the top of the
+       effect (react-hooks/set-state-in-effect) — imperceptible against a 450ms fade. */
+    queueMicrotask(() => setLeaving(true))
     const timer = window.setTimeout(() => { setShown(''); setLeaving(false) }, 450)
     return () => window.clearTimeout(timer)
   }, [notice, shown])

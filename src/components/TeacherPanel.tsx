@@ -60,13 +60,21 @@ export function TeacherPanel({ open, profile, journey, deviceMode, returnFocusRe
   const [working, setWorking] = useState(false)
   const [actionError, setActionError] = useState('')
 
-  useEffect(() => {
+  /* Reset the confirmation/working/error state the moment `open` flips to false — done
+     during render (not in the effect below) so react-hooks/set-state-in-effect doesn't
+     flag it; React re-renders once more before painting, so there's no visible flicker. */
+  const [wasOpen, setWasOpen] = useState(open)
+  if (open !== wasOpen) {
+    setWasOpen(open)
     if (!open) {
       setPendingAction(null)
       setWorking(false)
       setActionError('')
-      return
     }
+  }
+
+  useEffect(() => {
+    if (!open) return
     panelRef.current?.focus()
     const manageDialogKeys = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {

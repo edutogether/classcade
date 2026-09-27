@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useLatestRef } from '../lib/useLatestRef'
 import { Icon } from './VisualPrimitives'
 
 type BgmControlProps = {
@@ -24,10 +25,8 @@ export function BgmControl({ enabled, volume, onToggle, onVolumeChange }: BgmCon
      updates displayVolume synchronously below and never touches this effect. */
   const [displayVolume, setDisplayVolume] = useState(enabled ? volume : 0)
   const rafRef = useRef<number | null>(null)
-  const volumeRef = useRef(volume)
-  volumeRef.current = volume
-  const displayVolumeRef = useRef(displayVolume)
-  displayVolumeRef.current = displayVolume
+  const volumeRef = useLatestRef(volume)
+  const displayVolumeRef = useLatestRef(displayVolume)
   useEffect(() => {
     const target = enabled ? volumeRef.current : 0
     if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
@@ -45,7 +44,10 @@ export function BgmControl({ enabled, volume, onToggle, onVolumeChange }: BgmCon
     }
     rafRef.current = requestAnimationFrame(step)
     return () => { if (rafRef.current !== null) cancelAnimationFrame(rafRef.current) }
-  }, [enabled])
+    /* volumeRef/displayVolumeRef have stable identity (useLatestRef wraps useRef), so
+       listing them here is a no-op for when this effect re-runs — it only silences
+       exhaustive-deps, which can't see through the custom hook the way it does useRef. */
+  }, [enabled, volumeRef, displayVolumeRef])
 
   function handleDrag(next: number) {
     if (rafRef.current !== null) { cancelAnimationFrame(rafRef.current); rafRef.current = null }
