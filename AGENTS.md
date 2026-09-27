@@ -55,7 +55,7 @@ Story 공유")는 지금 존재하지 않는다. 게임 만들기 서브시스�
 | Firestore 규칙 테스트 | `npm run rules:test` (JDK 21 필요) |
 | 자산 계측(배경 낭비·처리방침 도달성) | `npm run measure:assets <URL>` — 배경 이미지나 CSS 미디어쿼리를 건드렸을 때 돌린다. Playwright가 의존성에 없어 최초 1회 별도 설치가 필요하며, 스크립트 맨 위 주석에 실행 방법과 정상값이 적혀 있다. |
 
-**배포**: `main`에 push하면 `.github/workflows/deploy.yml`이 Firebase Hosting으로 자동 배포한다(`https://classcade.edutogether.kr`). 별도 배포 명령은 없다. 2026-09-09에 GitHub Pages에서 이전했다 — 보안 응답 헤더를 붙이기 위해서다(Pages는 헤더를 설정할 수 없다).
+**배포**: `main`에 push하면 `.github/workflows/deploy.yml`이 Firebase Hosting으로 자동 배포한다(`https://classcade.edutogether.kr`). 별도 배포 명령은 없다. 2026-09-09에 GitHub Pages에서 이전했다 — 보안 응답 헤더를 붙이기 위해서다(Pages는 헤더를 설정할 수 없다). PR을 열면 `.github/workflows/pr-checks.yml`이 배포 없이 같은 검사(lint·test·rules:test·build)를 자동으로 돌린다(2026-09-27 추가).
 
 **절대 하면 안 되는 것** — 자세한 근거는 `.claude/rules/app.md`, 최신 상태는 `CLAUDE.md`.
 

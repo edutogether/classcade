@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-09-27 — PR 검사 워크플로 신설 (지시 Bumm 경유 팀장)
+
+- `.github/workflows/pr-checks.yml` 신설 — `main` 대상 PR을 열면 배포 워크플로의 `test`
+  잡(npm ci·vitest·`tsc`·`rules:test`·lint·build)과 동일한 검사가 비밀 키·배포 없이
+  자동으로 돈다. 검증용 가지(`ci/pr-checks-verify`)로 PR(#11)을 열어 초록(1분 9초)을
+  확인한 뒤 합치지 않고 닫고 가지를 삭제, 같은 파일을 `main`에 직접 커밋함.
+  AGENTS.md 배포 절에 한 줄 추가(180줄 유지, 기존 줄에 문장만 덧붙여 줄 수 안 늘림).
+
 ## 2026-09-27 — AGENTS.md 금지 목록에 app.md 참조 추가 (지시 Bumm 경유 팀장)
 
 - Codex는 `.claude/rules/app.md`를 자동으로 읽지 않으므로, AGENTS.md "절대 하면 안 되는 것"
