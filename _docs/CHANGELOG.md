@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2026-09-27 — AGENTS.md에 조직 공통 규칙 절 추가 (지시 Bumm 경유 팀장)
+
+- Codex 클라우드·Claude 클라우드 등 `D:\Projects` 공통 문서를 못 보는 도구를 위해,
+  `_shared/constitution.md` 요약 절("조직 공통 규칙")을 `AGENTS.md`에 그대로 옮겨 넣음.
+  "로컬 전용 작업" 줄에 이 앱 전용 항목(App Check·Sentry·예산 알림 콘솔 확인, `?pairing=1`
+  라이브 코드 제출 확인)을 덧붙임. 문서만 바뀜(DOC-STANDARD 180줄 이내).
+
 ## 2026-09-27 — React 19.3.0 업그레이드 (지시 Bumm 9/27)
 
 - `react`·`react-dom`·`@types/react`·`@types/react-dom`을 19.1.1 계열에서 19.3.0으로
