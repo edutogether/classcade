@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2026-10-05 — CI 위생: 워크플로 액션을 커밋 SHA로 고정 (승인 Bumm 10/5)
+
+- `deploy.yml`·`pr-checks.yml`의 `actions/checkout`·`setup-node`·`setup-java` 11곳을
+  태그(`@v6`·`@v4`)에서 커밋 SHA 고정(`# v6.1.0`·`# v4.4.0`·`# v4.9.1` 주석)으로 바꿈.
+  `.github/dependabot.yml`에 `github-actions` 항목을 추가해 새 버전은 갱신 PR로 받는다.
+  워크플로 로직·산출물은 그대로이고 제품 코드 변경 없음.
+
 ## 2026-09-27 — vite 8 · eslint 10 · react-hooks 7 동시 업그레이드 (승인 Bumm 9/27, 배포 완료)
 
 - `vite`(7→8.3.0, 기본 번들러 Rollup→Rolldown 전환) · `@vitejs/plugin-react`(5→6.1.1,
