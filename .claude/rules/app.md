@@ -39,7 +39,7 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
 - 🟢 **GCP 예산 알림 (2026-09-07 설정 완료)**: `classcade-budget-alert`, 프로젝트 `classcade-together`, 월 ₩25,000, 임계값 50%/90%/100%, 이메일 알림 켜짐. **Alerts only — spend cap enforcement가 아니다**: 한도를 넘어도 서비스가 자동으로 멈추지는 않고 메일만 온다.
 - 🟢 **App Check enforcement (2026-09-07 전환 완료)**: Cloud Firestore를 Monitoring → **Enforced**. 전환 직전 검증된 요청 100%/미검증 0%를 확인한 뒤 진행했고, 전환 후 라이브(`?pairing=1`)에서 여섯 자리 코드를 실제 제출해 Firestore 조회가 정상 통과하는 것("코드를 찾지 못했어요" = 정상 invalid 응답, 네트워크·권한 오류 아님)과 콘솔 에러 0건을 확인함.
 - 🟡 **App Check — Authentication(PREVIEW)은 Monitoring 유지**: 아직 정식 기능이 아니고, 잘못 걸리면 로그인이 전면 차단되는 위험이 Firestore보다 크다는 판단. 정식 출시되면 그때 재검토한다.
-- 🟢 **Sentry DSN 등록 (2026-09-08 완료)**: Sentry 프로젝트 생성 + GitHub Actions secret `VITE_SENTRY_DSN` 등록 완료. 배포 번들 실측으로 확인함 — DSN 문자열(`...ingest.us.sentry.io/4512045242449920`)과 `Sentry.init` 옵션 객체(`sendDefaultPii`/`replaysOnErrorSampleRate`)가 실제로 들어가 있다(등록 전에는 이 둘 다 번들에서 0건이라 `initErrorReporting()`이 통째로 죽은 코드였음). 이제 `reportError()` 호출이 프로덕션에서 실제로 전송된다. 처리방침(`public/privacy.html` §3)의 Sentry 고지는 등록 **전에** 먼저 반영해뒀으므로 지금은 문구와 실제 동작이 일치한다.
+- 🟢 **Sentry DSN 등록 (2026-09-08 완료)**: Sentry 프로젝트 생성 + GitHub Actions secret `VITE_SENTRY_DSN` 등록 완료. 배포 번들 실측으로 확인함 — DSN 문자열(`...ingest.us.sentry.io/4512045242449920`)과 `Sentry.init` 옵션 객체(Sentry 10 시절 `sendDefaultPii`, 11부터 `dataCollection`/`replaysOnErrorSampleRate`)가 실제로 들어가 있다(등록 전에는 이 둘 다 번들에서 0건이라 `initErrorReporting()`이 통째로 죽은 코드였음). 이제 `reportError()` 호출이 프로덕션에서 실제로 전송된다. 처리방침(`public/privacy.html` §3)의 Sentry 고지는 등록 **전에** 먼저 반영해뒀으므로 지금은 문구와 실제 동작이 일치한다.
 
 🔴 **App Check Enforced와 CSP는 서로 묶여 있다**(CSP는 2026-09-09 이전으로 `index.html`의 `<meta>`가 아니라 `firebase.json`의 `hosting.headers`에 있다). Enforced 상태에서는 App Check 토큰이 없으면 Firestore가 요청을 아예 거부한다. 그 토큰은 reCAPTCHA v3 스크립트(`www.google.com`/`www.gstatic.com`)를 받아와야 발급되므로, CSP의 `script-src`/`frame-src`에서 이 두 도메인을 빼면 페어링이 경고 수준이 아니라 **완전히 막힌다**. CSP를 조이는 변경을 할 때는 반드시 라이브 `?pairing=1`에서 여섯 자리 코드 제출까지 실제로 확인할 것(현재 조합은 2026-09-09 새 도메인에서 재검증 완료).
 
@@ -94,6 +94,8 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
 **확인 방법**: 새 도메인에서 `?pairing=1`에 아무 여섯 자리나 넣고 제출해 **"코드를 찾지 못했어요"**가 나오면 정상입니다(그 응답이 나온다는 건 App Check·익명 로그인·Firestore가 전부 통과했다는 뜻). 403이나 "네트워크를 확인해 주세요"가 나오면 위 2·3번이 안 먹은 것입니다. **헤드리스 브라우저로는 검증할 수 없습니다** — reCAPTCHA v3가 자동화를 차단해 정상 상태에서도 403이 납니다. 실제 브라우저나 헤드 모드로 확인하세요.
 
 ## 자주 틀리는 것
+
+- 🟠 **`src/lib/errorReporting.ts`의 `dataCollection`을 지우거나 느슨하게 하지 않는다**(2026-10-05, Sentry 11 전환). Sentry 11은 `sendDefaultPii`를 없애고 `dataCollection`으로 바꿨는데, **비워 두면 v10보다 넓게 수집**한다 — 특히 Sentry 서버가 방문자 IP를 추론·저장하도록 알린다(`sdk.settings.infer_ip: 'auto'`). 처리방침의 "입력 정보는 함께 전송되지 않는다"와 어긋나므로 v10의 제한 상태(`infer_ip: 'never'`)를 명시해 두었고, `src/lib/errorReporting.test.ts`가 이를 지킨다(설정을 빼면 이 테스트가 빨개진다). Sentry를 올릴 때는 이 옵션의 이름·기본값이 또 바뀌지 않았는지 마이그레이션 문서부터 본다.
 
 - 🟡 **워크플로의 `uses:`는 커밋 SHA로 고정돼 있다**(2026-10-05, 뒤에 `# vX.Y.Z` 주석). 새 액션을 추가하거나 올릴 때도 태그(`@v4` 등)가 아니라 SHA로 쓴다. 고정하면 자동 최신화가 멈추므로 새 버전은 Dependabot(`github-actions`)의 갱신 PR로 받는다 — 그 PR의 `pr-checks`가 초록이어야 병합한다.
 

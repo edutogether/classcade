@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-10-05 — 의존성 갱신: @sentry/react 11 (승인 Bumm 10/5)
+
+- Dependabot #34를 그대로 병합하지 않고 직접 마이그레이션했다 — 11은 `sendDefaultPii`를
+  `dataCollection`으로 바꾸고 기본값을 넓혀(방문자 IP 추론 등), 옵션을 지우기만 하면
+  개인정보 처리방침과 어긋나는 수집이 조용히 시작된다. `src/lib/errorReporting.ts`에
+  v10의 제한 상태를 명시하고 `errorReporting.test.ts`로 고정했다(수정 없이는 실패함을 확인).
+- 검증: 린트·tsc·vitest 124통과·규칙 테스트 6통과·빌드 성공. 산출물은 파일 구성 동일(84개),
+  JS 청크 4개 해시 변경, 총량 +4.4KB(+0.45%).
+- 같은 날 `@eslint/js` 10(#35, eslint 10과 짝 맞춤)도 병합했다.
+
 ## 2026-10-05 — 의존성 갱신(보안 패치 포함) 12건 병합, Dependabot 한도·묶음 설정 (승인 Bumm 10/5)
 
 - Dependabot PR 12건을 하나씩 rebase·PR 검사 확인 후 병합했고, 병합마다 배포 4개 잡
