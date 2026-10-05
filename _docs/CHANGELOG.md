@@ -9,6 +9,10 @@
   마지막으로 프로덕션 번들에 실리는 firebase 12.19.
 - 남은 알림은 `@grpc/grpc-js`·`stream-json` 뿐이고, 둘 다 `firebase`/`firebase-tools`가
   구버전을 고정 요구해 상류 갱신을 기다린다(`dependabot.yml`의 ignore 목록 참고).
+- 이어서 올라온 개발 도구 묶음·`@types/node` 26도 같은 방식으로 병합·배포했다.
+  TypeScript 7(#32)은 린트 도구(typescript-eslint)가 아직 TS 7을 지원하지 않아
+  병합하지 않고 `dependabot.yml`에 메이저 ignore를 걸었다 — 지원판이 나오면 해제한다.
+  (확인: TS 7에서 tsc·테스트·빌드는 통과했고 산출물 해시는 현재와 동일.)
 - `.github/dependabot.yml`: npm·github-actions에 `open-pull-requests-limit: 3` 추가,
   개발 도구의 마이너·패치(npm)와 액션의 마이너·패치만 묶음 — 메이저·프로덕션 의존성은
   묶지 않고 개별 PR로 남긴다.
