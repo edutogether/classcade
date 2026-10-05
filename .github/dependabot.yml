@@ -37,6 +37,13 @@ updates:
         # (csv-parse는 목록에서 뺐다 — 2026-09-11에 override로 안전하게 고쳤다: 이 저장소
         # 안에서 딱 한 곳(firebase-tools -> csv-parse)만 물고 있었고, rules:test 에뮬레이터·
         # 전체 테스트·빌드가 그대로 통과하는 것을 확인했다.)
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+        # 2026-10-05: TypeScript 7은 아직 올리지 않는다 — typescript-eslint(최신 8.71.0)가
+        # TS 7을 지원하지 않아 npm ci가 peer 충돌(`typescript <6.1.0`)로 실패하고, 억지로
+        # 설치해도 린트가 "does not support TS 7.0"으로 중단된다. 코드·테스트·빌드 산출물은
+        # TS 7에서 문제없음을 확인했다(tsc 0건·vitest 통과·dist 전 파일 해시 동일).
+        # typescript-eslint가 TS 7 지원판을 내면 이 항목을 지운다(그러면 Dependabot이 다시 올린다).
 
   # 워크플로의 액션은 커밋 SHA로 고정돼 있다(2026-10-05). 고정하면 자동 최신화가 멈추므로
   # 새 버전은 Dependabot이 SHA 갱신 PR로 알려준다 — 병합 전 PR 검사(pr-checks)가 돈다.
