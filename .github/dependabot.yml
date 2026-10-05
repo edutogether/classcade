@@ -4,6 +4,14 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    # 2026-10-05: 한꺼번에 몰리지 않게 한도를 둔다(보안 업데이트는 별도 한도라 이 제한에
+    # 막히지 않는다). 묶는 것은 개발 도구의 마이너·패치뿐 — 메이저와 프로덕션 의존성
+    # (firebase 등)은 묶지 않고 개별 PR로 남겨 일부러 판단한다.
+    open-pull-requests-limit: 3
+    groups:
+      dev-tools-minor-patch:
+        dependency-type: "development"
+        update-types: ["minor", "patch"]
     # 2026-09-10 npm audit 잔여 8건(전부 devDependency `firebase-tools` 체인, 프로덕션
     # 번들에는 들어가지 않음 — .claude/rules/app.md "npm audit 구조적 상한" 참고)에
     # 대한 무시 규칙. firebase-tools 자체는 여기 없다 — 그건 계속 정상적으로 업데이트
@@ -36,3 +44,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 3
+    groups:
+      actions-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]

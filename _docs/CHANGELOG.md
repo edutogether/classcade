@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 2026-10-05 — 의존성 갱신(보안 패치 포함) 12건 병합, Dependabot 한도·묶음 설정 (승인 Bumm 10/5)
+
+- Dependabot PR 12건을 하나씩 rebase·PR 검사 확인 후 병합했고, 병합마다 배포 4개 잡
+  성공과 라이브 응답(200·CSP 필수 허용 5종·보안 헤더)을 확인했다. 개발 도구의 보안
+  패치 6건(fast-uri·undici·morgan·brace-expansion·hono·ip-address), typescript-eslint
+  8.71, globals 17, 액션 메이저 3건(checkout 7·setup-java 6·setup-node 7 — SHA 고정 유지),
+  마지막으로 프로덕션 번들에 실리는 firebase 12.19.
+- 남은 알림은 `@grpc/grpc-js`·`stream-json` 뿐이고, 둘 다 `firebase`/`firebase-tools`가
+  구버전을 고정 요구해 상류 갱신을 기다린다(`dependabot.yml`의 ignore 목록 참고).
+- `.github/dependabot.yml`: npm·github-actions에 `open-pull-requests-limit: 3` 추가,
+  개발 도구의 마이너·패치(npm)와 액션의 마이너·패치만 묶음 — 메이저·프로덕션 의존성은
+  묶지 않고 개별 PR로 남긴다.
+
 ## 2026-10-05 — CI 위생: 워크플로 액션을 커밋 SHA로 고정 (승인 Bumm 10/5)
 
 - `deploy.yml`·`pr-checks.yml`의 `actions/checkout`·`setup-node`·`setup-java` 11곳을
