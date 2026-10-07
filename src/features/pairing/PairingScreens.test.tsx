@@ -49,6 +49,7 @@ function baseProps(): JourneySceneProps {
 
 beforeEach(() => {
   localStorage.clear()
+  sessionStorage.clear()
   watchPairingImpl = () => () => {}
   counters.createCalls = 0
 })
