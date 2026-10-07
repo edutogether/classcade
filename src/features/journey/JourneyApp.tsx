@@ -5,7 +5,7 @@ import { QuestionScene, ResultScene, StartScene } from './scenes/NbtiScenes'
 import { PairingEntryScene, PairingScene } from '../pairing/PairingScreens'
 import { JourneyExitDialog } from './components/JourneyExitDialog'
 import type { PairingPayload } from '../pairing/pairingContract'
-import type { Profile } from '../../lib/storage'
+import { PAIRING_GATE_OPEN_STORAGE_KEY, getStorageBackend, resolveDeviceMode, type Profile } from '../../lib/storage'
 import type { JourneySceneProps } from './components/SceneFrame'
 import './journey.css'
 
@@ -24,16 +24,18 @@ type JourneyAppProps = {
   onNextParticipant?: () => void
 }
 
-const PAIRING_GATE_OPEN_KEY = 'classcade.pairing-gate-open.v1'
-function loadPairingGateOpen() { try { return localStorage.getItem(PAIRING_GATE_OPEN_KEY) === 'true' } catch { return false } }
-function savePairingGateOpen(open: boolean) { try { if (open) localStorage.setItem(PAIRING_GATE_OPEN_KEY, 'true'); else localStorage.removeItem(PAIRING_GATE_OPEN_KEY) } catch { /* Pairing remains usable when browser storage is unavailable. */ } }
+/* Same per-device-mode store as the rest of the journey, so a reset or a new participant on a
+   shared device does not inherit an open pairing screen. */
+const pairingGateBackend = () => getStorageBackend(resolveDeviceMode())
+function loadPairingGateOpen() { try { return pairingGateBackend()?.getItem(PAIRING_GATE_OPEN_STORAGE_KEY) === 'true' } catch { return false } }
+function savePairingGateOpen(open: boolean) { try { if (open) pairingGateBackend()?.setItem(PAIRING_GATE_OPEN_STORAGE_KEY, 'true'); else pairingGateBackend()?.removeItem(PAIRING_GATE_OPEN_STORAGE_KEY) } catch { /* Pairing remains usable when browser storage is unavailable. */ } }
 
 export function JourneyApp({ state, notice, onAction, onTeacherOpen, teacherTriggerRef, profile, journeyId, pairingEntry = false, onPaired, onStartHere, onExitPairingEntry, onNextParticipant }: JourneyAppProps) {
   const [pairingOpen, setPairingOpen] = useState(loadPairingGateOpen)
   const [exitDialogOpen, setExitDialogOpen] = useState(false)
   const [exitDialogMode, setExitDialogMode] = useState<'home' | 'next'>('home')
   /* Close the pairing gate the moment the stage leaves nbti_result — during render (not
-     in an effect) so react-hooks/set-state-in-effect doesn't flag it. The localStorage
+     in an effect) so react-hooks/set-state-in-effect doesn't flag it. The storage
      write is idempotent (removeItem), so running it a render earlier than the old effect
      did changes nothing observable. */
   const [pairingGateStage, setPairingGateStage] = useState(state.stage)

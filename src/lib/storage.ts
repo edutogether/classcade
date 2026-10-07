@@ -16,6 +16,7 @@ export const JOURNEY_STORAGE_KEY = 'classcade.journey.v1'
 export const JOURNEY_STATE_STORAGE_KEY = 'classcade.journey-state.v1'
 export const ANONYMOUS_JOURNEY_ID_STORAGE_KEY = 'classcade.anonymous-journey-id.v1'
 export const PAIRING_ISSUED_CODE_STORAGE_KEY = 'classcade.pairing-issued-code.v1'
+export const PAIRING_GATE_OPEN_STORAGE_KEY = 'classcade.pairing-gate-open.v1'
 export const PREP_DRAFT_STORAGE_KEY = 'classcade.prep-draft.v1'
 
 const NBTI_PROGRESS_STORAGE_KEY = 'classcade.nbti.v1'
@@ -66,7 +67,7 @@ export type StorageResult<T> =
   | { ok: false; value: T; reason: 'unavailable' | 'read_failed' | 'write_failed' }
 
 const journeyStatuses: JourneyStatus[] = ['new', 'nbti_in_progress', 'nbti_complete']
-const sessionKeys = [PROFILE_STORAGE_KEY, JOURNEY_STORAGE_KEY, JOURNEY_STATE_STORAGE_KEY, ANONYMOUS_JOURNEY_ID_STORAGE_KEY, NBTI_PROGRESS_STORAGE_KEY, PAIRING_ISSUED_CODE_STORAGE_KEY, PREP_DRAFT_STORAGE_KEY]
+const sessionKeys = [PROFILE_STORAGE_KEY, JOURNEY_STORAGE_KEY, JOURNEY_STATE_STORAGE_KEY, ANONYMOUS_JOURNEY_ID_STORAGE_KEY, NBTI_PROGRESS_STORAGE_KEY, PAIRING_ISSUED_CODE_STORAGE_KEY, PAIRING_GATE_OPEN_STORAGE_KEY, PREP_DRAFT_STORAGE_KEY]
 const hasValue = <T extends string>(options: readonly { value: T }[], value: unknown): value is T =>
   typeof value === 'string' && options.some((option) => option.value === value)
 
