@@ -39,14 +39,46 @@ service cloud.firestore {
           && request.resource.data.status == 'connected' && request.resource.data.usedAt == request.time
           && request.resource.data.consumerUid == request.auth.uid;
       }
-      allow create: if anonymous() && validCreation();
+      // 2026-10-07: every create/delete must be charged to the caller's own quota document in the
+      // SAME write (see pairingQuota below) — getAfter() sees that document as the batch leaves it.
+      function quotaPath() { return /databases/$(database)/documents/pairingQuota/$(request.auth.uid); }
+      function quotaCharged() {
+        return existsAfter(quotaPath())
+          && (!exists(quotaPath())
+            || getAfter(quotaPath()).data.count != get(quotaPath()).data.count
+            || getAfter(quotaPath()).data.windowStart != get(quotaPath()).data.windowStart);
+      }
+      allow create: if anonymous() && validCreation() && quotaCharged();
       // A create transaction must probe one exact prospective code for collision; no collection listing is permitted.
       allow get: if anonymous() && code.matches('^[0-9]{6}$') && (!exists(/databases/$(database)/documents/pairingSessions/$(code))
         || (resource.data.expiresAt > request.time && (resource.data.status == 'waiting' || resource.data.creatorUid == request.auth.uid || resource.data.consumerUid == request.auth.uid)));
       allow list: if false;
       allow update: if anonymous() && validConsumption();
       // Deletion is limited to the creator's still-waiting code, solely for reissue before expiry.
-      allow delete: if anonymous() && resource.data.creatorUid == request.auth.uid && resource.data.status == 'waiting' && resource.data.expiresAt > request.time;
+      allow delete: if anonymous() && resource.data.creatorUid == request.auth.uid && resource.data.status == 'waiting' && resource.data.expiresAt > request.time && quotaCharged();
+    }
+
+    // Per-user operation budget for pairingSessions create/delete: at most 20 operations per
+    // 10-minute window (one class of 30 phones is 30 different users, one issue each). The
+    // document can only move forward one step at a time and only when the caller owns it.
+    match /pairingQuota/{uid} {
+      function anonymous() {
+        return request.auth != null && request.auth.token.firebase.sign_in_provider == 'anonymous';
+      }
+      function ownDoc() { return anonymous() && request.auth.uid == uid; }
+      function shape() { return request.resource.data.keys().hasOnly(['windowStart', 'count']); }
+      function freshWindow() { return request.resource.data.windowStart == request.time && request.resource.data.count == 1; }
+      function nextStep() {
+        return request.time < resource.data.windowStart + duration.value(10, 'm')
+          ? (request.resource.data.windowStart == resource.data.windowStart
+              && request.resource.data.count == resource.data.count + 1 && request.resource.data.count <= 20)
+          : freshWindow();
+      }
+      allow get: if ownDoc();
+      allow list: if false;
+      allow create: if ownDoc() && shape() && freshWindow();
+      allow update: if ownDoc() && shape() && nextStep();
+      allow delete: if false;
     }
   }
 }
