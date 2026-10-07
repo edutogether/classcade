@@ -184,7 +184,7 @@ jobs:
           require_file dist/og.jpg
           require_file dist/favicon.svg
           require_file dist/favicon-32x32.png
-          require_file dist/favicon-black.png
+          require_file dist/favicon-emblem.png
           require_file dist/apple-touch-icon.png
           require_file dist/site.webmanifest
           mp3_count="$(find dist/assets -maxdepth 1 -type f -name '*.mp3' | wc -l)"
