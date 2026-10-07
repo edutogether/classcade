@@ -96,7 +96,7 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
 
 ## 자주 틀리는 것
 
-- 🟡 **탭·즐겨찾기 파비콘은 CLASSCADE 자체 엠블럼 한 개(`public/favicon-emblem.png`, 64×64)이고 탭 포커스에 따라 바뀌지 않는다**(2026-10-07, COMMON_STANDARDS §33). 예전의 «백그라운드 탭에서 회색으로 바꾸기»(`backgroundFavicon.ts`·`favicon-32x32-gray.png`)는 폐기해 지웠다 — 되살리지 않는다. 홈 화면 아이콘(`apple-touch-icon.png`·`site.webmanifest`의 아이콘)은 별개라 그대로다.
+- 🟡 **탭·즐겨찾기 파비콘은 CLASSCADE 자체 엠블럼 한 개(`public/favicon-emblem.png`, 64×64, 장식 끝까지 칸을 채우고 밝기·대비를 올린 것 — 원본 PNG(자산 압축 커밋 `4cca4d1` 직전의 `classcade-emblem.png`)에서 원화소로 잘라 만듦)이고 탭 포커스에 따라 바뀌지 않는다**(2026-10-07, COMMON_STANDARDS §33). 예전의 «백그라운드 탭에서 회색으로 바꾸기»(`backgroundFavicon.ts`·`favicon-32x32-gray.png`)는 폐기해 지웠다 — 되살리지 않는다. 홈 화면 아이콘(`apple-touch-icon.png`·`site.webmanifest`의 아이콘)은 별개라 그대로다.
 
 - 🟠 **`src/lib/errorReporting.ts`의 `dataCollection`을 지우거나 느슨하게 하지 않는다**(2026-10-05, Sentry 11 전환). Sentry 11은 `sendDefaultPii`를 없애고 `dataCollection`으로 바꿨는데, **비워 두면 v10보다 넓게 수집**한다 — 특히 Sentry 서버가 방문자 IP를 추론·저장하도록 알린다(`sdk.settings.infer_ip: 'auto'`). 처리방침의 "입력 정보는 함께 전송되지 않는다"와 어긋나므로 v10의 제한 상태(`infer_ip: 'never'`)를 명시해 두었고, `src/lib/errorReporting.test.ts`가 이를 지킨다(설정을 빼면 이 테스트가 빨개진다). Sentry를 올릴 때는 이 옵션의 이름·기본값이 또 바뀌지 않았는지 마이그레이션 문서부터 본다.
 
