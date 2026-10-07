@@ -96,7 +96,7 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
 
 ## 자주 틀리는 것
 
-- 🟡 **탭·즐겨찾기 파비콘은 같이교육 로고 한 개(`public/favicon-black.png`, Calendar와 같은 파일)이고 탭 포커스에 따라 바뀌지 않는다**(2026-10-07, COMMON_STANDARDS §33). 예전의 «백그라운드 탭에서 회색으로 바꾸기»(`backgroundFavicon.ts`·`favicon-32x32-gray.png`)는 폐기해 지웠다 — 되살리지 않는다. 홈 화면 아이콘(`apple-touch-icon.png`·`site.webmanifest`의 아이콘)은 별개라 그대로다.
+- 🟡 **탭·즐겨찾기 파비콘은 CLASSCADE 자체 엠블럼 한 개(`public/favicon-emblem.png`, 64×64)이고 탭 포커스에 따라 바뀌지 않는다**(2026-10-07, COMMON_STANDARDS §33). 예전의 «백그라운드 탭에서 회색으로 바꾸기»(`backgroundFavicon.ts`·`favicon-32x32-gray.png`)는 폐기해 지웠다 — 되살리지 않는다. 홈 화면 아이콘(`apple-touch-icon.png`·`site.webmanifest`의 아이콘)은 별개라 그대로다.
 
 - 🟠 **`src/lib/errorReporting.ts`의 `dataCollection`을 지우거나 느슨하게 하지 않는다**(2026-10-05, Sentry 11 전환). Sentry 11은 `sendDefaultPii`를 없애고 `dataCollection`으로 바꿨는데, **비워 두면 v10보다 넓게 수집**한다 — 특히 Sentry 서버가 방문자 IP를 추론·저장하도록 알린다(`sdk.settings.infer_ip: 'auto'`). 처리방침의 "입력 정보는 함께 전송되지 않는다"와 어긋나므로 v10의 제한 상태(`infer_ip: 'never'`)를 명시해 두었고, `src/lib/errorReporting.test.ts`가 이를 지킨다(설정을 빼면 이 테스트가 빨개진다). Sentry를 올릴 때는 이 옵션의 이름·기본값이 또 바뀌지 않았는지 마이그레이션 문서부터 본다.
 
@@ -106,7 +106,7 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
 
 - 🟠 **반대 방향도 난다 — 배포가 실패했는데 라이브가 멀쩡해 보인다.** 2026-09-10, `public/og/classcade-share-v2.png`를 지운 뒤에도 워크플로의 "Verify build artifact"가 그 파일을 계속 단언해서 **연속 두 번의 배포가 실패**했다. 라이브는 직전 성공분(`b13f97c`)을 그대로 서빙하고 있어 화면상 아무 이상이 없었고, 아무도 몇 시간 동안 눈치채지 못했다. 그 사이에 급한 수정을 push했다면 조용히 안 나갔을 것이다. **push한 뒤에는 `gh run list --limit 1 --json headSha,conclusion`으로 "방금 그 커밋"의 실행 결과를 확인한다**("최근 실행"이 아니라 — COMMON_STANDARDS §21-7). 그리고 **산출물을 지울 때는 그것을 단언하는 CI 줄이 있는지 함께 본다.**
 
-- 🟡 **`.github/workflows/deploy.yml`의 "Verify build artifact" 스텝이 하드코딩된 파일명을 단언하는 곳이 7곳 있다**(`dist/index.html`·`dist/assets`·`dist/privacy.html`·`dist/og.jpg`·`dist/favicon.svg`·`dist/favicon-32x32.png`·`dist/favicon-black.png`·`dist/apple-touch-icon.png`·`dist/site.webmanifest`, mp3·m4a 개수 하한 2곳). 2026-09-10 사고(바로 위 항목) 이후로 지금 깨진 곳은 없지만 **구조적으로 같은 종류의 함정**이다 — 이 파일들 중 하나를 지우거나 이름을 바꾸면 같은 패턴이 재발한다. 실패 시 메시지 자체에 "이 파일을 의도적으로 지웠다면 `deploy.yml`의 이 스텝도 같이 고칠 것"이라는 안내를 넣어뒀다(`require_file` 헬퍼) — 파일 목록은 지우지 말고, **그 파일을 실제로 지우거나 이름 바꿀 때 같은 커밋에서 이 스텝도 같이 고친다.**
+- 🟡 **`.github/workflows/deploy.yml`의 "Verify build artifact" 스텝이 하드코딩된 파일명을 단언하는 곳이 7곳 있다**(`dist/index.html`·`dist/assets`·`dist/privacy.html`·`dist/og.jpg`·`dist/favicon.svg`·`dist/favicon-32x32.png`·`dist/favicon-emblem.png`·`dist/apple-touch-icon.png`·`dist/site.webmanifest`, mp3·m4a 개수 하한 2곳). 2026-09-10 사고(바로 위 항목) 이후로 지금 깨진 곳은 없지만 **구조적으로 같은 종류의 함정**이다 — 이 파일들 중 하나를 지우거나 이름을 바꾸면 같은 패턴이 재발한다. 실패 시 메시지 자체에 "이 파일을 의도적으로 지웠다면 `deploy.yml`의 이 스텝도 같이 고칠 것"이라는 안내를 넣어뒀다(`require_file` 헬퍼) — 파일 목록은 지우지 말고, **그 파일을 실제로 지우거나 이름 바꿀 때 같은 커밋에서 이 스텝도 같이 고친다.**
 
 - 🟡 **"자주 뻗는다"는 인상이 오면 개수부터 세지 말고 원인으로 묶는다.** 2026-09-10 대표님이 "얘 자꾸 뻗는 게 이상해"라고 하셨을 때 최근 30일 배포 실행 194회를 전수 조사했다 — 실패 9회였지만 원인은 3종(현재 파이프라인의 진짜 결함 1건이 후속 커밋 4개에서 반복 카운트된 것, Dependabot 자체 업데이트 시도 실패 3건은 우리 파이프라인과 무관한 GitHub 쪽 소음, GitHub Pages 시절 1회성 결함 2건은 이미 그날 해결됨)뿐이었다. **"실패가 반복되는 것"과 "고장이 여러 개인 것"은 다르다** — 후자로 착각하면 이미 고친 걸 다시 고치려 들거나 없는 문제를 찾아 헤맨다. 근본 원인은 결함 자체가 아니라 **"커밋하고 그 커밋의 CI 결과를 확인하지 않은 채 다음 작업으로 넘어간 습관"**이었다 — 코드를 고친 뒤로는 매 push마다 `gh run list --json headSha`로 그 커밋의 실행을 확인하는 것으로 바꿨고(2026-09-10 이후 push 전부 그렇게 확인), 그 뒤로 재발이 없다.
 
