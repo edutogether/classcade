@@ -56,7 +56,7 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
   - `src/features/pairing/activePairingCode.ts`, `src/features/journey/JourneyApp.tsx:27-29` — `lib/storage.ts` 어댑터를 우회해 `localStorage`를 직접 만진다. 특히 페어링 게이트 키는 "전체 여정 초기화"를 살아남는다.
   - `src/features/pairing/PairingScreens.tsx:19` — 썸네일 `<img>`에 `referrerPolicy="no-referrer"`가 빠져 결과 화면과 불일치한다.
   - Firestore 콘솔 — `pairingSessions.expiresAt`에 TTL 정책이 없어 만료 문서가 계속 쌓인다.
-  - **서버 쪽 호출량 제한이 없다**(2026-10-05 Bumm님 결정). 화면에서 도달할 수 없다고 서버가 막혀 있는 것은 아니다 — **페어링 재설계 시 서버 호출 제한을 반드시 함께 넣는다**(지금은 하지 않는다).
+  - **서버 호출 한도는 사용자(익명 UID)별이다**(2026-10-07 도입, 대표 지시 — 앞선 «재설계 때 함께»를 당겨 처리). 세션 생성·삭제는 `pairingQuota/{uid}`를 같은 쓰기에서 함께 올려야 하고(규칙이 `getAfter`로 검사) 10분에 20회까지다. 한 반 30명은 서로 다른 UID라 막히지 않는다(`firestore.rules.test.ts`가 증명). **한계**: 새 익명 UID를 계속 만드는 호출은 이 방식으로 못 막는다 — 그건 App Check(Auth) 강제나 서버 함수 단계의 몫이므로 재설계 때 다시 본다.
   - `?pairing=1`(`PairingEntryScene`) 진입자는 개인정보 처리방침에 도달할 방법이 없다. 프렙 5단계와 결과 화면에는 링크가 있지만 이 진입 경로는 둘 다 거치지 않는다(2026-09-08 Playwright 실측: 링크 0개). 이 화면이 동결 대상이라 그때 함께 처리한다.
 
 - 🔴 **CSP에서 아래를 빼지 않는다.** CSP는 2026-09-09 이전 이후 `index.html`의 `<meta>`가 아니라 **`firebase.json`의 `hosting.headers`**에 있다(`index.html`에는 그 사실을 알리는 주석만 남아 있다). 각각을 빼면 조용히 기능이 죽는다(에러가 눈에 띄지 않는다):

@@ -63,6 +63,32 @@ describe('FirestorePairingStore.create', () => {
     const store = new FirestorePairingStore()
     await expect(store.create(record)).rejects.toThrow('network down')
   })
+
+  it("charges the caller's quota document in the same transaction as the session", async () => {
+    const tx = fakeTransaction({ exists: () => false })
+    mockRunTransaction.mockImplementation(async (_db, updateFn) => updateFn(tx as never))
+    await new FirestorePairingStore().create(record)
+    const written = tx.set.mock.calls.map(([target]) => (target as { collection: string; id: string }))
+    expect(written).toEqual(expect.arrayContaining([{ collection: 'pairingQuota', id: 'creator-uid' }, { collection: 'pairingSessions', id: '123456' }]))
+    const quotaWrite = tx.set.mock.calls.find(([target]) => (target as { collection: string }).collection === 'pairingQuota')
+    expect(quotaWrite?.[1]).toEqual({ windowStart: 'SERVER_TIMESTAMP', count: 1 })
+  })
+
+  it('counts up inside an open window, and retries once with the other window reading if the server disagrees', async () => {
+    const inWindow = { exists: (): boolean => true, data: () => ({ windowStart: { toMillis: () => Date.now() - 60_000 }, count: 4 }) }
+    const txs: Array<ReturnType<typeof fakeTransaction>> = []
+    mockRunTransaction.mockImplementation(async (_db, updateFn) => {
+      const tx = { ...fakeTransaction({ exists: () => false }), get: vi.fn(async (target: { collection: string }) => (target.collection === 'pairingQuota' ? inWindow : { exists: (): boolean => false })) }
+      txs.push(tx as never)
+      if (txs.length === 1) { const result = await updateFn(tx as never); void result; throw { code: 'permission-denied' } }
+      return updateFn(tx as never)
+    })
+    await expect(new FirestorePairingStore().create(record)).resolves.toBe('created')
+    expect(txs).toHaveLength(2)
+    const quotaOf = (tx: ReturnType<typeof fakeTransaction>) => tx.set.mock.calls.find(([target]) => (target as { collection: string }).collection === 'pairingQuota')?.[1]
+    expect(quotaOf(txs[0])).toMatchObject({ count: 5 })
+    expect(quotaOf(txs[1])).toEqual({ windowStart: 'SERVER_TIMESTAMP', count: 1 })
+  })
 })
 
 describe('FirestorePairingStore.consume', () => {
