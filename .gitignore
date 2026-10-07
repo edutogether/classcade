@@ -28,3 +28,6 @@ _backups/
 .claude/agent-memory-local
 .claude/first-run
 .claude/assistant-daemon-state.json
+
+# 팀장 세션이 대표님께 보여 드리려고 만드는 비교 캡처(저장소에 올리지 않는다)
+.local-captures/
