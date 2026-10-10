@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 2026-10-10 — 저장소 정리와 의존성 갱신(보안 패치 포함) (승인 Bumm 10/10)
+
+- `.codex/`를 지우고 `.gitignore`에 넣었다. 쓰임이 끝난 인계용 원격 가지(`codex/classcade-claude-handoff-20261005`)를 정리했다.
+- 개발 도구와 Firestore 서버용 의존성을 안전한 버전으로 올려 `npm audit`와 Dependabot 열린 알림을 모두 0으로 만들었다(`firebase-tools` 15.33.0, `package.json` `overrides`). 화면에 나가는 번들은 그대로이고 테스트·에뮬레이터 규칙 테스트도 그대로 통과한다.
+
 ## 2026-10-08 — 파비콘 주소에 버전 붙임 (승인 Bumm 10/8)
 
 - 아이콘 링크를 `favicon-emblem.png?v=20261008`로 바꿔, 새 아이콘이 캐시(최대 1시간) 없이 바로 보이게 했다.
