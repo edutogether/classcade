@@ -103,7 +103,11 @@ jobs:
 
   deploy:
     needs: [test, changes]
-    if: needs.changes.outputs.code_changed == 'true'
+    # Production secrets are only for main: a manual run (workflow_dispatch) of any other branch skips
+    # this job instead of reaching them. `environment: production` is where the secrets and the
+    # "main only" deployment-branch rule live (see .claude/rules/app.md, 2026-10-10).
+    if: github.ref == 'refs/heads/main' && needs.changes.outputs.code_changed == 'true'
+    environment: production
     runs-on: ubuntu-latest
     env:
       # Firebase Hosting serves from the site root, unlike GitHub Pages which served this
@@ -293,7 +297,11 @@ jobs:
     # entirely). Gated on the same code_changed check: docs-only commits don't touch
     # firestore.rules either.
     needs: [test, changes]
-    if: needs.changes.outputs.code_changed == 'true'
+    # Production secrets are only for main: a manual run (workflow_dispatch) of any other branch skips
+    # this job instead of reaching them. `environment: production` is where the secrets and the
+    # "main only" deployment-branch rule live (see .claude/rules/app.md, 2026-10-10).
+    if: github.ref == 'refs/heads/main' && needs.changes.outputs.code_changed == 'true'
+    environment: production
     runs-on: ubuntu-latest
     permissions:
       contents: read

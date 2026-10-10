@@ -10,6 +10,7 @@ import { nbtiResultArt } from '../../../data/nbtiResultArt'
 import { ResultRecommendations } from '../components/ResultRecommendations'
 import { PrimaryButton, Progress, SceneFrame, SecondaryButton, type JourneySceneProps } from '../components/SceneFrame'
 import { playSceneTheme } from '../../../lib/audioManager'
+import { samePagePath } from '../../../lib/pagePath'
 
 const journeyItems = [{ icon: 'clock' as const, title: '약 1분', detail: '간단한 여정' }, { icon: 'spark' as const, title: '캐릭터 성장', detail: '선택이 힘이 돼요' }, { icon: 'gamepad' as const, title: '놀이 추천', detail: '결과와 함께 받아요' }]
 const directionLabels: Record<NbtiDirection, string> = { design: '설계', response: '반응', whole: '전체', individual: '개별', criteria: '기준', empathy: '공감', completion: '완성', expansion: '확장' }
@@ -377,7 +378,7 @@ function restartFromScratch() {
     for (const key of Object.keys(localStorage)) if (key.startsWith('classcade.')) localStorage.removeItem(key)
     sessionStorage.clear()
   } catch { /* storage unavailable - reload alone still resets the in-memory run */ }
-  window.location.href = window.location.pathname
+  window.location.href = samePagePath(window.location.pathname)
 }
 
 export function ResultScene(props: JourneySceneProps & { onPair: () => void }) {
