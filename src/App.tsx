@@ -30,6 +30,7 @@ import {
   type Journey,
   type Profile,
 } from './lib/storage'
+import { samePagePath } from './lib/pagePath'
 import './App.css'
 
 type Screen = 'prep' | 'journey'
@@ -302,7 +303,7 @@ export default function App() {
   function clearPairingEntryQuery() {
     if (typeof window === 'undefined') return
     const query = deviceRole === 'laptop-station' ? '?role=laptop-station' : ''
-    window.history.replaceState({}, '', `${window.location.pathname}${query}`)
+    window.history.replaceState({}, '', `${samePagePath(window.location.pathname)}${query}`)
   }
 
   if (sharedSessionGateOpen) return <SharedSessionGate onResume={resumeSharedSession} onStartNew={resetActiveJourney} />

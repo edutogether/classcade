@@ -40,10 +40,13 @@ service cloud.firestore {
           && request.resource.data.consumerUid == request.auth.uid;
       }
       // 2026-10-07: every create/delete must be charged to the caller's own quota document in the
-      // SAME write (see pairingQuota below) — getAfter() sees that document as the batch leaves it.
+      // SAME write (see pairingQuota below) — getAfter() sees that document as the batch leaves it, and
+      // it must name THIS code (`lastCode`), so one quota step can pay for one session and a batch that
+      // touches several codes finds only one of them matching.
       function quotaPath() { return /databases/$(database)/documents/pairingQuota/$(request.auth.uid); }
       function quotaCharged() {
         return existsAfter(quotaPath())
+          && getAfter(quotaPath()).data.lastCode == code
           && (!exists(quotaPath())
             || getAfter(quotaPath()).data.count != get(quotaPath()).data.count
             || getAfter(quotaPath()).data.windowStart != get(quotaPath()).data.windowStart);
@@ -66,7 +69,7 @@ service cloud.firestore {
         return request.auth != null && request.auth.token.firebase.sign_in_provider == 'anonymous';
       }
       function ownDoc() { return anonymous() && request.auth.uid == uid; }
-      function shape() { return request.resource.data.keys().hasOnly(['windowStart', 'count']); }
+      function shape() { return request.resource.data.keys().hasOnly(['windowStart', 'count', 'lastCode']) && request.resource.data.lastCode is string && request.resource.data.lastCode.matches('^[0-9]{6}$'); }
       function freshWindow() { return request.resource.data.windowStart == request.time && request.resource.data.count == 1; }
       function nextStep() {
         return request.time < resource.data.windowStart + duration.value(10, 'm')

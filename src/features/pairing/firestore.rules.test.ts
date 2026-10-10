@@ -14,18 +14,18 @@ const ref = (db: Db, code: string) => doc(db, 'pairingSessions', code)
 const quotaRef = (db: Db, uid: string) => doc(db, 'pairingQuota', uid)
 
 /** What the real store does: advance the caller's own quota document in the same write as the session. */
-async function chargedBatch(uid: string, write: (batch: ReturnType<typeof writeBatch>, db: Db) => void) {
+async function chargedBatch(uid: string, code: string, write: (batch: ReturnType<typeof writeBatch>, db: Db) => void) {
   const db = anonymous(uid)
   const snap = await getDoc(quotaRef(db, uid))
   const previous = snap.exists() ? (snap.data() as { windowStart: Timestamp; count: number }) : undefined
   const inWindow = !!previous && Date.now() < previous.windowStart.toMillis() + 10 * 60_000
   const batch = writeBatch(db)
-  batch.set(quotaRef(db, uid), inWindow && previous ? { windowStart: previous.windowStart, count: previous.count + 1 } : { windowStart: serverTimestamp(), count: 1 })
+  batch.set(quotaRef(db, uid), inWindow && previous ? { windowStart: previous.windowStart, count: previous.count + 1, lastCode: code } : { windowStart: serverTimestamp(), count: 1, lastCode: code })
   write(batch, db)
   return batch.commit()
 }
-const issue = (uid: string, code: string, expiresAt?: number) => chargedBatch(uid, (batch, db) => batch.set(ref(db, code), { ...session(code, expiresAt), creatorUid: uid }))
-const revoke = (uid: string, code: string) => chargedBatch(uid, (batch, db) => batch.delete(ref(db, code)))
+const issue = (uid: string, code: string, expiresAt?: number) => chargedBatch(uid, code, (batch, db) => batch.set(ref(db, code), { ...session(code, expiresAt), creatorUid: uid }))
+const revoke = (uid: string, code: string) => chargedBatch(uid, code, (batch, db) => batch.delete(ref(db, code)))
 
 beforeAll(async () => { environment = await initializeTestEnvironment({ projectId, firestore: { rules: readFileSync('firestore.rules', 'utf8') } }) })
 afterEach(async () => { await environment.clearFirestore() })
@@ -49,15 +49,15 @@ describeRules(requiredButMissing ? 'pairingSessions Firestore rules (emulator re
     await assertSucceeds(issue('mobile', '123456'))
   })
   it('denies malformed codes, extra fields, direct identifiers, and long expiry', async () => {
-    await assertFails(chargedBatch('mobile', (batch, db) => batch.set(ref(db, 'abc'), session('abc'))))
-    await assertFails(chargedBatch('mobile', (batch, db) => batch.set(ref(db, '123456'), { ...session('123456'), email: 'blocked@example.test' })))
-    await assertFails(chargedBatch('mobile', (batch, db) => batch.set(ref(db, '123457'), { ...session('123457'), payload: { ...session('123457').payload, profile: { ...session('123457').payload.profile, schoolName: 'blocked' } } })))
+    await assertFails(chargedBatch('mobile', 'abc', (batch, db) => batch.set(ref(db, 'abc'), session('abc'))))
+    await assertFails(chargedBatch('mobile', '123456', (batch, db) => batch.set(ref(db, '123456'), { ...session('123456'), email: 'blocked@example.test' })))
+    await assertFails(chargedBatch('mobile', '123457', (batch, db) => batch.set(ref(db, '123457'), { ...session('123457'), payload: { ...session('123457').payload, profile: { ...session('123457').payload.profile, schoolName: 'blocked' } } })))
     await assertFails(issue('mobile', '123458', Date.now() + 6 * 60_000))
   })
   it('denies oversized string and map fields', async () => {
     const oversized = session('123459')
-    await assertFails(chargedBatch('mobile', (batch, db) => batch.set(ref(db, '123459'), { ...oversized, payload: { ...oversized.payload, journeyId: 'x'.repeat(101) } })))
-    await assertFails(chargedBatch('mobile', (batch, db) => batch.set(ref(db, '123459'), { ...oversized, payload: { ...oversized.payload, profile: { ...oversized.payload.profile, growthPriorityOther: 'x'.repeat(31) } } })))
+    await assertFails(chargedBatch('mobile', '123459', (batch, db) => batch.set(ref(db, '123459'), { ...oversized, payload: { ...oversized.payload, journeyId: 'x'.repeat(101) } })))
+    await assertFails(chargedBatch('mobile', '123459', (batch, db) => batch.set(ref(db, '123459'), { ...oversized, payload: { ...oversized.payload, profile: { ...oversized.payload.profile, growthPriorityOther: 'x'.repeat(31) } } })))
   })
   it('allows exactly one unchanged payload consumption and blocks listing, mutation, and reuse', async () => {
     await assertSucceeds(issue('mobile', '123456'))
@@ -100,6 +100,15 @@ describeRules(requiredButMissing ? 'pairingSessions Firestore rules (emulator re
       await assertFails(issue('busy', '299999'))
       await assertSucceeds(issue('someone-else', '299998'))
     })
+    it('lets one quota step pay for one session only, however the writes are batched', async () => {
+      const db = anonymous('batcher')
+      const batch = writeBatch(db)
+      batch.set(quotaRef(db, 'batcher'), { windowStart: serverTimestamp(), count: 1, lastCode: '400001' })
+      for (const code of ['400001', '400002', '400003']) batch.set(ref(db, code), { ...session(code), creatorUid: 'batcher' })
+      await assertFails(batch.commit())
+      await assertSucceeds(issue('batcher', '400001'))
+      await assertFails(chargedBatch('batcher', '400002', (b, d) => { b.set(ref(d, '400002'), { ...session('400002'), creatorUid: 'batcher' }); b.set(ref(d, '400003'), { ...session('400003'), creatorUid: 'batcher' }) }))
+    })
     it('starts a fresh window once the old one has expired', async () => {
       await environment.withSecurityRulesDisabled(async (context) => setDoc(doc(context.firestore(), 'pairingQuota', 'busy'), { windowStart: Timestamp.fromMillis(Date.now() - 11 * 60_000), count: 20 }))
       await assertSucceeds(issue('busy', '300000'))
@@ -107,10 +116,10 @@ describeRules(requiredButMissing ? 'pairingSessions Firestore rules (emulator re
     it('cannot be reset, rewound, borrowed from, or deleted by the client', async () => {
       await assertSucceeds(issue('mobile', '123456'))
       const db = anonymous('mobile')
-      await assertFails(setDoc(quotaRef(db, 'mobile'), { windowStart: serverTimestamp(), count: 1 }))
+      await assertFails(setDoc(quotaRef(db, 'mobile'), { windowStart: serverTimestamp(), count: 1, lastCode: '123456' }))
       await assertFails(updateDoc(quotaRef(db, 'mobile'), { count: 0 }))
       await assertFails(deleteDoc(quotaRef(db, 'mobile')))
-      await assertFails(setDoc(quotaRef(db, 'victim'), { windowStart: serverTimestamp(), count: 1 }))
+      await assertFails(setDoc(quotaRef(db, 'victim'), { windowStart: serverTimestamp(), count: 1, lastCode: '123456' }))
       await assertFails(getDoc(quotaRef(anonymous('attacker'), 'mobile')))
     })
   })

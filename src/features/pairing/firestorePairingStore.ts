@@ -8,12 +8,12 @@ function toRecord(value: FirestorePairingDocument): PairingRecord { return { ver
 /** Per-user budget for session create/delete (mirrors `pairingQuota` in firestore.rules): the rules
  *  reject a create/delete unless the caller's quota document is advanced in the same write. */
 const QUOTA_WINDOW_MS = 10 * 60_000
-type QuotaDoc = { windowStart: Timestamp; count: number }
+type QuotaDoc = { windowStart: Timestamp; count: number; lastCode?: string }
 function isPermissionDenied(error: unknown) { return typeof error === 'object' && error !== null && (error as { code?: string }).code === 'permission-denied' }
-function nextQuota(previous: QuotaDoc | undefined, now: number, startNewWindow: boolean) {
+function nextQuota(previous: QuotaDoc | undefined, now: number, startNewWindow: boolean, code: string) {
   const inWindow = !!previous && typeof previous.windowStart?.toMillis === 'function' && now < previous.windowStart.toMillis() + QUOTA_WINDOW_MS
   const continueWindow = startNewWindow ? !inWindow : inWindow
-  return continueWindow && previous ? { windowStart: previous.windowStart, count: previous.count + 1 } : { windowStart: serverTimestamp(), count: 1 }
+  return continueWindow && previous ? { windowStart: previous.windowStart, count: previous.count + 1, lastCode: code } : { windowStart: serverTimestamp(), count: 1, lastCode: code }
 }
 /** The browser clock can disagree with the server's about whether the window has expired; the rules
  *  decide with server time. If the guess is rejected, retry once with the opposite reading. */
@@ -36,7 +36,7 @@ export class FirestorePairingStore implements PairingStore {
       await withQuotaRetry((flip) => runTransaction(firebaseRuntime().db, async (transaction) => {
         if ((await transaction.get(ref)).exists()) throw new Error('pairing_collision')
         const quota = await transaction.get(quotaRef)
-        transaction.set(quotaRef, nextQuota(quota.exists() ? (quota.data() as QuotaDoc) : undefined, Date.now(), flip))
+        transaction.set(quotaRef, nextQuota(quota.exists() ? (quota.data() as QuotaDoc) : undefined, Date.now(), flip, record.code))
         transaction.set(ref, { ...record, createdAt: serverTimestamp(), expiresAt: Timestamp.fromMillis(record.expiresAt), usedAt: null, creatorUid: user.uid, consumerUid: null, status: 'waiting' })
       }))
       return 'created'
@@ -75,7 +75,7 @@ export class FirestorePairingStore implements PairingStore {
       const value = snapshot.data() as FirestorePairingDocument
       if (value.creatorUid !== user.uid || value.status !== 'waiting' || value.usedAt || value.expiresAt.toMillis() <= now) return 'not_active' as const
       const quota = await transaction.get(quotaRef)
-      transaction.set(quotaRef, nextQuota(quota.exists() ? (quota.data() as QuotaDoc) : undefined, Date.now(), flip))
+      transaction.set(quotaRef, nextQuota(quota.exists() ? (quota.data() as QuotaDoc) : undefined, Date.now(), flip, code))
       transaction.delete(ref)
       return 'revoked' as const
     }))

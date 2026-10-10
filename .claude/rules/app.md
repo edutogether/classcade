@@ -56,7 +56,7 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
   - (해결됨 2026-10-07) 페어링 발급 코드·게이트 값은 이제 `lib/storage.ts`의 기기 모드별 저장 계층을 쓰고 «초기화»가 함께 지운다 — 공용 기기에서 다음 참가자가 이어받지 못한다(`activePairingCode.test.ts`).
   - `src/features/pairing/PairingScreens.tsx:19` — 썸네일 `<img>`에 `referrerPolicy="no-referrer"`가 빠져 결과 화면과 불일치한다.
   - Firestore 콘솔 — `pairingSessions.expiresAt`에 TTL 정책이 없어 만료 문서가 계속 쌓인다.
-  - **서버 호출 한도는 사용자(익명 UID)별이다**(2026-10-07 도입, 대표 지시 — 앞선 «재설계 때 함께»를 당겨 처리). 세션 생성·삭제는 `pairingQuota/{uid}`를 같은 쓰기에서 함께 올려야 하고(규칙이 `getAfter`로 검사) 10분에 20회까지다. 한 반 30명은 서로 다른 UID라 막히지 않는다(`firestore.rules.test.ts`가 증명). **한계**: 새 익명 UID를 계속 만드는 호출은 이 방식으로 못 막는다 — 그건 App Check(Auth) 강제나 서버 함수 단계의 몫이므로 재설계 때 다시 본다.
+  - **서버 호출 한도는 사용자(익명 UID)별이다**(2026-10-07 도입, 대표 지시 — 앞선 «재설계 때 함께»를 당겨 처리). 세션 생성·삭제는 `pairingQuota/{uid}`를 같은 쓰기에서 함께 올려야 하고(규칙이 `getAfter`로 검사, 2026-10-10부터 한도 문서의 `lastCode`가 그 세션의 코드와 같아야 한다) 10분에 20회까지다. 한 반 30명은 서로 다른 UID라 막히지 않는다(`firestore.rules.test.ts`가 증명). **한계**: 새 익명 UID를 계속 만드는 호출은 이 방식으로 못 막는다 — 그건 App Check(Auth) 강제나 서버 함수 단계의 몫이므로 재설계 때 다시 본다.
   - Firestore 콘솔 — `pairingQuota/{uid}` 문서도 TTL이 없어 익명 UID마다 하나씩 남는다(페어링 UI가 도달 불가라 지금은 쌓이지 않는다). `pairingSessions.expiresAt` TTL과 같이 처리한다.
   - `?pairing=1`(`PairingEntryScene`) 진입자는 개인정보 처리방침에 도달할 방법이 없다. 프렙 5단계와 결과 화면에는 링크가 있지만 이 진입 경로는 둘 다 거치지 않는다(2026-09-08 Playwright 실측: 링크 0개). 이 화면이 동결 대상이라 그때 함께 처리한다.
 
@@ -96,6 +96,10 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
 **확인 방법**: 새 도메인에서 `?pairing=1`에 아무 여섯 자리나 넣고 제출해 **"코드를 찾지 못했어요"**가 나오면 정상입니다(그 응답이 나온다는 건 App Check·익명 로그인·Firestore가 전부 통과했다는 뜻). 403이나 "네트워크를 확인해 주세요"가 나오면 위 2·3번이 안 먹은 것입니다. **헤드리스 브라우저로는 검증할 수 없습니다** — reCAPTCHA v3가 자동화를 차단해 정상 상태에서도 403이 납니다. 실제 브라우저나 헤드 모드로 확인하세요.
 
 ## 자주 틀리는 것
+
+- 🟠 **배포 잡은 `main`에서만 돈다**(2026-10-10). `deploy`·`firestore-rules` 잡은 `github.ref == 'refs/heads/main'`일 때만 실행되고 `environment: production`에 붙는다 — 다른 가지를 골라 수동 실행(`workflow_dispatch`)해도 운영 비밀에 닿지 않게 하려는 것이다. 이 조건을 지우지 않는다. 비밀 6종(`FIREBASE_SERVICE_ACCOUNT`·`VITE_FIREBASE_*`·`VITE_SENTRY_DSN`)은 아직 저장소 비밀이다 — `production` 환경의 «Deployment branches = main만»으로 옮기고 저장소 쪽 비밀을 지우는 것은 Bumm님의 GitHub 화면 작업이다(절차는 팀장 문서 참고, 끝나면 여기 «옮김 완료»를 적는다).
+- 🟡 **Sentry로 나가는 오류에는 페이지 주소의 `?…`·`#…`를 싣지 않는다**(2026-10-10): `errorReporting.ts`의 `beforeSend`·`beforeBreadcrumb`가 주소를 잘라 내고 `errorReporting.url.test.ts`가 지킨다. `dataCollection.urlQueryParams`만으로는 `request.url`의 쿼리가 안 빠진다.
+- 🟡 **`location`·`history`에 경로를 넣을 땐 `samePagePath()`를 거친다**(2026-10-10, `src/lib/pagePath.ts`) — 맨 앞이 `//`인 경로는 다른 사이트 주소로 읽힌다(운영 호스팅은 `//`를 `/`로 되돌려 보내 지금은 닿지 않지만 방어로 둔다).
 
 - 🟠 **`package.json`의 `overrides`(grpc-js·qs·basic-ftp·opentelemetry/core·chokidar·uuid·csv-parse)를 지우거나 낮추지 않는다**(2026-10-10). `npm audit` 0건과 Dependabot 알림 0건이 이 고정에 기대고 있다 — `firebase`가 grpc-js를 낮은 버전으로 묶고 `firebase-tools`가 구버전 전이 의존성을 끌고 와서다. 이 값을 올리거나 `firebase`·`firebase-tools`를 올릴 때는 `npm audit`·`npm run rules:test`·빌드를 같이 돌린다. `dependabot.yml`의 무시 규칙은 보안 업데이트까지 막으므로 `typescript` 메이저 하나만 남겨 두었다 — 새로 걸지 않는다. `firebase` 13은 grpc-js를 여전히 낮은 버전으로 묶고 `rules-unit-testing` 6과 함께 올려야 해서(설치·audit은 통과했으나 App Check 실브라우저 확인이 필요) 보류했다.
 
