@@ -57,6 +57,7 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
   - `src/features/pairing/PairingScreens.tsx:19` — 썸네일 `<img>`에 `referrerPolicy="no-referrer"`가 빠져 결과 화면과 불일치한다.
   - Firestore 콘솔 — `pairingSessions.expiresAt`에 TTL 정책이 없어 만료 문서가 계속 쌓인다.
   - **서버 호출 한도는 사용자(익명 UID)별이다**(2026-10-07 도입, 대표 지시 — 앞선 «재설계 때 함께»를 당겨 처리). 세션 생성·삭제는 `pairingQuota/{uid}`를 같은 쓰기에서 함께 올려야 하고(규칙이 `getAfter`로 검사) 10분에 20회까지다. 한 반 30명은 서로 다른 UID라 막히지 않는다(`firestore.rules.test.ts`가 증명). **한계**: 새 익명 UID를 계속 만드는 호출은 이 방식으로 못 막는다 — 그건 App Check(Auth) 강제나 서버 함수 단계의 몫이므로 재설계 때 다시 본다.
+  - Firestore 콘솔 — `pairingQuota/{uid}` 문서도 TTL이 없어 익명 UID마다 하나씩 남는다(페어링 UI가 도달 불가라 지금은 쌓이지 않는다). `pairingSessions.expiresAt` TTL과 같이 처리한다.
   - `?pairing=1`(`PairingEntryScene`) 진입자는 개인정보 처리방침에 도달할 방법이 없다. 프렙 5단계와 결과 화면에는 링크가 있지만 이 진입 경로는 둘 다 거치지 않는다(2026-09-08 Playwright 실측: 링크 0개). 이 화면이 동결 대상이라 그때 함께 처리한다.
 
 - 🔴 **CSP에서 아래를 빼지 않는다.** CSP는 2026-09-09 이전 이후 `index.html`의 `<meta>`가 아니라 **`firebase.json`의 `hosting.headers`**에 있다(`index.html`에는 그 사실을 알리는 주석만 남아 있다). 각각을 빼면 조용히 기능이 죽는다(에러가 눈에 띄지 않는다):
@@ -95,6 +96,8 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
 **확인 방법**: 새 도메인에서 `?pairing=1`에 아무 여섯 자리나 넣고 제출해 **"코드를 찾지 못했어요"**가 나오면 정상입니다(그 응답이 나온다는 건 App Check·익명 로그인·Firestore가 전부 통과했다는 뜻). 403이나 "네트워크를 확인해 주세요"가 나오면 위 2·3번이 안 먹은 것입니다. **헤드리스 브라우저로는 검증할 수 없습니다** — reCAPTCHA v3가 자동화를 차단해 정상 상태에서도 403이 납니다. 실제 브라우저나 헤드 모드로 확인하세요.
 
 ## 자주 틀리는 것
+
+- 🟠 **`package.json`의 `overrides`(grpc-js·qs·basic-ftp·opentelemetry/core·chokidar·uuid·csv-parse)를 지우거나 낮추지 않는다**(2026-10-10). `npm audit` 0건과 Dependabot 알림 0건이 이 고정에 기대고 있다 — `firebase`가 grpc-js를 낮은 버전으로 묶고 `firebase-tools`가 구버전 전이 의존성을 끌고 와서다. 이 값을 올리거나 `firebase`·`firebase-tools`를 올릴 때는 `npm audit`·`npm run rules:test`·빌드를 같이 돌린다. `dependabot.yml`의 무시 규칙은 보안 업데이트까지 막으므로 `typescript` 메이저 하나만 남겨 두었다 — 새로 걸지 않는다. `firebase` 13은 grpc-js를 여전히 낮은 버전으로 묶고 `rules-unit-testing` 6과 함께 올려야 해서(설치·audit은 통과했으나 App Check 실브라우저 확인이 필요) 보류했다.
 
 - 🟡 **파비콘 그림을 바꿀 때는 `index.html` 아이콘 링크의 `?v=`(날짜) 값도 같이 올린다**(2026-10-08). 주소가 같으면 브라우저가 `max-age=3600` 동안 옛 파일을 계속 쓰기 때문이다. 링크 문자열을 단언하는 검사는 없고 `deploy.yml`은 파일 존재만 본다.
 

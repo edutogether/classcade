@@ -22,7 +22,7 @@
 
 ## 기술 스택
 
-React 19 + TypeScript + Vite 7, Firebase(Firestore·App Check·익명 인증, 페어링 기능에서만 사용), Sentry(오류 리포팅). 테스트는 Vitest + Testing Library, Firestore 규칙 테스트는 firebase-tools 에뮬레이터.
+React 19 + TypeScript + Vite 8, Firebase(Firestore·App Check·익명 인증, 페어링 기능에서만 사용), Sentry(오류 리포팅). 테스트는 Vitest + Testing Library, Firestore 규칙 테스트는 firebase-tools 에뮬레이터.
 
 ## 로컬 실행
 
@@ -39,6 +39,14 @@ npm run dev          # http://localhost:5173
 | Firestore 규칙 테스트 (JDK 21 필요) | `npm run rules:test` |
 
 Node 22(CI 기준, `.github/workflows/deploy.yml`)를 권장한다. 페어링(모바일→노트북 이어하기) 기능을 로컬에서 실제로 동작시키려면 `VITE_FIREBASE_*` 환경변수(`src/lib/firebase.ts` 참고)가 필요하지만, 이 환경변수 없이도 앱 자체(교실 NBTI·결과·놀이 추천)는 정상 실행된다.
+
+## 실운영 상태 (2026-10-10 종합감사 기준)
+
+**그냥 돌리면 되는 상태다.** 끝나는 날짜는 없다(상시 서비스).
+
+- **자동으로 도는 것**: `main` 푸시 → 검사·배포·라이브 점검(`.github/workflows/deploy.yml`), 의존성·액션 갱신 PR(Dependabot 매주), 코드 보안 스캔(CodeQL)·비밀 스캔, 오류 알림(Sentry), 예산 알림(GCP 월 ₩25,000, 메일만 오고 자동 정지는 아님).
+- **사람이 주기적으로 할 일**: 없음. Dependabot PR이 오면 검사(`pr-checks`)가 초록일 때 병합하고, 알림이 뜨면 아래를 본다.
+- **문제가 생기면 어디부터**: ① 라이브 화면과 `node D:/Projects/_shared/ops/smoke-check.mjs _docs/ops/smoke.json` ② `gh run list --workflow deploy.yml --limit 3`(방금 커밋의 배포 결과) ③ 되돌리기는 [`_docs/ops/rollback.md`](_docs/ops/rollback.md) ④ 이 앱만의 함정은 [`.claude/rules/app.md`](.claude/rules/app.md).
 
 ## 문서 안내
 

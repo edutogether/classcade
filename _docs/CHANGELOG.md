@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2026-10-10 — 종합감사 10/10 (지시 Bumm 10/10, 팀장 경유)
+
+- 마지막 감사 태그(9/10) 이후 쌓인 커밋을 대상으로 종합감사를 돌렸다. 찾은 결함은 모두 고쳤다: 낡은 `dependabot.yml` 무시 규칙 제거(보안 업데이트까지 막고 있었고 전제가 이미 사라짐), 마이너·패치 의존성 갱신, README의 Vite 버전 오기와 낡은 CLAUDE.md 감사 주기·상태 정정, `app.md`에 `overrides`·`pairingQuota` TTL 기록.
+- README에 «실운영 상태» 절을 두었다(자동으로 도는 것·사람이 할 일·문제 시 순서).
+- 복구 지점: `classcade-freeze-20261010-audited-100`. Dependabot·code scanning·secret scanning 열린 알림 모두 0건, `npm audit` 0건.
+
 ## 2026-10-10 — 저장소 정리와 의존성 갱신(보안 패치 포함) (승인 Bumm 10/10)
 
 - `.codex/`를 지우고 `.gitignore`에 넣었다. 쓰임이 끝난 인계용 원격 가지(`codex/classcade-claude-handoff-20261005`)를 정리했다.
