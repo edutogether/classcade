@@ -97,7 +97,7 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
 
 ## 자주 틀리는 것
 
-- 🟠 **배포 잡은 `main`에서만 돈다**(2026-10-10). `deploy`·`firestore-rules` 잡은 `github.ref == 'refs/heads/main'`일 때만 실행되고 `environment: production`에 붙는다 — 다른 가지를 골라 수동 실행(`workflow_dispatch`)해도 운영 비밀에 닿지 않게 하려는 것이다. 이 조건을 지우지 않는다. 비밀 6종(`FIREBASE_SERVICE_ACCOUNT`·`VITE_FIREBASE_*`·`VITE_SENTRY_DSN`)은 아직 저장소 비밀이다 — `production` 환경의 «Deployment branches = main만»으로 옮기고 저장소 쪽 비밀을 지우는 것은 Bumm님의 GitHub 화면 작업이다(절차는 팀장 문서 참고, 끝나면 여기 «옮김 완료»를 적는다).
+- 🟠 **배포 잡은 `main`에서만 돈다**(2026-10-10). `deploy`·`firestore-rules` 잡은 `github.ref == 'refs/heads/main'`일 때만 실행되고 `environment: production`에 붙는다 — 다른 가지를 골라 수동 실행(`workflow_dispatch`)해도 운영 비밀에 닿지 않게 하려는 것이다. 이 조건을 지우지 않는다. 비밀 6종은 저장소 수준 비밀로 두고 `production` 환경으로 옮기지 않는다 — **감수: 쓰기 권한자 2명 모두 대표님이 확인한 정당한 권한, 외부 PR은 비밀에 닿지 않음(2026-10-10).** 환경 연결은 그대로 둬도 동작에 문제없다.
 - 🟡 **Sentry로 나가는 오류에는 페이지 주소의 `?…`·`#…`를 싣지 않는다**(2026-10-10): `errorReporting.ts`의 `beforeSend`·`beforeBreadcrumb`가 주소를 잘라 내고 `errorReporting.url.test.ts`가 지킨다. `dataCollection.urlQueryParams`만으로는 `request.url`의 쿼리가 안 빠진다.
 - 🟡 **`location`·`history`에 경로를 넣을 땐 `samePagePath()`를 거친다**(2026-10-10, `src/lib/pagePath.ts`) — 맨 앞이 `//`인 경로는 다른 사이트 주소로 읽힌다(운영 호스팅은 `//`를 `/`로 되돌려 보내 지금은 닿지 않지만 방어로 둔다).
 
