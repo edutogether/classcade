@@ -1,3 +1,4 @@
+// @vitest-environment-options { "url": "https://localhost/" }
 import { describe, it, expect, vi } from 'vitest'
 import * as Sentry from '@sentry/react'
 
@@ -15,7 +16,8 @@ describe('initErrorReporting privacy baseline', () => {
     }))
     vi.stubEnv('PROD', true)
     vi.stubEnv('VITE_SENTRY_DSN', 'https://examplePublicKey@o0.ingest.us.sentry.io/0')
-    document.cookie = 'secret_session=abc123'
+    document.cookie = 'secret_session=abc123; Secure; SameSite=Strict'
+    expect(document.cookie).toContain('secret_session')
 
     const { initErrorReporting, reportError } = await import('./errorReporting')
     initErrorReporting()
