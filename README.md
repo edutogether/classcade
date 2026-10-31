@@ -38,7 +38,7 @@ npm run dev          # http://localhost:5173
 | 빌드 | `npm run build` |
 | Firestore 규칙 테스트 (JDK 21 필요) | `npm run rules:test` |
 
-Node 22(CI 기준, `.github/workflows/deploy.yml`)를 권장한다. 페어링(모바일→노트북 이어하기) 기능을 로컬에서 실제로 동작시키려면 `VITE_FIREBASE_*` 환경변수(`src/lib/firebase.ts` 참고)가 필요하지만, 이 환경변수 없이도 앱 자체(교실 NBTI·결과·놀이 추천)는 정상 실행된다.
+Node 24(CI 기준, `.github/workflows/deploy.yml`)를 권장한다. 페어링(모바일→노트북 이어하기) 기능을 로컬에서 실제로 동작시키려면 `VITE_FIREBASE_*` 환경변수(`src/lib/firebase.ts` 참고)가 필요하지만, 이 환경변수 없이도 앱 자체(교실 NBTI·결과·놀이 추천)는 정상 실행된다.
 
 ## 실운영 상태 (2026-10-10 종합감사 기준)
 
