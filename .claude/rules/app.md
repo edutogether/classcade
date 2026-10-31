@@ -101,7 +101,7 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
 - 🟡 **Sentry로 나가는 오류에는 페이지 주소의 `?…`·`#…`를 싣지 않는다**(2026-10-10): `errorReporting.ts`의 `beforeSend`·`beforeBreadcrumb`가 주소를 잘라 내고 `errorReporting.url.test.ts`가 지킨다. `dataCollection.urlQueryParams`만으로는 `request.url`의 쿼리가 안 빠진다.
 - 🟡 **`location`·`history`에 경로를 넣을 땐 `samePagePath()`를 거친다**(2026-10-10, `src/lib/pagePath.ts`) — 맨 앞이 `//`인 경로는 다른 사이트 주소로 읽힌다(운영 호스팅은 `//`를 `/`로 되돌려 보내 지금은 닿지 않지만 방어로 둔다).
 
-- 🟠 **`package.json`의 `overrides`(grpc-js·qs·basic-ftp·opentelemetry/core·chokidar·uuid·csv-parse)를 지우거나 낮추지 않는다**(2026-10-10). `npm audit` 0건과 Dependabot 알림 0건이 이 고정에 기대고 있다 — `firebase`가 grpc-js를 낮은 버전으로 묶고 `firebase-tools`가 구버전 전이 의존성을 끌고 와서다. 이 값을 올리거나 `firebase`·`firebase-tools`를 올릴 때는 `npm audit`·`npm run rules:test`·빌드를 같이 돌린다. `dependabot.yml`의 무시 규칙은 보안 업데이트까지 막으므로 `typescript` 메이저 하나만 남겨 두었다 — 새로 걸지 않는다. `firebase` 13은 grpc-js를 여전히 낮은 버전으로 묶고 `rules-unit-testing` 6과 함께 올려야 해서(설치·audit은 통과했으나 App Check 실브라우저 확인이 필요) 보류했다.
+- 🟠 **`package.json`의 `overrides`(grpc-js·qs·basic-ftp·opentelemetry/core·chokidar·uuid·csv-parse)를 지우거나 낮추지 않는다**(2026-10-10). `npm audit` 0건과 Dependabot 알림 0건이 이 고정에 기대고 있다 — `firebase`가 grpc-js를 낮은 버전으로 묶고 `firebase-tools`가 구버전 전이 의존성을 끌고 와서다. 이 값을 올리거나 `firebase`·`firebase-tools`를 올릴 때는 `npm audit`·`npm run rules:test`·빌드를 같이 돌린다. `dependabot.yml`의 무시 규칙은 보안 업데이트까지 막으므로 `typescript` 메이저 하나만 남겨 두었다 — 새로 걸지 않는다. `firebase`는 13(2026-10-31 올림)이고 grpc-js를 여전히 낮은 버전으로 묶으므로 이 `overrides`가 필요하다.
 
 - 🟡 **파비콘 그림을 바꿀 때는 `index.html` 아이콘 링크의 `?v=`(날짜) 값도 같이 올린다**(2026-10-08). 주소가 같으면 브라우저가 `max-age=3600` 동안 옛 파일을 계속 쓰기 때문이다. 링크 문자열을 단언하는 검사는 없고 `deploy.yml`은 파일 존재만 본다.
 
