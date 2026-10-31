@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 2026-10-31 — 수시 종합감사 (지시 Bumm 10/31, 팀장 경유)
+
+- 범위: 프리즈 `classcade-freeze-20261010b-audited-100` 이후(firebase 13, 워크플로 2개, 훅 권한, 의존성 갱신). `src/` 변경은 없다.
+- 결함 1건 수정: CI의 Node가 22인데 firebase 13 패키지가 24.12 이상을 요구해 빌드·테스트가 지원 밖 런타임에서 돌고 있었다 → 워크플로 4곳과 README를 Node 24로 올렸다(해당 커밋의 CI에서 엔진 경고 0건, 4개 잡 모두 성공).
+- 개발 도구 쪽 의존성 권고는 `eslint` 계열의 `minimatch`를 고정해 줄였고, `firebase-tools`가 묶고 있는 나머지는 상류가 고칠 때까지 남는다(배포되는 번들의 `npm audit --omit=dev`는 0건). 근거는 `.claude/rules/app.md`.
+- 점수 10/10. 복구 지점: `classcade-freeze-20261031-audited-100`.
+
 ## 2026-10-31 — 의존성 갱신: firebase 13 (지시 Bumm 10/31)
 
 - `firebase` 13과 `@firebase/rules-unit-testing` 6을 함께 올리고 의존성 보안 패치를 반영했다(`npm audit` 0건). 전체 테스트·규칙 테스트·lint·build 통과, 로컬에서 `?pairing=1` 화면 렌더와 콘솔 오류 0건 확인. 지난 보류 사유였던 App Check 실브라우저 확인은 배포 뒤 Bumm님이 실제 Chrome에서 `?pairing=1`에 여섯 자리를 제출해 «코드를 찾지 못했어요. 여섯 자리를 다시 확인해 주세요.»가 뜨는 것으로 확인했다(10/31) — firebase 13에서도 App Check와 연결 코드 경로가 정상이다.
