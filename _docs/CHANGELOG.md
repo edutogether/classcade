@@ -2,7 +2,7 @@
 
 ## 2026-10-31 — 의존성 갱신: firebase 13 (지시 Bumm 10/31)
 
-- `firebase` 13과 `@firebase/rules-unit-testing` 6을 함께 올리고 의존성 보안 패치를 반영했다(`npm audit` 0건). 전체 테스트·규칙 테스트·lint·build 통과, 로컬에서 `?pairing=1` 화면 렌더와 콘솔 오류 0건 확인. 지난 보류 사유였던 App Check 실브라우저 확인은 배포 뒤 Bumm님이 한다.
+- `firebase` 13과 `@firebase/rules-unit-testing` 6을 함께 올리고 의존성 보안 패치를 반영했다(`npm audit` 0건). 전체 테스트·규칙 테스트·lint·build 통과, 로컬에서 `?pairing=1` 화면 렌더와 콘솔 오류 0건 확인. 지난 보류 사유였던 App Check 실브라우저 확인은 배포 뒤 Bumm님이 실제 Chrome에서 `?pairing=1`에 여섯 자리를 제출해 «코드를 찾지 못했어요. 여섯 자리를 다시 확인해 주세요.»가 뜨는 것으로 확인했다(10/31) — firebase 13에서도 App Check와 연결 코드 경로가 정상이다.
 
 ## 2026-10-10 — 보안 강화 (지시 Bumm 10/10, 팀장 경유)
 
