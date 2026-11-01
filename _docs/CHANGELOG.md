@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-11-01 — Firebase CLI를 잠금 파일에서 뺌 (지시 Bumm 11/1, 팀장 경유)
+
+- `firebase-tools`를 `package.json`·잠금 파일에서 빼고 `deploy.yml` 2곳과 `rules:test`가 `npx --yes firebase-tools@15.34.1`로 부르게 했다(`_shared/CONVENTIONS.md` §3.7). 배포되는 의존성의 버전은 그대로이고(대조 확인) 라이브 화면 차이는 0이다. 열린 Dependabot 알림이 저절로 닫히는 것을 기대한다.
+
 ## 2026-10-31 — 수시 종합감사 (지시 Bumm 10/31, 팀장 경유)
 
 - 범위: 프리즈 `classcade-freeze-20261010b-audited-100` 이후(firebase 13, 워크플로 2개, 훅 권한, 의존성 갱신). `src/` 변경은 없다.

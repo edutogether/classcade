@@ -96,6 +96,7 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
 **확인 방법**: 새 도메인에서 `?pairing=1`에 아무 여섯 자리나 넣고 제출해 **"코드를 찾지 못했어요"**가 나오면 정상입니다(그 응답이 나온다는 건 App Check·익명 로그인·Firestore가 전부 통과했다는 뜻). 403이나 "네트워크를 확인해 주세요"가 나오면 위 2·3번이 안 먹은 것입니다. **헤드리스 브라우저로는 검증할 수 없습니다** — reCAPTCHA v3가 자동화를 차단해 정상 상태에서도 403이 납니다. 실제 브라우저나 헤드 모드로 확인하세요.
 
 ## 자주 틀리는 것
+- 🟠 **Firebase CLI(`firebase-tools`)는 `package.json`·잠금 파일에 두지 않는다**(2026-11-01 Bumm님 결정, `_shared/CONVENTIONS.md` §3.7). `deploy.yml` 2곳과 `rules:test` 스크립트가 `npx --yes firebase-tools@15.34.1`로 정확한 판을 박아 부른다 — `@latest`·범위 지정 금지. 판을 올릴 때는 이 3곳의 번호를 사람이 같이 바꾼다(Dependabot이 추적하지 않는다). 이유: 이 CLI가 고친 판이 없는 옛 `minimatch`를 끌고 와 Dependabot 알림이 닫히지 않았고, `minimatch` 11로 덮으면 `fsAsync`·`superstatic`이 깨져 배포가 멈춘다.
 - 🟠 **배포가 필요한 push 전에 팀장에게 «배포 직전 한 줄»을 보내고, 팀장의 «승인» 답을 받은 뒤에 push한다**(2026-10-31 팀장 지시). 보내고 바로 push하지 않는다 — 화면 차이가 0이어도 같다. 답이 올 때까지 상관없는 일만 계속한다.
 
 
@@ -103,7 +104,7 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
 - 🟡 **Sentry로 나가는 오류에는 페이지 주소의 `?…`·`#…`를 싣지 않는다**(2026-10-10): `errorReporting.ts`의 `beforeSend`·`beforeBreadcrumb`가 주소를 잘라 내고 `errorReporting.url.test.ts`가 지킨다. `dataCollection.urlQueryParams`만으로는 `request.url`의 쿼리가 안 빠진다.
 - 🟡 **`location`·`history`에 경로를 넣을 땐 `samePagePath()`를 거친다**(2026-10-10, `src/lib/pagePath.ts`) — 맨 앞이 `//`인 경로는 다른 사이트 주소로 읽힌다(운영 호스팅은 `//`를 `/`로 되돌려 보내 지금은 닿지 않지만 방어로 둔다).
 
-- 🟠 **`package.json`의 `overrides`(grpc-js·qs·basic-ftp·opentelemetry/core·chokidar·uuid·csv-parse)를 지우거나 낮추지 않는다**(2026-10-10). 배포되는 의존성의 `npm audit --omit=dev` 0건과 Dependabot 알림 0건이 이 고정에 기대고 있다(`basic-ftp`는 2026-10-31 기준 끌고 오는 패키지가 없어 비어 있지만 해가 없어 둔다. 개발 도구의 `glob`·`minimatch` 권고는 `firebase-tools`가 `glob ^10`·`minimatch ^3`을 쓰는 구조라 `eslint` 쪽 `minimatch ^11`만 고정했고 나머지는 상류가 고칠 때까지 남는다 — 전체를 올리면 `firebase deploy`의 API가 깨진다) — `firebase`가 grpc-js를 낮은 버전으로 묶고 `firebase-tools`가 구버전 전이 의존성을 끌고 와서다. 이 값을 올리거나 `firebase`·`firebase-tools`를 올릴 때는 `npm audit`·`npm run rules:test`·빌드를 같이 돌린다. `dependabot.yml`의 무시 규칙은 보안 업데이트까지 막으므로 `typescript` 메이저 하나만 남겨 두었다 — 새로 걸지 않는다. `firebase`는 13(2026-10-31 올림)이고 grpc-js를 여전히 낮은 버전으로 묶으므로 이 `overrides`가 필요하다.
+- 🟠 **`package.json`의 `overrides`(grpc-js·qs·basic-ftp·opentelemetry/core·chokidar·uuid·csv-parse)를 지우거나 낮추지 않는다**(2026-10-10). 배포되는 의존성의 `npm audit --omit=dev` 0건과 Dependabot 알림 0건이 이 고정에 기대고 있다(`basic-ftp`는 2026-10-31 기준 끌고 오는 패키지가 없어 비어 있지만 해가 없어 둔다. 개발 도구의 `glob`·`minimatch` 권고는 `firebase-tools`가 `glob ^10`·`minimatch ^3`을 쓰는 구조라 `eslint` 쪽 `minimatch ^11`만 고정했고 나머지는 상류가 고칠 때까지 남는다 — 전체를 올리면 `firebase deploy`의 API가 깨진다) — `firebase`가 grpc-js를 낮은 버전으로 묶고 `firebase-tools`가 구버전 전이 의존성을 끌고 와서다. 이 값을 올리거나 `firebase`를 올릴 때는 `npm audit`·`npm run rules:test`·빌드를 같이 돌린다. `dependabot.yml`의 무시 규칙은 보안 업데이트까지 막으므로 `typescript` 메이저 하나만 남겨 두었다 — 새로 걸지 않는다. `firebase`는 13(2026-10-31 올림)이고 grpc-js를 여전히 낮은 버전으로 묶으므로 이 `overrides`가 필요하다.
 
 - 🟡 **파비콘 그림을 바꿀 때는 `index.html` 아이콘 링크의 `?v=`(날짜) 값도 같이 올린다**(2026-10-08). 주소가 같으면 브라우저가 `max-age=3600` 동안 옛 파일을 계속 쓰기 때문이다. 링크 문자열을 단언하는 검사는 없고 `deploy.yml`은 파일 존재만 본다.
 

@@ -10,7 +10,7 @@
     "test": "vitest run && tsc -b --noEmit",
     "preview": "vite preview",
     "entry:tune:apply": "node scripts/apply-entry-tuning.mjs",
-    "rules:test": "firebase emulators:exec --only firestore \"vitest run src/features/pairing/firestore.rules.test.ts\"",
+    "rules:test": "npx --yes firebase-tools@15.34.1 emulators:exec --only firestore \"vitest run src/features/pairing/firestore.rules.test.ts\"",
     "measure:assets": "node scripts/measure-assets.mjs"
   },
   "dependencies": {
@@ -52,7 +52,6 @@
     "eslint": "^10.13.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
-    "firebase-tools": "15.34.1",
     "globals": "^17.13.0",
     "jsdom": "^30.1.3",
     "typescript": "~5.9.3",

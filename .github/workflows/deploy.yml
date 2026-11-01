@@ -208,7 +208,7 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-service-account.json
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$GOOGLE_APPLICATION_CREDENTIALS"
-          npx firebase deploy --only hosting --project classcade-together --non-interactive
+          npx --yes firebase-tools@15.34.1 deploy --only hosting --project classcade-together --non-interactive
 
       - name: Remove Firebase service account credentials
         if: always()
@@ -324,7 +324,7 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-service-account.json
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$GOOGLE_APPLICATION_CREDENTIALS"
-          npx firebase deploy --only firestore:rules --project classcade-together --non-interactive
+          npx --yes firebase-tools@15.34.1 deploy --only firestore:rules --project classcade-together --non-interactive
 
       - name: Remove Firestore service account credentials
         if: always()
