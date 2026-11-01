@@ -36,7 +36,7 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
 
 감사 세션은 이 값들을 코드로 검증할 수 없다. 아래는 대표가 콘솔에서 직접 설정하고 확인해준 실제 상태이므로, 감사 시 "확인 불가"로 남기지 말고 이 기록을 근거로 삼는다(값이 바뀌면 대표가 알려줄 때 여기를 갱신한다).
 
-- 🟢 **GCP 예산 알림 (2026-09-07 설정 완료)**: `classcade-budget-alert`, 프로젝트 `classcade-together`, 월 ₩25,000, 임계값 50%/90%/100%, 이메일 알림 켜짐. **Alerts only — spend cap enforcement가 아니다**: 한도를 넘어도 서비스가 자동으로 멈추지는 않고 메일만 온다.
+- 🟢 **GCP 예산 알림 (2026-11-01 앱마다 하나로 통일, Bumm님 결정)**: CLASSCADE 결제 계정(`019504-C8D2C0-D3F17F`)에 «CLASSCADE Budget Alert» 하나, 월 ₩10,000, 범위 결제 계정 전체, 임계값 50%/90%/100% 메일, Pub/Sub 없음. 옛 `classcade-budget-alert`(₩25,000, 2026-09-07 설정)는 AI Ways Incheon 결제 계정에 남아 ₩0만 세고 있어 지웠다. **Alerts only — spend cap enforcement가 아니다**: 한도를 넘어도 서비스가 자동으로 멈추지는 않고 메일만 온다.
 - 🟢 **App Check enforcement (2026-09-07 전환 완료)**: Cloud Firestore를 Monitoring → **Enforced**. 전환 직전 검증된 요청 100%/미검증 0%를 확인한 뒤 진행했고, 전환 후 라이브(`?pairing=1`)에서 여섯 자리 코드를 실제 제출해 Firestore 조회가 정상 통과하는 것("코드를 찾지 못했어요" = 정상 invalid 응답, 네트워크·권한 오류 아님)과 콘솔 에러 0건을 확인함.
 - 🟢 **firebase 12.19 실브라우저 확인 (2026-10-05)**: 의존성 갱신으로 `firebase` 12.18→12.19를 올린 뒤, Bumm님이 실제 브라우저에서 `?pairing=1`에 여섯 자리(950324)를 제출해 «코드를 찾지 못했어요. 여섯 자리를 다시 확인해 주세요»가 뜨는 것을 직접 확인했다 — App Check·익명 로그인·Firestore가 12.19에서도 정상. (세션의 자동 브라우저는 reCAPTCHA 때문에 같은 제출에서 403이 나므로 이 확인은 실브라우저로만 가능하다.)
 - 🟡 **App Check — Authentication(PREVIEW)은 Monitoring 유지**: 아직 정식 기능이 아니고, 잘못 걸리면 로그인이 전면 차단되는 위험이 Firestore보다 크다는 판단. 정식 출시되면 그때 재검토한다.
