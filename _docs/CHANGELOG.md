@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-11-11 — 움직임 줄이기 신호로 연출을 멈추지 않음 (지시 Bumm 11/11, 팀장 경유)
+
+- 브라우저가 `prefers-reduced-motion: reduce`를 보고하면 전체 애니메이션을 끄던 스타일 6곳(`App.css`·`entry-shared.css`·`journey-shared.css`)을 지웠다. 신호가 있어도 없을 때와 똑같이 움직인다. 배치·디자인은 그대로이고 `src/lib/reducedMotion.test.ts`가 이 신호를 다시 읽지 않도록 지킨다.
+
 ## 2026-11-01 — Firebase CLI를 잠금 파일에서 뺌 (지시 Bumm 11/1, 팀장 경유)
 
 - `firebase-tools`를 `package.json`·잠금 파일에서 빼고 `deploy.yml` 2곳과 `rules:test`가 `npx --yes firebase-tools@15.34.1`로 부르게 했다(`_shared/CONVENTIONS.md` §3.7). 배포되는 의존성의 버전은 그대로이고(대조 확인) 라이브 화면 차이는 0이다. 열린 Dependabot 알림이 저절로 닫히는 것을 기대한다.

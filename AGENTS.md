@@ -156,7 +156,7 @@ Before presenting a scene:
 - no clipped Korean text
 - no distorted illustration
 - keyboard focus is visible
-- reduced-motion mode remains usable
+- the app animates the same whether or not the browser reports prefers-reduced-motion (Bumm 2026-11-11)
 - audio is optional and muted until user interaction
 - asset loading failures have a graceful fallback
 - production build passes

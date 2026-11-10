@@ -96,6 +96,7 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
 **확인 방법**: 새 도메인에서 `?pairing=1`에 아무 여섯 자리나 넣고 제출해 **"코드를 찾지 못했어요"**가 나오면 정상입니다(그 응답이 나온다는 건 App Check·익명 로그인·Firestore가 전부 통과했다는 뜻). 403이나 "네트워크를 확인해 주세요"가 나오면 위 2·3번이 안 먹은 것입니다. **헤드리스 브라우저로는 검증할 수 없습니다** — reCAPTCHA v3가 자동화를 차단해 정상 상태에서도 403이 납니다. 실제 브라우저나 헤드 모드로 확인하세요.
 
 ## 자주 틀리는 것
+- 🟠 **«움직임 줄이기»(`prefers-reduced-motion`) 신호로 연출을 멈추지 않는다**(2026-11-11 Bumm님 결정, 여덟 앱 공통). 원격 접속 등으로 브라우저가 이 신호를 잘못 보고해도 앱은 늘 정상처럼 움직여야 한다 — 이 미디어 쿼리를 CSS·코드에 다시 넣지 않는다(`reducedMotion.test.ts`가 막는다). 애니메이션을 건드리는 확인은 Playwright `emulateMedia({ reducedMotion })`로 **reduce와 no-preference 둘 다**에서 `document.getAnimations()`가 running인지 본다.
 - 🟠 **Firebase CLI(`firebase-tools`)는 `package.json`·잠금 파일에 두지 않는다**(2026-11-01 Bumm님 결정, `_shared/CONVENTIONS.md` §3.7). `deploy.yml` 2곳과 `rules:test` 스크립트가 `npx --yes firebase-tools@15.34.1`로 정확한 판을 박아 부른다 — `@latest`·범위 지정 금지. 판을 올릴 때는 이 3곳의 번호를 사람이 같이 바꾼다(Dependabot이 추적하지 않는다). 이유: 이 CLI가 고친 판이 없는 옛 `minimatch`를 끌고 와 Dependabot 알림이 닫히지 않았고, `minimatch` 11로 덮으면 `fsAsync`·`superstatic`이 깨져 배포가 멈춘다.
 - 🟠 **배포가 필요한 push 전에 팀장에게 «배포 직전 한 줄»을 보내고, 팀장의 «승인» 답을 받은 뒤에 push한다**(2026-10-31 팀장 지시). 보내고 바로 push하지 않는다 — 화면 차이가 0이어도 같다. 답이 올 때까지 상관없는 일만 계속한다.
 
