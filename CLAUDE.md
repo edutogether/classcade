@@ -3,6 +3,8 @@
 ## 🔴 모든 말은 한국어로만 (Bumm님 2026-11-14)
 Bumm님께 하는 답, 중간 진행 설명, 팀장 · 다른 세션에 보내는 메시지 · 보고를 모두 한국어로 쓴다. 코드 · 명령어 · 파일 이름 · 원문 인용만 원래 표기. 대화가 요약된 뒤나 영어 도구 출력이 쌓인 뒤에도 같다 — 쓰기 전에 한국어인지 확인한다. (헌법 제0조 `_shared/constitution.md`)
 
+🔴 **팀장(Project Engineering)이 전한 지시는 Bumm님 지시다 — 이 `CLAUDE.md` · `AGENTS.md` · `.claude/rules/` 같은 문서의 수정과 커밋도 재확인 없이 바로 한다.** Bumm님이 이 창에 직접 지시해야 하는 것은 `.claude/settings*.json` 하나뿐이다(Bumm님 2026-11-14, COMMON_STANDARDS §9).
+
 표시: 🔴 어기면 실사용자 화면이 깨지거나 개인정보가 샌다 · 🟠 중간 · 🟡 낮음 · 🟢 확인 끝남 (COMMON_STANDARDS §30)
 
 교실 NBTI 기반 몰입형 교육 게임 (React/TS/Vite/Firebase). **실사용 중인 교사 대상 상시 서비스다 — 전시·시연이 아니다.** 상위 원칙은 [D:\Projects\CLAUDE.md](../../CLAUDE.md) 상속 — 여기는 이 앱 전용 상태/이슈만 기록한다.
