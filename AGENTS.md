@@ -1,5 +1,7 @@
 # CLASSCADE Agent Instructions
 
+> 🔴 모든 말은 한국어로만 쓴다 (Bumm님 2026-11-14): 답 · 진행 설명 · 다른 세션에 보내는 메시지와 보고 전부. 코드 · 명령어 · 파일 이름 · 원문 인용만 원래 표기. (헌법 제0조 `_shared/constitution.md`)
+
 ## Mission
 
 Build **같교오락실 / CLASSCADE**, an immersive educational adventure for teachers and classroom demonstrations.
