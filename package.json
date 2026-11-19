@@ -10,7 +10,7 @@
     "test": "vitest run && tsc -b --noEmit",
     "preview": "vite preview",
     "entry:tune:apply": "node scripts/apply-entry-tuning.mjs",
-    "rules:test": "npx --yes firebase-tools@15.34.1 emulators:exec --only firestore \"vitest run src/features/pairing/firestore.rules.test.ts\"",
+    "rules:test": "npx --yes firebase-tools@15.37.0 emulators:exec --only firestore \"vitest run src/features/pairing/firestore.rules.test.ts\"",
     "measure:assets": "node scripts/measure-assets.mjs"
   },
   "dependencies": {

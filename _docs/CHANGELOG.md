@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-11-19 — 고정 판을 안정된 최신판으로 (지시 Bumm 11/19, 팀장 경유)
+
+- `firebase-tools` 15.34.1 → 15.37.0(`deploy.yml` 2곳, `rules:test`), `actions/setup-java` v6.1.0 → v6.3.0(SHA 고정, 워크플로 2곳). `checkout`·`setup-node`는 이미 최신이다.
+
 ## 2026-11-19 — Node 26으로 올림 (지시 Bumm 11/19, 팀장 경유)
 
 - CI의 `node-version`(`deploy.yml` 3곳, `pr-checks.yml` 1곳)과 README를 Node 24 → 26으로 올렸다. 앱도 컴퓨터도 최신 판만 보관한다는 결정이다. Functions·`engines`·`.nvmrc`가 없어 바뀐 곳은 이것뿐이다. 전환 직전 복구 지점: `classcade-freeze-20261119-node26-pre`.
