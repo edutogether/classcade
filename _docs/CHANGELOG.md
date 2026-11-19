@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-11-19 — Node 26으로 올림 (지시 Bumm 11/19, 팀장 경유)
+
+- CI의 `node-version`(`deploy.yml` 3곳, `pr-checks.yml` 1곳)과 README를 Node 24 → 26으로 올렸다. 앱도 컴퓨터도 최신 판만 보관한다는 결정이다. Functions·`engines`·`.nvmrc`가 없어 바뀐 곳은 이것뿐이다. 전환 직전 복구 지점: `classcade-freeze-20261119-node26-pre`.
+
 ## 2026-11-11 — 움직임 줄이기 신호로 연출을 멈추지 않음 (지시 Bumm 11/11, 팀장 경유)
 
 - 브라우저가 `prefers-reduced-motion: reduce`를 보고하면 전체 애니메이션을 끄던 스타일 6곳(`App.css`·`entry-shared.css`·`journey-shared.css`)을 지웠다. 신호가 있어도 없을 때와 똑같이 움직인다. 배치·디자인은 그대로이고 `src/lib/reducedMotion.test.ts`가 이 신호를 다시 읽지 않도록 지킨다.
