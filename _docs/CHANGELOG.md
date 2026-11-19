@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-11-19 — 의존성을 안정된 최신판으로 (지시 Bumm 11/19, 팀장 경유)
+
+- 전 → 후: firebase 13.1.0 → 13.4.0, @sentry/react 11.6.0 → 11.14.0, react·react-dom 19.3.0 → 19.3.1, vite 8.3.5 → 8.3.8, vitest 5.0.5 → 5.1.1, eslint 10.13.0 → 10.15.0, typescript-eslint 8.72.0 → 8.73.0, @vitejs/plugin-react 6.1.2 → 6.3.0, @testing-library/jest-dom 7.0.1 → 8.0.0, jsdom 30.1.3 → 31.0.1, typescript 5.9.3 → 6.0.3 외 소폭 갱신. TypeScript 7.0.2는 typescript-eslint가 아직 6.1 미만만 받아 6.0.3에서 멈췄다(Dependabot 무시 규칙 유지). 코드 수정은 필요 없었고 lint·시험 133개·빌드·에뮬레이터 12/12·`npm audit` 0건을 통과했다. 복구 지점: `classcade-freeze-20261119-deps-pre`.
+
 ## 2026-11-19 — 고정 판을 안정된 최신판으로 (지시 Bumm 11/19, 팀장 경유)
 
 - `firebase-tools` 15.34.1 → 15.37.0(`deploy.yml` 2곳, `rules:test`), `actions/setup-java` v6.1.0 → v6.3.0(SHA 고정, 워크플로 2곳). `checkout`·`setup-node`는 이미 최신이다.
