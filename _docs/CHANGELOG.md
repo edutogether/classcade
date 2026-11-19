@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-11-19 — 에뮬레이터 포트를 6300~6308로 고정 (지시 Bumm 11/19, 팀장 경유, COMMON_STANDARDS §37)
+
+- `firebase.json`에 `emulators` 블록을 추가했다(ui 6300·hub 6301·logging 6302·firestore 6303·websocket 6304·auth 6305·functions 6306·storage 6307·database 6308). 여러 앱이 동시에 시험할 때 기본 포트(8080 등)가 겹쳐 시작하지 못하던 문제를 막는다. 시험 코드는 `FIRESTORE_EMULATOR_HOST`에서 주소를 읽고 있어 수정이 필요 없었다. `npm run rules:test` 12/12 통과. 복구 지점: `classcade-freeze-20261119-ports-pre`.
+
 ## 2026-11-19 — 의존성을 안정된 최신판으로 (지시 Bumm 11/19, 팀장 경유)
 
 - 전 → 후: firebase 13.1.0 → 13.4.0, @sentry/react 11.6.0 → 11.14.0, react·react-dom 19.3.0 → 19.3.1, vite 8.3.5 → 8.3.8, vitest 5.0.5 → 5.1.1, eslint 10.13.0 → 10.15.0, typescript-eslint 8.72.0 → 8.73.0, @vitejs/plugin-react 6.1.2 → 6.3.0, @testing-library/jest-dom 7.0.1 → 8.0.0, jsdom 30.1.3 → 31.0.1, typescript 5.9.3 → 6.0.3 외 소폭 갱신. TypeScript 7.0.2는 typescript-eslint가 아직 6.1 미만만 받아 6.0.3에서 멈췄다(Dependabot 무시 규칙 유지). 코드 수정은 필요 없었고 lint·시험 133개·빌드·에뮬레이터 12/12·`npm audit` 0건을 통과했다. 복구 지점: `classcade-freeze-20261119-deps-pre`. 병합 후 라이브(커밋 `171ffb4`)에서 세션 자체 브라우저로 `?pairing=1`에 여섯 자리를 제출해 «코드를 찾지 못했어요. 여섯 자리를 다시 확인해 주세요»가 뜨는 것을 확인했다(App Check 토큰 교환·익명 로그인·Firestore 조회·기록까지 요청이 모두 통과, 콘솔 오류 0건). Dependabot PR 62·63·66은 이 갱신에 흡수되어 닫혔다.

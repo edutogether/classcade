@@ -81,7 +81,7 @@ Chrome(Claude in Chrome)은 대표님 본인 계정이므로 ①대표님이 크
 - 린트: `npm run lint`
 - 로컬 실행: `npm run dev`
 - 빌드: `npm run build`
-- 에뮬레이터(Firestore 규칙 테스트): `npm run rules:test` — JDK 21 필요
+- 에뮬레이터(Firestore 규칙 테스트): `npm run rules:test` — JDK 21 필요. 🟠 포트는 `firebase.json`의 `emulators`에 6300~6308로 고정돼 있다(ui 6300·hub 6301·logging 6302·firestore 6303·websocket 6304·auth 6305·functions 6306·storage 6307·database 6308, COMMON_STANDARDS §37 — 여러 앱이 동시에 시험할 때 기본 포트가 겹치지 않게). 시험은 `FIRESTORE_EMULATOR_HOST`에서 주소를 읽으므로 코드에 포트 숫자를 박지 않는다.
 
 ## 주소를 바꿀 때 반드시 함께 하는 것 (2026-09-09 이전에서 확인)
 

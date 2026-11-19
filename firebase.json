@@ -2,6 +2,16 @@
   "firestore": {
     "rules": "firestore.rules"
   },
+  "emulators": {
+    "ui": { "port": 6300 },
+    "hub": { "port": 6301 },
+    "logging": { "port": 6302 },
+    "firestore": { "port": 6303, "websocketPort": 6304 },
+    "auth": { "port": 6305 },
+    "functions": { "port": 6306 },
+    "storage": { "port": 6307 },
+    "database": { "port": 6308 }
+  },
   "hosting": {
     "public": "dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
