@@ -18,7 +18,7 @@ updates:
     ignore:
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
-        # 2026-10-05: TypeScript 7은 아직 올리지 않는다 — typescript-eslint(최신 8.71.0)가
+        # 2026-10-05: TypeScript 7은 아직 올리지 않는다(지금은 도구가 지원하는 6.0.3까지 올려 둠) — typescript-eslint(8.73.0까지 확인, 2026-11-19)가
         # TS 7을 지원하지 않아 npm ci가 peer 충돌(`typescript <6.1.0`)로 실패하고, 억지로
         # 설치해도 린트가 "does not support TS 7.0"으로 중단된다. 코드·테스트·빌드 산출물은
         # TS 7에서 문제없음을 확인했다(tsc 0건·vitest 통과·dist 전 파일 해시 동일).
