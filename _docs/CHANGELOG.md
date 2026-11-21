@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-11-22 — 규칙 장부 · 순서 문서 추가 (지시 Bumm 11/21, 팀장 경유)
+
+- `_docs/RULES.md`(규칙 31줄)와 `_docs/RUNBOOK.md`(절 11개)를 새로 만들고 `CLAUDE.md`에 `@_docs/RULES.md`, `AGENTS.md` 맨 위에 «먼저 읽기» 줄을 넣었다. 문서만 바뀌었고 코드 · 설정 · 배포는 그대로다.
+
 ## 2026-11-19 — 에뮬레이터 포트를 6300~6308로 고정 (지시 Bumm 11/19, 팀장 경유, COMMON_STANDARDS §37)
 
 - `firebase.json`에 `emulators` 블록을 추가했다(ui 6300·hub 6301·logging 6302·firestore 6303·websocket 6304·auth 6305·functions 6306·storage 6307·database 6308). 여러 앱이 동시에 시험할 때 기본 포트(8080 등)가 겹쳐 시작하지 못하던 문제를 막는다. 시험 코드는 `FIRESTORE_EMULATOR_HOST`에서 주소를 읽고 있어 수정이 필요 없었다. `npm run rules:test` 12/12 통과. 복구 지점: `classcade-freeze-20261119-ports-pre`.
