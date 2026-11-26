@@ -530,6 +530,9 @@
 /* Phones (incl. QR visitors): the poster h1 is sized for a wide column and was clipping
    to "든든한 …" on a 390px screen. Let it wrap and shrink. */
 @media (max-width: 700px) {
+  .journey-scene--result .journey-scene__stage { grid-template-columns: minmax(0, 1fr); }
+  .journey-scene--result .journey-brand, .journey-scene--result .journey-brand .classcade-wordmark { min-width: 0; }
+  .journey-result h1 { max-width: 100%; overflow: visible; overflow-wrap: anywhere; text-overflow: clip; white-space: normal; }
   .journey-result--art .journey-result__copy { max-width: none; }
   .journey-result--art .journey-result__copy h1,
   .journey-result--art .journey-result__copy h1[data-tune-id='main-title'] { font-size: clamp(32px, 9vw, 44px); max-width: 100%; overflow: visible; overflow-wrap: anywhere; text-overflow: clip; white-space: normal; width: auto; word-break: keep-all; }
