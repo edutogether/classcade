@@ -1,13 +1,15 @@
-import { useEffect, useState, type RefObject } from 'react'
+import { lazy, Suspense, useEffect, useState, type RefObject } from 'react'
 import { noteAudioUserGesture, playAudioCue, playSceneTheme } from '../../lib/audioManager'
 import type { JourneyAction, JourneyState } from './journeyState'
 import { QuestionScene, ResultScene, StartScene } from './scenes/NbtiScenes'
-import { PairingEntryScene, PairingScene } from '../pairing/PairingScreens'
 import { JourneyExitDialog } from './components/JourneyExitDialog'
 import type { PairingPayload } from '../pairing/pairingContract'
 import { PAIRING_GATE_OPEN_STORAGE_KEY, getStorageBackend, resolveDeviceMode, type Profile } from '../../lib/storage'
 import type { JourneySceneProps } from './components/SceneFrame'
 import './journey.css'
+
+const PairingEntryScene = lazy(() => import('../pairing/PairingScreens').then((module) => ({ default: module.PairingEntryScene })))
+const PairingScene = lazy(() => import('../pairing/PairingScreens').then((module) => ({ default: module.PairingScene })))
 
 type JourneyAppProps = {
   state: JourneyState
@@ -65,7 +67,7 @@ export function JourneyApp({ state, notice, onAction, onTeacherOpen, teacherTrig
      used to follow it are gone entirely (see below); any stage value that no longer
      exists (a stale saved session) falls through the if/else chain to the result screen
      rather than dead-ending on a disconnected page. */
-  if (pairingEntry) content = <PairingEntryScene {...sceneProps} onPaired={(payload) => onPaired?.(payload)} onStart={() => onStartHere?.()} onBack={() => onExitPairingEntry?.()} />
+  if (pairingEntry) content = <Suspense fallback={<div style={{ background: '#050c07', minHeight: '100svh' }} />}><PairingEntryScene {...sceneProps} onPaired={(payload) => onPaired?.(payload)} onStart={() => onStartHere?.()} onBack={() => onExitPairingEntry?.()} /></Suspense>
   else if (state.stage === 'nbti_start') content = <StartScene {...sceneProps} />
   else if (state.stage === 'nbti_question') content = <QuestionScene {...sceneProps} />
   else content = <ResultScene {...sceneProps} onPair={() => { savePairingGateOpen(true); setPairingOpen(true) }} />
@@ -75,7 +77,7 @@ export function JourneyApp({ state, notice, onAction, onTeacherOpen, teacherTrig
      the pairing code-issuance screen remains unreachable, pending the separate LOCKED
      pairing-redesign decision in this repo's CLAUDE.md. */
   const disconnectedScenes = (): React.ReactNode => {
-    if (state.stage === 'nbti_result' && pairingOpen && profile) return <PairingScene {...sceneProps} profile={profile} journeyId={journeyId} onBack={() => { savePairingGateOpen(false); setPairingOpen(false) }} />
+    if (state.stage === 'nbti_result' && pairingOpen && profile) return <Suspense fallback={null}><PairingScene {...sceneProps} profile={profile} journeyId={journeyId} onBack={() => { savePairingGateOpen(false); setPairingOpen(false) }} /></Suspense>
     return null
   }
   void disconnectedScenes
