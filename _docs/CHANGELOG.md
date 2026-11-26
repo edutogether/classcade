@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-11-26 — 설치 스크립트 정책 명시
+
+- `@firebase/util` · `protobufjs` 설치 스크립트를 명시적으로 거부했다. npm 11.20 · 12에서 설치와 정책을 확인했고 전체 시험 138개 · Firestore 규칙 시험 12개 · 린트 · 빌드 통과, `npm audit` 0건이다. 병합 · 배포하지 않았다.
+
 ## 2026-11-26 — OpenTelemetry 의존성 충돌 정리
 
 - `@opentelemetry/core` 고정 범위를 2.12.0 → 3.1.1로 올려 API 1.10.0과의 peer 충돌을 해소했다. `npm ls` · `npm audit`(0건) · 전체 시험 138개 · Firestore 규칙 시험 12개 · 린트 · 빌드 통과. 병합 · 배포하지 않았다.
