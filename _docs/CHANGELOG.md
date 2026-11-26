@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2026-11-26 — OpenTelemetry 의존성 충돌 정리
+
+- `@opentelemetry/core` 고정 범위를 2.12.0 → 3.1.1로 올려 API 1.10.0과의 peer 충돌을 해소했다. `npm ls` · `npm audit`(0건) · 전체 시험 138개 · Firestore 규칙 시험 12개 · 린트 · 빌드 통과. 병합 · 배포하지 않았다.
+
 ## 2026-11-26 — Sentry 11.18.0 로컬 검증
 
 - `@sentry/react` 11.14.0 → 11.18.0. 개인정보 보호 시험 2개, 전체 시험 138개, Firestore 규칙 시험 12개, 린트 · 빌드 통과, `npm audit` 0건. 기존 OpenTelemetry peer 의존성 경고는 유지된다. 병합 · 배포하지 않았다.
