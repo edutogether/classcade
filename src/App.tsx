@@ -19,6 +19,7 @@ import {
   clearActiveSession,
   clearNbtiAndProgress,
   ensureAnonymousJourneyId,
+  getStorageBackend,
   hasActiveSession,
   loadJourney,
   loadProfile,
@@ -31,6 +32,7 @@ import {
   type Profile,
 } from './lib/storage'
 import { samePagePath } from './lib/pagePath'
+import { revokePairingIfPresent } from './lib/resetPairing'
 import './App.css'
 
 type Screen = 'prep' | 'journey'
@@ -283,8 +285,7 @@ export default function App() {
     /* Dynamically imported: activePairingCode pulls in the Firestore pairing store (and
        the whole Firebase SDK chain), which must not weigh down the first-load bundle for
        visitors who never reach a paired mobile round. */
-    const { revokeActivePairingCode } = await import('./features/pairing/activePairingCode')
-    const revocation = await revokeActivePairingCode()
+    const revocation = await revokePairingIfPresent(getStorageBackend(resolveDeviceMode()), () => import('./features/pairing/activePairingCode'))
     if (revocation === 'network_error') { setNotice('현재 연결 코드를 안전하게 폐기하지 못했어요. 네트워크를 확인한 뒤 다시 시도해 주세요.'); return }
     applyJourneyAction({ type: 'RESET_NBTI' })
     setNotice(revocation === 'revoked' ? '기존 연결 코드를 폐기하고 새 라운드 1을 시작합니다.' : '새 라운드 1을 시작합니다.')
