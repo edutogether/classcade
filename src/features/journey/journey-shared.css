@@ -531,7 +531,7 @@
    to "든든한 …" on a 390px screen. Let it wrap and shrink. */
 @media (max-width: 700px) {
   .journey-scene--result .journey-scene__stage { grid-template-columns: minmax(0, 1fr); }
-  .journey-scene--result .journey-brand, .journey-scene--result .journey-brand .classcade-wordmark { min-width: 0; }
+  .journey-brand, .journey-brand .classcade-wordmark { min-width: 0; }
   .journey-result h1 { max-width: 100%; overflow: visible; overflow-wrap: anywhere; text-overflow: clip; white-space: normal; }
   .journey-result--art .journey-result__copy { max-width: none; }
   .journey-result--art .journey-result__copy h1,
